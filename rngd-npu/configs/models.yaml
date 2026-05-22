@@ -1,0 +1,92 @@
+# 모델 매트릭스 (Furiosa RNGD / furiosa-llm). enabled:false는 SKIP.
+# id는 Hugging Face 모델 id — furiosa-ai/* 는 prebuilt 아티팩트.
+# 하드웨어: RNGD 1장 = 8 PE. 이 머신 = 2장 = 16 PE. 모델 PE = tp × pp.
+# 측정 대상: GPU 벤치(bench-gpu)와 동일 비교가 가능하도록 Qwen2.5-0.5B·Llama-3.1-8B enabled.
+# gated 모델은 HF_TOKEN 필요 — `hf auth login`.
+
+models:
+  - id: furiosa-ai/Qwen2.5-0.5B-Instruct
+    revision: null
+    role: smoke           # 파이프라인 검증용. SWE-bench는 점수 의미 없음.
+    gen: true
+    enabled: true
+    serve_args: []
+
+  - id: furiosa-ai/Llama-3.1-8B-Instruct
+    revision: null
+    role: baseline        # v2026.2 검증된 베이스라인. bench-gpu의 meta-llama/Llama-3.1-8B 와 비교.
+    gen: true
+    enabled: true
+    serve_args: ["--tool-call-parser", "llama3_json"]
+
+  # ---- 아래 3종: prebuilt 아티팩트가 tensor_parallel=32 (RNGD 4장=32 PE)로 ----
+  # 하드 컴파일됨. artifact.json의 model.parallel_config.tensor_parallel_size=32.
+  # 현재 머신은 RNGD 2장(16 PE)뿐 → 서빙 불가 (furiosa-llm: "Required PEs: 32").
+  # 작은 tp 변형은 v2026.1/v2026.2 어느 revision에도 없음. 4장 머신에서 enabled:true.
+  - id: furiosa-ai/Qwen3-32B-FP8
+    revision: null
+    role: main
+    gen: true
+    enabled: false        # 아티팩트 tp=32 → RNGD 4장 필요
+    serve_args: ["--reasoning-parser", "qwen3"]
+
+  - id: furiosa-ai/EXAONE-4.0-32B-FP8
+    revision: null
+    role: main
+    gen: true
+    enabled: false        # 아티팩트 tp=32 → RNGD 4장 필요
+    serve_args: ["--reasoning-parser", "exaone4"]
+
+  - id: furiosa-ai/Llama-3.3-70B-Instruct
+    revision: null
+    role: large
+    gen: true
+    enabled: false        # 아티팩트 tp=32 → RNGD 4장 필요
+    serve_args: ["--tool-call-parser", "llama3_json", "--devices", "npu:0,npu:1"]
+
+  # ---- retrieval helpers (자체 throughput 측정) ----
+  - id: furiosa-ai/Qwen3-Embedding-8B
+    revision: null
+    role: embedding
+    gen: false
+    enabled: true
+    serve_args: []
+
+  - id: furiosa-ai/Qwen3-Reranker-8B
+    revision: null
+    role: reranker
+    gen: false
+    enabled: true
+    serve_args: []
+
+# 모든 모델 공통 furiosa-llm serve 인자.
+# prefix caching: artifact가 extend bucket 미지원이면 엔진이 자동 비활성.
+common_serve_args:
+  - "--host"
+  - "0.0.0.0"
+  - "--port"
+  - "8000"
+  - "--enable-prefix-caching"
+
+# Devices. 단일 NPU 우선; cold boot 후 "npu:0,npu:1"로 변경하면 dp=2 자동 인식.
+devices: "npu:0"
+
+# Request shape sweep (tps/sweep 태스크에서 사용).
+# batch_sizes를 128까지 확장 — 8B는 c=32에서도 처리량이 안 꺾여 감소 시작점을
+# 찾으려면 더 높은 동시성까지 밀어야 함.
+sweep:
+  batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128]
+  prompt_lens: [256, 1024, 4096]
+  max_tokens: 256
+  warmup_requests: 5
+  measured_requests: 50
+
+# Memsweep — furiosa-llm serve 옵션 OFAT 스윕 (baseline에서 한 축씩 변경, 조합마다 재기동).
+# 주의: spare_blocks_ratio는 furiosa-llm 2026.2.0에서 deprecated(0.0 외 값은
+# 엔진 패닉) → 축에서 제외.
+memsweep:
+  baseline: {}
+  axes:
+    max_model_len: [4096, 8192, 16384]
+    max_batch_size: [8, 32]
+    max_num_batched_tokens: [4096, 16384]

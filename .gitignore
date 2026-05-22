@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Logs / cache
+.cache/
+logs/
+*.log
+
+# ML outputs
+data/
+datasets/
+checkpoints/
+outputs/
+results/
+runs/
+wandb/
+
+# Large files
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.pickle
+*.npy
+*.npz
+*.h5
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Node
+node_modules/
+
+# 컴파일된 NPU 아티팩트 (대용량 바이너리 — HF에서 재취득/재생성 가능)
+Model_Benchmark/rngd-npu/artifacts/*
+!Model_Benchmark/rngd-npu/artifacts/.gitkeep
+
+# OS / 에디터
+.DS_Store
+*.swp
+
+#ppt
+Model_Benchmark/ppt/build.js
+Model_Benchmark/ppt/fonts
+Model_Benchmark/ppt/package.json
+Model_Benchmark/ppt/package-lock.json
+Model_Benchmark/ppt/Design.md
