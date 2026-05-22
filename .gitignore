@@ -37,16 +37,16 @@ wandb/
 node_modules/
 
 # 컴파일된 NPU 아티팩트 (대용량 바이너리 — HF에서 재취득/재생성 가능)
-./rngd-npu/artifacts/*
-!./rngd-npu/artifacts/.gitkeep
+rngd-npu/artifacts/*
+!rngd-npu/artifacts/.gitkeep
 
 # OS / 에디터
 .DS_Store
 *.swp
 
 #ppt
-./ppt/build.js
-./ppt/fonts
-./ppt/package.json
-./ppt/package-lock.json
-./ppt/Design.md
+ppt/build.js
+ppt/fonts
+ppt/package.json
+ppt/package-lock.json
+ppt/Design.md
