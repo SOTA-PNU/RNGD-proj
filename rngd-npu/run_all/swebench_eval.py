@@ -19,8 +19,9 @@ import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(REPO_ROOT))
+SCRIPT_DIR = Path(__file__).resolve().parent       # run_all/
+REPO_ROOT = SCRIPT_DIR.parent                       # rngd-npu/
+sys.path.insert(0, str(SCRIPT_DIR))                 # runners/ import
 
 from runners.swebench_run import run_evaluation  # noqa: E402
 

@@ -7,4 +7,4 @@ cd "$(dirname "$0")"
 
 MAX_WORKERS=${MAX_WORKERS:-8}
 command -v docker >/dev/null 2>&1 || { echo "docker 없음 — 설치 필요"; exit 1; }
-python swebench_eval.py --max-workers "$MAX_WORKERS" "$@"
+python run_all/swebench_eval.py --max-workers "$MAX_WORKERS" "$@"

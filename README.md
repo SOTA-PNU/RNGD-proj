@@ -19,15 +19,16 @@ Furiosa RNGD NPU와 NVIDIA GPU에서 같은 모델을 같은 방식으로 측정
 Model_Benchmark/
 ├── README.md                  이 문서
 ├── README_npu_gpu_result.md   NPU vs GPU 결과 비교
-├── rngd-npu/                  NPU 벤치마크
+├── rngd-npu/                  NPU 벤치마크 (furiosa-llm)
 │   ├── README.md
 │   ├── REPORT.md              측정 결과 리포트 (자동 생성)
+│   ├── run_all.sh             단계별 wrapper (preflight → smoke → gen → embed → swebench → report)
+│   ├── run_all/               run_all.sh 가 호출하는 파이썬 모음
 │   ├── configs/models.yaml    모델 목록과 측정 설정
-│   ├── orchestrator.py        모델별 테스트 자동 실행
-│   ├── runners/               테스트별 측정 코드
 │   └── results/               측정 결과 원본 (JSON)
-├── bench-gpu/                 GPU 벤치마크. 구조는 rngd-npu와 같음
+├── bench-gpu/                 GPU 벤치마크 (vLLM). 구조는 rngd-npu와 같음
 │   └── results/_archive_pre_match/   조건 정렬 전 측정 (보관용)
+├── info/                      참고 문서 모음 (빌드/서빙/내부 구조 설명)
 └── ppt/
     ├── RNGD_Benchmark.pdf
     └── RNGD_Benchmark.pptx

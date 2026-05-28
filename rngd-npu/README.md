@@ -33,28 +33,43 @@ bash preflight.sh
 rngd-npu/
 ├── setup.sh              측정 도구 의존성 설치
 ├── preflight.sh          NPU·SDK·Docker·모델 점검
-├── run_all.sh            전체 측정 파이프라인
+├── run_all.sh            전체 측정 파이프라인 (단계별 wrapper)
 ├── eval_swebench.sh      SWE-bench 채점
+├── run_model.sh          한 모델만 빌드/서빙 (단일 카드)
+├── run_model_p.sh        한 모델만 빌드/서빙 (PP 사용)
+├── build_queue.sh        여러 모델을 순차로 빌드하는 큐
+├── quantize_fp8.py       NPU 용 FP8 양자화 변환 단일 스크립트
 ├── requirements.txt      측정용 추가 의존성
-├── orchestrator.py       모델별로 테스트를 자동 실행
-├── analyze.py            결과 모아서 표로 정리
-├── report.py             종합 리포트(REPORT.md) 생성
-├── swebench_eval.py      예측 파일을 Docker로 채점
 ├── configs/
 │   └── models.yaml       모델 목록, 서버 인자, 측정 설정
-├── runners/
-│   ├── server.py         furiosa-llm serve 띄우고 내리는 관리
-│   ├── tps.py            첫 토큰 지연, 토큰 간격, 처리량 측정
-│   ├── memory_sweep.py   서버 옵션을 바꿔가며 측정
-│   ├── embed_bench.py    임베딩·리랭커 처리량 측정
-│   └── swebench_run.py   SWE-bench 추론
-├── docs/
-│   ├── SWEBENCH_SETUP.md   SWE-bench 설명과 환경 구축
-│   ├── RUNNING_BENCHMARKS.md
-│   └── COMPILING_MODELS.md HF 모델을 직접 컴파일하는 방법
-├── artifacts/            직접 빌드한 모델 (선택)
+├── run_all/              run_all.sh 가 호출하는 파이썬 모음
+│   ├── orchestrator.py   모델별로 테스트를 자동 실행
+│   ├── analyze.py        결과 모아서 표로 정리
+│   ├── report.py         종합 리포트(REPORT.md) 생성
+│   ├── swebench_eval.py  예측 파일을 Docker로 채점
+│   └── runners/
+│       ├── server.py         furiosa-llm serve 띄우고 내리는 관리
+│       ├── tps.py            첫 토큰 지연, 토큰 간격, 처리량 측정
+│       ├── memory_sweep.py   서버 옵션을 바꿔가며 측정
+│       ├── embed_bench.py    임베딩·리랭커 처리량 측정
+│       └── swebench_run.py   SWE-bench 추론
+├── artifacts/            직접 빌드한 모델 (.gitignore 됨)
+├── log/                  빌드/서빙 로그
 └── results/              측정 결과 (자동 생성)
 ```
+
+각 영역 자세한 설명은 `Model_Benchmark/info/` 에 별도 정리되어 있습니다.
+
+| 정보성 문서 | 내용 |
+|---|---|
+| [info/README_runallsh.md](../info/README_runallsh.md) | `run_all.sh` + `run_all/` 안 파이썬들의 역할과 데이터 흐름 |
+| [info/README_build.md](../info/README_build.md) | `furiosa-llm build` 가이드 (옵션, 실패 패턴, 모델별 결과) |
+| [info/README_runcode.md](../info/README_runcode.md) | `furiosa-llm serve` 와 OpenAI 호환 API 호출 |
+| [info/README_preset.md](../info/README_preset.md) | `presets.py` 의 버킷 매칭 규칙과 새 모델 추가법 |
+| [info/README_config.md](../info/README_config.md) | HF `config.json` 의 필드를 furiosa-llm 빌드 관점에서 풀어 설명 |
+| [info/README_FCLM.md](../info/README_FCLM.md) | PP 미지원 `ForCausalLM` 을 SDK 에 직접 등록하는 절차 |
+| [info/BUILD_COMPIL.md](../info/BUILD_COMPIL.md) | `furiosa-llm build` 의 두 단계 (pipeline build · compile) |
+| [info/BUILD_FLOW.md](../info/BUILD_FLOW.md) | 빌드 내부 호출 흐름 (builder/validator/resolver/presets) |
 
 ## 측정 항목
 

@@ -30,8 +30,9 @@ from typing import Any
 
 import yaml
 
-REPO_ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(REPO_ROOT))
+SCRIPT_DIR = Path(__file__).resolve().parent       # run_all/
+REPO_ROOT = SCRIPT_DIR.parent                       # rngd-npu/
+sys.path.insert(0, str(SCRIPT_DIR))                 # runners/ import
 
 from runners.server import FuriosaServer  # noqa: E402
 from runners.tps import run_concurrency, to_jsonable  # noqa: E402
@@ -207,8 +208,9 @@ async def run_for_model(model_cfg, common, devices, sweep, tasks, memsweep_cfg=N
         print(f"== SKIP {model} (no applicable task: tasks={tasks}, role={model_cfg.get('role')}) ==")
         return
 
-    out_root = RESULTS_ROOT / _safe_name(model)
-    log_path = LOGS_ROOT / f"{_safe_name(model)}_{_ts()}.log"
+    disp_name = model_cfg.get("name") or model
+    out_root = RESULTS_ROOT / _safe_name(disp_name)
+    log_path = LOGS_ROOT / f"{_safe_name(disp_name)}_{_ts()}.log"
     base_args = _build_serve_args(model_cfg, common)
     host, port, devs, extra = _split_serve_args(base_args, devices)
 

@@ -1,6 +1,9 @@
 # 모델 매트릭스 (Furiosa RNGD / furiosa-llm). enabled:false는 SKIP.
-# id는 Hugging Face 모델 id — furiosa-ai/* 는 prebuilt 아티팩트.
-# 하드웨어: RNGD 1장 = 8 PE. 이 머신 = 2장 = 16 PE. 모델 PE = tp × pp.
+# id 형식 두 가지:
+#   - HF 모델 id (furiosa-ai/* 는 prebuilt 아티팩트) → furiosa-llm 이 HF Hub 에서 받음
+#   - 로컬 절대경로 (artifacts/* 직접 빌드) → 그 경로를 furiosa-llm serve 가 바로 로드
+# name: 결과/로그 폴더에 쓸 짧은 이름 (절대경로 id 가 폴더명으로 지저분해지는 것 방지). 없으면 id 사용.
+# 하드웨어: RNGD 1장 = 8 PE. 이 머신 = 2장 = 16 PE. 모델 PE = tp × pp. 1장 HBM ≈ 48GB.
 # 측정 대상: GPU 벤치(bench-gpu)와 동일 비교가 가능하도록 Qwen2.5-0.5B·Llama-3.1-8B enabled.
 # gated 모델은 HF_TOKEN 필요 — `hf auth login`.
 
@@ -9,25 +12,94 @@ models:
     revision: null
     role: smoke           # 파이프라인 검증용. SWE-bench는 점수 의미 없음.
     gen: true
-    enabled: true
+    enabled: false
     serve_args: []
 
   - id: furiosa-ai/Llama-3.1-8B-Instruct
     revision: null
     role: baseline        # v2026.2 검증된 베이스라인. bench-gpu의 meta-llama/Llama-3.1-8B 와 비교.
     gen: true
-    enabled: true
+    enabled: false
     serve_args: ["--tool-call-parser", "llama3_json"]
 
-  # ---- 아래 3종: prebuilt 아티팩트가 tensor_parallel=32 (RNGD 4장=32 PE)로 ----
-  # 하드 컴파일됨. artifact.json의 model.parallel_config.tensor_parallel_size=32.
-  # 현재 머신은 RNGD 2장(16 PE)뿐 → 서빙 불가 (furiosa-llm: "Required PEs: 32").
+  # ==== 직접 빌드한 로컬 아티팩트 (tp=8 = 1장, 현재 2장 환경에서 서빙 가능) ====
+  # furiosa-llm build 로 HF 원본을 tp=8 재컴파일한 결과. prebuilt(tp=32)와 달리 1장에 적재됨.
+  # id 는 절대경로 — 서버가 그 경로를 그대로 로드하고 /v1/models id 도 그 경로로 등록됨.
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8
+    name: Qwen3-32B-FP8-tp8
+    revision: null
+    role: main            # FP8 33GB, max_model_len 40960. sweep 전 구간 측정 가능.
+    gen: true
+    enabled: true
+    serve_args: ["--reasoning-parser", "qwen3"]
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-fp8-tp8
+    name: Qwen3-Coder-30B-A3B-FP8-tp8
+    revision: null
+    role: coder           # FP8 MoE 30GB, max_model_len 8192 → sweep 16384 포인트만 실패, 나머지 정상.
+    gen: true
+    enabled: true
+    serve_args: []
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8
+    name: Qwen2.5-Coder-14B-tp8
+    revision: null
+    role: coder           # bf16 28GB, max_model_len 32768. 1장 적재 tight 하지만 가능.
+    gen: true
+    enabled: true
+    serve_args: []
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-7b-tp8
+    name: Qwen2.5-Coder-7B-tp8
+    revision: null
+    role: coder           # bf16 15GB, max_model_len 32768.
+    gen: true
+    enabled: true
+    serve_args: []
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-1.5b-tp8
+    name: Qwen2.5-Coder-1.5B-tp8
+    revision: null
+    role: coder           # bf16 3GB, max_model_len 32768.
+    gen: true
+    enabled: true
+    serve_args: []
+
+  # ==== 빌드는 됐으나 현재 2장 환경 서빙 불가 (1장 초과 or 4장 필요) ====
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8-16k
+    name: Qwen3-32B-FP8-tp8-16k
+    revision: null
+    role: main
+    gen: true
+    enabled: false        # 위 qwen3-32b-fp8-tp8(40960)의 max_model_len 16384 축소판. 중복이라 OFF. OOM 시 대안.
+    serve_args: ["--reasoning-parser", "qwen3"]
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-32b-tp8
+    name: Qwen2.5-Coder-32B-tp8
+    revision: null
+    role: coder
+    gen: true
+    enabled: false        # bf16 62GB > 1장 48GB HBM → 서빙 OOM. FP8 양자화 후 재빌드해야 1장 적재.
+    serve_args: []
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-tp32
+    name: Qwen3-Coder-30B-A3B-bf16-tp32
+    revision: null
+    role: coder
+    gen: true
+    enabled: false        # bf16 58GB, tp=32 → RNGD 4장(32 PE) 필요. 4장 머신에서 enabled:true.
+    serve_args: []
+
+  # ---- prebuilt 아티팩트 tensor_parallel=32 (RNGD 4장=32 PE) ----
+  # artifact.json의 parallel_config.tensor_parallel_size=32. 2장(16 PE)에선 "Required PEs: 32"로 거부.
   # 작은 tp 변형은 v2026.1/v2026.2 어느 revision에도 없음. 4장 머신에서 enabled:true.
   - id: furiosa-ai/Qwen3-32B-FP8
     revision: null
     role: main
     gen: true
-    enabled: false        # 아티팩트 tp=32 → RNGD 4장 필요
+    enabled: false        # 아티팩트 tp=32 → RNGD 4장 필요 (1장 서빙은 위 로컬 빌드 qwen3-32b-fp8-tp8 사용)
     serve_args: ["--reasoning-parser", "qwen3"]
 
   - id: furiosa-ai/EXAONE-4.0-32B-FP8
@@ -49,14 +121,14 @@ models:
     revision: null
     role: embedding
     gen: false
-    enabled: true
+    enabled: false
     serve_args: []
 
   - id: furiosa-ai/Qwen3-Reranker-8B
     revision: null
     role: reranker
     gen: false
-    enabled: true
+    enabled: false
     serve_args: []
 
 # 모든 모델 공통 furiosa-llm serve 인자.
@@ -72,21 +144,25 @@ common_serve_args:
 devices: "npu:0"
 
 # Request shape sweep (tps/sweep 태스크에서 사용).
-# batch_sizes를 128까지 확장 — 8B는 c=32에서도 처리량이 안 꺾여 감소 시작점을
-# 찾으려면 더 높은 동시성까지 밀어야 함.
+# 측정 대상이 32B급(Qwen3-32B-FP8 등 RNGD 2장 이내 적재 가능 모델)으로 확장 →
+# prompt_lens에 16384 추가, max_tokens 512로 디코드 특성 더 봄.
+# batch_sizes 128 유지 (작은 모델 saturation 측정용).
+# 작은 모델(artifact max_model_len < 16K)은 16384 데이터 포인트만 실패하고
+# 나머지는 정상 측정됨 — 분석 시 누락 포인트만 걸러내면 됨.
 sweep:
   batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128]
-  prompt_lens: [256, 1024, 4096]
-  max_tokens: 256
+  prompt_lens: [256, 1024, 4096, 16384]
+  max_tokens: 512
   warmup_requests: 5
-  measured_requests: 50
+  measured_requests: 30
 
 # Memsweep — furiosa-llm serve 옵션 OFAT 스윕 (baseline에서 한 축씩 변경, 조합마다 재기동).
 # 주의: spare_blocks_ratio는 furiosa-llm 2026.2.0에서 deprecated(0.0 외 값은
 # 엔진 패닉) → 축에서 제외.
+# 32B급 대응 — max_model_len·max_num_batched_tokens 축에 32768 추가.
 memsweep:
   baseline: {}
   axes:
-    max_model_len: [4096, 8192, 16384]
+    max_model_len: [4096, 16384, 32768]
     max_batch_size: [8, 32]
-    max_num_batched_tokens: [4096, 16384]
+    max_num_batched_tokens: [4096, 16384, 32768]
