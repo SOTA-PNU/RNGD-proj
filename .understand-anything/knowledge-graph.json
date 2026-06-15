@@ -1,0 +1,5563 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "RNGD-proj",
+    "languages": [
+      "javascript",
+      "markdown",
+      "python",
+      "shell",
+      "txt",
+      "yaml"
+    ],
+    "frameworks": [
+      "furiosa-llm",
+      "vLLM",
+      "OpenAI-compatible API client",
+      "SWE-bench",
+      "HuggingFace",
+      "Gradio",
+      "pptxgenjs"
+    ],
+    "description": "Furiosa RNGD NPU와 NVIDIA GPU에서 같은 LLM 모델을 같은 방식으로 측정해 서빙 성능을 비교하는 벤치마크 자동화 프로젝트입니다. 토큰 생성 속도, 동시성 스케일링, 서버 옵션 스윕, SWE-bench 정확도, embedding/reranker throughput을 OpenAI 호환 API로 측정하며, NPU 실시간 모니터(ntop)와 Llama-70B quantization 도구도 함께 포함합니다.",
+    "analyzedAt": "2026-05-31T07:58:19.939Z",
+    "gitCommitHash": "4292b193bf2018407531d840c09cc4d6cace34b6"
+  },
+  "nodes": [
+    {
+      "id": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "type": "file",
+      "name": "orchestrator.py",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "summary": "GPU(vLLM) 쪽 벤치마크의 메인 오케스트레이터로, models.yaml을 읽어 모델마다 vLLM 서버를 띄우고 tps·sweep·memsweep·embed·rerank·swebench 태스크를 순차 실행한 뒤 결과를 results/<모델>/<태스크>/<timestamp>.json 으로 저장합니다.",
+      "tags": [
+        "entry-point",
+        "orchestrator",
+        "benchmark",
+        "vllm",
+        "cli"
+      ],
+      "complexity": "complex",
+      "languageNotes": "asyncio.run으로 비동기 실행을 묶고, sys.path에 repo 루트를 끼워 넣어 runners 패키지를 import합니다. 태스크별 _task_* 헬퍼로 측정 로직을 분리했습니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_split_serve_args",
+      "type": "function",
+      "name": "_split_serve_args",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        64,
+        76
+      ],
+      "summary": "vLLM serve 인자 리스트에서 host/port 같은 서버 기동 옵션을 따로 뽑아내고 나머지는 추가 인자(extra)로 분리합니다.",
+      "tags": [
+        "utility",
+        "argument-parsing",
+        "vllm"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_tps",
+      "type": "function",
+      "name": "_task_tps",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        85,
+        93
+      ],
+      "summary": "concurrency=1 단일 요청 기준으로 run_concurrency를 호출해 TTFT/ITL/output TPS를 측정하고 결과 JSON을 저장합니다.",
+      "tags": [
+        "benchmark",
+        "throughput",
+        "task-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_sweep",
+      "type": "function",
+      "name": "_task_sweep",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        96,
+        114
+      ],
+      "summary": "concurrency × prompt_len 매트릭스를 돌며 run_concurrency를 반복 호출해 동시성 스케일링 곡선을 측정하고 요약을 저장합니다.",
+      "tags": [
+        "benchmark",
+        "concurrency",
+        "task-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_memsweep",
+      "type": "function",
+      "name": "_task_memsweep",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        117,
+        131
+      ],
+      "summary": "max-model-len·max-num-seqs·gpu-memory-utilization 같은 vllm serve 인자를 OFAT로 스윕하기 위해 sweep_serve_args를 호출하고 최적 조합을 찾습니다.",
+      "tags": [
+        "benchmark",
+        "config-sweep",
+        "task-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_embed",
+      "type": "function",
+      "name": "_task_embed",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        134,
+        139
+      ],
+      "summary": "임베딩 모델의 batch size별 throughput을 bench_embeddings로 측정하고 결과를 저장합니다.",
+      "tags": [
+        "benchmark",
+        "embedding",
+        "task-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_swebench",
+      "type": "function",
+      "name": "_task_swebench",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        155,
+        179
+      ],
+      "summary": "환경변수로 SWE-bench Lite 설정을 읽어 인스턴스를 로드하고 모델 예측(run_predictions)을 돌린 뒤 정확도 요약을 저장합니다.",
+      "tags": [
+        "benchmark",
+        "swebench",
+        "accuracy",
+        "task-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:run_for_model",
+      "type": "function",
+      "name": "run_for_model",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        184,
+        237
+      ],
+      "summary": "한 모델에 대해 VllmServer를 컨텍스트로 띄우고 요청된 태스크들(tps/sweep/embed/rerank/swebench)을 차례로 실행하는 모델 단위 실행 루틴입니다.",
+      "tags": [
+        "orchestrator",
+        "benchmark",
+        "vllm",
+        "task-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        240,
+        261
+      ],
+      "summary": "CLI 인자(config·tasks·models·dry-run)를 파싱해 models.yaml을 로드하고, 선택된 모델 집합에 대해 asyncio로 _run_all을 실행합니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "argument-parsing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/orchestrator.py:_run_all",
+      "type": "function",
+      "name": "_run_all",
+      "filePath": "Model_Benchmark/bench-gpu/orchestrator.py",
+      "lineRange": [
+        264,
+        272
+      ],
+      "summary": "선택된 모델 목록을 순회하며 공통 설정·sweep 설정을 넘겨 run_for_model을 비동기로 호출하는 상위 실행 루프입니다.",
+      "tags": [
+        "orchestrator",
+        "async",
+        "loop"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "type": "file",
+      "name": "embed_bench.py",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "summary": "OpenAI 호환 /embeddings·/rerank 엔드포인트를 httpx로 호출해 임베딩과 리랭커의 throughput·latency(p50/p95)를 측정하는 러너입니다. 리랭커 전용 엔드포인트가 없으면 임베딩 코사인 유사도로 대체 측정합니다.",
+      "tags": [
+        "benchmark",
+        "embedding",
+        "reranker",
+        "runner",
+        "throughput"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "dataclass로 결과(EmbedResult/RerankResult)를 모델링하고 asdict로 JSON 직렬화합니다. httpx.AsyncClient로 비동기 POST를 보냅니다."
+    },
+    {
+      "id": "class:Model_Benchmark/bench-gpu/runners/embed_bench.py:EmbedResult",
+      "type": "class",
+      "name": "EmbedResult",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        43,
+        62
+      ],
+      "summary": "임베딩 측정 1회 결과(모델·입력 개수·batch size·전체 소요시간·요청별 latency)를 담고 summary()로 throughput·p50/p95 latency 요약을 만드는 dataclass입니다.",
+      "tags": [
+        "data-model",
+        "embedding",
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:Model_Benchmark/bench-gpu/runners/embed_bench.py:RerankResult",
+      "type": "class",
+      "name": "RerankResult",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        104,
+        123
+      ],
+      "summary": "리랭커 측정 결과(모델·쿼리/문서 쌍 수·소요시간·측정 방식·latency)를 담고 summary()로 throughput 요약을 만드는 dataclass입니다.",
+      "tags": [
+        "data-model",
+        "reranker",
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_embeddings",
+      "type": "function",
+      "name": "bench_embeddings",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        72,
+        100
+      ],
+      "summary": "여러 batch size로 /embeddings에 문서를 보내 요청별 latency와 전체 wall-clock을 재서 EmbedResult 리스트를 반환합니다.",
+      "tags": [
+        "benchmark",
+        "embedding",
+        "throughput"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_reranker",
+      "type": "function",
+      "name": "bench_reranker",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        136,
+        185
+      ],
+      "summary": "/rerank 전용 엔드포인트를 먼저 시도하고, 없으면 쿼리·문서 임베딩의 코사인 유사도로 순위를 매겨 리랭커 throughput을 측정합니다.",
+      "tags": [
+        "benchmark",
+        "reranker",
+        "fallback",
+        "throughput"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:_try_endpoint",
+      "type": "function",
+      "name": "_try_endpoint",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        126,
+        133
+      ],
+      "summary": "주어진 rerank 엔드포인트 URL로 POST를 보내 성공 여부를 확인하는 헬퍼로, 서버가 어떤 rerank 경로를 지원하는지 탐지합니다.",
+      "tags": [
+        "utility",
+        "http",
+        "probe"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_embed",
+      "type": "function",
+      "name": "to_jsonable_embed",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        188,
+        191
+      ],
+      "summary": "EmbedResult를 asdict로 펼치고 summary()를 덧붙여 JSON으로 저장 가능한 dict로 만드는 직렬화 헬퍼입니다.",
+      "tags": [
+        "utility",
+        "serialization",
+        "embedding"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_rerank",
+      "type": "function",
+      "name": "to_jsonable_rerank",
+      "filePath": "Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "lineRange": [
+        194,
+        197
+      ],
+      "summary": "RerankResult를 asdict로 펼치고 summary()를 덧붙여 JSON으로 저장 가능한 dict로 만드는 직렬화 헬퍼입니다.",
+      "tags": [
+        "utility",
+        "serialization",
+        "reranker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "type": "file",
+      "name": "memory_sweep.py",
+      "filePath": "Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "summary": "vLLM serve 옵션(max-model-len, max-num-seqs, gpu-memory-utilization 등)을 OFAT(한 번에 한 축) 방식으로 조합해, 각 조합마다 서버를 재기동하고 run_concurrency로 성능을 재서 메모리·동시성 트레이드오프를 스윕하는 러너입니다.",
+      "tags": [
+        "benchmark",
+        "config-sweep",
+        "runner",
+        "vllm",
+        "ofat"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "baseline 조합을 기준으로 각 축을 한 번씩만 변형하는 OFAT 탐색을 사용해 조합 폭발을 줄입니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:_ofat_combinations",
+      "type": "function",
+      "name": "_ofat_combinations",
+      "filePath": "Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "lineRange": [
+        33,
+        54
+      ],
+      "summary": "baseline 설정을 기준으로 각 스윕 축을 한 번에 하나씩만 바꾼 조합 목록을 만들어, 중복을 제거한 OFAT 조합 리스트를 생성합니다.",
+      "tags": [
+        "config-sweep",
+        "ofat",
+        "combinatorics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "type": "function",
+      "name": "sweep_serve_args",
+      "filePath": "Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "lineRange": [
+        71,
+        130
+      ],
+      "summary": "OFAT 조합마다 VllmServer를 기동·기동시간 측정·서버 정보 수집 후 run_concurrency로 성능을 재고, 조합별·요약 JSON을 results 디렉터리에 기록하는 핵심 스윕 루프입니다.",
+      "tags": [
+        "benchmark",
+        "config-sweep",
+        "vllm",
+        "throughput"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:_collect_server_info",
+      "type": "function",
+      "name": "_collect_server_info",
+      "filePath": "Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "lineRange": [
+        133,
+        144
+      ],
+      "summary": "서버의 /v1/models 등을 호출해 응답 헤더·바디에서 서버 버전·모델 정보를 모아 결과 메타데이터로 남기는 헬퍼입니다.",
+      "tags": [
+        "utility",
+        "http",
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/runners/server.py",
+      "type": "file",
+      "name": "server.py",
+      "filePath": "Model_Benchmark/bench-gpu/runners/server.py",
+      "summary": "vllm serve 프로세스를 subprocess로 띄우고 헬스체크·모델 ID 확인으로 준비 완료를 기다린 뒤, 컨텍스트 매니저로 종료까지 관리하는 vLLM 서버 라이프사이클 래퍼입니다.",
+      "tags": [
+        "service",
+        "vllm",
+        "process-management",
+        "runner",
+        "context-manager"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "subprocess.Popen으로 프로세스 그룹을 만들고 os.killpg로 자식까지 함께 종료합니다. __enter__/__exit__로 with 문에서 서버 수명을 보장합니다."
+    },
+    {
+      "id": "class:Model_Benchmark/bench-gpu/runners/server.py:VllmServer",
+      "type": "class",
+      "name": "VllmServer",
+      "filePath": "Model_Benchmark/bench-gpu/runners/server.py",
+      "lineRange": [
+        21,
+        167
+      ],
+      "summary": "vllm serve 명령을 조립·기동하고 포트 충돌 확인·준비 대기·정상 종료까지 처리하는 서버 핸들 클래스로, with 블록 안에서 OpenAI 호환 서버를 안전하게 띄웠다 내립니다.",
+      "tags": [
+        "service",
+        "vllm",
+        "process-management",
+        "context-manager"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "type": "file",
+      "name": "tps.py",
+      "filePath": "Model_Benchmark/bench-gpu/runners/tps.py",
+      "summary": "OpenAI 호환 /chat/completions를 stream으로 호출해 TTFT(첫 토큰까지 시간)·ITL(토큰 간 간격)·output TPS를 측정하고, asyncio로 동시 요청을 보내 concurrency별 throughput을 재는 핵심 토큰 생성 속도 러너입니다.",
+      "tags": [
+        "benchmark",
+        "throughput",
+        "latency",
+        "concurrency",
+        "runner"
+      ],
+      "complexity": "complex",
+      "languageNotes": "httpx.AsyncClient의 스트리밍 응답을 줄 단위로 파싱해 토큰 타임스탬프를 기록하고, asyncio.Semaphore로 동시성을 제한하며 gather로 묶어 실행합니다."
+    },
+    {
+      "id": "class:Model_Benchmark/bench-gpu/runners/tps.py:RequestMetric",
+      "type": "class",
+      "name": "RequestMetric",
+      "filePath": "Model_Benchmark/bench-gpu/runners/tps.py",
+      "lineRange": [
+        19,
+        33
+      ],
+      "summary": "요청 1건의 측정값(TTFT·총 소요시간·출력 토큰 수·토큰 간 간격 리스트·에러)을 담고 itl_p50·output_tps를 계산하는 dataclass입니다.",
+      "tags": [
+        "data-model",
+        "latency",
+        "result"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:Model_Benchmark/bench-gpu/runners/tps.py:BatchResult",
+      "type": "class",
+      "name": "BatchResult",
+      "filePath": "Model_Benchmark/bench-gpu/runners/tps.py",
+      "lineRange": [
+        37,
+        80
+      ],
+      "summary": "한 concurrency 배치의 전체 결과(모델·동시성·prompt/max 토큰·wall-clock·성공/실패·요청별 메트릭)를 담고 summary()로 TTFT·ITL·TPS의 p50/p95 등 종합 통계를 만드는 dataclass입니다.",
+      "tags": [
+        "data-model",
+        "throughput",
+        "result",
+        "statistics"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/tps.py:_one_request",
+      "type": "function",
+      "name": "_one_request",
+      "filePath": "Model_Benchmark/bench-gpu/runners/tps.py",
+      "lineRange": [
+        103,
+        162
+      ],
+      "summary": "단일 chat completion 요청을 stream으로 보내 SSE 라인을 파싱하면서 첫 토큰까지 시간(TTFT)과 토큰 간 간격(ITL)을 기록해 RequestMetric을 반환합니다.",
+      "tags": [
+        "benchmark",
+        "latency",
+        "streaming",
+        "http"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "type": "function",
+      "name": "run_concurrency",
+      "filePath": "Model_Benchmark/bench-gpu/runners/tps.py",
+      "lineRange": [
+        165,
+        203
+      ],
+      "summary": "지정된 concurrency만큼 _one_request를 동시에 보내 warmup 후 n_requests를 실행하고, 성공/실패 메트릭을 모아 BatchResult로 반환하는 동시성 측정 엔트리입니다.",
+      "tags": [
+        "benchmark",
+        "concurrency",
+        "throughput",
+        "async"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/tps.py:to_jsonable",
+      "type": "function",
+      "name": "to_jsonable",
+      "filePath": "Model_Benchmark/bench-gpu/runners/tps.py",
+      "lineRange": [
+        206,
+        209
+      ],
+      "summary": "BatchResult를 asdict와 summary로 변환해 JSON 직렬화 가능한 dict로 만드는 헬퍼입니다.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:Model_Benchmark/bench-gpu/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "Model_Benchmark/bench-gpu/README.md",
+      "summary": "NVIDIA GPU(vLLM) 벤치마크 폴더 전체 사용 설명서입니다. 환경 구축부터 다섯 가지 측정 항목(tps·sweep·memsweep·swebench·embed/rerank), 모델 설정, 실행 단계(STAGE), 결과 보기, SWE-bench Lite 동작 원리, RNGD NPU 폴더와의 차이까지 정리해 NPU와 같은 기준으로 GPU 성능을 비교하도록 안내합니다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "benchmark",
+        "vllm",
+        "swe-bench"
+      ],
+      "complexity": "complex",
+      "languageNotes": "측정 코드는 OpenAI 호환 API만 호출하므로 서버가 vLLM이든 furiosa-llm이든 동일하다는 점을 강조합니다. memsweep 축(max_num_seqs)을 NPU의 max_batch_size에 대응시켜 비교 가능성을 맞춥니다."
+    },
+    {
+      "id": "document:Model_Benchmark/bench-gpu/REPORT.md",
+      "type": "document",
+      "name": "REPORT.md",
+      "filePath": "Model_Benchmark/bench-gpu/REPORT.md",
+      "summary": "report.py가 results/ 측정값을 모아 자동 생성한 GPU(vLLM) 종합 리포트입니다. TL;DR 핵심 지표, 단일 요청 토큰 속도, 동시성 스케일링, serve 옵션 스윕, SWE-bench 정확도, embedding/reranker, 권장 서빙 설정, 종합 적합도 점수의 여덟 부분으로 Qwen2.5-0.5B와 Llama-3.1-8B 결과를 담고 있습니다.",
+      "tags": [
+        "documentation",
+        "benchmark-result",
+        "report",
+        "generated",
+        "swe-bench"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "종합 점수는 정확도(SWE-bench) 0.5 + peak 합산 TPS 0.3 + 단일 TPS 0.2의 가중합이며, 각 지표는 측정 모델 중 최댓값 대비 정규화한 값입니다."
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/eval_swebench.sh",
+      "type": "file",
+      "name": "eval_swebench.sh",
+      "filePath": "Model_Benchmark/bench-gpu/eval_swebench.sh",
+      "summary": "orchestrator의 swebench 태스크가 만든 예측 jsonl을 Docker로 일괄 채점하는 얇은 래퍼입니다. .venv를 활성화하고 docker 존재를 확인한 뒤 MAX_WORKERS 병렬 수로 swebench_eval.py를 호출합니다.",
+      "tags": [
+        "script",
+        "swe-bench",
+        "evaluation",
+        "docker",
+        "wrapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/preflight.sh",
+      "type": "file",
+      "name": "preflight.sh",
+      "filePath": "Model_Benchmark/bench-gpu/preflight.sh",
+      "summary": "측정 전 사전 점검 스크립트입니다. GPU(nvidia-smi), vLLM·torch CUDA 빌드, Python 의존성(httpx·yaml·openai·datasets·swebench), Docker 데몬, 디스크 여유, configs/models.yaml에 적힌 HF 모델 접근 가능 여부를 차례로 확인합니다.",
+      "tags": [
+        "script",
+        "preflight",
+        "environment-check",
+        "gpu",
+        "validation"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "셸 안에서 python heredoc(<<PY)을 여러 번 실행해 vLLM·torch·HfApi를 직접 import하며 점검합니다. models.yaml을 읽어 모델 목록을 동적으로 확인합니다."
+    },
+    {
+      "id": "config:Model_Benchmark/bench-gpu/requirements.txt",
+      "type": "config",
+      "name": "requirements.txt",
+      "filePath": "Model_Benchmark/bench-gpu/requirements.txt",
+      "summary": "GPU 벤치마크 Python 의존성을 고정합니다. 드라이버 570(CUDA 12.8 상한) 환경에서 동작하는 마지막 빌드인 vLLM 0.10.0+cu126 휠과 transformers 4.53.2를 직접 핀으로 박고, httpx·pyyaml·openai·datasets·huggingface_hub를 함께 설치합니다.",
+      "tags": [
+        "configuration",
+        "dependencies",
+        "vllm",
+        "version-pinning",
+        "build-system"
+      ],
+      "complexity": "simple",
+      "languageNotes": "vLLM은 cu128 휠을 낸 적이 없고 0.10.2부터 cu129/cu130만 제공하므로, 12.8 드라이버가 backward-compat로 돌릴 수 있는 cu126=0.10.0으로 고정합니다. transformers는 토크나이저 API 어긋남(Qwen2Tokenizer AttributeError)을 막으려 4.53.2 하한에 맞춥니다."
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "type": "file",
+      "name": "run_all.sh",
+      "filePath": "Model_Benchmark/bench-gpu/run_all.sh",
+      "summary": "GPU(vLLM) 전체 벤치마크 파이프라인을 STAGE 단위로 실행하는 메인 진입 스크립트입니다. preflight → smoke → gen(tps·sweep·memsweep) → embed → swebench → report 단계를 orchestrator.py·analyze.py·report.py·eval_swebench.sh 호출로 묶고, 각 단계 로그를 results/_run_logs에 남깁니다.",
+      "tags": [
+        "script",
+        "entry-point",
+        "pipeline",
+        "orchestration",
+        "benchmark"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "드라이버 570에서 flashinfer 샘플러가 cudaErrorInsufficientDriver(35)로 죽는 문제를 피하려 VLLM_USE_FLASHINFER_SAMPLER=0을 기본 설정합니다. STAGE 환경변수로 일부 단계만 실행할 수 있습니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/run_all.sh:step_gen",
+      "type": "function",
+      "name": "step_gen",
+      "filePath": "Model_Benchmark/bench-gpu/run_all.sh",
+      "lineRange": [
+        27,
+        30
+      ],
+      "summary": "생성 모델 측정 단계로, orchestrator.py에 tps·sweep·memsweep 세 태스크를 한 번에 넘겨 단일 속도·동시성 스케일링·serve 옵션 스윕을 측정하고 gen.log에 기록합니다.",
+      "tags": [
+        "script",
+        "benchmark",
+        "generation",
+        "orchestration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/run_all.sh:step_swebench",
+      "type": "function",
+      "name": "step_swebench",
+      "filePath": "Model_Benchmark/bench-gpu/run_all.sh",
+      "lineRange": [
+        37,
+        43
+      ],
+      "summary": "SWE-bench 단계로, docker 존재를 확인하고 swebench 패키지를 보장한 뒤 orchestrator.py로 추론을 돌리고 이어서 eval_swebench.sh로 Docker 채점을 실행합니다.",
+      "tags": [
+        "script",
+        "swe-bench",
+        "evaluation",
+        "orchestration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/run_all.sh:step_report",
+      "type": "function",
+      "name": "step_report",
+      "filePath": "Model_Benchmark/bench-gpu/run_all.sh",
+      "lineRange": [
+        45,
+        49
+      ],
+      "summary": "집계·리포트 단계로, analyze.py로 측정값을 CSV로 요약하고 report.py로 REPORT.md 종합 리포트를 생성합니다.",
+      "tags": [
+        "script",
+        "report",
+        "aggregation",
+        "orchestration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/setup.sh",
+      "type": "file",
+      "name": "setup.sh",
+      "filePath": "Model_Benchmark/bench-gpu/setup.sh",
+      "summary": "프레시 NVIDIA GPU 서버 환경을 한 번에 구축하는 스크립트입니다. GPU 확인 후 .venv 가상환경을 만들고 uv로 requirements.txt(vLLM 0.10.0 cu126 휠)를 설치하며, swebench 채점용 패키지와 Docker 가용성까지 점검합니다.",
+      "tags": [
+        "script",
+        "setup",
+        "environment",
+        "installation",
+        "vllm"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "기본 PyPI vllm(cu129)은 드라이버 570에서 못 돌기 때문에 requirements.txt에 직접 고정한 cu126 휠을 uv로 설치합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "type": "document",
+      "name": "BUILD_COMPIL.md",
+      "filePath": "Model_Benchmark/info/BUILD_COMPIL.md",
+      "summary": "furiosa-llm build 한 명령 안에서 연달아 도는 두 단계, 즉 PyTorch FX 그래프를 그리는 Pipeline build(tracing)와 그 그래프를 NPU EDF 바이너리로 번역하는 Compile을 비교 설명합니다. 시간·메모리 특성이 크게 달라 OOM이 거의 다 tracing 단계에서 나는 이유와 32B FP8 빌드 실측치를 정리합니다.",
+      "tags": [
+        "documentation",
+        "build",
+        "npu",
+        "compile",
+        "troubleshooting"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "SDK 내부 builder.py / new_pipeline_builder.py / converter.py 의 라인 위치를 직접 짚어가며 빌드 phase를 해설합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/info/BUILD_FLOW.md",
+      "type": "document",
+      "name": "BUILD_FLOW.md",
+      "filePath": "Model_Benchmark/info/BUILD_FLOW.md",
+      "summary": "furiosa-llm build 한 줄을 실행했을 때 builder.py(오케스트레이터)·validator.py(검증)·resolver.py(값 채우기)·presets.py(버킷 레시피) 네 모듈이 Validate → Resolve → Build 순서로 협업하는 내부 호출 흐름을 정리합니다.",
+      "tags": [
+        "documentation",
+        "build",
+        "npu",
+        "architecture",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_FCLM.md",
+      "type": "document",
+      "name": "README_FCLM.md",
+      "filePath": "Model_Benchmark/info/README_FCLM.md",
+      "summary": "PP(pipeline parallel)를 SDK가 아직 모르는 새 architecture에 직접 등록해 -pp 빌드를 시도하는 방법을 5단계로 안내합니다. block_slicer.py의 MODEL_ARCH_TO_BLOCK_SPLITTER 딕셔너리에 splitter 함수와 weight 정규식을 추가하는 절차와 한계를 다룹니다.",
+      "tags": [
+        "documentation",
+        "build",
+        "pipeline-parallel",
+        "npu",
+        "advanced"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Qwen3ForCausalLM 등 미등록 architecture를 예시로 weight pattern 정규식 작성과 splitter 함수 재사용을 설명합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_build.md",
+      "type": "document",
+      "name": "README_build.md",
+      "filePath": "Model_Benchmark/info/README_build.md",
+      "summary": "furiosa-llm build로 HuggingFace 모델을 RNGD 아티팩트로 컴파일할 때의 옵션·병렬화(tp/pp/dp)·버킷 시스템·OOM 3단 방어·자주 보는 에러·빌드 가능 모델 인벤토리를 종합 정리한 핵심 빌드 가이드입니다.",
+      "tags": [
+        "documentation",
+        "build",
+        "npu",
+        "troubleshooting",
+        "entry-point"
+      ],
+      "complexity": "complex",
+      "languageNotes": "tp=32가 2026.2.0에서 검증은 통과하나 네이티브 컴파일에서 실패하는 원인 등 실측 기반 트러블슈팅을 출처와 함께 상세히 담았습니다."
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_config.md",
+      "type": "document",
+      "name": "README_config.md",
+      "filePath": "Model_Benchmark/info/README_config.md",
+      "summary": "HuggingFace 모델 config.json의 필드들을 furiosa-llm 빌드 관점에서 해설합니다. 필수 필드 검증, max_position_embeddings와 --max-model-len의 차이, quantization_config(FP8 fmt), architectures의 PP 지원 판정, KV cache 메모리 계산을 모델별 실측 값과 함께 정리합니다.",
+      "tags": [
+        "documentation",
+        "build",
+        "config",
+        "quantization",
+        "npu"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_ntop.md",
+      "type": "document",
+      "name": "README_ntop.md",
+      "filePath": "Model_Benchmark/info/README_ntop.md",
+      "summary": "NPU·CPU 실시간 모니터 ntop/nctop의 사용법과 옵션을 안내하고, shebang·실행 권한·심볼릭 링크로 ntop을 어디서든 한 단어로 호출되게 만드는 원리, argv[0] 트릭으로 한 파일이 두 명령으로 동작하는 방식, furiosa-smi 등 데이터 출처를 설명합니다.",
+      "tags": [
+        "documentation",
+        "monitoring",
+        "npu",
+        "cli",
+        "tooling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_preset.md",
+      "type": "document",
+      "name": "README_preset.md",
+      "filePath": "Model_Benchmark/info/README_preset.md",
+      "summary": "furiosa_llm/artifact/presets.py의 버킷 프리셋 구조를 정리한 참고서입니다. 버킷 4종(prefill/decode/append/tokenwise)의 입력 형식과 내부 AttentionBucket 변환, find_preset의 log-distance 매칭, filter_preset_by_max_model_len, fmt 지시문, 등록된 preset 7종을 다룹니다.",
+      "tags": [
+        "documentation",
+        "build",
+        "bucket",
+        "npu",
+        "reference"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_runallsh.md",
+      "type": "document",
+      "name": "README_runallsh.md",
+      "filePath": "Model_Benchmark/info/README_runallsh.md",
+      "summary": "run_all.sh가 단계(preflight/smoke/gen/embed/swebench/report)별로 호출하는 파이썬 파일들과 rngd-npu/run_all/ 폴더 구조를 정리합니다. orchestrator.py가 모델 × 태스크 매트릭스를 돌리고 결과 JSON을 analyze.py·report.py·swebench_eval.py로 넘기는 데이터 흐름을 보여줍니다.",
+      "tags": [
+        "documentation",
+        "benchmark",
+        "orchestration",
+        "pipeline",
+        "entry-point"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:Model_Benchmark/info/README_runcode.md",
+      "type": "document",
+      "name": "README_runcode.md",
+      "filePath": "Model_Benchmark/info/README_runcode.md",
+      "summary": "빌드된 artifact를 furiosa-llm serve로 띄우고 curl·OpenAI Python SDK로 호출해 측정·검증하는 방법을 정리합니다. serve 옵션, OpenAI 호환 endpoint, JSON body 필드, dp=1 vs dp=2 동시 요청 부하 비교, serve-time 에러 대처를 상세히 다룹니다.",
+      "tags": [
+        "documentation",
+        "serving",
+        "npu",
+        "openai-api",
+        "benchmark"
+      ],
+      "complexity": "complex",
+      "languageNotes": "OpenAI 호환 API라 base_url만 바꾸면 GPU/NPU 측정 코드가 그대로 재사용된다는 점, dp=2의 round-robin/prefix_aware 라우팅 등을 실측과 함께 설명합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/rngd-npu/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "Model_Benchmark/rngd-npu/README.md",
+      "summary": "RNGD NPU(furiosa-llm) 벤치마크 폴더의 안내서로, 빠른 시작, 폴더 구조, 측정 항목(tps/sweep/memsweep/swebench/embed/rerank), models.yaml 설정법, 실행·결과 보기, GPU(bench-gpu)와의 차이, 문제 해결을 정리합니다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "benchmark",
+        "npu",
+        "overview"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "측정 코드는 OpenAI 호환 API만 호출하므로 NPU(furiosa-llm)와 GPU(vLLM)에서 동일 코드로 측정한다는 점을 강조합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/rngd-npu/REPORT.md",
+      "type": "document",
+      "name": "REPORT.md",
+      "filePath": "Model_Benchmark/rngd-npu/REPORT.md",
+      "summary": "RNGD NPU 측정 결과 종합 리포트로, 모델별 TTFT·단일 TPS·peak 합산 TPS·효율 배치·SWE-bench 정확도, 동시성 스케일링 표, serve 옵션 스윕, embedding/reranker throughput, NPU 요구량과 권장 서빙 설정, 코드 생성 적합도 점수를 담고 있습니다.",
+      "tags": [
+        "documentation",
+        "report",
+        "benchmark-results",
+        "npu",
+        "swe-bench"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "report.py가 results/ 의 측정 원본을 모아 자동 생성하는 산출물입니다. 32B/70B 모델은 tensor_parallel=32 컴파일 제약으로 측정 제외됨을 명시합니다."
+    },
+    {
+      "id": "config:Model_Benchmark/rngd-npu/requirements.txt",
+      "type": "config",
+      "name": "requirements.txt",
+      "filePath": "Model_Benchmark/rngd-npu/requirements.txt",
+      "summary": "furiosa-llm SDK 위에 측정 러너·리포트가 추가로 쓰는 클라이언트 의존성(httpx, pyyaml, openai, datasets, huggingface_hub, transformers)을 명시한 요구사항 파일입니다.",
+      "tags": [
+        "configuration",
+        "dependencies",
+        "requirements",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/setup.sh",
+      "type": "file",
+      "name": "setup.sh",
+      "filePath": "Model_Benchmark/rngd-npu/setup.sh",
+      "summary": "측정 도구 의존성 설치 스크립트로, NPU/SDK 존재 확인 후 ~/furiosa venv를 활성화하고 requirements.txt와 swebench를 설치한 뒤 Docker 가용성을 점검합니다.",
+      "tags": [
+        "script",
+        "setup",
+        "dependencies",
+        "installation",
+        "bootstrap"
+      ],
+      "complexity": "simple",
+      "languageNotes": "furiosa-llm SDK 자체는 설치하지 않고 ~/furiosa venv에 이미 있다고 가정하며, 그 위에 측정용 클라이언트 의존성만 추가합니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/preflight.sh",
+      "type": "file",
+      "name": "preflight.sh",
+      "filePath": "Model_Benchmark/rngd-npu/preflight.sh",
+      "summary": "측정 전 사전 점검 스크립트로, furiosa-smi로 NPU 상태, furiosa-llm collect-env로 SDK/드라이버/펌웨어, Python 의존성, Docker, 디스크 여유, models.yaml의 모델별 HF revision(v2026.2 호환) 가용성을 차례로 확인합니다.",
+      "tags": [
+        "script",
+        "preflight",
+        "validation",
+        "environment-check",
+        "npu"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "embedded Python heredoc로 HfApi.list_repo_refs를 호출해 각 모델의 v2026.2 태그 유무를 표시합니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "type": "file",
+      "name": "run_all.sh",
+      "filePath": "Model_Benchmark/rngd-npu/run_all.sh",
+      "summary": "전체 벤치마크 파이프라인 wrapper로, STAGE 환경변수(preflight/smoke/gen/embed/swebench/report/all)에 따라 단계별로 orchestrator.py·analyze.py·report.py·eval_swebench.sh를 호출하고 로그를 results/_run_logs에 남깁니다.",
+      "tags": [
+        "script",
+        "pipeline",
+        "orchestration",
+        "entry-point",
+        "benchmark"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "각 STAGE를 별도 step_* bash 함수로 정의하고 case 문으로 단계 조합을 선택하는 구조입니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "type": "file",
+      "name": "eval_swebench.sh",
+      "filePath": "Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "summary": "orchestrator의 swebench 태스크가 만든 예측 jsonl을 Docker로 일괄 채점하는 스크립트로, docker 존재를 확인한 뒤 run_all/swebench_eval.py에 max-workers를 넘겨 실행합니다.",
+      "tags": [
+        "script",
+        "swe-bench",
+        "evaluation",
+        "docker",
+        "scoring"
+      ],
+      "complexity": "simple",
+      "languageNotes": "추론 단계는 NPU가 필요하지만 이 채점 단계는 Docker만 필요하다는 점을 분리합니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_model.sh",
+      "type": "file",
+      "name": "run_model.sh",
+      "filePath": "Model_Benchmark/rngd-npu/run_model.sh",
+      "summary": "이미 떠 있는 furiosa-llm serve에 단일 요청 1개를 보내 응답 시간, 생성 토큰 수, throughput(tok/s), finish_reason을 측정·출력하는 수동 점검용 스크립트입니다.",
+      "tags": [
+        "script",
+        "tps",
+        "single-request",
+        "manual-test",
+        "openai-api"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "/v1/models로 MODEL을 자동 감지하고 curl + date 나노초 + awk로 throughput을 계산하며 응답 파싱은 embedded python3로 처리합니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_model_p.sh",
+      "type": "file",
+      "name": "run_model_p.sh",
+      "filePath": "Model_Benchmark/rngd-npu/run_model_p.sh",
+      "summary": "furiosa-llm serve에 동시 요청 N개를 백그라운드로 쏘고 전체 처리량(합산 tok/s), 요청당 평균 시간, 성공 건수를 측정하는 수동 throughput 점검 스크립트로, dp(데이터 병렬) 비교에도 씁니다.",
+      "tags": [
+        "script",
+        "throughput",
+        "concurrency",
+        "manual-test",
+        "openai-api"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "curl을 N개 병렬 발사 후 wait로 동기화하고, 응답 jsonl들을 python3 glob으로 합산해 동시성 처리량을 계산합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/rngd-npu/docs/COMPILING_MODELS.md",
+      "type": "document",
+      "name": "COMPILING_MODELS.md",
+      "filePath": "Model_Benchmark/rngd-npu/docs/COMPILING_MODELS.md",
+      "summary": "HuggingFace 모델을 furiosa-llm build로 컴파일해 RNGD NPU에서 서빙하기까지의 단계별 가이드입니다. 지원 아키텍처(model_type), PE/HBM 메모리 예산, FP8 양자화, 아티팩트 빌드(tp/pp/버킷 옵션), 서빙, curl 검증, models.yaml 등록, 그리고 prebuilt 32B/70B를 더 적은 카드로 재빌드하는 실측 절차까지 단계마다 성공 판정과 실패 시 조치를 정리해 둔 문서입니다.",
+      "tags": [
+        "documentation",
+        "model-compilation",
+        "furiosa-llm",
+        "quantization",
+        "deployment"
+      ],
+      "complexity": "complex",
+      "languageNotes": "furiosa-llm build의 tp×pp ≤ 16 PE 예산과 fine-grained FP8 dynamic 양자화, 자동 버킷 preset 같은 RNGD SDK 2026.2.0 고유 제약을 표로 정리한 점이 특징입니다."
+    },
+    {
+      "id": "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "type": "document",
+      "name": "RUNNING_BENCHMARKS.md",
+      "filePath": "Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "summary": "rngd-npu 프레임워크로 새 모델을 추가하거나 RNGD 카드를 증설했을 때 tps·sweep·memsweep·swebench·embed·rerank 벤치마크를 돌리는 운영 절차서입니다. PE 예산 확인, configs/models.yaml 항목 작성 규칙, orchestrator 실행과 백그라운드 구동, SWE-bench 채점 분리 실행, 결과 분석/리포트, 태스크별 측정 항목과 트러블슈팅을 다룹니다.",
+      "tags": [
+        "documentation",
+        "benchmark",
+        "operations",
+        "troubleshooting",
+        "model-onboarding"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "각 태스크(tps=concurrency 1 TTFT/ITL, sweep=concurrency×prompt_len 매트릭스, memsweep=serve 옵션 OFAT 스윕)가 무엇을 측정하는지 표로 매핑한 점이 핵심입니다."
+    },
+    {
+      "id": "document:Model_Benchmark/rngd-npu/docs/SWEBENCH_SETUP.md",
+      "type": "document",
+      "name": "SWEBENCH_SETUP.md",
+      "filePath": "Model_Benchmark/rngd-npu/docs/SWEBENCH_SETUP.md",
+      "summary": "SWE-bench(GitHub 이슈를 코드 패치로 해결하는 능력 측정)의 개념·데이터셋 변형·context 제공 방식·채점 절차를 설명하고, 본 벤치마크가 채택한 SWE-bench_Lite + oracle + single-shot + repo별 stratified 50건 구성을 명시한 문서입니다. Docker 기반 채점 harness 사용법과 rngd-npu 연동(추론·채점 분리) 방법을 안내합니다.",
+      "tags": [
+        "documentation",
+        "swe-bench",
+        "accuracy-benchmark",
+        "setup-guide",
+        "docker"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "oracle/bm25/full 등 context 제공 방식과 resolved/unresolved/error/empty_patch 채점 결과 해석을 표로 정리해, single-shot diff 예측 측정의 의미를 명확히 한 점이 특징입니다."
+    },
+    {
+      "id": "document:quantize_llama70b/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "quantize_llama70b/README.md",
+      "summary": "GPU 서버에서 Llama-3.3-70B 를 FineGrainedFP8 로 양자화하는 전체 절차 문서입니다. 빠른 시작(run.sh 한 번), 단계별 실행, 하드웨어 요구사항, 양자화 설정, 양자화 후 NPU 서버로 옮겨 furiosa-llm build(-tp 8 -pp 2)하는 방법, 문제 해결까지 안내합니다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "quantization",
+        "fp8",
+        "gpu"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "BF16 원본 ~141GB → FP8 결과 ~70GB. 70GB FP8 는 NPU 한 장(48GB)에 안 들어가서 tensor parallel 8 + pipeline parallel 2 로 빌드합니다."
+    },
+    {
+      "id": "file:quantize_llama70b/download.sh",
+      "type": "file",
+      "name": "download.sh",
+      "filePath": "quantize_llama70b/download.sh",
+      "summary": "HuggingFace 에서 원본 BF16 가중치를 받는 스크립트입니다. safetensors 만 받고 original/*.pth 는 --exclude 로 제외해 디스크를 아끼며, meta-llama gated 모델 접근을 위해 hf auth 로그인 여부를 먼저 확인합니다.",
+      "tags": [
+        "script",
+        "download",
+        "huggingface",
+        "model-weights"
+      ],
+      "complexity": "simple",
+      "languageNotes": "set -euo pipefail 로 엄격 모드, MODEL 인자 기본값은 meta-llama/Llama-3.3-70B-Instruct."
+    },
+    {
+      "id": "config:quantize_llama70b/requirements.txt",
+      "type": "config",
+      "name": "requirements.txt",
+      "filePath": "quantize_llama70b/requirements.txt",
+      "summary": "FineGrainedFP8 양자화에 필요한 최소 Python 의존성 목록입니다. transformers, huggingface_hub[cli], accelerate, safetensors, sentencepiece, protobuf 를 명시하며, torch 는 CUDA 버전 매칭 때문에 setup.sh 가 따로 설치하므로 여기서 제외합니다.",
+      "tags": [
+        "documentation",
+        "dependencies",
+        "requirements",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:quantize_llama70b/run.sh",
+      "type": "file",
+      "name": "run.sh",
+      "filePath": "quantize_llama70b/run.sh",
+      "summary": "환경 구축 → 원본 다운로드 → FP8 양자화를 한 번에 실행하는 파이프라인 진입점 스크립트입니다. setup.sh, download.sh 를 순서대로 호출한 뒤 venv 를 활성화하고 quantize.py 를 실행합니다.",
+      "tags": [
+        "script",
+        "entry-point",
+        "pipeline",
+        "orchestration",
+        "quantization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:quantize_llama70b/setup.sh",
+      "type": "file",
+      "name": "setup.sh",
+      "filePath": "quantize_llama70b/setup.sh",
+      "summary": "venv 를 만들고 GPU 환경에 맞는 torch 와 나머지 패키지를 설치하는 환경 구축 스크립트입니다. nvidia-smi 로 GPU 와 driver CUDA 버전을 감지해 cu121/cu118 wheel index 를 골라 torch 를 설치하고, requirements.txt 설치 후 torch·FineGrainedFP8 import 로 검증합니다.",
+      "tags": [
+        "script",
+        "setup",
+        "environment",
+        "cuda",
+        "venv"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "nvidia-smi --query 출력에서 CUDA Version 을 awk 로 파싱해 PyTorch wheel index(cu121/cu118)를 case 문으로 매칭합니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "type": "file",
+      "name": "chat_app.py",
+      "filePath": "Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "summary": "furiosa-llm serve(OpenAI 호환 API) 위에 올린 Gradio 채팅 UI입니다. 여러 NPU 모델을 포트별로 드롭다운에서 골라, 대화를 누적하며 토큰을 스트리밍으로 받아 ChatGPT처럼 주고받습니다.",
+      "tags": [
+        "chat-ui",
+        "gradio",
+        "openai-client",
+        "streaming",
+        "npu"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "OpenAI SDK로 furiosa-llm serve에 그대로 붙고, model id는 /v1/models로 자동 조회해 포트별로 캐시합니다. gradio는 furiosa venv와 충돌해 별도 .venv에서 실행합니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:_resolve_model_id",
+      "type": "function",
+      "name": "_resolve_model_id",
+      "filePath": "Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "lineRange": [
+        42,
+        48
+      ],
+      "summary": "서버의 /v1/models를 호출해 실제 model id(아티팩트 절대경로)를 알아내 포트별로 캐시합니다. furiosa는 경로 자체가 id라 직접 조회가 필요합니다.",
+      "tags": [
+        "model-discovery",
+        "caching",
+        "openai-client"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:available_models",
+      "type": "function",
+      "name": "available_models",
+      "filePath": "Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "lineRange": [
+        51,
+        60
+      ],
+      "summary": "MODELS 레지스트리를 순회하며 실제 응답하는 serve만 골라내, 드롭다운에 살아있는 모델만 노출되도록 합니다.",
+      "tags": [
+        "health-check",
+        "model-registry",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:chat_fn",
+      "type": "function",
+      "name": "chat_fn",
+      "filePath": "Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "lineRange": [
+        63,
+        105
+      ],
+      "summary": "한 번의 대화 턴을 처리하는 핵심 함수입니다. 시스템 프롬프트와 이전 대화 기록을 messages 배열로 묶어 보내고, chat.completions를 스트리밍으로 받아 토큰을 이어붙여 반환합니다.",
+      "tags": [
+        "chat-handler",
+        "streaming",
+        "multi-turn",
+        "openai-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:save_conversation",
+      "type": "function",
+      "name": "save_conversation",
+      "filePath": "Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "lineRange": [
+        108,
+        116
+      ],
+      "summary": "현재 대화 기록을 타임스탬프가 붙은 로컬 JSON 파일로 저장합니다.",
+      "tags": [
+        "persistence",
+        "serialization",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:build_ui",
+      "type": "function",
+      "name": "build_ui",
+      "filePath": "Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "lineRange": [
+        119,
+        145
+      ],
+      "summary": "Gradio Blocks로 채팅 화면을 구성합니다. 모델 드롭다운, temperature/max_tokens 슬라이더, 시스템 프롬프트 입력, ChatInterface, 대화 저장 버튼을 배치합니다.",
+      "tags": [
+        "ui-builder",
+        "gradio",
+        "component"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:Model_Benchmark/rngd-npu/chat/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "Model_Benchmark/rngd-npu/chat/README.md",
+      "summary": "RNGD NPU Chat 사용 안내서입니다. 모델 서버 띄우기(serve_models.sh), VS Code Continue 확장 또는 Gradio UI로 채팅하기, 원격 프록시 접속, 새 모델 추가, 포트·카드·모델 현황까지 단계별로 설명합니다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "chat",
+        "npu",
+        "usage-guide"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/chat/serve_models.sh",
+      "type": "file",
+      "name": "serve_models.sh",
+      "filePath": "Model_Benchmark/rngd-npu/chat/serve_models.sh",
+      "summary": "채팅용 모델 서버 기동 스크립트입니다. 여러 모델 아티팩트를 각 NPU 카드(npu:0~3)·포트(8001~8004)에 furiosa-llm serve로 동시에 띄우고, 인자로 개수 지정·전체 종료(stop)를 지원합니다.",
+      "tags": [
+        "server-launcher",
+        "npu",
+        "furiosa-llm",
+        "shell-script",
+        "deployment"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "JOBS 배열이 포트↔카드↔아티팩트↔serve 옵션 매핑을 정의하며, chat_app.py의 MODELS 포트 배정과 일치해야 합니다. --enable-prefix-caching와 모델별 추가 옵션(예: --reasoning-parser qwen3)을 붙입니다."
+    },
+    {
+      "id": "file:ntop.py",
+      "type": "file",
+      "name": "ntop.py",
+      "filePath": "ntop.py",
+      "summary": "Furiosa RNGD NPU용 htop 스타일 TUI 모니터입니다. furiosa-smi의 status·info JSON 출력을 합쳐 디바이스별 메모리·8코어 사용률·온도·전력을 rich 막대그래프로 보여주고, CPU/호스트 메모리와 NPU 점유 프로세스까지 한 화면에 실시간 갱신합니다.",
+      "tags": [
+        "monitoring",
+        "tui",
+        "npu",
+        "rich",
+        "real-time"
+      ],
+      "complexity": "complex",
+      "languageNotes": "rich의 Live/Layout/Panel로 화면을 구성하고, /proc/stat·/proc/meminfo를 직접 읽어 CPU·메모리 사용률을 계산합니다. NpuDev dataclass로 디바이스 상태를 모델링합니다."
+    },
+    {
+      "id": "class:ntop.py:NpuDev",
+      "type": "class",
+      "name": "NpuDev",
+      "filePath": "ntop.py",
+      "lineRange": [
+        46,
+        71
+      ],
+      "summary": "NPU 한 장의 상태를 담는 dataclass입니다. 메모리 사용량, 코어별 사용률, 온도, 전력, firmware, PCI 주소 등을 보관하고 평균/최대 사용률을 계산합니다.",
+      "tags": [
+        "data-model",
+        "dataclass",
+        "npu"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:ntop.py:gather",
+      "type": "function",
+      "name": "gather",
+      "filePath": "ntop.py",
+      "lineRange": [
+        108,
+        140
+      ],
+      "summary": "furiosa-smi status·info JSON을 모두 받아와 디바이스별로 메모리·코어 사용률·온도·전력·firmware를 NpuDev 객체 리스트로 합칩니다.",
+      "tags": [
+        "data-collection",
+        "npu",
+        "furiosa-smi",
+        "parsing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:cores_grid",
+      "type": "function",
+      "name": "cores_grid",
+      "filePath": "ntop.py",
+      "lineRange": [
+        187,
+        207
+      ],
+      "summary": "코어별 사용률을 색상이 입혀진 격자(grid)로 배치합니다. 콘솔 폭에 맞춰 한 줄에 들어갈 코어 수를 조정합니다.",
+      "tags": [
+        "rendering",
+        "tui",
+        "rich"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:render_devices",
+      "type": "function",
+      "name": "render_devices",
+      "filePath": "ntop.py",
+      "lineRange": [
+        238,
+        277
+      ],
+      "summary": "모든 NPU 디바이스를 한 테이블로 렌더링합니다. 카드별 사용률 막대, 메모리, 온도, 전력과 코어 격자를 행으로 채웁니다.",
+      "tags": [
+        "rendering",
+        "tui",
+        "npu",
+        "rich"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:render_header",
+      "type": "function",
+      "name": "render_header",
+      "filePath": "ntop.py",
+      "lineRange": [
+        280,
+        318
+      ],
+      "summary": "상단 요약 헤더 패널을 그립니다. 전체 카드 수, 살아있는 카드, 평균/최대 사용률, 합산 메모리·전력을 한눈에 보여줍니다.",
+      "tags": [
+        "rendering",
+        "tui",
+        "summary",
+        "rich"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:get_cpu_utils",
+      "type": "function",
+      "name": "get_cpu_utils",
+      "filePath": "ntop.py",
+      "lineRange": [
+        357,
+        378
+      ],
+      "summary": "/proc/stat의 직전 값과 현재 값의 차이로 코어별 CPU 사용률을 계산합니다. 첫 호출에서는 기준값만 저장합니다.",
+      "tags": [
+        "cpu",
+        "metrics",
+        "proc-stat"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:render_cpu",
+      "type": "function",
+      "name": "render_cpu",
+      "filePath": "ntop.py",
+      "lineRange": [
+        413,
+        474
+      ],
+      "summary": "호스트 CPU 패널을 그립니다. 모델명, 전체 사용률 막대, RAM·swap 사용량, 코어별 사용률 격자를 함께 보여줍니다.",
+      "tags": [
+        "rendering",
+        "tui",
+        "cpu",
+        "rich"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:render_host",
+      "type": "function",
+      "name": "render_host",
+      "filePath": "ntop.py",
+      "lineRange": [
+        477,
+        507
+      ],
+      "summary": "호스트 정보 패널을 그립니다. uptime, loadavg, 메모리 요약 등 시스템 전반 상태를 표시합니다.",
+      "tags": [
+        "rendering",
+        "tui",
+        "host",
+        "rich"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:_shorten_cmd",
+      "type": "function",
+      "name": "_shorten_cmd",
+      "filePath": "ntop.py",
+      "lineRange": [
+        510,
+        536
+      ],
+      "summary": "프로세스 명령줄을 화면 폭에 맞게 줄입니다. 실행 파일 경로는 짧게 자르고 핵심 인자만 남깁니다.",
+      "tags": [
+        "utility",
+        "formatting",
+        "string"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:render_ps",
+      "type": "function",
+      "name": "render_ps",
+      "filePath": "ntop.py",
+      "lineRange": [
+        539,
+        571
+      ],
+      "summary": "furiosa-smi ps 출력을 파싱해 NPU를 점유 중인 프로세스 목록을 패널로 그립니다.",
+      "tags": [
+        "rendering",
+        "tui",
+        "process",
+        "furiosa-smi"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:build_layout",
+      "type": "function",
+      "name": "build_layout",
+      "filePath": "ntop.py",
+      "lineRange": [
+        574,
+        626
+      ],
+      "summary": "헤더·디바이스·CPU·프로세스(또는 raw JSON) 패널을 콘솔 폭과 옵션에 맞춰 rich Layout으로 조립합니다.",
+      "tags": [
+        "layout",
+        "tui",
+        "rich",
+        "composition"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:ntop.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "ntop.py",
+      "lineRange": [
+        630,
+        682
+      ],
+      "summary": "진입점입니다. 인자를 파싱하고 furiosa-smi 존재 여부를 확인한 뒤, rich Live로 일정 간격마다 gather·build_layout을 반복 호출해 화면을 실시간 갱신합니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "main-loop",
+        "tui"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ntop.py:run_smi_json",
+      "type": "function",
+      "name": "run_smi_json",
+      "filePath": "ntop.py",
+      "lineRange": [
+        84,
+        94
+      ],
+      "summary": "furiosa-smi 하위 명령을 --format json으로 실행하고 결과를 파싱해 dict로 돌려줍니다.",
+      "tags": [
+        "subprocess",
+        "furiosa-smi",
+        "parsing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ntop.sh",
+      "type": "file",
+      "name": "ntop.sh",
+      "filePath": "ntop.sh",
+      "summary": "watch 기반의 가벼운 Furiosa NPU 실시간 모니터입니다. furiosa-smi의 info·status·ps 출력에 색을 입혀 일정 간격마다 갱신하고, 호스트 메모리·loadavg와 build/serve 프로세스 목록도 함께 보여줍니다.",
+      "tags": [
+        "monitoring",
+        "npu",
+        "furiosa-smi",
+        "shell-script",
+        "watch"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "본문을 임시파일로 빼서 watch의 /bin/sh가 bash 구문을 재파싱하지 않게 하고, sed로 온도·전력·사용률에 ANSI 색을 입힙니다. --simple 모드는 furiosa-smi 자체 --watch만 씁니다."
+    },
+    {
+      "id": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "type": "file",
+      "name": "build_model_prep.js",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "summary": "pptxgenjs로 'Furiosa RNGD 모델 준비 — SDK 내부 구조와 빌드 에러 분석' 발표 자료(16:9)를 생성하는 스크립트입니다. SDK 소스와 실제 빌드 로그에서 확인한 내용을 슬라이드로 만들며, 출처를 파일:라인으로 표기합니다.",
+      "tags": [
+        "slide-generator",
+        "pptxgenjs",
+        "documentation",
+        "build-script",
+        "presentation"
+      ],
+      "complexity": "complex",
+      "languageNotes": "frame/title/card/tag/codeCard/bullets/infoTable 같은 헬퍼로 슬라이드 요소를 그리는 재사용 패턴을 씁니다. Paperlogy 폰트와 고정 색상 팔레트로 일관된 디자인을 만듭니다."
+    },
+    {
+      "id": "function:Model_Benchmark/ppt/build_model_prep.js:frame",
+      "type": "function",
+      "name": "frame",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "lineRange": [
+        27,
+        38
+      ],
+      "summary": "슬라이드 공통 틀을 그립니다. 챕터 라벨, 페이지 번호, 하단 출처 텍스트를 일정한 위치에 배치합니다.",
+      "tags": [
+        "slide-helper",
+        "pptxgenjs",
+        "layout"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/ppt/build_model_prep.js:title",
+      "type": "function",
+      "name": "title",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "lineRange": [
+        39,
+        48
+      ],
+      "summary": "슬라이드 제목과 부제를 그리는 헬퍼입니다.",
+      "tags": [
+        "slide-helper",
+        "pptxgenjs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/ppt/build_model_prep.js:tag",
+      "type": "function",
+      "name": "tag",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "lineRange": [
+        57,
+        67
+      ],
+      "summary": "색상 배경의 작은 라벨(태그)을 그립니다. 채움색·글자색·글자 크기를 지정할 수 있습니다.",
+      "tags": [
+        "slide-helper",
+        "pptxgenjs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/ppt/build_model_prep.js:codeCard",
+      "type": "function",
+      "name": "codeCard",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "lineRange": [
+        71,
+        81
+      ],
+      "summary": "어두운 배경의 코드 카드를 그립니다. 라벨과 여러 줄의 코드 텍스트를 그림자와 함께 배치합니다.",
+      "tags": [
+        "slide-helper",
+        "pptxgenjs",
+        "code-block"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/ppt/build_model_prep.js:bullets",
+      "type": "function",
+      "name": "bullets",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "lineRange": [
+        82,
+        94
+      ],
+      "summary": "불릿 목록을 그리는 헬퍼입니다. 항목 배열을 받아 한 텍스트 박스에 줄별로 배치합니다.",
+      "tags": [
+        "slide-helper",
+        "pptxgenjs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/ppt/build_model_prep.js:infoTable",
+      "type": "function",
+      "name": "infoTable",
+      "filePath": "Model_Benchmark/ppt/build_model_prep.js",
+      "lineRange": [
+        95,
+        115
+      ],
+      "summary": "헤더와 행 데이터를 받아 스타일이 적용된 표를 그립니다.",
+      "tags": [
+        "slide-helper",
+        "pptxgenjs",
+        "table"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "저장소 최상위 안내 문서로, RNGD NPU 관련 프로젝트 모음 전체를 소개합니다. Model_Benchmark 폴더, 공용 도구(ntop/nctop), 그리고 저장소 밖에 있는 글로벌 환경(furiosa-llm venv, SWE-bench harness, HuggingFace 캐시)이 어디에 있고 어떻게 쓰이는지 정리합니다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "monorepo"
+      ],
+      "complexity": "simple",
+      "languageNotes": "코드가 아닌 머신 공용 글로벌 리소스(~/furiosa, ~/SWE-bench, ~/.cache/huggingface)에 대한 의존을 명시해, 새 머신 셋업 순서를 알려주는 진입 문서입니다."
+    },
+    {
+      "id": "document:Model_Benchmark/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "Model_Benchmark/README.md",
+      "summary": "Model_Benchmark 프로젝트의 메인 가이드로, NPU와 GPU에서 같은 모델을 같은 방식으로 측정해 비교하는 목적과 폴더 구성을 설명합니다. 다섯 가지 측정 항목(토큰 생성 속도·동시성 스케일링·서버 옵션 스윕·SWE-bench 정확도·임베딩/리랭커 throughput), 측정 환경 준비, run_all.sh 실행 순서(preflight→smoke→gen→embed→swebench→report), SWE-bench 처음 시작하기까지 다룹니다.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "benchmark",
+        "swe-bench",
+        "guide"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "OpenAI 호환 API만 호출하므로 furiosa-llm(NPU)과 vLLM(GPU)을 같은 코드로 측정한다는 핵심 설계 전제를 설명하고, STAGE 환경변수로 단계별 실행을 제어하는 방법을 안내합니다."
+    },
+    {
+      "id": "document:Model_Benchmark/README_npu_gpu_result.md",
+      "type": "document",
+      "name": "README_npu_gpu_result.md",
+      "filePath": "Model_Benchmark/README_npu_gpu_result.md",
+      "summary": "RNGD NPU(1카드 8 PE)와 NVIDIA A6000 GPU에서 Qwen2.5-0.5B·Llama-3.1-8B를 같은 조건으로 측정한 결과 비교 문서입니다. 단일 요청 속도, 동시 사용자 1~128명 처리량, 서버 옵션 튜닝, SWE-bench 정확도(둘 다 0%), 임베딩/리랭커 throughput을 표로 정리하고, 측정 조건을 어떻게 맞췄는지와 장비 선택 가이드를 제시합니다.",
+      "tags": [
+        "documentation",
+        "benchmark",
+        "results",
+        "npu-vs-gpu",
+        "comparison"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "NPU와 GPU의 컨텍스트 길이·prefix caching·동시성 범위·SWE-bench 설정을 일치시킨 근거를 정리하고, 8B 단일 속도는 NPU가 30% 빠르지만 동시 32명 이상에서는 GPU가 역전한다는 핵심 결론을 담고 있습니다."
+    },
+    {
+      "id": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "config",
+      "name": "models.yaml",
+      "filePath": "Model_Benchmark/rngd-npu/configs/models.yaml",
+      "summary": "RNGD NPU(furiosa-llm) 벤치마크의 모델 매트릭스와 측정 설정 파일입니다. 측정할 모델 목록(HF prebuilt id 또는 로컬 빌드 아티팩트 절대경로), 각 모델의 role·gen·enabled·serve_args, 공통 serve 인자, devices, 그리고 request shape sweep(batch_sizes·prompt_lens)과 memsweep(serve 옵션 OFAT 스윕) 축을 정의합니다.",
+      "tags": [
+        "configuration",
+        "benchmark",
+        "model-matrix",
+        "yaml",
+        "sweep"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "RNGD 1장=8 PE, 모델 PE=tp×pp 같은 하드웨어 제약을 주석으로 설명하고, enabled:false로 4카드(tp=32)나 OOM 때문에 현재 2카드 환경에서 못 도는 모델을 구분합니다. prompt_len + max_tokens ≤ 모델 max_model_len 인 포인트만 측정되는 규칙도 주석에 정리되어 있습니다."
+    },
+    {
+      "id": "file:quantize_llama70b/quantize.py",
+      "type": "file",
+      "name": "quantize.py",
+      "filePath": "quantize_llama70b/quantize.py",
+      "summary": "Llama-3.3-70B 등 HuggingFace 모델을 transformers의 FineGrainedFP8Config로 FP8 양자화하는 CLI 스크립트입니다. Furiosa 공식 model-preparation 워크플로를 따르며, GPU에서 모델을 적재·양자화해 저장하고, 마지막에 NPU 서버로 옮겨 furiosa-llm build로 빌드하는 명령을 안내합니다.",
+      "tags": [
+        "quantization",
+        "fp8",
+        "cli",
+        "transformers",
+        "model-preparation"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "GPU 필수(CUDA 미감지 시 종료)이며 device_map=\"auto\"로 여러 GPU에 자동 분산 적재합니다. activation(dynamic/static)과 weight block size를 인자로 받아 FineGrainedFP8Config를 구성합니다."
+    },
+    {
+      "id": "function:quantize_llama70b/quantize.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "quantize_llama70b/quantize.py",
+      "lineRange": [
+        29,
+        111
+      ],
+      "summary": "양자화 스크립트의 진입점으로, CLI 인자(모델 id, 출력 경로, activation 방식, block size, force)를 파싱하고 출력 폴더 충돌을 확인합니다. CUDA GPU를 점검한 뒤 AutoModelForCausalLM을 FineGrainedFP8Config로 적재·양자화해 저장하고, 결과 크기·model_type·quantization_config를 출력하며 NPU 서버 전송 및 furiosa-llm build 명령을 안내합니다.",
+      "tags": [
+        "entry-point",
+        "quantization",
+        "cli",
+        "fp8",
+        "gpu"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "type": "file",
+      "name": "analyze.py",
+      "filePath": "Model_Benchmark/bench-gpu/analyze.py",
+      "summary": "results/ 아래에 쌓인 task별 JSON 결과를 한데 모아 모델·조건별 비교표를 출력하거나 CSV로 저장하는 GPU(vLLM) 측 빠른 분석 도구입니다. ttft, itl, output TPS, 성공/실패 건수 같은 핵심 지표를 표 한 장으로 훑어볼 때 씁니다.",
+      "tags": [
+        "분석도구",
+        "utility",
+        "결과집계",
+        "csv",
+        "cli"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "sweep/list/dict 등 결과 JSON 모양이 task마다 달라 isinstance로 분기해 평탄화한 뒤 컬럼 폭을 맞춘 ASCII 표로 찍습니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/analyze.py:collect",
+      "type": "function",
+      "name": "collect",
+      "filePath": "Model_Benchmark/bench-gpu/analyze.py",
+      "lineRange": [
+        19,
+        47
+      ],
+      "summary": "results/<model>/<task>/ 폴더를 순회하며 각 JSON을 읽어, sweep·list·dict 등 서로 다른 결과 모양을 (task, model, 지표...) 형태의 평탄한 행 목록으로 모읍니다.",
+      "tags": [
+        "결과집계",
+        "json-parsing",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/analyze.py:to_table",
+      "type": "function",
+      "name": "to_table",
+      "filePath": "Model_Benchmark/bench-gpu/analyze.py",
+      "lineRange": [
+        50,
+        61
+      ],
+      "summary": "행 목록과 컬럼 순서를 받아 컬럼 폭을 맞춘 사람이 읽기 좋은 ASCII 정렬표 문자열을 만듭니다.",
+      "tags": [
+        "serialization",
+        "formatting",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/analyze.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/bench-gpu/analyze.py",
+      "lineRange": [
+        64,
+        90
+      ],
+      "summary": "--csv·--task 인자를 파싱해 collect()로 결과를 모으고, task로 필터링한 뒤 CSV 저장 또는 핵심 지표 표 출력을 수행하는 CLI 진입점입니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "분석도구"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/report.py",
+      "type": "file",
+      "name": "report.py",
+      "filePath": "Model_Benchmark/bench-gpu/report.py",
+      "summary": "results/ 아래 task별 JSON을 모아 NVIDIA GPU(vLLM) 측 종합 비교 리포트를 Markdown으로 자동 생성합니다. TL;DR, 단일 요청 속도, 동시성 스케일링, memsweep, SWE-bench, embedding/reranker, 동시 접속자별 권장 설정, 종합 결론까지 8개 섹션을 채웁니다.",
+      "tags": [
+        "리포트생성",
+        "결과집계",
+        "markdown",
+        "분석도구"
+      ],
+      "complexity": "complex",
+      "languageNotes": "render() 한 함수가 200줄 넘게 모든 섹션을 순서대로 찍고, 위쪽 작은 헬퍼들이 최신 결과 선택·스케일링 분석·memsweep 최적 조합 선정을 담당합니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/report.py:_load",
+      "type": "function",
+      "name": "_load",
+      "filePath": "Model_Benchmark/bench-gpu/report.py",
+      "lineRange": [
+        38,
+        56
+      ],
+      "summary": "results/ 디렉터리를 순회해 모델→task→결과 객체 목록 구조(by_model)로 읽어 들입니다. 파일 수정 시각(_mtime)을 객체에 심어 이후 최신 결과 선택에 씁니다.",
+      "tags": [
+        "결과집계",
+        "json-parsing",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/report.py:analyze_scaling",
+      "type": "function",
+      "name": "analyze_scaling",
+      "filePath": "Model_Benchmark/bench-gpu/report.py",
+      "lineRange": [
+        90,
+        113
+      ],
+      "summary": "동시성별 측정 행을 받아 aggregate output TPS가 최대가 되는 concurrency와 TTFT p95 SLA를 만족하는 효율 구간을 찾아 스케일링 요약을 만듭니다.",
+      "tags": [
+        "분석",
+        "concurrency",
+        "스케일링"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/report.py:_best_memsweep",
+      "type": "function",
+      "name": "_best_memsweep",
+      "filePath": "Model_Benchmark/bench-gpu/report.py",
+      "lineRange": [
+        116,
+        142
+      ],
+      "summary": "memsweep 결과 객체들에서 중복 조합을 제거하고 점수를 매겨 vllm serve 옵션의 최적 조합을 골라냅니다.",
+      "tags": [
+        "분석",
+        "memsweep",
+        "튜닝"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/report.py:render",
+      "type": "function",
+      "name": "render",
+      "filePath": "Model_Benchmark/bench-gpu/report.py",
+      "lineRange": [
+        176,
+        385
+      ],
+      "summary": "by_model 결과 전체를 받아 8개 섹션(TL;DR·단일 속도·동시성 스케일링·memsweep·SWE-bench·embedding/reranker·권장 설정·종합 결론)으로 구성된 Markdown 리포트 본문을 통째로 조립합니다.",
+      "tags": [
+        "리포트생성",
+        "markdown",
+        "formatting"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/report.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/bench-gpu/report.py",
+      "lineRange": [
+        388,
+        395
+      ],
+      "summary": "출력 경로 인자를 파싱해 _load()로 결과를 읽고 render()로 만든 Markdown을 파일로 저장하는 CLI 진입점입니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "리포트생성"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "type": "file",
+      "name": "swebench_eval.py",
+      "filePath": "Model_Benchmark/bench-gpu/swebench_eval.py",
+      "summary": "orchestrator의 swebench 태스크가 만든 예측 jsonl을 찾아 Docker harness로 채점하는 평가 드라이버입니다. NPU 없이 Docker만 쓰며, Docker 빌드 부하가 latency 측정을 오염시키지 않도록 생성 벤치마크와 분리해 돌립니다.",
+      "tags": [
+        "swe-bench",
+        "평가드라이버",
+        "cli",
+        "entry-point"
+      ],
+      "complexity": "simple",
+      "languageNotes": "sys.path에 REPO_ROOT를 끼워 넣어 runners.swebench_run.run_evaluation을 임포트하고, results/*/swebench/preds/*__preds.jsonl 패턴으로 예측 파일을 수집합니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/swebench_eval.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/bench-gpu/swebench_eval.py",
+      "lineRange": [
+        30,
+        62
+      ],
+      "summary": "예측 jsonl을 모델별로 찾아 instance_id를 모은 뒤 run_evaluation으로 Docker 채점을 돌리고, resolved/total 결과를 eval_result.json으로 저장하는 CLI 진입점입니다.",
+      "tags": [
+        "entry-point",
+        "swe-bench",
+        "평가드라이버"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/runners/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "Model_Benchmark/bench-gpu/runners/__init__.py",
+      "summary": "runners를 파이썬 패키지로 인식시키기 위한 빈 패키지 표식 파일입니다.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "type": "file",
+      "name": "swebench_run.py",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "summary": "SWE-bench inference와 evaluation을 감싸는 핵심 러너입니다. SWE-bench_Lite_oracle 데이터셋을 로컬 OpenAI 호환 서버(furiosa-llm/vLLM)에 보내 diff 패치를 생성하고, swebench harness(Docker)로 실제 테스트 통과(resolved) 여부를 채점합니다.",
+      "tags": [
+        "swe-bench",
+        "runner",
+        "inference",
+        "평가",
+        "openai-api"
+      ],
+      "complexity": "complex",
+      "languageNotes": "swebench.inference.run_api가 모델명을 하드코딩해 로컬 모델로 못 쓰므로 자체 inference 루프로 대체하고, 서버 max_model_len을 읽어 context 초과 인스턴스를 사전에 걸러냅니다."
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_server_max_model_len",
+      "type": "function",
+      "name": "_server_max_model_len",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        52,
+        65
+      ],
+      "summary": "OpenAI 호환 /models 엔드포인트를 호출해 서버가 실제로 쓰는 max_model_len(또는 max_seq_len)을 읽어 옵니다.",
+      "tags": [
+        "openai-api",
+        "context",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_count_prompt_tokens",
+      "type": "function",
+      "name": "_count_prompt_tokens",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        77,
+        95
+      ],
+      "summary": "system+user 메시지를 chat template으로 토크나이즈해 프롬프트 토큰 수를 셉니다. 토크나이저를 못 읽는 환경에서는 글자 수 기반 보수적 추정으로 대체합니다.",
+      "tags": [
+        "tokenizer",
+        "context",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_filter_by_context",
+      "type": "function",
+      "name": "_filter_by_context",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        98,
+        133
+      ],
+      "summary": "서버 max_model_len에서 응답 max_tokens와 여유분을 뺀 입력 토큰 상한을 기준으로, context를 넘는 인스턴스를 미리 걸러내 over-context 요청 실패를 줄입니다.",
+      "tags": [
+        "context",
+        "filtering",
+        "swe-bench"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_patch_sanity_error",
+      "type": "function",
+      "name": "_patch_sanity_error",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        140,
+        205
+      ],
+      "summary": "모델이 생성한 unified diff의 형식을 검사해, diff --git/@@ 헤더 누락이나 hunk 줄 수 불일치 같은 깨진 패치 사유를 찾아냅니다.",
+      "tags": [
+        "validation",
+        "diff",
+        "swe-bench"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:load_instances",
+      "type": "function",
+      "name": "load_instances",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        208,
+        241
+      ],
+      "summary": "oracle 데이터셋의 test split을 로드하고, subset이 지정되면 repo별 round-robin stratified 샘플링으로 특정 repo에 치우치지 않는 대표 subset을 뽑습니다.",
+      "tags": [
+        "dataset",
+        "sampling",
+        "swe-bench"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_predictions",
+      "type": "function",
+      "name": "run_predictions",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        244,
+        386
+      ],
+      "summary": "SWE-bench 인스턴스를 로컬 OpenAI 호환 서버에 동시(ThreadPool)로 보내 patch 예측을 생성하고, harness가 요구하는 jsonl과 분석용 지표(생성 시간·토큰·에러)를 함께 저장합니다.",
+      "tags": [
+        "inference",
+        "swe-bench",
+        "concurrency",
+        "openai-api"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_evaluation",
+      "type": "function",
+      "name": "run_evaluation",
+      "filePath": "Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "lineRange": [
+        389,
+        433
+      ],
+      "summary": "생성된 예측 파일을 swebench.harness.run_evaluation(Docker)로 채점합니다. --namespace swebench로 prebuilt 인스턴스 이미지를 pull해 대량 빌드를 생략하고, 결과 리포트 JSON을 읽어 반환합니다.",
+      "tags": [
+        "평가",
+        "swe-bench",
+        "docker"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:Model_Benchmark/bench-gpu/configs/models.yaml",
+      "type": "config",
+      "name": "models.yaml",
+      "filePath": "Model_Benchmark/bench-gpu/configs/models.yaml",
+      "summary": "NVIDIA GPU(vLLM) 측 벤치마크 모델 매트릭스와 서버·스윕 설정입니다. RNGD NPU 벤치와 같은 모델·context로 맞추려고 Qwen2.5-0.5B·Llama-3.1-8B만 enabled로 두고, 공통 serve 인자·사용 GPU·request shape sweep·memsweep 축을 정의합니다.",
+      "tags": [
+        "configuration",
+        "vllm",
+        "gpu",
+        "model-matrix",
+        "benchmark"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "NPU(furiosa-llm)와 직접 비교가 되도록 prefix caching 명시, max-model-len 4K/32K 정렬, memsweep 축(max-num-seqs↔max_batch_size 등)을 NPU 옵션에 대응시켰습니다."
+    },
+    {
+      "id": "document:Model_Benchmark/bench-gpu/docs/SWEBENCH_SETUP.md",
+      "type": "document",
+      "name": "SWEBENCH_SETUP.md",
+      "filePath": "Model_Benchmark/bench-gpu/docs/SWEBENCH_SETUP.md",
+      "summary": "SWE-bench 환경 구축과 사용법을 정리한 문서입니다. 데이터셋 종류·context 제공 방식(oracle/bm25/full)·single-shot vs agentic 실행, 설치, 예측 파일 포맷, Docker 채점 실행, 결과 해석, 본 프레임워크 연동까지 13개 섹션으로 설명합니다.",
+      "tags": [
+        "documentation",
+        "swe-bench",
+        "setup",
+        "guide"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "type": "file",
+      "name": "orchestrator.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "summary": "RNGD NPU 벤치마크의 메인 오케스트레이터입니다. models.yaml을 읽어 모델별로 FuriosaServer를 띄우고 tps / sweep / memsweep / embed / rerank / swebench 평가축을 순차 실행한 뒤, 결과를 results/<model>/<task>/<timestamp>.json 으로 저장합니다.",
+      "tags": [
+        "entry-point",
+        "orchestrator",
+        "benchmark",
+        "npu",
+        "cli"
+      ],
+      "complexity": "complex",
+      "languageNotes": "sys.path에 runners/ 디렉터리를 끼워 넣어 절대 import로 러너를 불러오고, asyncio.run으로 모델 루프 전체를 비동기 실행합니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_split_serve_args",
+      "type": "function",
+      "name": "_split_serve_args",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        66,
+        80
+      ],
+      "summary": "furiosa-llm serve 인자 리스트에서 --devices 값과 나머지 추가 인자를 분리합니다. devices를 별도로 떼어내 서버 기동에 쓰고 나머지는 extra_args로 넘깁니다.",
+      "tags": [
+        "utility",
+        "arg-parsing",
+        "serve-config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_tps",
+      "type": "function",
+      "name": "_task_tps",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        89,
+        97
+      ],
+      "summary": "concurrency=1 단일 요청으로 TTFT/ITL/output_TPS를 재는 tps 태스크입니다. run_concurrency를 호출하고 요약을 JSON으로 저장합니다.",
+      "tags": [
+        "benchmark-task",
+        "throughput",
+        "latency"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_sweep",
+      "type": "function",
+      "name": "_task_sweep",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        100,
+        118
+      ],
+      "summary": "concurrency × prompt_len 매트릭스를 돌며 throughput을 측정하는 sweep 태스크입니다. 각 조합의 요약을 모아 하나의 JSON으로 저장합니다.",
+      "tags": [
+        "benchmark-task",
+        "throughput",
+        "concurrency"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_memsweep",
+      "type": "function",
+      "name": "_task_memsweep",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        121,
+        137
+      ],
+      "summary": "furiosa-llm serve 메모리 옵션(max-model-len, max-batch-size 등) OFAT 스윕을 실행하는 태스크입니다. memory_sweep.sweep_serve_args에 인자를 구성해 위임합니다.",
+      "tags": [
+        "benchmark-task",
+        "memory-sweep",
+        "serve-config",
+        "npu"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_swebench",
+      "type": "function",
+      "name": "_task_swebench",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        161,
+        185
+      ],
+      "summary": "SWE-bench Lite oracle 예측을 실행하는 태스크입니다. 환경 변수로 인스턴스 수/동시성/토큰 한도를 받아 load_instances와 run_predictions를 호출하고 예측 결과를 저장합니다.",
+      "tags": [
+        "benchmark-task",
+        "swebench",
+        "code-eval",
+        "env-config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:run_for_model",
+      "type": "function",
+      "name": "run_for_model",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        190,
+        244
+      ],
+      "summary": "한 모델에 대해 요청된 평가축 전체를 실행하는 핵심 루틴입니다. serve 인자를 구성하고 FuriosaServer를 컨텍스트 매니저로 띄운 뒤 tps/sweep/embed/rerank/swebench 태스크를 순서대로 돌립니다.",
+      "tags": [
+        "orchestrator",
+        "benchmark",
+        "server-lifecycle",
+        "npu"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        247,
+        268
+      ],
+      "summary": "CLI 진입점입니다. argparse로 config 경로·tasks·models·dry-run을 받아 models.yaml을 파싱하고 선택된 모델/태스크에 대해 _run_all을 asyncio로 실행합니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "arg-parsing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_run_all",
+      "type": "function",
+      "name": "_run_all",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "lineRange": [
+        271,
+        279
+      ],
+      "summary": "선택된 모델 목록을 순회하며 공통 설정(devices, sweep 등)을 꺼내 run_for_model을 차례로 await 하는 비동기 드라이버입니다.",
+      "tags": [
+        "orchestrator",
+        "async",
+        "driver"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "type": "file",
+      "name": "server.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "summary": "furiosa-llm serve 프로세스의 라이프사이클을 관리하는 FuriosaServer 클래스를 제공합니다. OpenAI 호환 API 서버를 subprocess로 띄우고 /v1/models 로 모델 id가 일치할 때까지 대기한 뒤, 측정이 끝나면 프로세스 그룹째 정리합니다.",
+      "tags": [
+        "service",
+        "server-lifecycle",
+        "npu",
+        "subprocess",
+        "furiosa-llm"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "start_new_session으로 별도 프로세스 그룹을 만들고 os.killpg로 자식까지 한 번에 종료합니다. bench-gpu의 VllmServer와 동일한 인터페이스라 러너 계층은 서버만 바꿔 재사용됩니다."
+    },
+    {
+      "id": "class:Model_Benchmark/rngd-npu/run_all/runners/server.py:FuriosaServer",
+      "type": "class",
+      "name": "FuriosaServer",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "lineRange": [
+        21,
+        161
+      ],
+      "summary": "furiosa-llm serve를 기동·헬스체크·종료하는 컨텍스트 매니저입니다. _build_cmd로 NPU devices/host/port 인자를 조립하고, _wait_ready로 서버가 뜰 때까지 폴링하며, 포트 점유 시 _ensure_port_free로 충돌을 막습니다.",
+      "tags": [
+        "service",
+        "context-manager",
+        "server-lifecycle",
+        "npu",
+        "health-check"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "type": "file",
+      "name": "tps.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "summary": "토큰 생성 속도(throughput)를 측정하는 러너입니다. 요청마다 stream으로 TTFT(time to first token)·ITL(inter-token latency)·총 처리 시간을 재고, concurrency별로 동시 요청을 보내 output TPS와 p50/p95 지표를 집계합니다.",
+      "tags": [
+        "benchmark",
+        "throughput",
+        "latency",
+        "async",
+        "streaming"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "dataclass + @property로 메트릭을 모델링하고, httpx.AsyncClient와 asyncio.Semaphore로 동시성을 제한해 동시 요청 부하를 거는 구조입니다."
+    },
+    {
+      "id": "class:Model_Benchmark/rngd-npu/run_all/runners/tps.py:RequestMetric",
+      "type": "class",
+      "name": "RequestMetric",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "lineRange": [
+        19,
+        33
+      ],
+      "summary": "단일 요청의 측정 결과를 담는 dataclass입니다. TTFT·총 시간·출력 토큰 수·토큰 간 지연 리스트를 보관하고, itl_p50와 output_tps를 property로 계산합니다.",
+      "tags": [
+        "data-model",
+        "metrics",
+        "latency",
+        "throughput"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:Model_Benchmark/rngd-npu/run_all/runners/tps.py:BatchResult",
+      "type": "class",
+      "name": "BatchResult",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "lineRange": [
+        37,
+        80
+      ],
+      "summary": "한 concurrency 배치 전체의 측정 결과를 담는 dataclass입니다. 성공/실패 건수와 개별 RequestMetric을 모아 summary()에서 평균 output TPS, TTFT/ITL의 p50·p95 등 집계 지표를 만듭니다.",
+      "tags": [
+        "data-model",
+        "metrics",
+        "aggregation",
+        "throughput"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:_one_request",
+      "type": "function",
+      "name": "_one_request",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "lineRange": [
+        103,
+        162
+      ],
+      "summary": "OpenAI 호환 chat/completions 엔드포인트에 stream 요청 하나를 보내 SSE 청크를 읽으며 TTFT·토큰 간 지연·출력 토큰 수를 측정해 RequestMetric으로 반환합니다.",
+      "tags": [
+        "benchmark",
+        "streaming",
+        "latency",
+        "async",
+        "http"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "type": "function",
+      "name": "run_concurrency",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "lineRange": [
+        165,
+        203
+      ],
+      "summary": "지정한 concurrency로 N개의 요청을 동시에 보내 throughput을 재는 핵심 함수입니다. Semaphore로 동시 요청 수를 제한하고 wall-clock 시간을 측정해 BatchResult로 묶습니다.",
+      "tags": [
+        "benchmark",
+        "throughput",
+        "concurrency",
+        "async"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "type": "file",
+      "name": "memory_sweep.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "summary": "furiosa-llm serve의 메모리 옵션(max-model-len, max-batch-size, max-num-batched-tokens)을 OFAT 방식으로 스윕하는 러너입니다. baseline에서 한 번에 한 축만 바꿔 서버를 재기동하며, 각 옵션 조합이 처리량과 OOM에 미치는 영향을 측정합니다.",
+      "tags": [
+        "benchmark",
+        "memory-sweep",
+        "serve-config",
+        "npu",
+        "ofat"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "조합 수를 1(baseline)+각 축 값 개수의 합으로 줄여 서버 재기동 횟수를 현실적인 수준으로 유지합니다. spare_blocks_ratio는 2026.2.0에서 deprecated라 축에서 제외했습니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:_ofat_combinations",
+      "type": "function",
+      "name": "_ofat_combinations",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "lineRange": [
+        38,
+        59
+      ],
+      "summary": "OFAT(One-Factor-At-a-Time) 조합 목록을 생성합니다. baseline 1개에 더해 각 축의 값을 하나씩만 바꾼 조합을 만들고, 중복은 seen 집합으로 제거합니다.",
+      "tags": [
+        "utility",
+        "ofat",
+        "combination-generation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "type": "function",
+      "name": "sweep_serve_args",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "lineRange": [
+        76,
+        134
+      ],
+      "summary": "각 serve 옵션 조합마다 FuriosaServer를 새로 띄우고 run_concurrency로 부하를 건 뒤, 기동 시간·throughput·서버 정보를 기록하는 스윕 본체입니다. 조합별 JSON과 전체 요약을 out_dir에 저장합니다.",
+      "tags": [
+        "benchmark",
+        "memory-sweep",
+        "server-lifecycle",
+        "npu",
+        "throughput"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:_collect_server_info",
+      "type": "function",
+      "name": "_collect_server_info",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "lineRange": [
+        137,
+        148
+      ],
+      "summary": "기동된 서버의 /v1/models 응답 헤더와 본문을 조회해 버전·모델 메타데이터를 수집하는 보조 함수입니다.",
+      "tags": [
+        "utility",
+        "http",
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "type": "file",
+      "name": "embed_bench.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "summary": "Qwen3-Embedding-8B / Qwen3-Reranker-8B의 처리량을 측정하는 러너입니다. /v1/embeddings로 배치 크기별 임베딩 throughput을 재고, 리랭커는 /v1/rerank·/v1/score 엔드포인트를 시도한 뒤 실패하면 임베딩 코사인 유사도로 fallback 합니다.",
+      "tags": [
+        "benchmark",
+        "embedding",
+        "reranker",
+        "throughput",
+        "async"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "furiosa-llm 버전별로 리랭커 엔드포인트가 달라 두 후보를 순차 시도하고, 둘 다 없으면 임베딩 기반 코사인 유사도로 대체하는 방어적 설계입니다."
+    },
+    {
+      "id": "class:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:EmbedResult",
+      "type": "class",
+      "name": "EmbedResult",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "lineRange": [
+        43,
+        62
+      ],
+      "summary": "임베딩 측정 결과를 담는 dataclass입니다. 입력 수·배치 크기·wall-clock·요청별 지연을 보관하고, summary()에서 throughput과 지연 p50·p95를 계산합니다.",
+      "tags": [
+        "data-model",
+        "metrics",
+        "embedding",
+        "throughput"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:RerankResult",
+      "type": "class",
+      "name": "RerankResult",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "lineRange": [
+        104,
+        123
+      ],
+      "summary": "리랭커 측정 결과를 담는 dataclass입니다. 처리한 query/doc 쌍 수·사용한 method(rerank/score/cosine)·wall-clock·지연을 보관하고 summary()로 throughput 지표를 만듭니다.",
+      "tags": [
+        "data-model",
+        "metrics",
+        "reranker",
+        "throughput"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_embeddings",
+      "type": "function",
+      "name": "bench_embeddings",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "lineRange": [
+        72,
+        100
+      ],
+      "summary": "/v1/embeddings 엔드포인트에 배치 크기별로 문서를 보내 임베딩 throughput과 요청 지연을 측정하고 EmbedResult 리스트로 반환합니다.",
+      "tags": [
+        "benchmark",
+        "embedding",
+        "throughput",
+        "async",
+        "http"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_reranker",
+      "type": "function",
+      "name": "bench_reranker",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "lineRange": [
+        136,
+        185
+      ],
+      "summary": "리랭커 throughput을 측정합니다. /v1/rerank·/v1/score 엔드포인트를 먼저 시도하고, 둘 다 없으면 query/doc를 임베딩해 코사인 유사도로 순위를 매기는 fallback 경로로 측정합니다.",
+      "tags": [
+        "benchmark",
+        "reranker",
+        "throughput",
+        "async",
+        "fallback"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "type": "file",
+      "name": "analyze.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "summary": "rngd-npu의 results/ 폴더 아래 모델별·task별 결과 JSON을 모아 한 줄씩 행으로 펼친 뒤, 텍스트 표나 CSV로 출력하는 가벼운 후처리 스크립트입니다. sweep·리스트·딕셔너리 등 결과 형태가 제각각이라 모양을 보고 분기해서 ttft, output_tps, successes 같은 주요 지표만 골라 보여줍니다.",
+      "tags": [
+        "utility",
+        "entry-point",
+        "serialization",
+        "benchmark-postprocessing"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "stdlib(argparse·csv·json·pathlib)만 쓰고 외부 의존성이 없어 NPU 없이도 결과 집계가 가능합니다. bench-gpu의 같은 이름 파일과 짝을 이루는 NPU 쪽 구현입니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:collect",
+      "type": "function",
+      "name": "collect",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "lineRange": [
+        19,
+        47
+      ],
+      "summary": "results/ 아래 모든 모델 폴더와 task 폴더를 훑어 *.json을 읽고, sweep 키·리스트·딕셔너리 형태를 각각 다르게 풀어 task와 파일 경로를 붙인 평탄한 행 리스트로 만듭니다. 읽기 실패한 파일은 조용히 건너뜁니다.",
+      "tags": [
+        "data-aggregation",
+        "serialization",
+        "file-scan"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:to_table",
+      "type": "function",
+      "name": "to_table",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "lineRange": [
+        50,
+        60
+      ],
+      "summary": "행 리스트와 컬럼 목록을 받아 각 열의 최대 너비에 맞춰 정렬한 파이프(|) 구분 텍스트 표 문자열을 만듭니다. 컬럼을 안 주면 등장하는 모든 키를 정렬해서 씁니다.",
+      "tags": [
+        "formatting",
+        "utility",
+        "table-render"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "lineRange": [
+        63,
+        89
+      ],
+      "summary": "--csv·--task 인자를 파싱해 collect()로 모은 행을 task로 필터링한 뒤, CSV가 주어지면 DictWriter로 저장하고 아니면 미리 정한 주요 지표 컬럼만 골라 to_table()로 표를 출력하는 CLI 진입점입니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "data-pipeline"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "type": "file",
+      "name": "report.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "summary": "results/ 아래 task별 JSON을 모아 Furiosa RNGD / furiosa-llm 기준의 모델별 종합 비교 리포트(Markdown)를 자동 생성합니다. TL;DR, 단일 요청 속도, 동시성 스케일링, memsweep, SWE-bench, embedding/reranker, 동시 접속자별 권장 설정, 종합 결론까지 8개 절을 채웁니다.",
+      "tags": [
+        "report-generator",
+        "entry-point",
+        "data-pipeline",
+        "markdown"
+      ],
+      "complexity": "complex",
+      "languageNotes": "render()가 약 245줄로 리포트 본문 전체를 문자열 리스트에 누적해 마지막에 join하는 구조입니다. yaml은 _load_config 안에서 지연 import해 미설치 시에도 동작하도록 했습니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_load",
+      "type": "function",
+      "name": "_load",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        38,
+        56
+      ],
+      "summary": "results/ 디렉터리를 순회해 모델명(언더스코어 둘을 슬래시로 복원)과 task별로 결과 딕셔너리를 모읍니다. 각 객체에 결과 파일 경로와 mtime을 심어 두어 이후 최신 결과 선택에 쓰도록 합니다.",
+      "tags": [
+        "data-aggregation",
+        "file-scan",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_tps_summary",
+      "type": "function",
+      "name": "_tps_summary",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        68,
+        71
+      ],
+      "summary": "tps task 결과 중 가장 최근 것을 골라 그 안의 summary 딕셔너리를 꺼내 단일 요청 throughput 요약으로 반환합니다.",
+      "tags": [
+        "utility",
+        "throughput",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_sweep_rows",
+      "type": "function",
+      "name": "_sweep_rows",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        74,
+        82
+      ],
+      "summary": "sweep task의 최신 결과에서 sweep 행들을 꺼내 지정한 prompt 길이에 해당하는 것만 추려 concurrency 순으로 정렬해 동시성 스케일링 분석용 입력으로 만듭니다.",
+      "tags": [
+        "utility",
+        "scaling",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:analyze_scaling",
+      "type": "function",
+      "name": "analyze_scaling",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        90,
+        113
+      ],
+      "summary": "concurrency별 행에서 aggregate_output_tps가 최대인 지점(peak), 그 90% 이상을 처음 내는 효율 지점, 그리고 에러·실패·TTFT SLA 위반·throughput 하락이 처음 나타나는 degrade 지점을 찾아 권장 동시성 판단 근거를 만듭니다.",
+      "tags": [
+        "analysis",
+        "scaling",
+        "throughput",
+        "sla"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_best_memsweep",
+      "type": "function",
+      "name": "_best_memsweep",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        116,
+        142
+      ],
+      "summary": "memsweep 결과들 중 가장 최근 묶음을 골라 에러·실패가 없고 서버가 실제로 서빙한 모델과 일치하는 항목만 남긴 뒤, 같은 combo는 한 번만 세어 aggregate_output_tps가 가장 높은 조합과 그 요약을 반환합니다.",
+      "tags": [
+        "analysis",
+        "memory-sweep",
+        "throughput",
+        "deduplication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_server_model_ids",
+      "type": "function",
+      "name": "_server_model_ids",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        145,
+        152
+      ],
+      "summary": "서버 /models 응답의 data 목록에서 각 항목의 id·root 값을 모아 실제로 서빙 중인 모델 식별자 집합을 만듭니다. 결과와 서버가 가리키는 모델이 맞는지 대조하는 데 씁니다.",
+      "tags": [
+        "utility",
+        "validation",
+        "server-info"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_swebench",
+      "type": "function",
+      "name": "_swebench",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        155,
+        160
+      ],
+      "summary": "모델 폴더 아래 swebench/eval_result.json을 읽어 채점 report 부분을 꺼내 반환합니다. 파일이 없으면 None을 돌려줍니다.",
+      "tags": [
+        "utility",
+        "swebench",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_swebench_pred_summary",
+      "type": "function",
+      "name": "_swebench_pred_summary",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        163,
+        166
+      ],
+      "summary": "swebench task 결과 중 n_instances 키를 가진 예측(prediction) 요약들 가운데 가장 최근 것을 골라 반환합니다.",
+      "tags": [
+        "utility",
+        "swebench",
+        "metrics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:_model_devices",
+      "type": "function",
+      "name": "_model_devices",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        176,
+        180
+      ],
+      "summary": "모델 메타의 serve_args에서 --devices 다음 값을 찾아 그 모델이 쓴 NPU 디바이스 지정을 돌려줍니다. 없으면 기본 디바이스 문자열을 반환합니다.",
+      "tags": [
+        "utility",
+        "npu",
+        "config-parse"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:render",
+      "type": "function",
+      "name": "render",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        183,
+        427
+      ],
+      "summary": "모델별로 모은 결과를 받아 단일 요청 속도·동시성 스케일링·memsweep·SWE-bench·embedding/reranker·동시 접속자별 권장 설정·종합 결론으로 이어지는 Markdown 리포트 전문을 문자열 리스트에 차곡차곡 쌓아 합쳐 반환하는 핵심 렌더링 함수입니다.",
+      "tags": [
+        "report-generator",
+        "markdown",
+        "data-pipeline"
+      ],
+      "complexity": "complex",
+      "languageNotes": "L.append를 100회 이상 호출해 리포트 줄을 누적한 뒤 \\n으로 join하는 긴 단일 함수로, 거의 모든 분석 헬퍼(_tps_summary·analyze_scaling·_sweep_rows·_best_memsweep·_swebench 등)를 여기서 호출합니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/report.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/report.py",
+      "lineRange": [
+        430,
+        437
+      ],
+      "summary": "--out 인자를 파싱해 _load()로 결과를 모으고 render()로 Markdown을 만든 뒤 지정 경로에 써서 리포트를 저장하는 CLI 진입점입니다.",
+      "tags": [
+        "entry-point",
+        "cli"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "type": "file",
+      "name": "swebench_eval.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "summary": "orchestrator의 swebench inference 단계가 만든 예측 jsonl(results/*/swebench/preds/*__preds.jsonl)을 찾아 Docker harness로 채점하는 드라이버입니다. 채점에는 Docker만 필요하고 NPU는 안 쓰므로, Docker 빌드 부하가 latency 측정을 오염시키지 않도록 생성 벤치마크와 분리해 돌립니다.",
+      "tags": [
+        "swebench",
+        "entry-point",
+        "evaluation",
+        "cli"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "sys.path.insert로 run_all/을 경로에 넣어 runners.swebench_run의 run_evaluation을 import합니다. bench-gpu의 swebench_eval.py와 짝을 이루는 NPU 쪽 채점 드라이버입니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/swebench_eval.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "lineRange": [
+        31,
+        63
+      ],
+      "summary": "--models·--max-workers 인자를 파싱해 예측 jsonl을 모델 substring으로 필터링하고, 각 파일에서 instance_id를 읽어 run_evaluation()으로 Docker 채점을 돌린 뒤 eval_result.json으로 저장하며 resolved/total 수를 출력하는 진입점입니다.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "swebench",
+        "evaluation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/runners/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/__init__.py",
+      "summary": "runners를 Python 패키지로 만들어 주는 빈 초기화 파일입니다. swebench_run 등 각 task 러너 모듈을 패키지 경로로 import할 수 있게 합니다.",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "barrel"
+      ],
+      "complexity": "simple",
+      "languageNotes": "내용이 비어 있는 Python 패키지 마커 파일입니다."
+    },
+    {
+      "id": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "type": "file",
+      "name": "swebench_run.py",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "summary": "SWE-bench inference와 evaluation을 묶은 핵심 러너입니다. SWE-bench_Lite_oracle을 로드해 로컬 furiosa-llm OpenAI 호환 서버에 보내 diff patch를 생성하고(prediction), swebench Docker harness로 실제 테스트 통과(resolved) 여부를 채점합니다.",
+      "tags": [
+        "swebench",
+        "service",
+        "inference",
+        "evaluation",
+        "data-pipeline"
+      ],
+      "complexity": "complex",
+      "languageNotes": "swebench.inference.run_api가 OpenAI/Anthropic 모델명에 하드코딩돼 있어 로컬 모델로는 못 쓰므로 자체 inference 루프로 대체했습니다. ThreadPoolExecutor로 동시 요청을 보내고, 서버 max_model_len과 tokenizer로 context 초과 인스턴스를 사전 필터링하며, 다수 동작은 환경변수(SWEBENCH_*)로 제어합니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_server_max_model_len",
+      "type": "function",
+      "name": "_server_max_model_len",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        52,
+        65
+      ],
+      "summary": "furiosa-llm 서버의 /v1/models를 httpx로 조회해 max_model_len(또는 max_position_embeddings) 값을 읽어 옵니다. context 초과 인스턴스를 거르기 위한 입력 토큰 상한 계산의 기준이 됩니다.",
+      "tags": [
+        "utility",
+        "server-info",
+        "context-limit",
+        "http"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_count_prompt_tokens",
+      "type": "function",
+      "name": "_count_prompt_tokens",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        77,
+        95
+      ],
+      "summary": "tokenizer로 chat template을 적용해 프롬프트의 실제 토큰 수를 셉니다. apply_chat_template이 실패하면 일반 인코딩으로, 그것도 안 되면 글자 수 기반으로 어림잡아 입력 길이를 추정합니다.",
+      "tags": [
+        "utility",
+        "tokenization",
+        "context-limit"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_filter_by_context",
+      "type": "function",
+      "name": "_filter_by_context",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        98,
+        133
+      ],
+      "summary": "서버 max_model_len과 응답 max_tokens, margin을 바탕으로 입력 토큰 상한을 정한 뒤, tokenizer로 각 인스턴스 프롬프트 길이를 재 상한을 넘는 것은 미리 제외합니다. 서버가 처리 못 할 긴 context로 인한 실패를 막습니다.",
+      "tags": [
+        "validation",
+        "tokenization",
+        "context-limit",
+        "filtering"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_patch_sanity_error",
+      "type": "function",
+      "name": "_patch_sanity_error",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        140,
+        205
+      ],
+      "summary": "모델이 만든 unified diff patch의 형식을 검사합니다. diff --git·--- ·+++ 헤더, @@ hunk 헤더의 줄 수 일치, 모든 변경/문맥 줄이 공백·+·-로 시작하는지 등을 보고 깨진 곳이 있으면 오류 사유 문자열을, 정상이면 None을 반환합니다.",
+      "tags": [
+        "validation",
+        "patch",
+        "diff-parsing"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:load_instances",
+      "type": "function",
+      "name": "load_instances",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        208,
+        241
+      ],
+      "summary": "HuggingFace datasets로 SWE-bench 데이터셋을 로드하고, subset 크기가 주어지면 repo별로 묶어 시드 기반으로 셔플한 뒤 라운드로빈으로 골라 repo가 골고루 섞인 대표 표본을 만듭니다.",
+      "tags": [
+        "data-loading",
+        "swebench",
+        "sampling",
+        "dataset"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_predictions",
+      "type": "function",
+      "name": "run_predictions",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        244,
+        386
+      ],
+      "summary": "context 필터를 거친 인스턴스들을 ThreadPoolExecutor로 동시에 furiosa-llm 서버에 보내 diff patch를 생성하고, 형식 검사·재시도를 거쳐 jsonl 예측 파일로 저장하며 latency·patch 비율 등 요약 통계를 만드는 핵심 inference 루프입니다.",
+      "tags": [
+        "inference",
+        "concurrency",
+        "patch",
+        "data-pipeline",
+        "swebench"
+      ],
+      "complexity": "complex",
+      "languageNotes": "내부에 인스턴스 하나를 처리하는 중첩 함수 one()을 두고 ThreadPoolExecutor로 fan-out합니다. OpenAI 클라이언트로 로컬 서버의 chat.completions를 호출하고 extract_diff로 응답에서 patch를 뽑아냅니다."
+    },
+    {
+      "id": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_evaluation",
+      "type": "function",
+      "name": "run_evaluation",
+      "filePath": "Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "lineRange": [
+        389,
+        432
+      ],
+      "summary": "예측 jsonl 경로와 run_id, instance_ids를 받아 swebench Docker harness를 subprocess로 실행해 채점하고, report 디렉터리에 생성된 결과 JSON을 읽어 resolved 등 채점 리포트를 반환합니다. swebench_eval.py가 이 함수를 호출합니다.",
+      "tags": [
+        "evaluation",
+        "swebench",
+        "subprocess",
+        "harness"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_embed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_embed",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_rerank",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_rerank",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_embed",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_embed",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_embed",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:to_jsonable_rerank",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/server.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/server.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_split_serve_args",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_tps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_sweep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_memsweep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_embed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_swebench",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:run_for_model",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "target": "function:Model_Benchmark/bench-gpu/orchestrator.py:_run_all",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/embed_bench.py:EmbedResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/embed_bench.py:RerankResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_embeddings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_reranker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:_try_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/embed_bench.py:EmbedResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/embed_bench.py:RerankResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_embeddings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_reranker",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:_ofat_combinations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:_collect_server_info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/server.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/server.py:VllmServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/server.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/server.py:VllmServer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/tps.py:RequestMetric",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "class:Model_Benchmark/bench-gpu/runners/tps.py:BatchResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:_one_request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:to_jsonable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:to_jsonable",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_tps",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_tps",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:to_jsonable",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_sweep",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_memsweep",
+      "target": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:_task_embed",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_embeddings",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/orchestrator.py:run_for_model",
+      "target": "class:Model_Benchmark/bench-gpu/runners/server.py:VllmServer",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "target": "class:Model_Benchmark/bench-gpu/runners/server.py:VllmServer",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/memory_sweep.py:sweep_serve_args",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:to_jsonable",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:bench_reranker",
+      "target": "function:Model_Benchmark/bench-gpu/runners/embed_bench.py:_try_endpoint",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/tps.py:run_concurrency",
+      "target": "function:Model_Benchmark/bench-gpu/runners/tps.py:_one_request",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "function:Model_Benchmark/bench-gpu/run_all.sh:step_gen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "function:Model_Benchmark/bench-gpu/run_all.sh:step_swebench",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "function:Model_Benchmark/bench-gpu/run_all.sh:step_report",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "file:Model_Benchmark/bench-gpu/preflight.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "file:Model_Benchmark/bench-gpu/eval_swebench.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "target": "file:Model_Benchmark/bench-gpu/report.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/eval_swebench.sh",
+      "target": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/preflight.sh",
+      "target": "config:Model_Benchmark/bench-gpu/configs/models.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/setup.sh",
+      "target": "config:Model_Benchmark/bench-gpu/requirements.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:Model_Benchmark/bench-gpu/requirements.txt",
+      "target": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/setup.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/run_all.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/preflight.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/eval_swebench.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/README.md",
+      "target": "config:Model_Benchmark/bench-gpu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/REPORT.md",
+      "target": "file:Model_Benchmark/bench-gpu/report.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/REPORT.md",
+      "target": "document:Model_Benchmark/bench-gpu/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "target": "document:Model_Benchmark/info/README_build.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "target": "document:Model_Benchmark/info/README_preset.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "target": "document:Model_Benchmark/info/README_config.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "target": "document:Model_Benchmark/info/README_runcode.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/BUILD_FLOW.md",
+      "target": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/BUILD_FLOW.md",
+      "target": "document:Model_Benchmark/info/README_preset.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_FCLM.md",
+      "target": "document:Model_Benchmark/info/README_build.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_build.md",
+      "target": "document:Model_Benchmark/info/BUILD_FLOW.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_build.md",
+      "target": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_build.md",
+      "target": "document:Model_Benchmark/info/README_preset.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_build.md",
+      "target": "document:Model_Benchmark/info/README_config.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_build.md",
+      "target": "document:Model_Benchmark/info/README_runcode.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_config.md",
+      "target": "document:Model_Benchmark/info/README_preset.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_config.md",
+      "target": "document:Model_Benchmark/info/README_build.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_config.md",
+      "target": "document:Model_Benchmark/info/BUILD_COMPIL.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_preset.md",
+      "target": "document:Model_Benchmark/info/README_build.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_preset.md",
+      "target": "document:Model_Benchmark/info/README_config.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "document:Model_Benchmark/info/README_build.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "document:Model_Benchmark/info/README_preset.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "document:Model_Benchmark/info/README_config.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_ntop.md",
+      "target": "file:ntop.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_ntop.md",
+      "target": "file:ntop.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runallsh.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_model.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_model_p.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/info/README_runcode.md",
+      "target": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/setup.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/preflight.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_model.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_model_p.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/REPORT.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/REPORT.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/setup.sh",
+      "target": "config:Model_Benchmark/rngd-npu/requirements.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "target": "file:Model_Benchmark/rngd-npu/preflight.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "target": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/preflight.sh",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:Model_Benchmark/rngd-npu/requirements.txt",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/COMPILING_MODELS.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "target": "file:Model_Benchmark/rngd-npu/run_all.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "target": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "target": "file:Model_Benchmark/rngd-npu/preflight.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+      "target": "file:Model_Benchmark/rngd-npu/setup.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/SWEBENCH_SETUP.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/docs/SWEBENCH_SETUP.md",
+      "target": "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:quantize_llama70b/run.sh",
+      "target": "file:quantize_llama70b/setup.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:quantize_llama70b/run.sh",
+      "target": "file:quantize_llama70b/download.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:quantize_llama70b/setup.sh",
+      "target": "config:quantize_llama70b/requirements.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:quantize_llama70b/README.md",
+      "target": "file:quantize_llama70b/run.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:quantize_llama70b/README.md",
+      "target": "file:quantize_llama70b/setup.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:quantize_llama70b/README.md",
+      "target": "file:quantize_llama70b/download.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:quantize_llama70b/README.md",
+      "target": "config:quantize_llama70b/requirements.txt",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:_resolve_model_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:available_models",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:chat_fn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:save_conversation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:build_ui",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:chat_fn",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:_resolve_model_id",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:available_models",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:_resolve_model_id",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:build_ui",
+      "target": "function:Model_Benchmark/rngd-npu/chat/chat_app.py:available_models",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "class:ntop.py:NpuDev",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:gather",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:run_smi_json",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:cores_grid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:render_devices",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:render_header",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:get_cpu_utils",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:render_cpu",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:render_host",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:_shorten_cmd",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:render_ps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:build_layout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:ntop.py",
+      "target": "function:ntop.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "function:ntop.py:gather",
+      "target": "function:ntop.py:run_smi_json",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:render_devices",
+      "target": "function:ntop.py:cores_grid",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:render_cpu",
+      "target": "function:ntop.py:get_cpu_utils",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:render_cpu",
+      "target": "function:ntop.py:cores_grid",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:render_ps",
+      "target": "function:ntop.py:_shorten_cmd",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:build_layout",
+      "target": "function:ntop.py:render_header",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:build_layout",
+      "target": "function:ntop.py:render_devices",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:build_layout",
+      "target": "function:ntop.py:render_cpu",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:build_layout",
+      "target": "function:ntop.py:render_ps",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:main",
+      "target": "function:ntop.py:gather",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ntop.py:main",
+      "target": "function:ntop.py:build_layout",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:frame",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:title",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:tag",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:codeCard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:bullets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/ppt/build_model_prep.js",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:infoTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "function:Model_Benchmark/ppt/build_model_prep.js:codeCard",
+      "target": "function:Model_Benchmark/ppt/build_model_prep.js:tag",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/chat/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/rngd-npu/chat/README.md",
+      "target": "file:Model_Benchmark/rngd-npu/chat/serve_models.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/chat/serve_models.sh",
+      "target": "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:ntop.sh",
+      "target": "file:ntop.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:quantize_llama70b/quantize.py",
+      "target": "function:quantize_llama70b/quantize.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:Model_Benchmark/README.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:ntop.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:ntop.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README.md",
+      "target": "document:Model_Benchmark/README_npu_gpu_result.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README.md",
+      "target": "file:Model_Benchmark/bench-gpu/report.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README_npu_gpu_result.md",
+      "target": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+      "target": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/README_npu_gpu_result.md",
+      "target": "file:quantize_llama70b/quantize.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "target": "function:Model_Benchmark/bench-gpu/analyze.py:collect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "target": "function:Model_Benchmark/bench-gpu/analyze.py:to_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "target": "function:Model_Benchmark/bench-gpu/analyze.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "target": "function:Model_Benchmark/bench-gpu/analyze.py:collect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "target": "function:Model_Benchmark/bench-gpu/analyze.py:to_table",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "target": "function:Model_Benchmark/bench-gpu/analyze.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:_load",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:analyze_scaling",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:_best_memsweep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:render",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:render",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:analyze_scaling",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/report.py",
+      "target": "function:Model_Benchmark/bench-gpu/report.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "target": "function:Model_Benchmark/bench-gpu/swebench_eval.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "target": "function:Model_Benchmark/bench-gpu/swebench_eval.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/swebench_eval.py:main",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_evaluation",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_server_max_model_len",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_count_prompt_tokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_filter_by_context",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_patch_sanity_error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:load_instances",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_predictions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_evaluation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:load_instances",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_predictions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_evaluation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_filter_by_context",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_server_max_model_len",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_filter_by_context",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_count_prompt_tokens",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_predictions",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_filter_by_context",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:run_predictions",
+      "target": "function:Model_Benchmark/bench-gpu/runners/swebench_run.py:_patch_sanity_error",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "config:Model_Benchmark/bench-gpu/configs/models.yaml",
+      "target": "file:Model_Benchmark/bench-gpu/report.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:Model_Benchmark/bench-gpu/configs/models.yaml",
+      "target": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/docs/SWEBENCH_SETUP.md",
+      "target": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:Model_Benchmark/bench-gpu/docs/SWEBENCH_SETUP.md",
+      "target": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_split_serve_args",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_tps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_sweep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_memsweep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_swebench",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:run_for_model",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_run_all",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:run_for_model",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_tps",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_sweep",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:_task_memsweep",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:run_for_model",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/server.py:FuriosaServer",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:run_for_model",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_embeddings",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/orchestrator.py:run_for_model",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_reranker",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/server.py:FuriosaServer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/server.py:FuriosaServer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/tps.py:RequestMetric",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/tps.py:BatchResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:_one_request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/tps.py:RequestMetric",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/tps.py:BatchResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:_one_request",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:_ofat_combinations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:_collect_server_info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:_ofat_combinations",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/server.py:FuriosaServer",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py:sweep_serve_args",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/tps.py:run_concurrency",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:EmbedResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:RerankResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_embeddings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_reranker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:EmbedResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "class:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:RerankResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_embeddings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py:bench_reranker",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+      "target": "file:Model_Benchmark/bench-gpu/orchestrator.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/server.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/tps.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:collect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:to_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:collect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:to_table",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/analyze.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+      "target": "file:Model_Benchmark/bench-gpu/analyze.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_load",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_tps_summary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_sweep_rows",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:analyze_scaling",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_best_memsweep",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_server_model_ids",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_swebench",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_swebench_pred_summary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:_model_devices",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:render",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:render",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:analyze_scaling",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/report.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/report.py",
+      "target": "file:Model_Benchmark/bench-gpu/report.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "target": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/swebench_eval.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/swebench_eval.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:Model_Benchmark/rngd-npu/run_all/swebench_eval.py:main",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_evaluation",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+      "target": "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/__init__.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/__init__.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_server_max_model_len",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_count_prompt_tokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_filter_by_context",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:_patch_sanity_error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:load_instances",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_predictions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_evaluation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:load_instances",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_predictions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "function:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py:run_evaluation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py",
+      "target": "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:npu-benchmark",
+      "name": "NPU 벤치마크 (rngd-npu)",
+      "description": "Furiosa RNGD NPU 위에서 furiosa-llm serve를 띄우고 tps·sweep·memsweep·SWE-bench·embedding/reranker를 측정하는 run_all 오케스트레이터·runners와 setup·preflight·run_all·eval·수동 점검(run_model) 셸 스크립트, models.yaml 설정을 담은 NPU 측 실행 서브프로젝트입니다.",
+      "nodeIds": [
+        "config:Model_Benchmark/rngd-npu/requirements.txt",
+        "file:Model_Benchmark/rngd-npu/setup.sh",
+        "file:Model_Benchmark/rngd-npu/preflight.sh",
+        "file:Model_Benchmark/rngd-npu/run_all.sh",
+        "file:Model_Benchmark/rngd-npu/eval_swebench.sh",
+        "file:Model_Benchmark/rngd-npu/run_model.sh",
+        "file:Model_Benchmark/rngd-npu/run_model_p.sh",
+        "config:Model_Benchmark/rngd-npu/configs/models.yaml",
+        "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/tps.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/memory_sweep.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/embed_bench.py",
+        "file:Model_Benchmark/rngd-npu/run_all/analyze.py",
+        "file:Model_Benchmark/rngd-npu/run_all/report.py",
+        "file:Model_Benchmark/rngd-npu/run_all/swebench_eval.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/__init__.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/swebench_run.py"
+      ]
+    },
+    {
+      "id": "layer:gpu-benchmark",
+      "name": "GPU 벤치마크 (bench-gpu)",
+      "description": "NVIDIA GPU 위 vLLM 서버를 대상으로 NPU 측과 같은 OpenAI 호환 API로 동일 지표를 재는 미러 서브프로젝트로, orchestrator·runners(tps/embed/memory_sweep/server/swebench)·analyze·report와 setup·preflight·run_all·eval 셸 스크립트, requirements·models.yaml 설정을 포함합니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/orchestrator.py",
+        "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+        "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+        "file:Model_Benchmark/bench-gpu/runners/server.py",
+        "file:Model_Benchmark/bench-gpu/runners/tps.py",
+        "file:Model_Benchmark/bench-gpu/eval_swebench.sh",
+        "file:Model_Benchmark/bench-gpu/preflight.sh",
+        "config:Model_Benchmark/bench-gpu/requirements.txt",
+        "file:Model_Benchmark/bench-gpu/run_all.sh",
+        "file:Model_Benchmark/bench-gpu/setup.sh",
+        "file:Model_Benchmark/bench-gpu/analyze.py",
+        "file:Model_Benchmark/bench-gpu/report.py",
+        "file:Model_Benchmark/bench-gpu/swebench_eval.py",
+        "file:Model_Benchmark/bench-gpu/runners/__init__.py",
+        "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+        "config:Model_Benchmark/bench-gpu/configs/models.yaml"
+      ]
+    },
+    {
+      "id": "layer:quantization",
+      "name": "모델 양자화 (quantize_llama70b)",
+      "description": "Llama-3.3-70B를 GPU 서버에서 FineGrainedFP8로 양자화해 NPU 빌드 입력으로 만드는 파이프라인으로, 환경 구축(setup)·가중치 다운로드(download)·양자화 실행(quantize.py)을 run.sh 한 번으로 묶습니다.",
+      "nodeIds": [
+        "file:quantize_llama70b/download.sh",
+        "file:quantize_llama70b/run.sh",
+        "file:quantize_llama70b/setup.sh",
+        "file:quantize_llama70b/quantize.py",
+        "config:quantize_llama70b/requirements.txt"
+      ]
+    },
+    {
+      "id": "layer:ops-tools",
+      "name": "운영 도구 (ntop·chat)",
+      "description": "실제 NPU를 운영하며 쓰는 도구 모음으로, furiosa-smi 기반 실시간 NPU 모니터(ntop)와 furiosa-llm serve에 OpenAI SDK로 붙는 Gradio 채팅 데모 및 모델 서버 기동 스크립트를 담습니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+        "file:Model_Benchmark/rngd-npu/chat/serve_models.sh",
+        "file:ntop.py",
+        "file:ntop.sh"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "문서·참고 자료",
+      "description": "프로젝트 전반의 README와 NPU↔GPU 결과 비교, 각 서브프로젝트 사용·결과 리포트(REPORT), 운영 절차서(docs), furiosa-llm 빌드·컴파일·preset·config 등을 다루는 info/ 참고 문서를 모은 계층입니다.",
+      "nodeIds": [
+        "document:Model_Benchmark/bench-gpu/README.md",
+        "document:Model_Benchmark/bench-gpu/REPORT.md",
+        "document:Model_Benchmark/info/BUILD_COMPIL.md",
+        "document:Model_Benchmark/info/BUILD_FLOW.md",
+        "document:Model_Benchmark/info/README_FCLM.md",
+        "document:Model_Benchmark/info/README_build.md",
+        "document:Model_Benchmark/info/README_config.md",
+        "document:Model_Benchmark/info/README_ntop.md",
+        "document:Model_Benchmark/info/README_preset.md",
+        "document:Model_Benchmark/info/README_runallsh.md",
+        "document:Model_Benchmark/info/README_runcode.md",
+        "document:Model_Benchmark/rngd-npu/README.md",
+        "document:Model_Benchmark/rngd-npu/REPORT.md",
+        "document:Model_Benchmark/rngd-npu/docs/COMPILING_MODELS.md",
+        "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md",
+        "document:Model_Benchmark/rngd-npu/docs/SWEBENCH_SETUP.md",
+        "document:Model_Benchmark/rngd-npu/chat/README.md",
+        "document:Model_Benchmark/README.md",
+        "document:Model_Benchmark/README_npu_gpu_result.md",
+        "document:Model_Benchmark/bench-gpu/docs/SWEBENCH_SETUP.md",
+        "document:quantize_llama70b/README.md",
+        "document:README.md"
+      ]
+    },
+    {
+      "id": "layer:presentation",
+      "name": "발표 자료 (ppt)",
+      "description": "pptxgenjs로 모델 준비·벤치마크 내용을 발표용 PPTX 슬라이드로 빌드하는 스크립트를 담은 계층입니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/ppt/build_model_prep.js"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "프로젝트 전체 지도",
+      "description": "맨 위 README부터 시작합니다. 이 저장소가 Furiosa RNGD NPU 관련 프로젝트 모음이라는 점, 핵심인 Model_Benchmark 폴더와 공용 도구(ntop), 그리고 저장소 밖에 있는 글로벌 환경(furiosa-llm venv, SWE-bench harness, HuggingFace 캐시)이 어디에 있는지 한눈에 알 수 있습니다. 이어지는 모든 단계의 뼈대를 잡아 주는 출발점입니다.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "왜 측정하는가 — NPU vs GPU",
+      "description": "Model_Benchmark의 메인 가이드에서 프로젝트의 진짜 목적을 만납니다. 같은 모델을 NPU(furiosa-llm)와 GPU(vLLM)에서 똑같은 방식으로 돌려 성능을 비교한다는 것이 핵심입니다. 측정의 비결은 양쪽 서버 모두 OpenAI 호환 API를 제공한다는 점인데, 덕분에 측정 코드 한 벌로 두 하드웨어를 같은 잣대로 잴 수 있습니다.",
+      "nodeIds": [
+        "document:Model_Benchmark/README.md"
+      ],
+      "languageLesson": "OpenAI 호환 API란 /v1/chat/completions, /v1/embeddings 같은 표준 엔드포인트를 그대로 흉내 내는 것을 말합니다. 클라이언트는 base_url만 바꾸면 vLLM이든 furiosa-llm이든 동일한 코드로 호출할 수 있어, 공정한 비교의 토대가 됩니다."
+    },
+    {
+      "order": 3,
+      "title": "다섯 가지 측정 항목",
+      "description": "2단계의 목적을 실제 무엇으로 재는지가 여기서 정해집니다. 토큰 생성 속도(tps), 동시성 스케일링(sweep), 서버 옵션 스윕(memsweep), SWE-bench 정확도, 그리고 embedding/reranker throughput — 이렇게 다섯 축을 잡습니다. GPU 쪽 README는 각 항목이 무엇을 측정하고 어떤 STAGE로 실행되는지를, RUNNING_BENCHMARKS 문서는 같은 항목을 NPU 운영 관점에서 풀어 설명합니다.",
+      "nodeIds": [
+        "document:Model_Benchmark/bench-gpu/README.md",
+        "document:Model_Benchmark/rngd-npu/docs/RUNNING_BENCHMARKS.md"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "전체 파이프라인 진입점",
+      "description": "3단계에서 정한 다섯 항목을 실제로 묶어 돌리는 곳이 run_all.sh입니다. preflight → smoke → gen(tps·sweep·memsweep) → embed → swebench → report 순서로 STAGE를 차례차례 실행하며, 단계마다 orchestrator·analyze·report·eval을 호출합니다. 이 한 스크립트가 벤치마크 전체의 시작 버튼이라고 보면 됩니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/run_all.sh"
+      ],
+      "languageLesson": "셸 스크립트에서 STAGE 환경변수와 case 문을 쓰면 전체 파이프라인 중 원하는 단계만 골라 실행할 수 있습니다. 각 단계를 step_* 함수로 쪼개 두면 재실행과 디버깅이 쉬워집니다."
+    },
+    {
+      "order": 5,
+      "title": "측정의 심장 — Orchestrator",
+      "description": "run_all.sh가 부르는 핵심이 orchestrator입니다. models.yaml을 읽어 모델마다 서버를 띄우고, tps·sweep·memsweep·embed·rerank·swebench 태스크를 순서대로 돌린 뒤 결과를 results/<모델>/<태스크>/<timestamp>.json으로 저장합니다. 이 파일이 그래프에서 fan-out이 가장 큰 축의 하나로, 모델×측정 항목 매트릭스를 실제로 굴리는 중심입니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/orchestrator.py"
+      ],
+      "languageLesson": "Python의 asyncio.run으로 비동기 측정 루틴을 하나로 묶어 실행합니다. 모델 단위 실행은 with VllmServer(...) 컨텍스트 매니저로 감싸, 측정이 끝나거나 에러가 나도 서버 프로세스가 깔끔히 정리되도록 보장합니다."
+    },
+    {
+      "order": 6,
+      "title": "모델 매트릭스 설정 — models.yaml",
+      "description": "orchestrator가 무엇을 측정할지는 전적으로 models.yaml이 정합니다. 측정할 모델 목록과 각 모델의 serve 인자, 공통 서버 설정, 그리고 sweep(batch_sizes·prompt_lens)·memsweep(serve 옵션 OFAT) 축이 모두 여기 들어 있습니다. 그래프에서 fan-in이 가장 높은 노드로, 거의 모든 측정 코드가 이 설정 한 장을 바라봅니다.",
+      "nodeIds": [
+        "config:Model_Benchmark/bench-gpu/configs/models.yaml",
+        "config:Model_Benchmark/rngd-npu/configs/models.yaml"
+      ],
+      "languageLesson": "YAML로 모델×측정 축을 선언해 두면, 코드를 고치지 않고 설정만 바꿔 새 모델이나 새 sweep 조합을 추가할 수 있습니다. NPU·GPU 두 파일을 같은 모델·context로 맞춰 두는 것이 공정 비교의 핵심입니다."
+    },
+    {
+      "order": 7,
+      "title": "토큰 속도와 동시성 측정 (tps·sweep)",
+      "description": "측정의 첫 두 축을 담당하는 러너입니다. OpenAI 호환 /chat/completions를 스트리밍으로 호출해 TTFT(첫 토큰까지 시간)·ITL(토큰 간 간격)·output TPS를 재고, asyncio로 동시 요청을 보내 concurrency별 throughput 곡선을 그립니다. 5단계 orchestrator의 tps·sweep 태스크가 바로 이 코드를 호출합니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/runners/tps.py"
+      ],
+      "languageLesson": "httpx.AsyncClient의 스트리밍 응답을 SSE(줄 단위) 형식으로 파싱해 토큰별 도착 시각을 기록합니다. asyncio.Semaphore로 동시 실행 개수를 제한하고 gather로 묶어, 동시 사용자 1~128명 같은 부하를 재현합니다."
+    },
+    {
+      "order": 8,
+      "title": "서버 옵션 스윕과 서버 수명 관리 (memsweep)",
+      "description": "세 번째 축인 memsweep을 담당합니다. memory_sweep은 max-model-len·max-num-seqs·gpu-memory-utilization 같은 serve 옵션을 OFAT(한 번에 한 축) 방식으로 바꿔 가며 최적 조합을 찾고, 그때마다 server 래퍼가 서버를 안전하게 재기동했다가 내립니다. 7단계의 동시성 측정을 각 옵션 조합마다 다시 돌려 메모리·동시성 트레이드오프를 그려냅니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/runners/memory_sweep.py",
+        "file:Model_Benchmark/bench-gpu/runners/server.py"
+      ],
+      "languageLesson": "OFAT(One-Factor-At-a-Time)는 baseline에서 한 번에 한 축만 바꿔 보는 탐색법으로, 모든 조합을 다 돌리는 폭발을 피합니다. server는 subprocess.Popen으로 프로세스 그룹을 만들고 os.killpg로 자식까지 함께 종료해, 옵션을 바꿀 때마다 서버를 깨끗이 갈아 끼웁니다."
+    },
+    {
+      "order": 9,
+      "title": "정확도와 임베딩 측정 (SWE-bench·embed/rerank)",
+      "description": "나머지 두 축, 정확도와 임베딩/리랭커를 다룹니다. embed_bench는 /embeddings·/rerank 엔드포인트를 호출해 throughput·latency를 재고(리랭커 전용 엔드포인트가 없으면 코사인 유사도로 대체), swebench_run은 GitHub 이슈를 코드 패치로 푸는 SWE-bench Lite 예측을 돌립니다. 추론으로 만든 예측 jsonl은 별도 Docker harness(swebench_eval)에서 채점합니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/runners/embed_bench.py",
+        "file:Model_Benchmark/bench-gpu/runners/swebench_run.py",
+        "file:Model_Benchmark/bench-gpu/swebench_eval.py"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "NPU 미러 구현 (furiosa-llm)",
+      "description": "지금까지 본 GPU(vLLM) 구조가 NPU 쪽 run_all/ 폴더에 거의 그대로 복제돼 있습니다. orchestrator·tps·server 러너의 역할은 같고, 다른 점은 vLLM 대신 furiosa-llm serve를 띄운다는 것뿐입니다. 측정 코드가 OpenAI 호환 API만 호출하기 때문에 가능한 미러 구조로, 같은 측정 항목을 NPU에서 동일하게 잴 수 있습니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/rngd-npu/run_all/orchestrator.py",
+        "file:Model_Benchmark/rngd-npu/run_all/runners/server.py",
+        "file:Model_Benchmark/rngd-npu/run_all.sh"
+      ]
+    },
+    {
+      "order": 11,
+      "title": "결과 리포트와 NPU↔GPU 비교",
+      "description": "측정이 끝나면 report가 results/의 원본 JSON을 모아 REPORT.md 종합 리포트를 자동 생성합니다. GPU·NPU 각각의 REPORT에는 단일 속도·동시성 스케일링·serve 스윕·SWE-bench 정확도·임베딩 throughput과 종합 적합도 점수가 담기고, README_npu_gpu_result는 두 결과를 나란히 놓아 장비 선택 가이드까지 제시합니다. 1~10단계가 만든 데이터가 여기서 사람이 읽을 결론으로 바뀝니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/bench-gpu/report.py",
+        "document:Model_Benchmark/bench-gpu/REPORT.md",
+        "document:Model_Benchmark/README_npu_gpu_result.md"
+      ]
+    },
+    {
+      "order": 12,
+      "title": "모델 준비 — 양자화와 NPU 빌드",
+      "description": "NPU에서 큰 모델을 돌리려면 먼저 준비 과정이 필요합니다. quantize_llama70b는 GPU에서 Llama-3.3-70B를 FineGrainedFP8로 양자화(BF16 ~141GB → FP8 ~70GB)한 뒤 NPU로 옮겨 furiosa-llm build로 빌드하는 파이프라인이고, README_build는 그 빌드 옵션·병렬화(tp/pp/dp)·OOM 대처를 정리한 핵심 가이드입니다. 6단계 models.yaml에 등록할 아티팩트가 바로 여기서 만들어집니다.",
+      "nodeIds": [
+        "file:quantize_llama70b/quantize.py",
+        "file:quantize_llama70b/run.sh",
+        "document:Model_Benchmark/info/README_build.md"
+      ],
+      "languageLesson": "FP8 양자화는 가중치를 8비트 부동소수점으로 줄여 메모리를 약 절반으로 압축합니다. 70GB FP8 모델은 NPU 한 장(48GB)에 안 들어가므로 tensor parallel 8 + pipeline parallel 2로 여러 PE에 나눠 빌드합니다."
+    },
+    {
+      "order": 13,
+      "title": "운영 도구 — NPU 모니터와 채팅 데모",
+      "description": "측정 너머 실제 운영에 쓰는 도구들입니다. ntop은 furiosa-smi 출력을 모아 NPU 카드별 메모리·코어·온도·전력을 htop 스타일 TUI로 실시간 보여 주고, chat_app은 furiosa-llm serve 위에 OpenAI SDK로 붙는 Gradio 채팅 UI로 빌드한 모델을 직접 대화하며 확인하게 해 줍니다. 2단계에서 강조한 OpenAI 호환성이 측정뿐 아니라 데모에도 그대로 재사용되는 모습을 볼 수 있습니다.",
+      "nodeIds": [
+        "file:ntop.py",
+        "file:Model_Benchmark/rngd-npu/chat/chat_app.py",
+        "document:Model_Benchmark/rngd-npu/chat/README.md"
+      ]
+    },
+    {
+      "order": 14,
+      "title": "발표 자료로 마무리",
+      "description": "마지막은 이 모든 작업을 정리해 보여 주는 발표 자료입니다. build_model_prep은 pptxgenjs로 'Furiosa RNGD 모델 준비 — SDK 내부 구조와 빌드 에러 분석' PPTX 슬라이드를 생성하는데, SDK 소스와 실제 빌드 로그에서 확인한 내용을 파일:라인 출처와 함께 슬라이드로 옮깁니다. 12단계의 빌드 경험이 발표 형태로 응결되는 마침표입니다.",
+      "nodeIds": [
+        "file:Model_Benchmark/ppt/build_model_prep.js"
+      ],
+      "languageLesson": "pptxgenjs는 Node.js로 PPTX 슬라이드를 코드로 생성하는 라이브러리입니다. 슬라이드를 코드로 정의하면 데이터나 측정 결과가 바뀔 때 스크립트만 다시 돌려 발표 자료를 일관되게 재생성할 수 있습니다."
+    }
+  ]
+}
