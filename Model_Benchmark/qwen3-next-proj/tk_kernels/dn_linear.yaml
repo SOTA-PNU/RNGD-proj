@@ -1,0 +1,217 @@
+#naive_yaml
+# NPU Linear (FLOAT32):  y[t,o] = sum_i x[t,i] * W[o,i]   ==  F.linear(x, W)
+#
+# This is the matmul einsum 'ti,oi->to' realized on the vector engine
+# (kind: EinsumByVe) -- the SAME pattern as the QK matmul 'ck,dk->cd' in
+# dn_chunk_full.yaml / the kv-read 'kv,k->v' in dn_einsum_f32.yaml:
+#   read0 = x[t,i] tiled (broadcast) along the new output axis "o"  -> [t,i,o]
+#   read1 = W[o,i] tiled (broadcast) along the token axis      "t"  -> [o,i,t]
+#   inst#2: tmp = x *_f W           (MulF, Float32)
+#   inst#3: y[t,o] = sum over "i" of tmp   (LocalReduceAddF over the contraction axis)
+# The contraction axis "i" appears in BOTH reads but is ABSENT from the write
+# output [t,o], so it is the reduced/summed dimension.
+#
+# Inputs:  0 = x[t,i]   (tokens x in_features)
+#          1 = W[o,i]   (out_features x in_features  == nn.Linear.weight)
+# Output:  2 = y[t,o]   (tokens x out_features)
+#
+# fp32 NOTE: MulF (Binary) + LocalReduceAddF (Reduce) are the float ops; this is
+# the proven path (dn_einsum_f32 / dn_chunk_full QK matmul both run on NPU).
+# IMPORTANT (load-bearing): the broadcast/tiled read MUST be read0 (first) else
+# validation fails with "EinsumByVe should have broadcast" (tactic_kernel/mod.rs).
+---
+tensors:
+  inner:
+    # input 0: x[t,i]  (tokens x in_features)
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: T
+              - Var: I
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # input 1: W[o,i]  (out_features x in_features)
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: O
+              - Var: I
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # output 2: y[t,o]  (tokens x out_features)
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: T
+              - Var: O
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: dn_linear_f32
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                # read0: x[t,i] broadcast (tiled) along the new output axis "o"
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "o"
+                          stride: 1
+                      size:
+                        Var: O
+                # read1: W[o,i] broadcast (tiled) along the token axis "t"
+                # (contraction axis "i" shared with read0)
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "o"
+                              stride: 1
+                          size:
+                            Var: O
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "t"
+                          stride: 1
+                      size:
+                        Var: T
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  # tmp[t,o,i] = x[t,i] * W[o,i]   (per-element product)
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+                  # y[t,o] = sum over contraction axis "i" of tmp
+                  - def: 3
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddF
+                        operand:
+                          Tensor: 2
+                        axes:
+                          Tag:
+                            - inner: "i"
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "o"
+                            stride: 1
+                        size:
+                          Var: O
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "o"
+                            stride: 1
+                        size:
+                          Var: O
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

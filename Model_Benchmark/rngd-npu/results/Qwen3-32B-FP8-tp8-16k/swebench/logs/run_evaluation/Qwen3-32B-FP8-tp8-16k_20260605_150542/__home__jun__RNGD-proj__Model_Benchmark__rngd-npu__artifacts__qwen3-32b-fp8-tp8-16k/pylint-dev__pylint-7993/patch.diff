@@ -1,0 +1,30 @@
+<think>
+Okay, let's see. The user is having an issue where using custom braces in the message template for pylint isn't working as expected. The problem started when they upgraded from pylint 1.7.4 to 2.12.2. In the older version, they could use a template like '{{ "Category": "{category}" }}' and it would output the desired JSON-like lines. But in the newer version, they get a warning about unrecognized arguments and the output is broken.
+
+Looking at the provided code, specifically the text.py file in the reporters directory, the issue seems to be in how the message template is processed. The TextReporter class has a method on_set_current_module which processes the template. The code uses a regular expression to find all arguments in the template and checks if they are valid Message fields. If an argument is not recognized, it issues a warning and removes that part from the template.
+
+The key here is that the user's template uses double braces {{ and }} which are meant to be escaped in the template. However, in the current code, the regex is looking for {argument} and treating the entire { "Category" part as an argument. The regex is matching {(.+?)(:.*)?} which would capture everything between { and }, including the quotes and colons, leading to the incorrect argument name being checked against MESSAGE_FIELDS.
+
+In the user's example, the template is '{{ "Category": "{category}" }}'. The outer {{ and }} are meant to be literal braces, but the code is interpreting the inner {category} as a placeholder. However, the initial processing step is removing the unrecognized arguments, which in this case is '{ "Category' because the regex is capturing that as an argument. This leads to the warning and the template being modified incorrectly.
+
+The solution would be to adjust the regex to properly handle escaped braces. In Python's str.format(), double braces are used to escape a single brace. So in the template, the user is using {{ to represent a single { in the output. However, the current code's regex is not accounting for this escaping. The regex is looking for { followed by some text, but it's not considering that { might be escaped as {{.
+
+So, the problem is that the code is processing the template by splitting on { and }, but it's not handling the escaped braces correctly. The regex should first unescape the braces, or adjust the regex to account for the escaped ones. Alternatively, the code should process the template in a way that recognizes the escaped braces and doesn't treat them as part of a format field.
+
+Looking at the code in on_set_current_module, the line template = str(self.linter.config.msg_template or self._template) gets the template string. Then, arguments = re.findall(r"\{(.+?)(:.*)?\}", template) finds all the format fields. But in the user's case, the { is actually part of an escaped {{, so the regex is seeing the first { and then the next { as part of the argument name. For example, in '{{ "Category": "{category}" }}', the regex would match the first { (from {{) and then the next { as part of the argument, leading to the argument name being '{ "Category"' which is not a valid Message field.
+
+To fix this, the regex needs to account for escaped braces. The correct approach would be to first replace the escaped {{ and }} with a temporary placeholder, process the template, and then replace them back. Alternatively, adjust the regex to skip over escaped braces.
+
+Another approach is to use the string.Template class or similar, but the current code is using a regex. The key is to correctly identify the format fields in the template, considering that { and } might be escaped.
+
+In the current code, the regex r"\{(.+?)(:.*)?\}" matches any { followed by some text. But in the case of escaped braces, the { is part of a {{, so the regex should not treat it as the start of a format field. Therefore, the regex should be modified to only match unescaped { characters.
+
+To do that, the regex can be adjusted to look for { that are not preceded by another {. This can be done using a negative lookbehind assertion. So, the regex would become r"(?<!\{)\{(.+?)(:.*)?\}" which ensures that the { is not preceded by another {.
+
+By changing the regex to use a negative lookbehind, the code will correctly identify only the unescaped { as the start of a format field. This way, the escaped {{ in the user's template will not be treated as a format field, and the argument extraction will work correctly.
+
+So, the fix would involve modifying the line where the regex is applied. In the text.py file, the line is:
+
+arguments = re.findall(r"\{(.+?)(:.*)?\}", template)
+
+Changing this regex to use a negative lookbehind to ignore escaped braces

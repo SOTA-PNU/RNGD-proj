@@ -1,0 +1,16 @@
+diff --git a/seaborn/_stats/regression.py b/seaborn/_stats/regression.py
+@@ -22,7 +22,7 @@
+     def _fit_predict(self, data):
+ 
+         x = data["x"]
+-        y = data["y"]
++        y = data["y"].dropna()
+         if x.nunique() <= self.order:
+             # TODO warn?
+             xx = yy = []
+@@ -30,7 +30,7 @@
+             p = np.polyfit(x.dropna(), y, self.order)
+             xx = np.linspace(x.min(), x.max(), self.gridsize)
+             yy = np.polyval(p, xx)
+-        return pd.DataFrame(dict(x=xx, y=yy))
++        return pd.DataFrame(dict(x=xx, y=yy)).dropna()

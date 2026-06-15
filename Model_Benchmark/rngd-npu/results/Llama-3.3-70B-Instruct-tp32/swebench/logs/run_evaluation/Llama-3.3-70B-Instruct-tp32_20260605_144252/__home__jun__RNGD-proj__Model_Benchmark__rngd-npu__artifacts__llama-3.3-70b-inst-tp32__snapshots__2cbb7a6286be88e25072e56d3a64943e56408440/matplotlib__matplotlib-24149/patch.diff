@@ -1,0 +1,89 @@
+diff --git a/lib/matplotlib/axes/_axes.py b/lib/matplotlib/axes/_axes.py
+--- a/lib/matplotlib/axes/_axes.py
++++ b/lib/matplotlib/axes/_axes.py
+@@ -2182,7 +2182,7 @@
+         try:
+             # attempt to add the width to x0; this works for
+             # datetime+timedelta, for instance
+-            x0 = cbook._safe_first_finite(x0)
++            x0 = cbook._safe_first_finite(x0, skip_nonfinite=True)
+         except (TypeError, IndexError, KeyError):
+             pass
+         try:
+             # removes the units from unit packages like `pint` that
+             # wrap numpy arrays.
+             x = cbook._safe_first_finite(x, skip_nonfinite=True)
+         except (TypeError, IndexError, KeyError):
+             x = x
+         dx = convert(x0 + ddx) - x
+@@ -2370,7 +2370,7 @@
+         if xerr is not None:
+             # using list comps rather than arrays to preserve unit info
+-            ex = [l + 0.5 * w for l, w in zip(left, width)]
++            ex = [l + 0.5 * w for l, w in zip(left, width)]
+         else:  # no errorbars
+             ex = left
+         if yerr is not None:
+             # using list comps rather than arrays to preserve unit info
+-            ey = [b + h for b, h in zip(bottom, height)]
++            ey = [b + h for b, h in zip(bottom, height)]
+         else:  # no errorbars
+             ey = bottom
+         error_kw.setdefault("label", '_nolegend_')
+         error_kw.setdefault("zorder", ezorder)
+         error_kw.setdefault("ecolor", ecolor)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capsize", capsize)
+         error_kw.setdefault("elinewidth", elinewidth)
+         error_kw.setdefault("capthick", capthick)
+         error_kw.setdefault("alpha", alpha)
+         error_kw.setdefault("elinewidth", elinewidth

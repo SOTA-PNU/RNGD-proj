@@ -1,0 +1,46 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# -*- coding: utf-8 -*-
+
+"""
+requests.models
+~~~~~~~~~~~~~~~
+
+This module contains the primary objects that power Requests.
+"""
+
+import os
+import socket
+from datetime import datetime
+from io import BytesIO
+
+from .hooks import dispatch_hook, HOOKS
+from .structures import CaseInsensitiveDict
+from .status_codes import codes
+
+from .auth import HTTPBasicAuth, HTTPProxyAuth
+from .cookies import cookiejar_from_dict, extract_cookies_to_jar, get_cookie_header
+from .packages.urllib3.exceptions import MaxRetryError, LocationParseError
+from .packages.urllib3.exceptions import TimeoutError
+from .packages.urllib3.exceptions import SSLError as _SSLError
+from .packages.urllib3.exceptions import HTTPError as _HTTPError
+from .packages.urllib3 import connectionpool, poolmanager
+from .packages.urllib3.filepost import encode_multipart_formdata
+from .defaults import SCHEMAS
+from .exceptions import (
+    ConnectionError, HTTPError, RequestException, Timeout, TooManyRedirects,
+    URLRequired, SSLError, MissingSchema, InvalidSchema, InvalidURL)
+from .utils import (
+    get_encoding_from_headers, stream_untransfer, guess_filename, requote_uri,
+    stream_decode_response_unicode, get_netrc_auth, get_environ_proxies,
+    to_key_val_list, DEFAULT_CA_BUNDLE_PATH, parse_header_links, iter_slices)
+from .compat import (
+    cookielib, urlparse, urlunparse, urljoin, urlsplit, urlencode, str, bytes,
+    StringIO, is_py2, chardet, json, builtin_str)
+
+REDIRECT_STATI = (codes.moved, codes.found, codes.other, codes.temporary_moved)
+CONTENT_CHUNK_SIZE = 10 * 1024
+
+
+class Request(object):
+    """The :class:`Request <Request>` object. It carries out all functionality
+    of Requests. Recommended interface is with the Requests functions.

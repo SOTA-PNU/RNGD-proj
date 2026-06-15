@@ -1,0 +1,19 @@
+<patch>
+--- a/sklearn/linear_model/logistic.py
++++ b/sklearn/linear_model/logistic.py
+@@ -1392,7 +1392,7 @@
+         if multi_class == 'ovr':
+             w0 = np.zeros(n_features + int(fit_intercept), dtype=X.dtype, order='F', dtype=X.dtype)
+         else:
+-            w0 = np.zeros((classes.size, -1), order='F', dtype=X.dtype)
++            w0 = np.zeros((classes.size, n_features + int(fit_intercept)), order='F', dtype=X.dtype)
+         sample_weight = np.array(sample_weight, dtype=X.dtype, order='C')
+         check_consistent_length(y, sample_weight)
+@@ -1400,7 +1400,7 @@
+         if multi_class == 'ovr':
+             w0 = np.zeros(n_features + int(fit_intercept), dtype=X.dtype, order='F', dtype=X.dtype)
+         else:
+-            w0 = np.zeros((classes.size, -1), order='F', dtype=X.dtype)
++            w0 = np.zeros((classes.size, n_features + int(fit_intercept)), order='F', dtype=X.dtype)
+         sample_weight = np.array(sample_weight, dtype=X.dtype, order='C')
+         check_consistent_length(y, sample_weight)

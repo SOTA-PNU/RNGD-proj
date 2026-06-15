@@ -1,14 +1,15 @@
-== SKIP furiosa-ai/Qwen2.5-0.5B-Instruct (no applicable task: tasks={'rerank', 'embed'}, role=smoke) ==
-== SKIP furiosa-ai/Llama-3.1-8B-Instruct (no applicable task: tasks={'rerank', 'embed'}, role=baseline) ==
-== SKIP furiosa-ai/Qwen3-32B-FP8 (disabled) ==
-== SKIP furiosa-ai/EXAONE-4.0-32B-FP8 (disabled) ==
-== SKIP furiosa-ai/Llama-3.3-70B-Instruct (disabled) ==
-
-== furiosa-ai/Qwen3-Embedding-8B ==  devices=npu:0  tasks=['embed']
-  [embed] {"model": "furiosa-ai/Qwen3-Embedding-8B", "n_inputs": 100, "batch_size": 1, "wall_clock_s": 86.27, "throughput_inputs_per_s": 1.16, "p50_latency_s": 0.8616, "p95_latency_s": 0.8657}
-  [embed] {"model": "furiosa-ai/Qwen3-Embedding-8B", "n_inputs": 100, "batch_size": 4, "wall_clock_s": 85.659, "throughput_inputs_per_s": 1.17, "p50_latency_s": 3.4266, "p95_latency_s": 3.4332}
-  [embed] {"model": "furiosa-ai/Qwen3-Embedding-8B", "n_inputs": 100, "batch_size": 16, "wall_clock_s": 85.501, "throughput_inputs_per_s": 1.17, "p50_latency_s": 13.6682, "p95_latency_s": 13.7523}
-  [embed] {"model": "furiosa-ai/Qwen3-Embedding-8B", "n_inputs": 100, "batch_size": 64, "wall_clock_s": 85.331, "throughput_inputs_per_s": 1.17, "p50_latency_s": 42.6654, "p95_latency_s": 54.6108}
-
-== furiosa-ai/Qwen3-Reranker-8B ==  devices=npu:0  tasks=['rerank']
-  [rerank] {"model": "furiosa-ai/Qwen3-Reranker-8B", "method": "rerank", "pairs": 2000, "wall_clock_s": 1707.712, "throughput_pairs_per_s": 1.17, "p50_latency_s": 85.1354, "p95_latency_s": 85.2473}
+== SKIP furiosa-ai/Qwen2.5-0.5B-Instruct (disabled) ==
+== SKIP furiosa-ai/Llama-3.1-8B-Instruct (disabled) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8 (no applicable task: tasks={'rerank', 'embed'}, role=main) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8-16k (no applicable task: tasks={'rerank', 'embed'}, role=main) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k (no applicable task: tasks={'rerank', 'embed'}, role=coder) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8 (no applicable task: tasks={'rerank', 'embed'}, role=coder) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-7b-tp8 (no applicable task: tasks={'rerank', 'embed'}, role=coder) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-1.5b-tp8 (no applicable task: tasks={'rerank', 'embed'}, role=coder) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-32b-tp8 (disabled) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-tp32 (disabled) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2 (no applicable task: tasks={'rerank', 'embed'}, role=main) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31 (no applicable task: tasks={'rerank', 'embed'}, role=main) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440 (no applicable task: tasks={'rerank', 'embed'}, role=large) ==
+== SKIP furiosa-ai/Qwen3-Embedding-8B (disabled) ==
+== SKIP furiosa-ai/Qwen3-Reranker-8B (disabled) ==

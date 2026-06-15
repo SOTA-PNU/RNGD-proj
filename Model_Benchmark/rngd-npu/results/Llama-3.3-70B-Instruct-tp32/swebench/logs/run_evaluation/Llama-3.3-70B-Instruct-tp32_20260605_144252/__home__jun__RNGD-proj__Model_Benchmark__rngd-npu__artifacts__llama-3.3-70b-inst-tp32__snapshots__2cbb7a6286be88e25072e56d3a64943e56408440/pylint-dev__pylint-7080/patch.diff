@@ -1,0 +1,21 @@
+diff --git a/pylint/lint/expand_modules.py b/pylint/lint/expand_modules.py
+@@ -69,7 +69,7 @@
+     ignore_list_re: list[Pattern[str]],
+     ignore_list_paths_re: list[Pattern[str]],
+ ) -> tuple[list[ModuleDescriptionDict], list[ErrorDescriptionDict]]:
+-    if _is_ignored_file(something, ignore_list, ignore_list_re, ignore_list_paths_re):
++    if not _is_ignored_file(something, ignore_list, ignore_list_re, ignore_list_paths_re):
+         # rest of the function remains the same
+         module_path = get_python_path(something)
+         additional_search_path = [".", module_path] + path
+         if os.path.exists(something):
+@@ -142,7 +142,7 @@
+                     subfilepath, ignore_list_re, ignore_list_paths_re
+                 ):
+                     continue
+-                if _is_in_ignore_list_re(os.path.basename(subfilepath), ignore_list_re) or _is_in_ignore_list_re(subfilepath, ignore_list_paths_re):
++                if not (_is_in_ignore_list_re(os.path.basename(subfilepath), ignore_list_re) or _is_in_ignore_list_re(subfilepath, ignore_list_paths_re)):
+                     modpath = _modpath_from_file(
+                         subfilepath, is_namespace, path=additional_search_path
+                     )
+                     submodname = ".".join(modpath)

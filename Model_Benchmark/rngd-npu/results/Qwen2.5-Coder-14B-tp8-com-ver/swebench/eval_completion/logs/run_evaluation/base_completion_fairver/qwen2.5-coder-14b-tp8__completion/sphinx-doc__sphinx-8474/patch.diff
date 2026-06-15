@@ -1,0 +1,43 @@
+<patch>
+--- a/sphinx/domains/std.py
++++ b/sphinx/domains/std.py
+@@ -94,6 +94,7 @@
+     def add_target_and_index(self, name: str, sig: str, signode: desc_signature) -> None:
+         node_id = make_id(self.env, self.state.document, self.objtype, name)
+         signode['ids'].append(node_id)
++        signode['ids'].append(self.make_old_id(name))
+ 
+         # Assign old styled node_id not to break old hyperlinks (if possible)
+         # Note: Will be removed in Sphinx-5.0 (RemovedInSphinx50Warning)
+@@ -103,6 +104,7 @@
+         self.state.document.note_explicit_target(signode)
+ 
+         if self.indextemplate:
++            self.indextemplate = self.indextemplate.replace('%s', name)
+             colon = self.indextemplate.find(':')
+             if colon != -1:
+                 indextype = self.indextemplate[:colon].strip()
+@@ -111,6 +113,7 @@
+                 indextype = 'single'
+                 indexentry = self.indextemplate % (name,)
+             self.indexnode['entries'].append((indextype, indexentry, node_id, '', None))
++            self.indextemplate = self.indextemplate.replace(name, '%s')
+ 
+         std = cast(StandardDomain, self.env.get_domain('std'))
+         std.note_object(self.objtype, name, node_id, location=signode)
+@@ -119,6 +122,7 @@
+     def make_old_id(self, name: str) -> str:
+         """Generate old styled node_id for generic objects.
+ 
++        .. note:: Old Styled node_id was used until Sphinx-3.0.
+                   This will be removed in Sphinx-5.0.
+         """
+         return self.objtype + '-' + name
+@@ -127,6 +131,7 @@
+     def add_target_and_index(self, name: str, sig: str, signode: desc_signature) -> None:
+         node_id = make_id(self.env, self.state.document, self.objtype, name)
+         signode['ids'].append(node_id)
++        signode['ids'].append(self.make_old_id(name))
+ 
+         # Assign old styled node_id not to break old hyperlinks (if possible)
+        

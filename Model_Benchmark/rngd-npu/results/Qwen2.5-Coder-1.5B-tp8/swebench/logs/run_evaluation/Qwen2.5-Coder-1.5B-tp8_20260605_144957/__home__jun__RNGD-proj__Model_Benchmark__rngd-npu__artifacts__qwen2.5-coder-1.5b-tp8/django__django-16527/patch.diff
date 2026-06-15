@@ -1,0 +1,24 @@
+diff --git ./django.contrib.admin/templates/change_forms.js ./django.contrib.admin/templates/change_forms.js.patch
+
+index fcebea..bcafebaf HEAD
+
+--- ./django.contrib.admin/templates/change_forms.js
+
++++ ./django.contrib.admin/templates/change_forms.js.patch
+
+@@@ +... @@@
+
+@@@ +... @@@
+
+@@@ ... @@
++
++
++
++
++
+
+diff --git ./tests/test_utils/test_template_tags.test_template_tags.test_submit_line_html ../tests/test_utils/test_template_tags.test_template_tags.test_submit_line_html.patch
+
+index cdeffed..eefeffed HEAD
+
+--- ../tests/test_utils/test_template_tags.test_test_templates.tags.submit_line_html +++./tests/test_utils/__init__.py.patch

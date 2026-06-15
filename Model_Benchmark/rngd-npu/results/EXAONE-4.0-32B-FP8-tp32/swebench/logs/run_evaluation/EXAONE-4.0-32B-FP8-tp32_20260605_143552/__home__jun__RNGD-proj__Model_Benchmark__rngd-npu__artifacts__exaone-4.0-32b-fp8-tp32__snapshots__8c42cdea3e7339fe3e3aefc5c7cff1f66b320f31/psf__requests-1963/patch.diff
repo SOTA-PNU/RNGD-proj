@@ -1,0 +1,11 @@
+--- a/requests/sessions.py
++++ b/requests/sessions.py
+@@ -139,7 +139,7 @@
+         if (resp.status_code == codes.see_other and
+             method != 'HEAD'):
+             method = 'GET'
+-        if resp.status_code == codes.found and method != 'HEAD':
++        if resp.status_code == codes.found and method != 'HEAD' and resp.status_code != codes.temporary:
+             method = 'GET'
+         if resp.status_code == codes.moved and method == 'POST':
+             method = 'GET'

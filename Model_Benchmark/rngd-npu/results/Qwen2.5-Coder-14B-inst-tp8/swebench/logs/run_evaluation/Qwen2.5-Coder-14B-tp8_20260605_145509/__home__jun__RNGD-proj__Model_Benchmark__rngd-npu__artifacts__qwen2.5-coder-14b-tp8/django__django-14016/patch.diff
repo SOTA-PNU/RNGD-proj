@@ -1,0 +1,16 @@
+diff --git src/django/db/models/query_utils.py src/django/db/models/query_utils.py  
+index fadcecc..cddcdaa  
+--- src/django/db/models/query_utils.py  
++++ src/django/db/models/query_utils.py  
+@@\@ \-\-\-\-\-\-\-\-\-\-\ \ src/django/db/models/query\_utils\.py\ \(\d{YYYY}-MM-DD\)\ \+\+\+\+\+\+\+\+\++\ \ src/django/db/models/query\_utils\.py\ \(\d{YYYY}-MM-DD\)  
+@@\@ \-\d+,?\d*\ \@ \@\-d+,?\d*\ \@ \@\-d+,?\d*\ @@  
+\-def subclasses\(cls\):  
+\- yield cls  
+\-for subclass \(cls.\_\_subclasses\_\_\(\)\):  
+\-yield fro\(subclass\)  
+
+@@\@ \+\d+,?\d*\ \@ \@\+\d+,?\d*\ \@ \@\+\d+,?\d*\ @@  
+def subclasses\(cls):   
+yield fro\(cls\)   
+for subclass \(cls.\_\_subclasses\_\_\(\)\):   
+yield fro\(subclasses\(subclass))

@@ -1,0 +1,12 @@
+
+--- a/seaborn/_stats/regression.py
++++ b/seaborn/_stats/regression.py
+@@ -24,7 +24,7 @@
+     x = data["x"]
+     y = data["y"]
+     if x.nunique() <= self.order:
+-        # TODO warn?
++        # TODO: Warn about insufficient data points for polynomial fit
+         xx = yy = []
+     else:
+         p = np.polyfit(x, y, self.order)

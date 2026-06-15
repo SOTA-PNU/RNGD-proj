@@ -1,0 +1,67 @@
+<patch>
+--- a/src/_pytest/assertion/rewrite.py
++++ b/src/_pytest/assertion/rewrite.py
+@@ -1,6 +1,7 @@
+ """Rewrite assertion AST to produce nice error messages"""
+ from __future__ import absolute_import
+ from __future__ import division
++from __future__ import print_function
+ 
+ import ast
+ import errno
+@@ -10,6 +11,7 @@
+ import marshal
+ import os
+ import re
++import sys
+ import string
+ import struct
+ import types
+@@ -17,6 +19,7 @@
+ import py
+ import six
+ 
++from _pytest._io.saferepr import saferepr
+ from _pytest.assertion import util
+ from _pytest.assertion.util import (  # noqa: F401
+     format_explanation as _format_explanation,
+@@ -24,6 +27,7 @@
+ from _pytest.compat import spec_from_file_location
+ from _pytest.pathlib import fnmatch_ex
+ from _pytest.pathlib import PurePath
++from _pytest.assertion import util
+ 
+ # pytest caches rewritten pycs in __pycache__.
+ if hasattr(imp, "get_tag"):
+@@ -41,6 +45,7 @@
+     impl = "pypy"
+ elif sys.platform == "java":
+     impl = "jython"
++elif sys.version_info >= (3, 5):
+     impl = "cpython"
+ else:
+     impl = "cpython"
+@@ -48,6 +53,7 @@
+     ver = sys.version_info
+     PYTEST_TAG = "%s-%s%s-PYTEST" % (impl, ver[0], ver[1])
+     del ver, impl
++    ast_Call = ast.Call
+ else:
+ 
+     def ast_Call(a, b, c):
+@@ -55,6 +61,7 @@
+ 
+ 
+ class AssertionRewritingHook(object):
++    """PEP302 Import hook which rewrites asserts."""
+ 
+     def __init__(self, config):
+         self.config = config
+@@ -62,6 +69,7 @@
+         self.session = None
+         self.modules = {}
+         self._rewritten_names = set()
++        self._register_with_pkg_resources()
+         self._must_rewrite = set()
+         # flag to guard against trying to rewrite a pyc file while we are already writing another pyc file,
+         # which might result in

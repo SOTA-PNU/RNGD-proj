@@ -1,0 +1,37 @@
+diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+@@ -55,6 +55,13 @@
+     _format_name = "rst"
+     _description = "reStructuredText simple table"
+     data_class = SimpleRSTData
++    _supported_kwargs = {'header_rows': None}
++
++    def __init__(self, **kwargs):
++        self.header_rows = kwargs.get('header_rows', None)
++        super().__init__(**kwargs)
++
+     def __init__(self):
+         super().__init__(delimiter_pad=None, bookend=False)
+ 
+@@ -63,6 +70,21 @@
+         lines = super().write(lines)
+         lines = [lines[1]] + lines + [lines[1]]
+         return lines
++
++    def write(self, table):
++        if self.header_rows:
++            header_lines = self._write_header_rows(table)
++            lines = super().write(table)
++            lines = header_lines + lines
++            lines = [lines[1]] + lines + [lines[1]]
++            return lines
++        else:
++            return super().write(table)
++
++    def _write_header_rows(self, table):
++        header_rows = self.header_rows
++        lines = []
++        for row in header_rows:
++            line =''.join(str(getattr(col, row, '')) for col in table.columns)
++            lines.append(''+ line)
++        return lines
+```

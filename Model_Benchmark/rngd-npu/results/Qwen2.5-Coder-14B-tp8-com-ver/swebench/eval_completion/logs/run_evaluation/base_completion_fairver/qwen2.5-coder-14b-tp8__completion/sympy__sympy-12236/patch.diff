@@ -1,0 +1,12 @@
+
+--- a/sympy/polys/domains/polynomialring.py
++++ b/sympy/polys/domains/polynomialring.py
+@@ -104,7 +104,7 @@
+     def from_PolynomialRing(K1, a, K0):
+         """Convert a polynomial to ``dtype``. """
+         try:
+-            return a.set_ring(K1.ring)
++            return K1.ring.from_expr(a.as_expr())
+         except (CoercionFailed, GeneratorsError):
+             return None
+ 

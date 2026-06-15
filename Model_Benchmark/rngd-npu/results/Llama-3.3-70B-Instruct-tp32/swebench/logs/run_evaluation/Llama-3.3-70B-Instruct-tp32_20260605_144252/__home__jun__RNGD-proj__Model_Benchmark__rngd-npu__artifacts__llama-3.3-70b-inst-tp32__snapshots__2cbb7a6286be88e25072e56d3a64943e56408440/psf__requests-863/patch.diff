@@ -1,0 +1,33 @@
+diff --git a/requests/models.py b/requests/models.py
+@@ -151,7 +151,7 @@
+         for (k, v) in list(hooks.items()):
+             self.register_hook(event=k, hook=v)
+ 
+-        #: Event-handling hooks.
++        #: Event-handling hooks.
+         self.hooks = {}
+ 
+         for event in HOOKS:
+@@ -164,7 +164,11 @@
+ 
+         for event in HOOKS:
+             self.hooks[event] = []
+-        hooks = hooks or {}
++        hooks = hooks or {}
++        for (k, v) in list(hooks.items()):
++            if isinstance(v, list):
++                for hook in v:
++                    self.register_hook(event=k, hook=hook)
++            else:
++                self.register_hook(event=k, hook=v)
+ 
+         #: Session.
+         self.session = session
+@@ -464,7 +468,7 @@
+     def register_hook(self, event, hook):
+         """Properly register a hook."""
+ 
+-        self.hooks[event].append(hook)
++        if not isinstance(self.hooks[event], list):
++            self.hooks[event] = [self.hooks[event]]
++        self.hooks[event].append(hook)

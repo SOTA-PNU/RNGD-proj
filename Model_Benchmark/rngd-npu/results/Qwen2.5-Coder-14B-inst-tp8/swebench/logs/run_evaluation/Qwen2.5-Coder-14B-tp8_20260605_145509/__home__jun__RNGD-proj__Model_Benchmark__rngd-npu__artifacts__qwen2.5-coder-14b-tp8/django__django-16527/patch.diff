@@ -1,0 +1,48 @@
+diff --git src/django/contrib/admin/templatetags/admin_modify.py src/django/contrib/admin/templatetags/admin_modify.py  
+index fdbbfae..cddcdaa  
+--- src/django/contrib/admin/templatetags/admin_modify.py  
++++ src/django/contrib\admin/templatetags\admin_modify.py  
+@@ -**,** +**,** @@  
+```python  
+...  
+
+def submit_row(context):  
+...  
+
+ctx.update(  
+{  
+...  
+
+-"**:** **:** **:** **:** **:** **:** **:** **:** **:** **:** **:",  
+
++"**:** "**:" "**:" "**:" "**:" "**:" "**:" "**:" "**:",  
+
+...  
+
+})  
+
+return ctx  
+  
+@**(**name="submit_row")  
+  
+def submit_row_tag(parser,**token):  
+  
+return InclusionAdminNode(**parser**,token,**func=submit_row**,template_name="submit_line.html")  
+  
+@**(**name="change\_form\_object\_tools")  
+  
+def change\_form\_object\_tools_tag(parser,**token):  
+  
+"""Display**the row**of change form object tools."""  
+  
+return InclusionAdminNode(**parser**,token,**func=lambda**:context:,template_name="change\_form\_object_tools.html")  
+  
+@filter()  
+  
+def cell_count(inline AdminForm):  
+  
+"""Return**the number**of cells used*in*a tabular*inline."""  
+  
+count=**int**(len(inline AdminForm.form.fields)) + int(len(inline AdminForm.form.errors)) + int(len(inline AdminForm.form.non_field_errors)) + int(len(inline AdminForm.form.hidden_inputs())) + int(len([f.name*for*f*in*if*f.widget.is_required])) + int(len([f.name*for*f*in*if*f.widget.attrs.get('readonly')])) + int(len([f.name\*\for\*\in\*\if\*.widget.attrs.get('disabled')])) + int(len([f.name\*\for\*\in\*\if\*.widget.attrs.get('hidden')])) + int(len([f.name\*\for\*\in\*\if\*.widget.attrs.get('autofocus')])) + int(len([f.name\*\for\f*in\f.inline.admin-form.fields\f.if\f.widget.attrs.get('required')])) + int(len([f.name*f.for*f.in*f.inline.admin-form.fields\f.if\f.widget.attrs.get('readonly')])) + int(len([f.name*f.for*f.in\f.inline.admin-form.fields\f.if\f.widget.attrs.get('disabled')])) + len(list(filter(lambda f: f.field.is_hidden,f.inline.admin-form.fields))) \# Count all hidden fields.
+
+```

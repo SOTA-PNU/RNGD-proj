@@ -1,0 +1,62 @@
+<patch>
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -1,6 +1,7 @@
+ import collections.abc
+ import copy
+ import datetime
++import os
+ import decimal
+ import operator
+ import uuid
+@@ -10,6 +11,7 @@
+ from django.apps import apps
+ from django.conf import settings
+ from django.core import checks, exceptions, validators
++from django.core.exceptions import ImproperlyConfigured
+ from django.db import connection, connections, router
+ from django.db.models.constants import LOOKUP_SEP
+ from django.db.models.query_utils import DeferredAttribute, RegisterLookupMixin
+@@ -17,6 +19,7 @@
+ from django.utils import timezone
+ from django.utils.datastructures import DictWrapper
+ from django.utils.dateparse import (
++    parse_date, parse_datetime, parse_duration, parse_time,
+ )
+ from django.utils.duration import duration_microseconds, duration_string
+ from django.utils.functional import Promise, cached_property
+@@ -24,6 +27,7 @@
+ from django.utils.text import capfirst
+ from django.utils.translation import gettext_lazy as _
+ 
++from django.utils.module_loading import import_string
+ 
+ __all__ = [
+     'AutoField', 'BLANK_CHOICE_DASH', 'BigAutoField', 'BigIntegerField',
+@@ -100,6 +104,7 @@
+     'URLField', 'UUIDField',
+ ]
+ 
++from django.utils.module_loading import import_string
+ 
+ class Empty:
+     pass
+@@ -110,6 +115,7 @@
+     pass
+ 
+ 
++def _load_field(app_label, model_name, field_name):
++    return apps.get_model(app_label, model_name)._meta.get_field(field_name)
++
+ # A guide to Field parameters:
+ #
+ #   * name:      The name of the field specified in the model.
+@@ -120,6 +126,7 @@
+ #                "name", except in the case of ForeignKeys, where "_id" is
+ #                appended.
+ #   * db_column: The db_column specified in the model (or None).
++#   * path:      The path to the file or directory specified in the model (or None).
+ #   * column:    The database column for this field. This is the same as
+ #                "attname", except if db_column is specified.
+ #
+@@ -130,6

@@ -1,0 +1,12 @@
+
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -103,7 +103,7 @@
+     "regexp_csv": _regexp_csv_transfomer,
+     "regexp_paths_csv": _regexp_paths_csv_transfomer,
+     "string": pylint_utils._unquote,
+-    "yn": _yn_transformer,
++    "yn": _yn_transformer,  # type: ignore[arg-type]
+ }
+ """Type transformers for all argument types.
+ 

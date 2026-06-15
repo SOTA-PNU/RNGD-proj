@@ -1,0 +1,12 @@
+--- a/sphinx/domains/std.py
++++ b/sphinx/domains/std.py
+@@ -186,7 +186,7 @@
+ class Cmdoption(ObjectDescription):
+     """
+     Description of a command-line option (.. option).
+     """
+-    option_desc_re = re.compile(r'((?:/|--|-|\+)?[^\s=[]+)(=?\s*.*)')
++    option_desc_re = re.compile(r'(.*)')
+
+     def handle_signature(self, sig: str, signode: desc_signature) -> str:
+         """Transform an option description into RST nodes."""

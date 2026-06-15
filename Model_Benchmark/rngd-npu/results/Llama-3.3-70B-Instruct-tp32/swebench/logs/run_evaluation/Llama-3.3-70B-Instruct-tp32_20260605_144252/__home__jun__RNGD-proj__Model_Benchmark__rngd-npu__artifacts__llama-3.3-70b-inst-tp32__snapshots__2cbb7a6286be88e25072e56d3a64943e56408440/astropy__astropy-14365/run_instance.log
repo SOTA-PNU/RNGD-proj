@@ -1,0 +1,50 @@
+2026-06-05 14:43:37,644 - INFO - Creating container for astropy__astropy-14365...
+2026-06-05 14:43:37,831 - INFO - Container for astropy__astropy-14365 created: cda05f44ba7721ba48129470709bdb86c17f2c6e1260ac18f656b00edc224757
+2026-06-05 14:43:38,292 - INFO - Container for astropy__astropy-14365 started: cda05f44ba7721ba48129470709bdb86c17f2c6e1260ac18f656b00edc224757
+2026-06-05 14:43:38,292 - INFO - Intermediate patch for astropy__astropy-14365 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/astropy__astropy-14365/patch.diff, now applying to container...
+2026-06-05 14:43:38,435 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:43:38,519 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:43:38,642 - INFO - >>>>> Applied Patch:
+patching file astropy/io/ascii/qdp.py
+patch unexpectedly ends in middle of line
+Hunk #1 succeeded at 61 with fuzz 4 (offset -1 lines).
+
+2026-06-05 14:43:39,002 - INFO - Git diff before:
+diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..5f3a3621e 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -60,7 +60,7 @@ def _line_type(line, delimiter=None):
+     ValueError: Unrecognized QDP line...
+     """
+     _decimal_re = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+-    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
++    _command_re = r"(?i)READ [TS]ERR(\s+[0-9]+)+"
+ 
+     sep = delimiter
+     if delimiter is None:
+2026-06-05 14:43:39,003 - INFO - Eval script for astropy__astropy-14365 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/astropy__astropy-14365/eval.sh; copying to container...
+2026-06-05 14:44:13,755 - INFO - Test runtime: 34.67 seconds
+2026-06-05 14:44:13,756 - INFO - Test output for astropy__astropy-14365 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/astropy__astropy-14365/test_output.txt
+2026-06-05 14:44:13,863 - INFO - Git diff after:
+diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+index 83a4f004a..5f3a3621e 100644
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -60,7 +60,7 @@ def _line_type(line, delimiter=None):
+     ValueError: Unrecognized QDP line...
+     """
+     _decimal_re = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+-    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
++    _command_re = r"(?i)READ [TS]ERR(\s+[0-9]+)+"
+ 
+     sep = delimiter
+     if delimiter is None:
+2026-06-05 14:44:13,863 - INFO - Grading answer for astropy__astropy-14365...
+2026-06-05 14:44:13,877 - INFO - report: {'astropy__astropy-14365': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['astropy/io/ascii/tests/test_qdp.py::test_roundtrip[True]']}, 'PASS_TO_PASS': {'success': ['astropy/io/ascii/tests/test_qdp.py::test_roundtrip[False]', 'astropy/io/ascii/tests/test_qdp.py::test_read_example', 'astropy/io/ascii/tests/test_qdp.py::test_roundtrip_example', 'astropy/io/ascii/tests/test_qdp.py::test_read_write_simple', 'astropy/io/ascii/tests/test_qdp.py::test_read_write_simple_specify_name', 'astropy/io/ascii/tests/test_qdp.py::test_get_lines_from_qdp'], 'failure': ['astropy/io/ascii/tests/test_qdp.py::test_get_tables_from_qdp_file', 'astropy/io/ascii/tests/test_qdp.py::test_roundtrip_example_comma']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-14365: resolved: False
+2026-06-05 14:44:13,877 - INFO - Attempting to stop container sweb.eval.astropy__astropy-14365.Llama-3.3-70B-Instruct-tp32_20260605_144252...
+2026-06-05 14:44:31,030 - INFO - Attempting to remove container sweb.eval.astropy__astropy-14365.Llama-3.3-70B-Instruct-tp32_20260605_144252...
+2026-06-05 14:44:31,059 - INFO - Container sweb.eval.astropy__astropy-14365.Llama-3.3-70B-Instruct-tp32_20260605_144252 removed.
+2026-06-05 14:44:31,059 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.astropy_1776_astropy-14365:latest...
+2026-06-05 14:44:31,169 - INFO - Image swebench/sweb.eval.x86_64.astropy_1776_astropy-14365:latest removed.

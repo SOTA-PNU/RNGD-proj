@@ -1,0 +1,35 @@
+{
+  "prompt": "def quicksort(arr):",
+  "prompt_ids": [
+    750,
+    3974,
+    6860,
+    10939,
+    1648
+  ],
+  "generated_ids": [
+    198,
+    262,
+    421,
+    2422
+  ],
+  "generated_text": "\n    if len",
+  "full_text": "def quicksort(arr):\n    if len",
+  "prefill_s": 76.89832496643066,
+  "per_token_s": [
+    34.36046767234802,
+    36.993243932724,
+    33.99865102767944,
+    35.24271750450134
+  ],
+  "npu_proof": {
+    "deltanet_cpu_fallbacks": 0,
+    "attn_cpu_fallbacks": 0,
+    "moe_cpu_fallbacks": 0,
+    "deltanet_npu_stages": 7200,
+    "attn_npu_stages": 2184,
+    "moe_npu_stages": 15168
+  },
+  "all_mixers_on_npu": true,
+  "dev": "rngd:2"
+}

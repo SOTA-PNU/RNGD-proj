@@ -1,0 +1,61 @@
+<patch>
+--- a/sklearn/pipeline.py
++++ b/sklearn/pipeline.py
+@@ -1,6 +1,7 @@
+ """
+ The :mod:`sklearn.pipeline` module implements utilities to build a composite
+ estimator, as a chain of transforms and estimators.
++__len__ method added to Pipeline class
+ """
+ # Author: Edouard Duchesnay
+ #         Gael Varoquaux
+@@ -10,6 +11,7 @@
+ from collections import defaultdict
+ from itertools import islice
+ 
++import numpy as np
+ import numpy as np
+ from scipy import sparse
+ 
+@@ -17,6 +19,7 @@
+ from .utils._joblib import Parallel, delayed
+ from .utils.metaestimators import if_delegate_has_method
+ from .utils import Bunch
++from .utils.validation import check_array
+ from .utils.validation import check_memory
+ 
+ from .utils.metaestimators import _BaseComposition
+@@ -24,6 +27,7 @@
+ __all__ = ['Pipeline', 'FeatureUnion', 'make_pipeline', 'make_union']
+ 
+ 
++class Pipeline(_BaseComposition):
+     """Pipeline of transforms with a final estimator.
+ 
+     Sequentially apply a list of transforms and a final estimator.
+@@ -31,6 +35,7 @@
+     The final estimator only needs to implement fit.
+     The transformers in the pipeline can be cached using ``memory`` argument.
+ 
++    __len__ method added to Pipeline class
+     The purpose of the pipeline is to assemble several steps that can be
+     cross-validated together while setting different parameters.
+     For this, it enables setting parameters of the various steps using their
+@@ -40,6 +45,7 @@
+     estimator, or a transformer removed by setting it to 'passthrough' or ``None``.
+ 
+     Read more in the :ref:`User Guide <pipeline>`.
++
+     Parameters
+     ----------
+     steps : list
+@@ -48,6 +54,7 @@
+         chained, with the last object an estimator.
+ 
+     memory : None, str or object with the joblib.Memory interface, optional
++
+         Used to cache the fitted transformers of the pipeline. By default,
+         no caching is performed. If a string is given, it is the path to
+         the caching directory. Enabling caching triggers a clone of
+@@ -56,6 +63,7 @@
+         transformers before fitting. Therefore

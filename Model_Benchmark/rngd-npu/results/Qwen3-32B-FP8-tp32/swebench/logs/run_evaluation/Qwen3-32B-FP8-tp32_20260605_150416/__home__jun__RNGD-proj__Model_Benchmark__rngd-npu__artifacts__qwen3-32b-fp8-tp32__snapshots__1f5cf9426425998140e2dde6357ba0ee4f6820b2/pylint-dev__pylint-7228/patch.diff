@@ -1,0 +1,40 @@
+<think>
+Okay, let's see. The user is having an issue where using \p{Han} in a regular expression in their .pylintrc file causes an error. The error message says there's a bad escape \p at position 1. Hmm.
+
+So, the problem is that Python's re module doesn't support \p{...} syntax. Oh right, that's Perl-compatible regular expressions, which Python's standard re module doesn't handle. Instead, Python uses the regex module for that, but maybe Pylint isn't using it here.
+
+Looking at the code provided, specifically in pylint/config/argument.py, there's a function called _regexp_csv_transfomer. That function compiles the regex patterns using re.compile. So when the user provides \p{Han}, re.compile is trying to parse it, but since it's not valid in Python's re, it throws an error.
+
+The solution here would be to switch from using the standard re module to the regex module, which does support \p{...} for Unicode property escapes. So, in the transformer functions that compile regex patterns, we need to replace re.compile with regex.compile.
+
+Looking at the _TYPE_TRANSFORMERS dictionary in the same file, the 'regexp' type is mapped to re.compile. So changing that to use the regex module's compile function should fix the issue. But wait, does Pylint depend on the regex module? The user's environment might not have it installed by default. But the user is using a feature that requires it, so maybe they have it installed. Alternatively, maybe Pylint should check for that.
+
+But the code as it stands uses re, which doesn't support \p{Han}. So the fix is to replace all instances where re.compile is used for compiling regex patterns with regex.compile. Let me check the relevant functions.
+
+In _regexp_csv_transfomer, they call re.compile on each pattern. Similarly, in _regexp_paths_csv_transfomer, they also use re.compile. So changing those to use the regex module would allow \p{Han} to be recognized.
+
+But to do that, we need to import regex instead of re in the file. Wait, the current code imports re from the standard library. So the fix would be to replace 're' with 'regex' in those functions.
+
+So, in the code, wherever re.compile is used in these transformer functions, we should replace it with regex.compile. Also, we need to make sure that the 'regex' module is imported instead of 're' in the file.
+
+Looking at the code in argument.py, line 14 imports re from __future__? No, line 14 is import re. So changing that to import regex as re? Or perhaps just change the import and then use regex in the functions.
+
+Wait, the code uses 'import re' but if we want to use the third-party regex module, we need to import regex. So the correct approach is to replace 'import re' with 'import regex as re' in the relevant parts. However, that might break compatibility for others who don't have the regex module installed. But the user is using a feature that requires it.
+
+But Pylint's codebase might not have dependencies on regex, so this could be a problem. However, the user is using a configuration that requires it, so perhaps it's acceptable to make this change, assuming that the user has the regex module installed.
+
+So the steps are:
+
+1. In pylint/config/argument.py, replace 'import re' with 'import regex as re'.
+
+But wait, the user's error is happening because re.compile doesn't support \p{Han}. If we replace the import, then re.compile would actually be regex.compile, which does support that syntax.
+
+So modifying the import statement in argument.py from 'import re' to 'import regex as re' would allow the regex module to be used instead of the standard re module. Then, when the transformer functions call re.compile, it would use the regex module's version, which supports \p{...}.
+
+But I need to check if that's the correct approach. Let me think. The user's code is using the standard re module, which doesn't support \p{Han}. By changing the import to use the third-party regex module, the code would then correctly compile the regex with Unicode properties.
+
+Therefore, the patch should change the import statement in pylint/config/argument.py from 'import re' to 'import regex as re'. That way, all calls to re.compile in that file would use the regex module's implementation.
+
+But wait, the code may have other parts that rely on the standard re module. However, given that the user's issue is about using \p{Han}, which isn't supported by the standard re, but is supported by regex, this change would allow the configuration to work as intended.
+
+So the correct patch is to modify the import line in pylint/config/argument.py, replacing 'import re

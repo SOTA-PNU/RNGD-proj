@@ -1,0 +1,25 @@
+2026-06-05 14:42:30,364 - INFO - Creating container for sympy__sympy-18532...
+2026-06-05 14:42:30,572 - INFO - Container for sympy__sympy-18532 created: 89828789cfd920c4e0238b84814ee243d8a953614bc6c8cf0040ffade9551a85
+2026-06-05 14:42:30,888 - INFO - Container for sympy__sympy-18532 started: 89828789cfd920c4e0238b84814ee243d8a953614bc6c8cf0040ffade9551a85
+2026-06-05 14:42:30,890 - INFO - Intermediate patch for sympy__sympy-18532 written to logs/run_evaluation/EXAONE-4.0-32B-FP8-tp32_20260605_143552/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__exaone-4.0-32b-fp8-tp32__snapshots__8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31/sympy__sympy-18532/patch.diff, now applying to container...
+2026-06-05 14:42:31,072 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:42:31,151 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:42:31,246 - INFO - >>>>> Applied Patch:
+patching file sympy/core/basic.py
+Hunk #1 succeeded at 502 with fuzz 4 (offset 64 lines).
+
+2026-06-05 14:42:31,641 - INFO - Git diff before:
+
+2026-06-05 14:42:31,641 - INFO - Eval script for sympy__sympy-18532 written to logs/run_evaluation/EXAONE-4.0-32B-FP8-tp32_20260605_143552/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__exaone-4.0-32b-fp8-tp32__snapshots__8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31/sympy__sympy-18532/eval.sh; copying to container...
+2026-06-05 14:42:34,445 - INFO - Test runtime: 2.72 seconds
+2026-06-05 14:42:34,446 - INFO - Test output for sympy__sympy-18532 written to logs/run_evaluation/EXAONE-4.0-32B-FP8-tp32_20260605_143552/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__exaone-4.0-32b-fp8-tp32__snapshots__8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31/sympy__sympy-18532/test_output.txt
+2026-06-05 14:42:34,541 - INFO - Git diff after:
+
+2026-06-05 14:42:34,541 - INFO - Grading answer for sympy__sympy-18532...
+2026-06-05 14:42:34,542 - INFO - report: {'sympy__sympy-18532': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_sizeof', 'test_atoms']}, 'PASS_TO_PASS': {'success': ['test_alignof', 'test_CommaOperator', 'test_goto_Label', 'test_PreDecrement', 'test_PostDecrement', 'test_PreIncrement', 'test_PostIncrement', 'test_struct', 'test__aresame', 'test_structure', 'test_equality', 'test_matches_basic', 'test_has', 'test_subs', 'test_subs_with_unicode_symbols', 'test_free_symbols_empty', 'test_doit', 'test_S', 'test_xreplace', 'test_preorder_traversal', 'test_sorted_args', 'test_call', 'test_rewrite', 'test_literal_evalf_is_number_is_zero_is_comparable', 'test_as_Basic', 'test_atomic', 'test_as_dummy', 'test_canonical_variables'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-18532: resolved: False
+2026-06-05 14:42:34,542 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18532.EXAONE-4.0-32B-FP8-tp32_20260605_143552...
+2026-06-05 14:42:49,754 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18532.EXAONE-4.0-32B-FP8-tp32_20260605_143552...
+2026-06-05 14:42:49,773 - INFO - Container sweb.eval.sympy__sympy-18532.EXAONE-4.0-32B-FP8-tp32_20260605_143552 removed.
+2026-06-05 14:42:49,773 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-18532:latest...
+2026-06-05 14:42:50,240 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-18532:latest removed.

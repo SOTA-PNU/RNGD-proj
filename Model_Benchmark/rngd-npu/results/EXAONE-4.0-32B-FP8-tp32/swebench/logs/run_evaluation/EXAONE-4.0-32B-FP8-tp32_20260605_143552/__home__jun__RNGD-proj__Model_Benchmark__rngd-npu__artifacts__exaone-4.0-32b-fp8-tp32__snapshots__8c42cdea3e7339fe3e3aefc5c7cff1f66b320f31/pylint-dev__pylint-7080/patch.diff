@@ -1,0 +1,18 @@
+The issue is that `ignore-paths` in pyproject.toml is being ignored when running with `--recursive=y`. The problem is in the `expand_modules` function where the ignore paths aren't being properly checked during recursive module expansion. Here's the patch:
+
+```diff --git a/pylint/lint/expand_modules.py b/pylint/lint/expand_modules.py
+@@ -69,7 +69,11 @@ def expand_modules(
+     path = sys.path.copy()
+ 
+     for something in files_or_modules:
+-        basename = os.path.basename(something)
++        full_path = os.path.abspath(something)
++        basename = os.path.basename(full_path)
++        if _is_ignored_file(
++            full_path, ignore_list, ignore_list_re, ignore_list_paths_re
++        ):
++            continue
+         module_path = get_python_path(something)
+         additional_search_path = [".", module_path] + path
+         if os.path.exists(something):
+```

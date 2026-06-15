@@ -1,0 +1,106 @@
+# Boilerplate classes that exist solely for satisfying the Python linter.
+class DramToHost:
+    pass
+class HostToDram:
+    pass
+class LowLevelUnlower:
+    pass
+class SplitOperation:
+    pass
+class View:
+    pass
+class Input:
+    pass
+
+# Note: Quantized types have the following representation:
+#       type(axes, (m, M), num_of_quant_parameters)
+def graph(t0: Input, t1: Input):
+    # Operators
+
+    # #PreLower:15#PostLower:48#PreCommandGen:48
+    # Input:   0  = Tensor(UnlabeledShape(256, 4096), f32)
+    # Output:  38 = Tensor(DramShape(1, 256, 4096), f32)
+    t38 = HostToDram(t0)
+
+    # #PreLower:15#PostLower:49#PreCommandGen:49
+    # Input:   38 = Tensor(DramShape(1, 256, 4096), f32)
+    # Output:  40 = Tensor(SplitDramShape(1, 8, 256, 512), f32)
+    t40 = View(t38)
+
+    # #PreLower:15#PostLower:50#PreCommandGen:50
+    # Input:   40 = Tensor(SplitDramShape(1, 8, 256, 512), f32)
+    # Output:  39 = Tensor(SplitShape(4, 16, 8, 64, 32), f32)
+    t39 = SplitOperation(t40)
+
+    # #Kernelized:10#PreLower:10#PostLower:25#PreCommandGen:81
+    # Input:   39 = Tensor(SplitShape(4, 16, 8, 64, 32), f32)
+    # Output:  19 = Tensor(SplitShape(4, 16, 8, 64, 32), bf16)
+    t19 = SplitOperation(t39)
+
+    # #PreLower:20#PostLower:28#PreCommandGen:82
+    # Input:   19 = Tensor(SplitShape(4, 16, 8, 64, 32), bf16)
+    # Output:  21 = Tensor(SplitShape(4, 16, 8, 32, 64), bf16)
+    t21 = SplitOperation(t19)
+
+    # mm#Kernelized:11#PreLower:11#PostLower:42#PreCommandGen:85
+    # Input:   21 = Tensor(SplitShape(4, 16, 8, 32, 64), bf16)
+    # Output:  33 = Tensor(SplitShape(4, 16, 8, 32, 64), bf16)
+    t33 = SplitOperation(t21)
+
+    # #PreLower:17#PostLower:29#PreCommandGen:29
+    # Input:   1  = Tensor(UnlabeledShape(4096, 4096), f32)
+    # Output:  22 = Tensor(DramShape(1, 4096, 4096), f32)
+    t22 = HostToDram(t1)
+
+    # #PreLower:17#PostLower:30#PreCommandGen:30
+    # Input:   22 = Tensor(DramShape(1, 4096, 4096), f32)
+    # Output:  24 = Tensor(SplitDramShape(1, 8, 512, 4096), f32)
+    t24 = View(t22)
+
+    # #PreLower:17#PostLower:31#PreCommandGen:31
+    # Input:   24 = Tensor(SplitDramShape(1, 8, 512, 4096), f32)
+    # Output:  23 = Tensor(SplitShape(4, 16, 8, 32, 1024), f32)
+    t23 = SplitOperation(t24)
+
+    # #Kernelized:9#PreLower:9#PostLower:56#PreCommandGen:86
+    # Input:   23 = Tensor(SplitShape(4, 16, 8, 32, 1024), f32)
+    # Output:  44 = Tensor(SplitShape(4, 16, 8, 32, 1024), bf16)
+    t44 = SplitOperation(t23)
+
+    # mm#Kernelized:11#PreLower:11#PostLower:41#PreCommandGen:87
+    # Input:   44 = Tensor(SplitShape(4, 16, 8, 32, 1024), bf16)
+    # Output:  32 = Tensor(SplitShape(4, 16, 8, 32, 1024), bf16)
+    t32 = SplitOperation(t44)
+
+    # mm#Kernelized:11#PreLower:11#PostLower:44#PreCommandGen:44
+    # Inputs:  32 = Tensor(SplitShape(4, 16, 8, 32, 1024), bf16)
+    #          33 = Tensor(SplitShape(4, 16, 8, 32, 64), bf16)
+    # Output:  35 = Tensor(SplitShape(4, 16, 8, 16, 1024), f32)
+    t35 = SplitOperation(t32, t33)
+
+    # mm#Kernelized:11#PreLower:11#PostLower:45#PreCommandGen:45
+    # Input:   35 = Tensor(SplitShape(4, 16, 8, 16, 1024), f32)
+    # Output:  36 = Tensor(BufferShape(4, 16, 16, 1024), f32)
+    t36 = SplitOperation(t35)
+
+    # #PreLower:14#PostLower:34#PreCommandGen:83
+    # Input:   36 = Tensor(BufferShape(4, 16, 16, 1024), f32)
+    # Output:  48 = Tensor(DramShape(256, 4096), f32)
+    t48 = LowLevelUnlower(t36)
+
+    # #PreCommandGen:71
+    # Input:   48 = Tensor(DramShape(256, 4096), f32)
+    # Output:  26 = Tensor(SplitDramShape(256, 4096), f32)
+    t26 = SplitOperation(t48)
+
+    # #PreLower:14#PostLower:36#PreCommandGen:80
+    # Input:   26 = Tensor(SplitDramShape(256, 4096), f32)
+    # Output:  28 = Tensor(DramShape(1, 256, 4096), f32)
+    t28 = View(t26)
+
+    # #PreLower:14#PostLower:37#PreCommandGen:37
+    # Input:   28 = Tensor(DramShape(1, 256, 4096), f32)
+    # Output:  6  = Tensor(UnlabeledShape(256, 4096), f32)
+    t6 = DramToHost(t28)
+
+    return t6

@@ -1,0 +1,78 @@
+<patch>
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -151,7 +151,7 @@
+ 
+         for event in HOOKS:
+             self.hooks[event] = []
+-        
++
+         hooks = hooks or {}
+ 
+         for (k, v) in list(hooks.items()):
+@@ -160,7 +160,7 @@
+ 
+         #: Session.
+         self.session = session
+-        
++
+         #: SSL Verification.
+         self.verify = verify
+ 
+@@ -170,7 +170,7 @@
+ 
+         #: Prefetch response content
+         self.prefetch = prefetch
+-        
++
+         if headers:
+             headers = CaseInsensitiveDict(self.headers)
+         else:
+@@ -180,7 +180,7 @@
+ 
+         # Add configured base headers.
+         for (k, v) in list(self.config.get('base_headers', {}).items()):
+-            if k not in headers:
++            if k.lower() not in headers:
+                 headers[k] = v
+ 
+         self.headers = headers
+@@ -200,7 +200,7 @@
+ 
+         # Fallback to None if there's no status_code, for whatever reason.
+         response.status_code = getattr(resp, 'status', None)
+-        
++
+         # Make headers case-insensitive.
+         response.headers = CaseInsensitiveDict(getattr(resp, 'headers', {}))
+ 
+@@ -210,7 +210,7 @@
+ 
+         # Set encoding.
+         response.encoding = get_encoding_from_headers(response.headers)
+-        
++
+         # Add new cookies from the server. Don't if configured not to
+         if self.config.get('store_cookies'):
+             extract_cookies_to_jar(self.cookies, self, resp)
+@@ -220,7 +220,7 @@
+ 
+         # Save cookies in Response.
+         response.cookies = self.cookies
+-        
++
+         # Save cookies in Session.
+         for cookie in self.cookies:
+             self.session.cookies.set_cookie(cookie)
+@@ -230,7 +230,7 @@
+ 
+         # No exceptions were harmed in the making of this request.
+         response.error = getattr(resp, 'error', None)
+-        
++
+         # Save original response for later.
+         response.raw = resp
+         if isinstance(self.full_url, bytes):
+@@ -240,7 +240,7 @@
+ 
+         return

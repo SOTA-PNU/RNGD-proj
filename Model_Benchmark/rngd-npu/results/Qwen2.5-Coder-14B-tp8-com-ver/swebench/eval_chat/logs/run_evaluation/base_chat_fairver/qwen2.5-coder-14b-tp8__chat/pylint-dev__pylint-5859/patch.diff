@@ -1,0 +1,61 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# pylint: disable=missing-module-docstring
+import os
+import sys
+import tempfile
+import unittest
+from unittest import mock
+
+import pytest
+
+from pylint.checkers import similar
+from pylint.testutils import (
+    CheckerTestCase,
+    MessageTest,
+    MinimalTestReporter,
+    _test_module,
+    _test_package,
+    _test_subpackage,
+    _test_subpackage2,
+    _test_subpackage3,
+    _test_subpackage4,
+    _test_subpackage5,
+    _test_subpackage6,
+    _test_subpackage7,
+    _test_subpackage8,
+    _test_subpackage9,
+    _test_subpackage10,
+    _test_subpackage11,
+    _test_subpackage12,
+    _test_subpackage13,
+    _test_subpackage14,
+    _test_subpackage15,
+    _test_subpackage16,
+    _test_subpackage17,
+    _test_subpackage18,
+    _test_subpackage19,
+    _test_subpackage20,
+    _test_subpackage21,
+    _test_subpackage22,
+    _test_subpackage23,
+    _test_subpackage24,
+    _test_subpackage25,
+    _test_subpackage26,
+    _test_subpackage27,
+    _test_subpackage28,
+    _test_subpackage29,
+    _test_subpackage30,
+    _test_subpackage31,
+    _test_subpackage32,
+    _test_subpackage33,
+    _test_subpackage34,
+    _test_subpackage35,
+    _test_subpackage36,
+    _test_subpackage37,
+    _test_subpackage38,
+    _test_subpackage39,
+    _test_subpackage40,
+    _test_subpackage41,
+    _test_subpackage42,
+    _test_subpackage43,
+    _test_subpackage

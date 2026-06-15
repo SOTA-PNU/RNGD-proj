@@ -1,0 +1,16 @@
+
+--- a/lib/matplotlib/artist.py
++++ b/lib/matplotlib/artist.py
+@@ -1279,7 +1279,11 @@ class Artist:
+         if self.get_rasterized():
+             if renderer._raster_depth == 0 and not renderer._rasterizing:
+                 renderer.start_rasterizing()
+-                renderer._rasterizing = True
++                try:
++                    renderer._rasterizing = True
++                except AttributeError:
++                    # Renderer does not support rasterization
++                    return
+             renderer._raster_depth += 1
+         else:
+             if renderer._raster_depth == 0 and renderer._rasterizing:

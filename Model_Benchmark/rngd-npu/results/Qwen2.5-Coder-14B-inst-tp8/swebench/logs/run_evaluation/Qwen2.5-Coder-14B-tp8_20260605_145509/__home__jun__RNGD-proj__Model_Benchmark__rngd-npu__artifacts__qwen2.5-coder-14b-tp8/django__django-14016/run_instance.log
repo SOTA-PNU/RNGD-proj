@@ -1,0 +1,27 @@
+2026-06-05 14:55:52,782 - INFO - Creating container for django__django-14016...
+2026-06-05 14:55:52,844 - INFO - Container for django__django-14016 created: f3472b305a823047069de8286b2aab11958343c5dd7a95feceb766857c4e3bc7
+2026-06-05 14:55:53,278 - INFO - Container for django__django-14016 started: f3472b305a823047069de8286b2aab11958343c5dd7a95feceb766857c4e3bc7
+2026-06-05 14:55:53,278 - INFO - Intermediate patch for django__django-14016 written to logs/run_evaluation/Qwen2.5-Coder-14B-tp8_20260605_145509/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen2.5-coder-14b-tp8/django__django-14016/patch.diff, now applying to container...
+2026-06-05 14:55:53,437 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:55:53,556 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:55:53,654 - INFO - >>>>> Applied Patch:
+patch unexpectedly ends in middle of line
+patching file django/db/models/query_utils.py
+patch unexpectedly ends in middle of line
+patch unexpectedly ends in middle of line
+
+2026-06-05 14:55:54,384 - INFO - Git diff before:
+
+2026-06-05 14:55:54,385 - INFO - Eval script for django__django-14016 written to logs/run_evaluation/Qwen2.5-Coder-14B-tp8_20260605_145509/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen2.5-coder-14b-tp8/django__django-14016/eval.sh; copying to container...
+2026-06-05 14:55:59,053 - INFO - Test runtime: 4.57 seconds
+2026-06-05 14:55:59,054 - INFO - Test output for django__django-14016 written to logs/run_evaluation/Qwen2.5-Coder-14B-tp8_20260605_145509/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen2.5-coder-14b-tp8/django__django-14016/test_output.txt
+2026-06-05 14:55:59,155 - INFO - Git diff after:
+
+2026-06-05 14:55:59,155 - INFO - Grading answer for django__django-14016...
+2026-06-05 14:55:59,158 - INFO - report: {'django__django-14016': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_combine_and_empty (queries.test_q.QTests)', 'test_combine_or_empty (queries.test_q.QTests)']}, 'PASS_TO_PASS': {'success': ['test_combine_and_both_empty (queries.test_q.QTests)', 'test_combine_not_q_object (queries.test_q.QTests)', 'test_combine_or_both_empty (queries.test_q.QTests)', 'test_deconstruct (queries.test_q.QTests)', 'test_deconstruct_and (queries.test_q.QTests)', 'test_deconstruct_multiple_kwargs (queries.test_q.QTests)', 'test_deconstruct_negated (queries.test_q.QTests)', 'test_deconstruct_nested (queries.test_q.QTests)', 'test_deconstruct_or (queries.test_q.QTests)', 'test_reconstruct (queries.test_q.QTests)', 'test_reconstruct_and (queries.test_q.QTests)', 'test_reconstruct_negated (queries.test_q.QTests)', 'test_reconstruct_or (queries.test_q.QTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-14016: resolved: False
+2026-06-05 14:55:59,159 - INFO - Attempting to stop container sweb.eval.django__django-14016.Qwen2.5-Coder-14B-tp8_20260605_145509...
+2026-06-05 14:56:14,703 - INFO - Attempting to remove container sweb.eval.django__django-14016.Qwen2.5-Coder-14B-tp8_20260605_145509...
+2026-06-05 14:56:14,733 - INFO - Container sweb.eval.django__django-14016.Qwen2.5-Coder-14B-tp8_20260605_145509 removed.
+2026-06-05 14:56:14,733 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-14016:latest...
+2026-06-05 14:56:15,777 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-14016:latest removed.

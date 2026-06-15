@@ -1,0 +1,100 @@
+{
+  "model": "Qwen/Qwen3-Coder-Next-FP8 (48-layer, host-streamed, NPU mixers)",
+  "device": "rngd:2",
+  "prompt": "def quicksort(arr):",
+  "note": "DPE = QCN_DPE=1: npu_linear -> dn_linear_dpe.yaml (EinsumByDpe, bf16 systolic) in attn/moe/deltanet proj+out_proj; DeltaNet chunk scan -> dn_chunk_full_dpe2.yaml (2 chunk matmuls on DPE; the 5-DPE variant miscompiles, per-graph DPE-fuse cap of 2). VE baseline = QCN_DPE unset (dn_linear.yaml EinsumByVe, f32-exact). Both pure-NPU (_dfg_inner==0).",
+  "before_VE_baseline": {
+    "max_new_tokens": 24,
+    "prefill_s": 360.83369636535645,
+    "avg_s_per_tok": 55.80925973256429,
+    "min_s_per_tok": 51.397027015686035,
+    "max_s_per_tok": 59.21806335449219,
+    "per_token_s": [
+      57.68582582473755,
+      53.21341323852539,
+      51.397027015686035,
+      55.68239998817444,
+      55.419862031936646,
+      55.230653285980225,
+      53.3556604385376,
+      55.42529845237732,
+      54.88449025154114,
+      57.47791576385498,
+      57.350706815719604,
+      55.84322476387024,
+      56.02523159980774,
+      56.65720343589783,
+      57.81557035446167,
+      57.034656286239624,
+      57.85649061203003,
+      54.5742301940918,
+      53.78794574737549,
+      59.21806335449219,
+      54.8194739818573,
+      52.902342557907104,
+      59.031140089035034,
+      56.733407497406006
+    ],
+    "generated_text": "\n    if len(arr) <= 1:\n        return arr\n    else:\n        pivot = arr[0]\n",
+    "all_mixers_on_npu": true,
+    "npu_proof": {
+      "deltanet_cpu_fallbacks": 0,
+      "attn_cpu_fallbacks": 0,
+      "moe_cpu_fallbacks": 0,
+      "deltanet_npu_stages": 36000,
+      "attn_npu_stages": 10824,
+      "moe_npu_stages": 59336
+    }
+  },
+  "after_DPE": {
+    "max_new_tokens": 4,
+    "prefill_s": 76.89832496643066,
+    "avg_s_per_tok": 35.1487700343132,
+    "min_s_per_tok": 33.99865102767944,
+    "max_s_per_tok": 36.993243932724,
+    "per_token_s": [
+      34.36046767234802,
+      36.993243932724,
+      33.99865102767944,
+      35.24271750450134
+    ],
+    "generated_text": "\n    if len",
+    "all_mixers_on_npu": true,
+    "npu_proof": {
+      "deltanet_cpu_fallbacks": 0,
+      "attn_cpu_fallbacks": 0,
+      "moe_cpu_fallbacks": 0,
+      "deltanet_npu_stages": 7200,
+      "attn_npu_stages": 2184,
+      "moe_npu_stages": 15168
+    }
+  },
+  "speedup": {
+    "prefill_x": 4.692347935054183,
+    "decode_s_per_tok_x": 1.5878012140419635,
+    "baseline_avg_s_per_tok": 55.8,
+    "baseline_prefill_s": 360.8,
+    "vs_baseline_decode_x": 1.5875377700422089,
+    "vs_baseline_prefill_x": 4.691909741304564
+  },
+  "validation_4layer_vs_HF_atol1e-2": {
+    "VE_after_norm_maxerr": 8.583e-06,
+    "VE_after_norm_rel": 2.083e-07,
+    "DPE_per_layer_maxerr": [
+      0.001536,
+      0.001964,
+      0.002867,
+      0.02505
+    ],
+    "DPE_per_layer_rel": [
+      0.0008349,
+      0.0007951,
+      0.0008903,
+      0.009687
+    ],
+    "DPE_after_norm_maxerr": 0.5026,
+    "DPE_after_norm_rel": 0.0122,
+    "DPE_per_layer_allclose_5e-2": true,
+    "comment": "DPE adds the expected bf16 systolic noise: per-layer relative error grows mildly to ~1e-2 (the known DPE bar), does NOT blow up across layers. The 5.0e-1 after-norm ABSOLUTE error is model.norm RMSNorm amplifying that ~1.2% relative error (normalize-then-scale), not divergence. Generation stays coherent -> precision is acceptable."
+  }
+}

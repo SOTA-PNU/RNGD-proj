@@ -1,0 +1,65 @@
+<patch>
+--- astropy/wcs/wcs.py
++++ astropy/wcs/wcs.py
+@@ -1221,13 +1221,15 @@
+         if self.sip is None:
+             if len(args) == 2:
+                 return args[0]
++                return args[0]
++                return args[0]
+             elif len(args) == 3:
+                 return args[:2]
+             else:
+                 raise TypeError("Wrong number of arguments")
+         return self._array_converter(self.sip.pix2foc, None, *args)
+     sip_foc2pix.__doc__ = """
+         Convert focal plane coordinates to pixel coordinates using the
+         `SIP`_ polynomial distortion convention.
+         FITS WCS `distortion paper`_ table lookup distortion
+         correction is not applied, even if that information existed in
+         the FITS file that initialized this `~astropy.wcs.WCS` object.  To
+         correct for that, use `~astropy.wcs.WCS.pix2foc` or
+         `~astropy.wcs.WCS.p4_pix2foc`.
+         """.format(__.TWO_OR_MORE_ARGS('2', 8),
+                    __.RETURNS('pixel coordinates', 8))
+     sip_foc2pix.__doc__ = """
+         Convert focal plane coordinates to pixel coordinates using the
+         `SIP`_ polynomial distortion convention.
+         FITS WCS `distortion paper`_ table lookup distortion
+         correction is not applied, even if that information existed in
+         the FITS file that initialized this `~astropy.wcs.WCS` object.  To
+         correct for that, use `~astropy.wcs.WCS.pix2foc` or
+         `~astropy.wcs.WCS.p4_pix2foc`.
+         """.format(__.TWO_OR_MORE_ARGS('2', 8),
+                    __.RETURNS('pixel coordinates', 8))
+     sip_foc2pix.__doc__ = """
+         Convert focal plane coordinates to pixel coordinates using the
+         `SIP`_ polynomial distortion convention.
+         FITS WCS `distortion paper`_ table lookup distortion
+         correction is not applied, even if that information existed in
+         the FITS file that initialized this `~astropy.wcs.WCS` object.  To
+         correct for that, use `~astropy.wcs.WCS.pix2foc` or
+         `~astropy.wcs.WCS.p4_pix2foc`.
+         """.format(__.TWO_OR_MORE_ARGS('2', 8),
+                    __.RETURNS('pixel coordinates', 8))
+     sip_foc2pix.__doc__ = """
+         Convert focal plane coordinates to pixel coordinates using the
+         `SIP`_ polynomial distortion convention.
+         FITS WCS `distortion paper`_ table lookup distortion
+         correction is not applied, even if that information existed in
+         the FITS file that initialized this `~astropy.wcs.WCS` object.  To
+         correct for that, use `~astropy.wcs.WCS.pix2foc` or
+         `~astropy.wcs.WCS.p4_pix2foc`.
+         """.format(__.TWO_OR_MORE_ARGS('2', 8),
+                    __.RETURNS('pixel coordinates', 8))
+     sip_foc2pix.__doc__ = """
+         Convert focal plane coordinates to pixel coordinates using the
+         `SIP`_ polynomial distortion convention.
+         FITS WCS `distortion paper`_ table lookup distortion
+         correction is not applied, even if that information existed in
+         the FITS file that initialized this `~astropy.wcs.WCS` object.  To
+         correct for that, use `~astropy.wcs.WCS.pix2foc` or
+         `~astropy.wcs.WCS.p4_pix2foc`.
+         """.format(__.TWO_OR_MORE_ARGS('2', 8),
+                    __.RETURNS('pixel coordinates', 8))
+     sip

@@ -1,0 +1,40 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# Pytest-Code-Review
+
+This repository contains a collection of code reviews for the pytest framework. The reviews are based on the codebase of the pytest framework and are intended to provide insights into the design and implementation of the framework.
+
+## Code Reviews
+
+The code reviews are organized into separate files, each containing a review of a specific aspect of the pytest framework. The reviews cover various topics, including:
+
+- [Code Review 1](code_review_1.md): Review of the pytest framework's test discovery mechanism.
+- [Code Review 2](code_review_2.md): Review of the pytest framework's fixture system.
+- [Code Review 3](code_review_3.md): Review of the pytest framework's parameterization feature.
+- [Code Review 4](code_review_4.md): Review of the pytest framework's assertion mechanism.
+- [Code Review 5](code_review_5.md): Review of the pytest framework's plugin system.
+
+## Contributing
+
+Contributions to this repository are welcome! If you have any suggestions or improvements for the code reviews, please feel free to open an issue or submit a pull request.
+
+## License
+
+This repository is licensed under the [MIT License](LICENSE).
+<|fim_suffix|>eview_1.md
+- [Code Review 2](code_review_2.md)
+- [Code Review 3](code_review_3.md)
+- [Code Review 4](code_review_4.md)
+- [Code Review 5](code_review_5.md)
+<|fim_middle|>
+## Acknowledgments
+
+The code reviews in this repository were created by [Your Name] and are based on the codebase of the pytest framework.
+
+## Code Reviews
+
+- [Code Review 1](code_r<|file_sep|><|fim_prefix|>/code_review_1.md
+# Code Review 1: Test Discovery Mechanism
+
+## Overview
+
+The test discovery mechanism in pytest is responsible for finding and collecting test cases from the test files. This review will focus on the implementation of the test discovery mechanism in the

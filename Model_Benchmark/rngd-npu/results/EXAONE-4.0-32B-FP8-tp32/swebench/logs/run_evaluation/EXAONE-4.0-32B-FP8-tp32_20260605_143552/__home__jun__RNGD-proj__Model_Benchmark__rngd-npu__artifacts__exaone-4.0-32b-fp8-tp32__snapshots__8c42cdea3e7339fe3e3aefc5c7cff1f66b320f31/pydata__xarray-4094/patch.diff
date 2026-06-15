@@ -1,0 +1,60 @@
+<patch>
+--- a/xarray/core/dataarray.py
++++ b/xarray/core/dataarray.py
+@@ -1312,12 +1312,19 @@
+         Returns
+         -------
+         DataArray
+-            A new DataArray with the padded coordinates and data.
++            A new DataArray with the padded coordinates and data.
+ 
+         See also
+         --------
+         DataArray.shift, DataArray.roll, DataArray.bfill, DataArray.ffill, numpy.pad, dask.array.pad
+ 
+         Notes
+         -----
+         By default when ``mode="constant"`` and ``constant_values=None``, integer types will be
+         promoted to ``float`` and padded with ``np.nan``. To avoid type promotion
+         specify ``constant_values=np.nan``
+ 
++        Examples
++        --------
++        >>> arr = xr.DataArray([5, 6, 7], coords=[("x", [0, 1, 2])])
++        >>> arr.pad(x=(1, 2), constant_values=0)
++        <xarray.DataArray (x: 6)>
++        array([0, 5, 6, 7, 0, 0])
++        Coordinates:
++           * x        (x) float64 nan 0.0 1.0 2.0 nan nan
++        >>> da = xr.DataArray(
++        ...     [[0, 1, 2, 3], [10, 11, 12, 13]],
++        ...     dims=["x", "y"],
++        ...     coords={"x": [0, 1], "y": [10, 20, 30, 40], "z": ("x", [100, 200])},
++        ... )
++        >>> da.pad(x=1)
++        <xarray.DataArray (x: 4, y: 4)>
++        array([[nan, nan, nan, nan],
++               [ 0.,  1.,  2.,  3.],
++               [10., 11., 12., 13.],
++               [nan, nan, nan, nan]])
++        Coordinates:
++           * x        (x) float64 nan 0.0 1.0 nan
++           * y        (y) int64 10 20 30 40
++             z        (x) float64 nan 100.0 200.0 nan
++        >>> da.pad(x=1, constant_values=np.nan)
++        <xarray.DataArray (x: 4, y: 4)>
++        array([[-9223372036854775808, -9223372036854775808, -9223372036854775808,
++                 -9223372036854775808],
++                [                   0,                    1,                    2,
++                                    3],
++                [                  10,                   11,                   12,
++                                   13],
++                [-9223372036854775808, -9223372036854775808, -9223372036854775808,
++                 -9223372036854775808]])
++        Coordinates:
++           * x        (x) float64 nan 0.0 1.0 nan
++           * y        (y) int64 10 20 30 40
++             z        (x) float64 nan 100.0 200.0 nan
++        """
+         ds = self._to_temp_dataset().pad(
+             pad_width=pad_width,

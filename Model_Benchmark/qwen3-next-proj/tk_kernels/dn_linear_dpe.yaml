@@ -1,0 +1,248 @@
+#naive_yaml
+# NPU Linear on the DPE (systolic MAC) engine:  y[t,o] = sum_i x[t,i]*W[o,i]
+#   == F.linear(x, W)  -- the FAST path. kind: EinsumByDpe.
+#
+# Hand-derived from dn_linear.yaml (kind: EinsumByVe) by flipping kind and then
+# populating, one validator error at a time, what the DPE path requires. Runs on
+# pure NPU (dfg_inner==0); ~3.8x faster than the EinsumByVe twin (3.5 vs 13.3
+# ms for [128,512]@[2048,512]). Precision is ~1.6% relmean / <2.4e-3 maxabs
+# (DPE accumulates in reduced precision -- allclose at atol/rtol=1e-2, NOT 1e-3).
+# Full error->fix derivation in dpe_incremental_log.md.
+#
+# KEY DIFFERENCE vs EinsumByVe:
+#  - EinsumByVe puts the contraction (MulF + LocalReduceAddF) in vector_ops.
+#  - EinsumByDpe REQUIRES the contraction in `ein_ops` (the systolic array does
+#    input*filter then accumulates). The validator reads self.inner.ein_ops and
+#    rejects a null ein_ops ("ein_ops.reduce.mode.is_dpe_supported_mode()").
+#  - For DPE the two reads collapse to ONE post-contraction descriptor, so
+#    vector_ops must have EXACTLY 1 input (the EinOps result [t,o]) that IS
+#    referenced by an inst. With no identity Unary op in the DSL, the passthrough
+#    is a Reduce(LocalReduceAddF) over an EMPTY axes list = no-op identity.
+#
+# Inputs:  0 = x[t,i]   (tokens x in_features)
+#          1 = W[o,i]   (out_features x in_features  == nn.Linear.weight)
+# Output:  2 = y[t,o]   (tokens x out_features)
+---
+tensors:
+  inner:
+    # input 0: x[t,i]  (tokens x in_features)
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: T
+              - Var: I
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # input 1: W[o,i]  (out_features x in_features)
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: O
+              - Var: I
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # output 2: y[t,o]  (tokens x out_features)
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: T
+              - Var: O
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: dn_linear_f32
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                # read0: x[t,i] broadcast (tiled) along the new output axis "o"
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "o"
+                          stride: 1
+                      size:
+                        Var: O
+                # read1: W[o,i] broadcast (tiled) along the token axis "t"
+                # (contraction axis "i" shared with read0)
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "o"
+                              stride: 1
+                          size:
+                            Var: O
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "t"
+                          stride: 1
+                      size:
+                        Var: T
+              ein_ops:
+                reduce:
+                  mode: Add
+                  input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "o"
+                              stride: 1
+                          size:
+                            Var: O
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  axes:
+                    - LabelStride:
+                        label:
+                          inner: "i"
+                        stride: 1
+                  source: ""
+                mul_source: ""
+              vector_ops:
+                inputs:
+                  - 0
+                insts:
+                  # IDENTITY passthrough of the single contracted EinOps result
+                  # [t,o]: Reduce LocalReduceAddF over an EMPTY axes list is a
+                  # no-op. This is the ONLY way found to satisfy both DPE checks
+                  # (input_descriptors.len()==1 must equal vector_ops.inputs.len(),
+                  # AND inputs must be referenced by an inst) since the DSL has NO
+                  # identity Unary op (PassF/Identity/Neg/Abs all rejected) and no
+                  # constant operand for Binary.
+                  - def: 1
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddF
+                        operand:
+                          Tensor: 0
+                        axes:
+                          Tag: []
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "o"
+                            stride: 1
+                        size:
+                          Var: O
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "o"
+                            stride: 1
+                        size:
+                          Var: O
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByDpe
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

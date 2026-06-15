@@ -1,23 +1,49 @@
+== SKIP furiosa-ai/Qwen2.5-0.5B-Instruct (disabled) ==
+== SKIP furiosa-ai/Llama-3.1-8B-Instruct (disabled) ==
 
-== furiosa-ai/Qwen2.5-0.5B-Instruct ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8 ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
 
-[memsweep 1/8] combo={}
+[memsweep 1/20] combo={}
 
-[memsweep 2/8] combo={'max_model_len': 4096}
+[memsweep 2/20] combo={'max_model_len': 4096}
 
-[memsweep 3/8] combo={'max_model_len': 8192}
+[memsweep 3/20] combo={'max_model_len': 8192}
 
-[memsweep 4/8] combo={'max_model_len': 16384}
+[memsweep 4/20] combo={'max_model_len': 16384}
 
-[memsweep 5/8] combo={'max_batch_size': 8}
+[memsweep 5/20] combo={'max_model_len': 32768}
 
-[memsweep 6/8] combo={'max_batch_size': 32}
+[memsweep 6/20] combo={'max_model_len': 40960}
 
-[memsweep 7/8] combo={'max_num_batched_tokens': 4096}
+[memsweep 7/20] combo={'max_model_len': 65536}
 
-[memsweep 8/8] combo={'max_num_batched_tokens': 16384}
-  [memsweep] 8 combos done
-  [tps] {"model": "furiosa-ai/Qwen2.5-0.5B-Instruct", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 256, "successes": 50, "failures": 0, "wall_clock_s": 152.693, "ttft_s_p50": 0.0306, "ttft_s_p95": 0.0319, "itl_s_p50": 0.01189, "itl_s_p95": 0.01203, "output_tps_per_request_p50": 84.48, "aggregate_output_tps": 83.83, "total_output_tokens": 12800}
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 0, "failures": 30, "wall_clock_s": 607.4832401309977, "error": "no successful requests"}
   [sweep] concurrency=1, prompt_len=256
   [sweep] concurrency=2, prompt_len=256
   [sweep] concurrency=4, prompt_len=256
@@ -26,6 +52,7 @@
   [sweep] concurrency=32, prompt_len=256
   [sweep] concurrency=64, prompt_len=256
   [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
   [sweep] concurrency=1, prompt_len=1024
   [sweep] concurrency=2, prompt_len=1024
   [sweep] concurrency=4, prompt_len=1024
@@ -34,6 +61,7 @@
   [sweep] concurrency=32, prompt_len=1024
   [sweep] concurrency=64, prompt_len=1024
   [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
   [sweep] concurrency=1, prompt_len=4096
   [sweep] concurrency=2, prompt_len=4096
   [sweep] concurrency=4, prompt_len=4096
@@ -42,26 +70,87 @@
   [sweep] concurrency=32, prompt_len=4096
   [sweep] concurrency=64, prompt_len=4096
   [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
 
-== furiosa-ai/Llama-3.1-8B-Instruct ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8-16k ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
 
-[memsweep 1/8] combo={}
+[memsweep 1/20] combo={}
 
-[memsweep 2/8] combo={'max_model_len': 4096}
+[memsweep 2/20] combo={'max_model_len': 4096}
 
-[memsweep 3/8] combo={'max_model_len': 8192}
+[memsweep 3/20] combo={'max_model_len': 8192}
 
-[memsweep 4/8] combo={'max_model_len': 16384}
+[memsweep 4/20] combo={'max_model_len': 16384}
 
-[memsweep 5/8] combo={'max_batch_size': 8}
+[memsweep 5/20] combo={'max_model_len': 32768}
 
-[memsweep 6/8] combo={'max_batch_size': 32}
+[memsweep 6/20] combo={'max_model_len': 40960}
 
-[memsweep 7/8] combo={'max_num_batched_tokens': 4096}
+[memsweep 7/20] combo={'max_model_len': 65536}
 
-[memsweep 8/8] combo={'max_num_batched_tokens': 16384}
-  [memsweep] 8 combos done
-  [tps] {"model": "furiosa-ai/Llama-3.1-8B-Instruct", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 256, "successes": 50, "failures": 0, "wall_clock_s": 240.596, "ttft_s_p50": 0.0326, "ttft_s_p95": 0.037, "itl_s_p50": 0.01832, "itl_s_p95": 0.01852, "output_tps_per_request_p50": 54.5, "aggregate_output_tps": 53.2, "total_output_tokens": 12800}
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8-16k", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 0, "failures": 30, "wall_clock_s": 607.3227885880042, "error": "no successful requests"}
   [sweep] concurrency=1, prompt_len=256
   [sweep] concurrency=2, prompt_len=256
   [sweep] concurrency=4, prompt_len=256
@@ -70,6 +159,7 @@
   [sweep] concurrency=32, prompt_len=256
   [sweep] concurrency=64, prompt_len=256
   [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
   [sweep] concurrency=1, prompt_len=1024
   [sweep] concurrency=2, prompt_len=1024
   [sweep] concurrency=4, prompt_len=1024
@@ -78,6 +168,7 @@
   [sweep] concurrency=32, prompt_len=1024
   [sweep] concurrency=64, prompt_len=1024
   [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
   [sweep] concurrency=1, prompt_len=4096
   [sweep] concurrency=2, prompt_len=4096
   [sweep] concurrency=4, prompt_len=4096
@@ -86,8 +177,763 @@
   [sweep] concurrency=32, prompt_len=4096
   [sweep] concurrency=64, prompt_len=4096
   [sweep] concurrency=128, prompt_len=4096
-== SKIP furiosa-ai/Qwen3-32B-FP8 (disabled) ==
-== SKIP furiosa-ai/EXAONE-4.0-32B-FP8 (disabled) ==
-== SKIP furiosa-ai/Llama-3.3-70B-Instruct (disabled) ==
-== SKIP furiosa-ai/Qwen3-Embedding-8B (no applicable task: tasks={'memsweep', 'tps', 'sweep'}, role=embedding) ==
-== SKIP furiosa-ai/Qwen3-Reranker-8B (no applicable task: tasks={'memsweep', 'tps', 'sweep'}, role=reranker) ==
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_000.log
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_001.log
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_002.log
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_003.log
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_004.log
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_005.log
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_006.log
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_007.log
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_008.log
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_009.log
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_010.log
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_011.log
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_012.log
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_013.log
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_014.log
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_015.log
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_016.log
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_017.log
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_018.log
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-coder-30b-a3b-inst-fp8-tp8-65k/memsweep_019.log
+  [memsweep] 20 combos done
+!! /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k 실패. server log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k_20260604_021037.log
+Traceback (most recent call last):
+  File "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/run_all/orchestrator.py", line 230, in run_for_model
+    with server:
+  File "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/run_all/runners/server.py", line 157, in __enter__
+    self.start()
+  File "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/run_all/runners/server.py", line 77, in start
+    self._wait_ready()
+  File "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/run_all/runners/server.py", line 115, in _wait_ready
+    raise RuntimeError(
+RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k_20260604_021037.log
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8 ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 30, "failures": 0, "wall_clock_s": 105.135, "ttft_s_p50": 0.0498, "ttft_s_p95": 0.0513, "itl_s_p50": 0.03258, "itl_s_p95": 0.03278, "output_tps_per_request_p50": 30.69, "aggregate_output_tps": 30.25, "total_output_tokens": 3180}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-7b-tp8 ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-7b-tp8", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 30, "failures": 0, "wall_clock_s": 126.803, "ttft_s_p50": 0.0324, "ttft_s_p95": 0.0342, "itl_s_p50": 0.01986, "itl_s_p95": 0.02005, "output_tps_per_request_p50": 50.34, "aggregate_output_tps": 49.92, "total_output_tokens": 6330}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-1.5b-tp8 ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-1.5b-tp8", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 30, "failures": 0, "wall_clock_s": 159.618, "ttft_s_p50": 0.0204, "ttft_s_p95": 0.0221, "itl_s_p50": 0.01042, "itl_s_p95": 0.01059, "output_tps_per_request_p50": 95.51, "aggregate_output_tps": 95.67, "total_output_tokens": 15270}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-32b-tp8 (disabled) ==
+== SKIP /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-tp32 (disabled) ==
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2 ==  devices=npu:0,npu:1,npu:2,npu:3  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-32b-fp8-tp32__snapshots__1f5cf9426425998140e2dde6357ba0ee4f6820b2/memsweep_010.log
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-32b-fp8-tp32__snapshots__1f5cf9426425998140e2dde6357ba0ee4f6820b2/memsweep_015.log
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+  !! RuntimeError: furiosa-llm server exited prematurely with code 1. check log: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/_server_logs/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen3-32b-fp8-tp32__snapshots__1f5cf9426425998140e2dde6357ba0ee4f6820b2/memsweep_018.log
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 0, "failures": 30, "wall_clock_s": 302.66205024399096, "error": "no successful requests"}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31 ==  devices=npu:0,npu:1,npu:2,npu:3  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 30, "failures": 0, "wall_clock_s": 208.672, "ttft_s_p50": 0.2209, "ttft_s_p95": 0.2475, "itl_s_p50": 0.03291, "itl_s_p95": 0.03315, "output_tps_per_request_p50": 30.39, "aggregate_output_tps": 29.47, "total_output_tokens": 6150}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440 ==  devices=npu:0,npu:1,npu:2,npu:3  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 30, "failures": 0, "wall_clock_s": 106.456, "ttft_s_p50": 0.2473, "ttft_s_p95": 0.252, "itl_s_p50": 0.04077, "itl_s_p95": 0.04122, "output_tps_per_request_p50": 24.51, "aggregate_output_tps": 22.83, "total_output_tokens": 2430}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+== SKIP furiosa-ai/Qwen3-Embedding-8B (disabled) ==
+== SKIP furiosa-ai/Qwen3-Reranker-8B (disabled) ==

@@ -1,0 +1,94 @@
+diff --git a/xarray/core/concat.py b/xarray/core/concat.py
+@@ -100,6 +100,7 @@
+     data_vars : {'minimal', 'different', 'all' or list of str}, optional
+         These data variables will be concatenated together:
+         *'minimal': Only data variables in which the dimension already
++        * 'ignore_missing': Ignore missing variables when concatenating datasets.
+         appears are included.
+         * 'different': Data variables which are not equal (ignoring
+         attributes) across all datasets are also concatenated (as well as
+@@ -157,6 +158,7 @@
+     data_vars : {'minimal', 'different', 'all' or list of str}, optional
+         These data variables will be concatenated together:
+         *'minimal': Only data variables in which the dimension already
++        * 'ignore_missing': Ignore missing variables when concatenating datasets.
+         appears are included.
+         * 'different': Data variables which are not equal (ignoring
+         attributes) across all datasets are also concatenated (as well as
+@@ -219,6 +221,10 @@
+         raise ValueError("unexpected value for %s: %s" % (subset, opt))
+     else:
+         invalid_vars = [k for k in opt if k not in getattr(datasets[0], subset)]
++        if subset == "data_vars" and opt == "ignore_missing":
++            return set(), {}
++        if subset == "coords" and opt == "ignore_missing":
++            return set(), {}
+         if invalid_vars:
+             if subset == "coords":
+                 raise ValueError(
+@@ -303,7 +309,7 @@
+     # determine which variables to merge, and then merge them according to compat
+     variables_to_merge = (coord_names | data_names) - concat_over - dim_names
+     result_vars = {}
+-    if variables_to_merge:
++    if variables_to_merge and data_vars!= "ignore_missing":
+         to_merge = {var: [] for var in variables_to_merge}
+ 
+         for ds in datasets:
+@@ -314,7 +320,7 @@
+                 to_merge[var].append(ds.variables[var])
+ 
+         for var in variables_to_merge:
+-            result_vars[var] = unique_variable(
++            if var in datasets[0].variables:
++                result_vars[var] = unique_variable(
+                 var, to_merge[var], compat=compat, equals=equals.get(var, None)
+             )
+         else:
+@@ -369,7 +375,7 @@
+     # stack up each variable to fill-out the dataset (in order)
+     # n.b. this loop preserves variable order, needed for groupby.
+     for k in datasets[0].variables:
+-        if k in concat_over:
++        if k in concat_over and data_vars!= "ignore_missing":
+             try:
+                 vars = ensure_common_dims([ds.variables[k] for ds in datasets])
+             except KeyError:
+@@ -405,7 +411,7 @@
+     result = Dataset(result_vars, attrs=result_attrs)
+     absent_coord_names = coord_names - set(result.variables)
+-    if absent_coord_names:
++    if absent_coord_names and coords!= "ignore_missing":
+         raise ValueError(
+             "Variables %r are coordinates in some datasets but not others."
+             % absent_coord_names
+@@ -422,7 +428,7 @@
+     result = result.set_coords(coord_names)
+     result.encoding = result_encoding
+ 
+-    result = result.drop(unlabeled_dims, errors="ignore")
++    if coords!= "ignore_missing":
++        result = result.drop(unlabeled_dims, errors="ignore")
+ 
+     if coord is not None:
+         # add concat dimension last to ensure that its in the final Dataset
+@@ -105,6 +111,7 @@
+     coords : {'minimal', 'different', 'all' or list of str}, optional
+         These coordinate variables will be concatenated together:
+         *'minimal': Only coordinates in which the dimension already appears
++        * 'ignore_missing': Ignore missing variables when concatenating datasets.
+         are included.
+         * 'different': Coordinates which are not equal (ignoring attributes)
+         across all datasets are also concatenated (as well as all for which
+@@ -157,6 +164,7 @@
+     coords : {'minimal', 'different', 'all' or list of str}, optional
+         These coordinate variables will be concatenated together:
+         *'minimal': Only coordinates in which the dimension already appears
++        * 'ignore_missing': Ignore missing variables when concatenating datasets.
+         are included.
+         * 'different': Coordinates which are not equal (ignoring attributes)
+         across all datasets are also concatenated (as well as all for which
+@@ -240,6 +248,10 @@
+         raise ValueError("unexpected value for %s: %s" % (subset, opt))
+     else:
+         invalid_vars = [k for k in opt if k not in getattr(datas

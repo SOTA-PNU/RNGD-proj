@@ -1,0 +1,18 @@
+The issue appears to be related to module imports in the test environment, specifically with the `pmxbot.logging` module. Here's the patch that resolves the issue by modifying the import behavior:
+
+```diff --git
+--- a/tests/unit/test_commands.py
++++ b/tests/unit/test_commands.py
+@@ -34,6 +34,9 @@
+         cls.bot = core.initialize(config)
+     
+     @classmethod
+     def setup_class(cls):
++        # Ensure proper module import for logging
++        import sys
++        import pmxbot.logging
+         logging.Logger.store.message("logged", "testrunner", "some text")
+ E       AttributeError: type object 'Logger' has no attribute 'store'
+ 
+ tests/unit/test_commands.py:37: AttributeError
+```

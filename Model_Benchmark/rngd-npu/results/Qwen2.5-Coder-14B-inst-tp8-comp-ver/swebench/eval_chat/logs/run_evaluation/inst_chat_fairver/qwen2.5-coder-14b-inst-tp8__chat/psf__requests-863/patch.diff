@@ -1,0 +1,61 @@
+diff --git i/docs/user_guide.md w/docs/user_guide.md  
+index ffaaeeb..cddcdaa  
+--- i/docs/user_guide.md  
++++ w/docs/user_guide.md  
+@@\@ \-\-\-\-\-\-\-\-\-\-\-\-\-- \+\+\+\+\+\+\+\+\+\+\++\@\@\@  
+\* \* \*  
+  
+## User Guide  
+  
+This guide provides information on how users interact with our application.
+
+### Getting Started
+
+To begin using our application:
+
+```bash  
+$ git clone https://github.com/example/repo.git  
+$ cd repo  
+$ npm install && npm run dev-server  
+```  
+
+### Features
+
+Our application offers several features:
+
+#### Feature One
+
+Description...
+
+#### Feature Two
+
+Description...
+
+### Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+```bash   
+$ git checkout develop   
+$ git checkout \--orphan my-feature   
+$ echo "My New Feature" >> README.md   
+$ git add README.md   
+$ git commit \--message "Add My New Feature"   
+$ git push origin my-feature    
+```  
+
+For more details see [CONTRIBUTING](CONTRIBUTING.md).
+
+### License
+
+This project uses MIT License.
+
+---
+
+Please note:
+
+* Replace placeholders like "example/repo", "README.md", etc., according your actual project details.
+
+* Ensure proper formatting after copying into your markdown editor; some platforms may require additional adjustments.
+
+If there’s anything specific about your project structure where these instructions might differ slightly—such customization might also help clarify steps further!

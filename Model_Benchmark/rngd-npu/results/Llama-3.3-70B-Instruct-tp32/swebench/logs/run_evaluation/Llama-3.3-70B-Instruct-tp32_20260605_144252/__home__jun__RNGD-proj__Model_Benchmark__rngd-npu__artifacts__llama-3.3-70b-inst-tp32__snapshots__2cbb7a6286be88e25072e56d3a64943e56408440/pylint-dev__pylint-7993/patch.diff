@@ -1,0 +1,35 @@
+diff --git a/pylint/reporters/text.py b/pylint/reporters/text.py
+@@ -177,7 +177,7 @@
+         # Check to see if all parameters in the template are attributes of the Message
+         arguments = re.findall(r"\{(.+?)(:.*)?\}", template)
+         for argument in arguments:
+-            if argument[0] not in MESSAGE_FIELDS:
++            if argument[0] not in MESSAGE_FIELDS and not (argument[0].startswith('"') and argument[0].endswith('"')):
+                 warnings.warn(
+                     f"Don't recognize the argument '{argument[0]}' in the --msg-template. "
+                     "Are you sure it is supported on the current version of pylint?"
+@@ -185,7 +185,7 @@
+                 template = re.sub(r"\{" + argument[0] + r"(:.*?)?\}", "", template)
+         self._fixed_template = template
+-    def write_message(self, msg: Message) -> None:
++    def write_message(self, msg: dict) -> None:
+         """Convenience method to write a formatted message with class default
+         template.
+         """
+@@ -192,7 +192,7 @@
+         self_dict = msg
+         for key in ("end_line", "end_column"):
+             self_dict[key] = self_dict[key] or ""
+-        self.writeln(self._fixed_template.format(**asdict(msg)))
++        self.writeln(self._fixed_template.format(**self_dict))
+ 
+     def handle_message(self, msg: Message) -> None:
+         """Manage message of different type and in the context of path."""
+@@ -206,7 +206,7 @@
+             self.writeln("************* ")
+         self.write_message(msg.__dict__)
+-    def _display(self, layout: Section) -> None:
++    # def _display(self, layout: Section) -> None:
+         """Launch layouts display."""
+         # print(file=self.out)
+         # TextWriter().format(layout, self.out)

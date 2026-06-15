@@ -1,0 +1,54 @@
+<patch>
+--- a/sphinx/ext/napoleon/docstring.py
++++ b/sphinx/ext/napoleon/docstring.py
+@@ -100,7 +100,7 @@
+     def _escape_args_and_kwargs(self, name: str) -> str:
+         if name.endswith('_'):
+             name = name[:-1] + r'\_'
+-        
++
+         if name[:2] == '**':
+             return r'\*\*' + name[2:]
+         elif name[:1] == '*':
+@@ -110,7 +110,7 @@
+ 
+     def _fix_field_desc(self, desc: List[str]) -> List[str]:
+         if self._is_list(desc):
+-            desc = [''] + desc
++            desc = [''] + desc[1:]
+         elif desc[0].endswith('::'):
+             desc_block = desc[1:]
+             indent = self._get_indent(desc[0])
+@@ -120,7 +120,7 @@
+                 desc = [''] + desc
+             else:
+                 desc = ['', desc[0]] + self._indent(desc_block, 4)
+-        return desc
++        return desc[1:]
+ 
+     def _format_admonition(self, admonition: str, lines: List[str]) -> List[str]:
+         lines = self._strip_empty(lines)
+@@ -130,7 +130,7 @@
+             return ['.. %s:: %s' % (admonition, lines[0].strip()), '']
+         elif lines:
+             lines = self._indent(self._dedent(lines), 3)
+-            return ['.. %s::' % admonition, ''] + lines + ['']
++            return ['.. %s::' % admonition, ''] + lines
+         else:
+             return ['.. %s::' % admonition, '']
+ 
+@@ -140,7 +140,7 @@
+         if lines:
+             if padding is None:
+                 padding = ' ' * len(prefix)
+-            result_lines = []
++            result_lines = [prefix]
+             for i, line in enumerate(lines):
+                 if i == 0:
+                     result_lines.append((prefix + line).rstrip())
+@@ -150,7 +150,7 @@
+                 else:
+                     result_lines.append('')
+             return result_lines
+-        else:
++        else:  # pragma: no

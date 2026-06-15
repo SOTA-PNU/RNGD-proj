@@ -1,0 +1,40 @@
+diff --git a/pmxbot/core.py b/pmxbot/core.py
+@@ -1,5 +1,5 @@
+ import importlib
+-from pmxbot import logging
++from. import logging
+
+ def initialize(config):
+@@ -10,7 +10,7 @@
+     logging.Logger.store = logging.LogStore()
+     #... rest of the initialization code...
+-    return bot
++    import sys
++    sys.modules['pmxbot.logging'] = logging
++    return bot
+
+diff --git a/tests/unit/test_commands.py b/tests/unit/test_commands.py
+@@ -30,7 +30,7 @@
+     @classmethod
+     def setup_class(cls):
+         path = os.path.dirname(os.path.abspath(__file__))
+         configfile = os.path.join(path, 'testconf.yaml')
+-        config = core.initialize(config)
++        config = core.initialize(config)
+         cls.bot = config
+         import sys
+         sys.modules['pmxbot.logging'] = __import__('pmxbot.logging')
+@@ -37,7 +37,7 @@
+         logging.Logger.store.message("logged", "testrunner", "some text")
+-    def test_something(self):
++    def test_something(self):
+         #... rest of the test code...
+
+diff --git a/pmxbot/logging.py b/pmxbot/logging.py
+@@ -1,5 +1,5 @@
+ class Logger:
+-    store = None
++    store = logging.LogStore()
+ 
+     def message(self, level, sender, text):
+         #... rest of the logging code...

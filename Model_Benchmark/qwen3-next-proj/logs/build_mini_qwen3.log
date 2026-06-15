@@ -1,0 +1,339 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:furiosa_llm.artifact.resolver:Found bucket preset for model_type=qwen3, hidden_size=512, intermediate_size=1536
+INFO:furiosa_llm.artifact.resolver:Filtered bucket preset by max_model_len=2048
+INFO:furiosa_llm.artifact.validator:The computed bucket limits are 1024
+INFO:furiosa_llm.utils:Calculated the hashsum in 0.298s for 'mini_models/mini-qwen3' (files=6, size=319.15 MB, throughput=1071.67 MB/s)
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py:Failed to get parameter file from cache for model mini-qwen3_2L_furiosa.models.language.architecture.qwen3.modeling_W16A16KV16.
+INFO:furiosa_llm.metadata.metadata:[1;36m(Loading mini-qwen3_2L_furiosa.models.language.architecture.qwen3.modeling_W16A16KV16)[0m
+`torch_dtype` is deprecated! Use `dtype` instead!
+WARNING:furiosa.models.language.config:Casting bfloat16 to torch.bfloat16.
+INFO:furiosa.models.common.load.loader:Loading weights from local path: ./mini_models/mini-qwen3
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py:[CACHE] Saved /home/jun/.cache/furiosa/llm/param_files/params-928364e2b9c1-modeling-2L-W16A16KV16-shard_size=5000000000-f80b73485f3a37b6fd65669966e244e1fbb5b81f5619d8027dc0deb1390cd922.safetensors 
+INFO:furiosa_llm.artifact.builder:Attention buckets: [AttentionBucket(batch_size=1, attention_size=128, kv_cache_size=0),
+ AttentionBucket(batch_size=1, attention_size=1024, kv_cache_size=1023),
+ AttentionBucket(batch_size=1, attention_size=256, kv_cache_size=128)]
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py:Building local pipelines for 3 buckets: [AttentionBucket(batch_size=1, attention_size=128, kv_cache_size=0), AttentionBucket(batch_size=1, attention_size=1024, kv_cache_size=1023), AttentionBucket(batch_size=1, attention_size=256, kv_cache_size=128)]
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py:Number of pipeline builder workers: 1, Number of CPUs per pipeline build worker: 1
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py:Number of compile workers: 1, Number of CPUs per compile worker: 1
+2026-06-10 04:01:35,287	INFO worker.py:2003 -- Started a local Ray instance. View the dashboard at [1m[32mhttp://127.0.0.1:8265 [39m[22m
+/home/jun/furiosa/lib/python3.12/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Model Tracing Progress:   0%|          | 0/3 [00:00<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:01<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:02<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:03<?, ?it/s][36m(pid=1126495)[0m /home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+[36m(pid=1126495)[0m   from furiosa.models.core.attention.backends import LLMAttentionBackend
+Model Tracing Progress:   0%|          | 0/3 [00:04<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:06<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:06<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:06<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:06<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:07<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:07<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:07<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:07<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:07<?, ?it/s]                                                             Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:08<00:16,  8.00s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:09<00:18,  9.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:10<00:20, 10.01s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:10<00:05,  5.10s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:10<00:05,  5.10s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:10<00:05,  5.10s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:10<00:05,  5.10s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:10<00:05,  5.10s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:11<00:05,  5.61s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:11<00:05,  5.61s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:11<00:05,  5.61s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:11<00:05,  5.61s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:11<00:05,  5.61s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:12<00:06,  6.11s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:12<00:06,  6.11s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:12<00:06,  6.11s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:12<00:06,  6.11s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:12<00:06,  6.11s/it]                                                                     Model Tracing Progress: 100%|██████████| 3/3 [00:12<00:00,  4.09s/it]                                                                     Model Tracing Progress: 100%|██████████| 3/3 [00:12<00:00,  4.09s/it]                                                                     Model Tracing Progress: 100%|██████████| 3/3 [00:12<00:00,  4.09s/it]Model Tracing Progress: 100%|██████████| 3/3 [00:12<00:00,  4.09s/it]Model Tracing Progress: 100%|██████████| 3/3 [00:14<00:00,  4.81s/it]                                                                     2026-06-10 04:01:55,123	INFO worker.py:2003 -- Started a local Ray instance. View the dashboard at [1m[32mhttp://127.0.0.1:8265 [39m[22m
+[pid=1126495] [INFO][furiosa_llm.metadata.metadata] [1;36m(Loading mini-qwen3_2L_furiosa.models.language.architecture.qwen3.modeling_W16A16KV16)[0m
+[pid=1126495] [WARNING][furiosa.models.language.config] Casting bfloat16 to torch.bfloat16.
+[pid=1126495] [INFO][furiosa.models.common.load.loader] Loading weights from local path: ./mini_models/mini-qwen3
+[pid=1126495 fd=stderr] `torch_dtype` is deprecated! Use `dtype` instead!
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] Generating ATen graph from torch ir graph.
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] ATen graph generation took 0.14 seconds.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] 26 weights will be saved in separate param files instead of in the GraphModule caching.
+[pid=1126495] [WARNING][root] Detected dead nodes: set(). Since `color_dead_nodes_with_1=True`, they will remain in the graph and be assigned a color `1`.
+[pid=1126495] [WARNING][py.warnings] /home/jun/furiosa/lib/python3.12/site-packages/networkx/utils/backends.py:551: UserWarning: The hashes produced for directed graphs changed in version v3.5 due to a bugfix to track in and out edges separately (see documentation).
+  return self.orig_func(*args, **kwargs)
+
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Marking not repeating constants for blocks takes 0.00 seconds
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks took 0.21 seconds
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] Generating ATen graph from torch ir graph.
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] ATen graph generation took 0.22 seconds.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] 26 weights will be saved in separate param files instead of in the GraphModule caching.
+[pid=1126495] [WARNING][root] Detected dead nodes: set(). Since `color_dead_nodes_with_1=True`, they will remain in the graph and be assigned a color `1`.
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Marking not repeating constants for blocks takes 0.00 seconds
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks took 0.21 seconds
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] Generating ATen graph from torch ir graph.
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] ATen graph generation took 0.15 seconds.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] 26 weights will be saved in separate param files instead of in the GraphModule caching.
+[pid=1126495] [WARNING][root] Detected dead nodes: set(). Since `color_dead_nodes_with_1=True`, they will remain in the graph and be assigned a color `1`.
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Marking not repeating constants for blocks takes 0.00 seconds
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1126495] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks took 0.51 seconds
+Compilation Progress:   0%|          | 0/6 [00:00<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:01<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:02<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:03<?, ?it/s][90m(pid=1135893)[0m /home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+[90m(pid=1135893)[0m   from furiosa.models.core.attention.backends import LLMAttentionBackend
+Compilation Progress:   0%|          | 0/6 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:05<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:06<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:07<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:08<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:09<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:10<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:11<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:12<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:13<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:14<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:15<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:16<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:17<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:18<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:19<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:20<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:21<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:22<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:23<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:24<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:25<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:26<?, ?it/s]Compilation Progress:   0%|          | 0/6 [00:27<?, ?it/s]                                                           Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.07s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]Compilation Progress:  17%|█▋        | 1/6 [00:28<02:20, 28.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]                                                                   Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]Compilation Progress:  17%|█▋        | 1/6 [00:29<02:25, 29.08s/it]Compilation Progress:  17%|█▋        | 1/6 [00:30<02:30, 30.09s/it]Compilation Progress:  17%|█▋        | 1/6 [00:31<02:35, 31.09s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:31<01:02, 15.59s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:31<01:02, 15.59s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:31<01:02, 15.59s/it]Compilation Progress:  33%|███▎      | 2/6 [00:31<01:02, 15.59s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]Compilation Progress:  33%|███▎      | 2/6 [00:32<01:04, 16.10s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   [pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Bucket batch_size=1 attention_size=128 kv_cache_size=0 is given for tokenwise-kernel compilation.
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=Embedding(), end=TransformerBlock(idx=0, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>))
+Bucket configuration: batch_size=1 attention_size=128 kv_cache_size=0
+Using activation dequantization: False
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_0, symbol values: (SymbolVal(val='128'),), layer range: LayerRange(start=Embedding(), end=TransformerBlock(idx=0, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>))
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1135893] [WARNING][py.warnings] /home/jun/furiosa/lib/python3.12/site-packages/networkx/utils/backends.py:551: UserWarning: The hashes produced for directed graphs changed in version v3.5 due to a bugfix to track in and out edges separately (see documentation).
+  return self.orig_func(*args, **kwargs)
+
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: 59cd31c46b7b9a08941c400c9e2675a0
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : 59cd31c46b7b9a08941c400c9e2675a0+1_128_128
+[pid=1135893 fd=stderr] [1/12] 🔍   Compiling from dfg to primitive
+[pid=1135893 fd=stderr] Done in 0.033713873s
+[pid=1135893 fd=stderr] [2/12] 🔍   Compiling from primitive to kernelized
+[pid=1135893 fd=stderr] Done in 0.0094527s
+[pid=1135893 fd=stderr] [3/12] 🔍   Compiling from kernelized to prelower
+[pid=1135893 fd=stderr] Done in 0.00168095s
+[pid=1135893 fd=stderr] [4/12] 🔍   Compiling from prelower to postlower
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+Bucket configuration: batch_size=1 attention_size=128 kv_cache_size=0
+Using activation dequantization: False
+[pid=1135893 fd=stderr] Done in 21.117939s
+[pid=1135893 fd=stderr] [5/12] 🔍   Compiling from postlower to precommandgen
+[pid=1135893 fd=stderr] Done in 0.008960707s
+[pid=1135893 fd=stderr] [6/12] 🔍   Compiling from precommandgen to commandgraph
+[pid=1135893 fd=stderr] Done in 0.029230246s
+[pid=1135893 fd=stderr] [7/12] 🔍   Compiling from commandgraph to tiledgraph
+[pid=1135893 fd=stderr] Done in 0.005521221s
+[pid=1135893 fd=stderr] [8/12] 🔍   Compiling from tiledgraph to ldfg
+[pid=1135893 fd=stderr] Done in 0.002207298s
+[pid=1135893 fd=stderr] [9/12] 🔍   Compiling from ldfg to cdfg
+[pid=1135893 fd=stderr] Done in 0.023218589s
+[pid=1135893 fd=stderr] [10/12] 🔍   Compiling from cdfg to lir
+[pid=1135893 fd=stderr] Done in 1.362228s
+[pid=1135893 fd=stderr] [11/12] 🔍   Compiling from lir to resourcelir
+[pid=1135893 fd=stderr] Done in 0.030299678s
+[pid=1135893 fd=stderr] [12/12] 🔍   Compiling from resourcelir to edf
+[pid=1135893 fd=stderr] Done in 0.48933786s
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_1, symbol values: (SymbolVal(val='1'), SymbolVal(val='128'), SymbolVal(val='128')), layer range: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+[pid=1135893 fd=stderr] ✨  Finished in 23.114836s
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: a40e747eccab3b132dd2bcce227f63ad
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : a40e747eccab3b132dd2bcce227f63ad+1_128_128
+[pid=1135893 fd=stderr] [1/12] 🔍   Compiling from dfg to primitive
+[pid=1135893 fd=stderr] Done in 0.013413037s
+[pid=1135893 fd=stderr] [2/12] 🔍   Compiling from primitive to kernelized
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+Bucket configuration: batch_size=1 attention_size=1024 kv_cache_size=1023
+Using activation dequantization: False
+[pid=1135893 fd=stderr] Done in 0.002421263s
+[pid=1135893 fd=stderr] [3/12] 🔍   Compiling from kernelized to prelower
+[pid=1135893 fd=stderr] Done in 0.000444272s
+[pid=1135893 fd=stderr] [4/12] 🔍   Compiling from prelower to postlower
+[pid=1135893 fd=stderr] Done in 2.500154s
+[pid=1135893 fd=stderr] [5/12] 🔍   Compiling from postlower to precommandgen
+[pid=1135893 fd=stderr] Done in 0.00625052s
+[pid=1135893 fd=stderr] [6/12] 🔍   Compiling from precommandgen to commandgraph
+[pid=1135893 fd=stderr] Done in 0.010175175s
+[pid=1135893 fd=stderr] [7/12] 🔍   Compiling from commandgraph to tiledgraph
+[pid=1135893 fd=stderr] Done in 0.001512556s
+[pid=1135893 fd=stderr] [8/12] 🔍   Compiling from tiledgraph to ldfg
+[pid=1135893 fd=stderr] Done in 0.000749428s
+[pid=1135893 fd=stderr] [9/12] 🔍   Compiling from ldfg to cdfg
+[pid=1135893 fd=stderr] Done in 0.004402235s
+[pid=1135893 fd=stderr] [10/12] 🔍   Compiling from cdfg to lir
+[pid=1135893 fd=stderr] Done in 0.073519744s
+[pid=1135893 fd=stderr] [11/12] 🔍   Compiling from lir to resourcelir
+[pid=1135893 fd=stderr] Done in 0.013322077s
+[pid=1135893 fd=stderr] [12/12] 🔍   Compiling from resourcelir to edf
+[pid=1135893 fd=stderr] Done in 0.30844358s
+[pid=1135893 fd=stderr] ✨  Finished in 2.934924s
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_1, symbol values: (SymbolVal(val='1'), SymbolVal(val='1'), SymbolVal(val='1024')), layer range: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: bd01e9d4b0f6ed75588f1818a1d411cb
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : bd01e9d4b0f6ed75588f1818a1d411cb+1_1_1024
+[pid=1135893 fd=stderr] [1/12] 🔍   Compiling from dfg to primitive
+[pid=1135893 fd=stderr] Done in 0.016826712s
+[pid=1135893 fd=stderr] [2/12] 🔍   Compiling from primitive to kernelized
+[pid=1135893 fd=stderr] Done in 0.004188542s
+[pid=1135893 fd=stderr] [3/12] 🔍   Compiling from kernelized to prelower
+[pid=1135893 fd=stderr] Done in 0.001110873s
+[pid=1135893 fd=stderr] [4/12] 🔍   Compiling from prelower to postlower
+[pid=1135893 fd=stderr] Done in 0.87887055s
+[pid=1135893 fd=stderr] [5/12] 🔍   Compiling from postlower to precommandgen
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+Bucket configuration: batch_size=1 attention_size=256 kv_cache_size=128
+Using activation dequantization: FalseCompilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]Compilation Progress:  50%|█████     | 3/6 [00:33<00:33, 11.04s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]                                                                   Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]Compilation Progress:  50%|█████     | 3/6 [00:34<00:34, 11.40s/it]Compilation Progress:  50%|█████     | 3/6 [00:35<00:35, 11.73s/it]Compilation Progress:  50%|█████     | 3/6 [00:36<00:36, 12.07s/it]Compilation Progress:  50%|█████     | 3/6 [00:37<00:37, 12.40s/it]Compilation Progress:  50%|█████     | 3/6 [00:38<00:38, 12.74s/it]Compilation Progress:  50%|█████     | 3/6 [00:39<00:39, 13.07s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:40<00:20, 10.03s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]                                                                   Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:41<00:20, 10.28s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:42<00:21, 10.53s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:43<00:21, 10.78s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:44<00:22, 11.03s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:45<00:22, 11.29s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:46<00:23, 11.54s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:47<00:23, 11.79s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:48<00:24, 12.04s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:49<00:24, 12.29s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:50<00:25, 12.54s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:51<00:25, 12.79s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:52<00:26, 13.04s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:53<00:26, 13.30s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:54<00:27, 13.55s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:55<00:27, 13.80s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:56<00:28, 14.05s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:57<00:28, 14.30s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:58<00:29, 14.55s/it]Compilation Progress:  67%|██████▋   | 4/6 [00:59<00:29, 14.80s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:00<00:30, 15.05s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:01<00:30, 15.31s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:02<00:31, 15.56s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:03<00:31, 15.81s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:04<00:32, 16.06s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:05<00:32, 16.31s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:06<00:33, 16.56s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:07<00:33, 16.81s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:08<00:34, 17.06s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:09<00:34, 17.32s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:10<00:35, 17.57s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:11<00:35, 17.82s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:12<00:36, 18.07s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:13<00:36, 18.32s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:14<00:37, 18.57s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:15<00:37, 18.82s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:16<00:38, 19.07s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:17<00:38, 19.33s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:18<00:39, 19.58s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:19<00:39, 19.83s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:20<00:40, 20.08s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:21<00:40, 20.33s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:22<00:41, 20.58s/it]Compilation Progress:  67%|██████▋   | 4/6 [01:23<00:41, 20.83s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:23<00:16, 16.73s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]                                                                   Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:24<00:16, 16.93s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:25<00:17, 17.14s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:26<00:17, 17.34s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:27<00:17, 17.54s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:28<00:17, 17.74s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:29<00:17, 17.94s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:30<00:18, 18.14s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:31<00:18, 18.34s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:32<00:18, 18.54s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:33<00:18, 18.74s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:34<00:18, 18.94s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:35<00:19, 19.14s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:36<00:19, 19.35s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:37<00:19, 19.55s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:38<00:19, 19.75s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:39<00:19, 19.95s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:40<00:20, 20.15s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:41<00:20, 20.35s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:42<00:20, 20.55s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:43<00:20, 20.75s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:44<00:20, 20.95s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:45<00:21, 21.15s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:46<00:21, 21.36s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:47<00:21, 21.56s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:48<00:21, 21.76s/it]Compilation Progress:  83%|████████▎ | 5/6 [01:49<00:21, 21.96s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   
+[pid=1135893 fd=stderr] Done in 0.006085143s
+[pid=1135893 fd=stderr] [6/12] 🔍   Compiling from precommandgen to commandgraph
+[pid=1135893 fd=stderr] Done in 0.015646892s
+[pid=1135893 fd=stderr] [7/12] 🔍   Compiling from commandgraph to tiledgraph
+[pid=1135893 fd=stderr] Done in 0.002591125s
+[pid=1135893 fd=stderr] [8/12] 🔍   Compiling from tiledgraph to ldfg
+[pid=1135893 fd=stderr] Done in 0.001254901s
+[pid=1135893 fd=stderr] [9/12] 🔍   Compiling from ldfg to cdfg
+[pid=1135893 fd=stderr] Done in 0.009358365s
+[pid=1135893 fd=stderr] [10/12] 🔍   Compiling from cdfg to lir
+[pid=1135893 fd=stderr] Done in 0.1596233s
+[pid=1135893 fd=stderr] [11/12] 🔍   Compiling from lir to resourcelir
+[pid=1135893 fd=stderr] Done in 0.016749948s
+[pid=1135893 fd=stderr] [12/12] 🔍   Compiling from resourcelir to edf
+[pid=1135893 fd=stderr] Done in 0.5397602s
+[pid=1135893 fd=stderr] ✨  Finished in 1.6521914s
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_1, symbol values: (SymbolVal(val='1'), SymbolVal(val='128'), SymbolVal(val='256')), layer range: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: 5caaeb0672f6355b0b4c639242430c05
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : 5caaeb0672f6355b0b4c639242430c05+1_128_256
+[pid=1135893 fd=stderr] [1/12] 🔍   Compiling from dfg to primitive
+[pid=1135893 fd=stderr] Done in 0.013582355s
+[pid=1135893 fd=stderr] [2/12] 🔍   Compiling from primitive to kernelized
+[pid=1135893 fd=stderr] Done in 0.00314598s
+[pid=1135893 fd=stderr] [3/12] 🔍   Compiling from kernelized to prelower
+[pid=1135893 fd=stderr] Done in 0.000800456s
+[pid=1135893 fd=stderr] [4/12] 🔍   Compiling from prelower to postlower
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Bucket batch_size=1 attention_size=128 kv_cache_size=0 is given for tokenwise-kernel compilation.
+[pid=1135893 fd=stderr] Done in 5.9035997s
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.OutputProjection: 'output_projection'>), end=TransformerBlock(idx=1, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>))
+Bucket configuration: batch_size=1 attention_size=128 kv_cache_size=0
+Using activation dequantization: False
+[pid=1135893 fd=stderr] [5/12] 🔍   Compiling from postlower to precommandgen
+[pid=1135893 fd=stderr] Done in 0.007551478s
+[pid=1135893 fd=stderr] [6/12] 🔍   Compiling from precommandgen to commandgraph
+[pid=1135893 fd=stderr] Done in 0.016370665s
+[pid=1135893 fd=stderr] [7/12] 🔍   Compiling from commandgraph to tiledgraph
+[pid=1135893 fd=stderr] Done in 0.002791954s
+[pid=1135893 fd=stderr] [8/12] 🔍   Compiling from tiledgraph to ldfg
+[pid=1135893 fd=stderr] Done in 0.001317125s
+[pid=1135893 fd=stderr] [9/12] 🔍   Compiling from ldfg to cdfg
+[pid=1135893 fd=stderr] Done in 0.010808561s
+[pid=1135893 fd=stderr] [10/12] 🔍   Compiling from cdfg to lir
+[pid=1135893 fd=stderr] Done in 0.21678732s
+[pid=1135893 fd=stderr] [11/12] 🔍   Compiling from lir to resourcelir
+[pid=1135893 fd=stderr] Done in 0.019873543s
+[pid=1135893 fd=stderr] [12/12] 🔍   Compiling from resourcelir to edf
+[pid=1135893 fd=stderr] Done in 0.62399065s
+[pid=1135893 fd=stderr] ✨  Finished in 6.8207445s
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_2, symbol values: (SymbolVal(val='128'),), layer range: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.OutputProjection: 'output_projection'>), end=TransformerBlock(idx=1, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>))
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: 4c31c19e76e0e0493b51b79e74de68fa
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : 4c31c19e76e0e0493b51b79e74de68fa+1_128_128
+[pid=1135893 fd=stderr] [1/12] 🔍   Compiling from dfg to primitive
+[pid=1135893 fd=stderr] Done in 0.018921766s
+[pid=1135893 fd=stderr] [2/12] 🔍   Compiling from primitive to kernelized
+[pid=1135893 fd=stderr] Done in 0.005056966s
+[pid=1135893 fd=stderr] [3/12] 🔍   Compiling from kernelized to prelower
+[pid=1135893 fd=stderr] Done in 0.000758874s
+[pid=1135893 fd=stderr] [4/12] 🔍   Compiling from prelower to postlower
+[pid=1135893 fd=stderr] Done in 41.55103s
+[pid=1135893 fd=stderr] [5/12] 🔍   Compiling from postlower to precommandgen
+[pid=1135893 fd=stderr] Done in 0.009996771s
+[pid=1135893 fd=stderr] [6/12] 🔍   Compiling from precommandgen to commandgraph
+[pid=1135893 fd=stderr] Done in 0.041394986s
+[pid=1135893 fd=stderr] [7/12] 🔍   Compiling from commandgraph to tiledgraph
+[pid=1135893 fd=stderr] Done in 0.008306138s
+[pid=1135893 fd=stderr] [8/12] 🔍   Compiling from tiledgraph to ldfg
+[pid=1135893 fd=stderr] Done in 0.004121427s
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Bucket batch_size=1 attention_size=128 kv_cache_size=0 is given for tokenwise-kernel compilation.
+[pid=1135893 fd=stderr] [9/12] 🔍   Compiling from ldfg to cdfg
+[pid=1135893 fd=stderr] Done in 0.025005165s
+[pid=1135893] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=TransformerBlock(idx=1, sub_layer=<SubLayerType.OutputProjection: 'output_projection'>), end=OutputHeadAndPostProcess())
+Bucket configuration: batch_size=1 attention_size=128 kv_cache_size=0
+Using activation dequantization: False
+[pid=1135893 fd=stderr] [10/12] 🔍   Compiling from cdfg to lir
+[pid=1135893 fd=stderr] Done in 0.95426834s
+[pid=1135893 fd=stderr] [11/12] 🔍   Compiling from lir to resourcelir
+[pid=1135893 fd=stderr] Done in 0.0513234s
+[pid=1135893 fd=stderr] [12/12] 🔍   Compiling from resourcelir to edf
+[pid=1135893 fd=stderr] Done in 0.63223696s
+[pid=1135893 fd=stderr] ✨  Finished in 43.30255s
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_4, symbol values: (SymbolVal(val='128'),), layer range: LayerRange(start=TransformerBlock(idx=1, sub_layer=<SubLayerType.OutputProjection: 'output_projection'>), end=OutputHeadAndPostProcess())
+[pid=1135893] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: fbe4c3e41122c57c7abac5849c7cfee8
+[pid=1135893] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : fbe4c3e41122c57c7abac5849c7cfee8+1_128_128
+[pid=1135893 fd=stderr] [1/12] 🔍   Compiling from dfg to primitive
+[pid=1135893 fd=stderr] Done in 0.011040818s
+[pid=1135893 fd=stderr] [2/12] 🔍   Compiling from primitive to kernelized
+[pid=1135893 fd=stderr] Done in 0.002774598s
+[pid=1135893 fd=stderr] [3/12] 🔍   Compiling from kernelized to prelower
+[pid=1135893 fd=stderr] Done in 0.000369134sCompilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]                                                                   Compilation Progress: 100%|██████████| 6/6 [01:49<00:00, 18.31s/it]Compilation Progress: 100%|██████████| 6/6 [01:51<00:00, 18.66s/it]                                                                   
+[pid=1135893 fd=stderr] [4/12] 🔍   Compiling from prelower to postlower
+[pid=1135893 fd=stderr] Done in 22.580666s
+[pid=1135893 fd=stderr] [5/12] 🔍   Compiling from postlower to precommandgen
+[pid=1135893 fd=stderr] Done in 0.005328418s
+[pid=1135893 fd=stderr] [6/12] 🔍   Compiling from precommandgen to commandgraph
+[pid=1135893 fd=stderr] Done in 0.022036703s
+[pid=1135893 fd=stderr] [7/12] 🔍   Compiling from commandgraph to tiledgraph
+[pid=1135893 fd=stderr] Done in 0.034837384s
+[pid=1135893 fd=stderr] [8/12] 🔍   Compiling from tiledgraph to ldfg
+[pid=1135893 fd=stderr] Done in 0.008298269s
+[pid=1135893 fd=stderr] [9/12] 🔍   Compiling from ldfg to cdfg
+[pid=1135893 fd=stderr] Done in 0.06631658s
+[pid=1135893 fd=stderr] [10/12] 🔍   Compiling from cdfg to lir
+[pid=1135893 fd=stderr] Done in 2.1346352s
+[pid=1135893 fd=stderr] [11/12] 🔍   Compiling from lir to resourcelir
+[pid=1135893 fd=stderr] Done in 0.3757818s
+[pid=1135893 fd=stderr] [12/12] 🔍   Compiling from resourcelir to edf
+[pid=1135893 fd=stderr] Done in 0.7529983s
+[pid=1135893 fd=stderr] ✨  Finished in 25.99522s
+Artifact Build Completed

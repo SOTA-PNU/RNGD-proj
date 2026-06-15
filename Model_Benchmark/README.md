@@ -19,15 +19,16 @@ Furiosa RNGD NPU와 NVIDIA GPU에서 같은 모델을 같은 방식으로 측정
 Model_Benchmark/
 ├── README.md                  이 문서
 ├── README_npu_gpu_result.md   NPU vs GPU 결과 비교
-├── rngd-npu/                  NPU 벤치마크
+├── rngd-npu/                  NPU 벤치마크 (furiosa-llm)
 │   ├── README.md
 │   ├── REPORT.md              측정 결과 리포트 (자동 생성)
+│   ├── run_all.sh             단계별 wrapper (preflight → smoke → gen → embed → swebench → report)
+│   ├── run_all/               run_all.sh 가 호출하는 파이썬 모음
 │   ├── configs/models.yaml    모델 목록과 측정 설정
-│   ├── orchestrator.py        모델별 테스트 자동 실행
-│   ├── runners/               테스트별 측정 코드
 │   └── results/               측정 결과 원본 (JSON)
-├── bench-gpu/                 GPU 벤치마크. 구조는 rngd-npu와 같음
+├── bench-gpu/                 GPU 벤치마크 (vLLM). 구조는 rngd-npu와 같음
 │   └── results/_archive_pre_match/   조건 정렬 전 측정 (보관용)
+├── info/                      참고 문서 모음 (빌드/서빙/내부 구조 설명)
 └── ppt/
     ├── RNGD_Benchmark.pdf
     └── RNGD_Benchmark.pptx
@@ -81,9 +82,13 @@ NPU prebuilt 모델은 컴파일할 때 컨텍스트 길이가 고정됩니다. 
 맞춘 근거는 [README_npu_gpu_result.md의 측정 조건 항목](README_npu_gpu_result.md#측정-조건을-맞춘-방법)에 정리해 두었습니다.
 
 임베딩·리랭커 모델(Qwen3-Embedding-8B, Qwen3-Reranker-8B)은 NPU에서만 측정했습니다.
-32B, 70B 모델은 NPU prebuilt가 RNGD 4카드를 요구해서 현재 2카드 환경에서는 빠졌습니다.
-`configs/models.yaml`에 정의는 되어 있어서, 4카드 환경이라면 `enabled: true`로 바꾸기만 하면
-코드 수정 없이 측정됩니다.
+
+> 측정 환경이 RNGD 4카드(32 PE)로 늘어, 32B·70B를 포함한 코드 모델 9종을 추가로 측정했습니다
+> (`configs/models.yaml` enabled:true 9종). 1카드(tp8)는 Qwen2.5-Coder 1.5B/7B/14B와 Qwen3-32B
+> 계열, 4카드(tp32)는 Qwen3-32B·EXAONE-4.0-32B·Llama-3.3-70B입니다.
+> Qwen2.5-Coder 3종과 EXAONE-4.0-32B, Llama-3.3-70B는 정상 서빙됐고, Qwen3-32B 계열은 서빙은
+> 되나 응답이 매우 느렸으며, Qwen3-Coder-30B-A3B는 FP8 MoE 커널이 없어 서빙에 실패했습니다.
+> 모델별 수치와 원인은 [rngd-npu/REPORT.md](rngd-npu/REPORT.md)에 정리되어 있습니다.
 
 ## 측정 환경 준비
 

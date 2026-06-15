@@ -1,0 +1,11 @@
+--- a/django/contrib/auth/tokens.py
++++ b/django/contrib/auth/tokens.py
+@@ -79,7 +79,7 @@
+ 94         # Truncate microseconds so that tokens are consistent even if the
+ 95         # database doesn't support microseconds.
+ 96         login_timestamp = '' if user.last_login is None else user.last_login.replace(microsecond=0, tzinfo=None)
+-97         return str(user.pk) + user.password + str(login_timestamp) + str(timestamp)
++97         return str(user.pk) + user.password + str(login_timestamp) + str(timestamp) + user.email
+ 98 
+ 99     def _num_seconds(self, dt):
+100         return int((dt - datetime(2001, 1, 1)).total_seconds())

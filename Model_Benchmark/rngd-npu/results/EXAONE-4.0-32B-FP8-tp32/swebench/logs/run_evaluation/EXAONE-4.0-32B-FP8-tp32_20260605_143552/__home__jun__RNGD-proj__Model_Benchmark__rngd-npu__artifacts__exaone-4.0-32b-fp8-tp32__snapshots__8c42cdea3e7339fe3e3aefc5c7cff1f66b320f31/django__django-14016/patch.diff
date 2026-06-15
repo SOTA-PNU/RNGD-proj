@@ -1,0 +1,19 @@
+--- a/django/db/models/query_utils.py
++++ b/django/db/models/query_utils.py
+@@ -30,7 +30,11 @@
+     def __or__(self, other):
+         return self._combine(other, self.OR)
+ 
+     def __and__(self, other):
+         return self._combine(other, self.AND)
+ 
++    def __init__(self, *args, _connector=None, _negated=False, **kwargs):
++        super().__init__(*args, _connector=_connector, _negated=_negated, **kwargs)
++        self._args = args
++        self._kwargs = kwargs
++        self._connector = _connector
++        self._negated = _negated
++        self._children = []
+ 
+     def _combine(self, other, conn):
+         if not isinstance(other, Q):

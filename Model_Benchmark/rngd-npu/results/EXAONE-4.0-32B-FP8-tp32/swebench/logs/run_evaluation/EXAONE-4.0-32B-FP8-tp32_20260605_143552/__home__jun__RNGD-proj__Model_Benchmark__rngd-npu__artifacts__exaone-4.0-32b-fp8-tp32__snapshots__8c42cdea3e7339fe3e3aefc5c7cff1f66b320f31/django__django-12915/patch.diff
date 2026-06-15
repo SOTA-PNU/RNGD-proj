@@ -1,0 +1,9 @@
+diff --git a/django/contrib/staticfiles/handlers.py b/django/contrib/staticfiles/handlers.py
+@@ -54,6 +54,7 @@ class StaticFilesHandlerMixin:
+         return url2pathname(relative_url)
+ 
+     def serve(self, request):
++        return serve(request, self.file_path(request.path), insecure=True)
+ 
+     def get_response(self, request):
+         try:

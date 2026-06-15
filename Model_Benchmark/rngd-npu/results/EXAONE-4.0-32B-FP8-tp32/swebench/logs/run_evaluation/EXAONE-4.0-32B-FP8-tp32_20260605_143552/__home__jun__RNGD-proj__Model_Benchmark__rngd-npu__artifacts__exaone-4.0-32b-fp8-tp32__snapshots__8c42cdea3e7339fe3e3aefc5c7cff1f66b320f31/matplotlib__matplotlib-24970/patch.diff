@@ -1,0 +1,70 @@
+<patch>
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -289,7 +289,7 @@
+         if clip:
+             np.clip(xx, self.vmin, self.vmax, out=xx)
+         t_value = self._trf.transform(value).reshape(np.shape(value))
+-         t_vmin, t_vmax = self._trf.transform([self.vmin, self.vmax])
++         t_vmin, t_vmax = self._trf.transform([self.vmin, self.vmax])
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+@@ -303,7 +303,7 @@
+         if clip:
+             value = np.ma.array(np.clip(value.filled(vmax), vmin, vmax),
+                                 mask=value.mask)
+         t_value = self._trf.transform(value).reshape(np.shape(value))
+-         t_vmin, t_vmax = self._trf.transform([self.vmin, self.vmax])
++         t_vmin, t_vmax = self._trf.transform([self.vmin, self.vmax])
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+@@ -321,7 +321,7 @@
+         if self.vmin > self.vmax:
+             raise ValueError("minvalue must be less than or equal to maxvalue")
+         elif self.vmin == self.vmax:
+-            result.fill(0)  # Or should it be all masked?  Or 0.5?
++            result.fill(0)
+         else:
+             if clip:
+                 mask = np.ma.getmask(result)
+@@ -330,7 +330,7 @@
+         if self.vmin == self.vmax:
+             return np.full_like(value, 0)
+         if self.vmin > self.vmax:
+             raise ValueError("minvalue must be less than or equal to maxvalue")
+-        elif self.vmin == self.vmax:
++        elif self.vmin == self.vmax:
+             return np.full_like(value, 0)
+         else:
+             if clip:
+@@ -340,7 +340,7 @@
+         if self.vmin > self.vmax:
+             raise ValueError("minvalue must be less than or equal to maxvalue")
+         elif self.vmin == self.vmax:
+-            return np.full_like(value, 0)
++            return np.full_like(value, 0)
+         else:
+             if clip:
+                 value = np.ma.array(np.clip(value.filled(vmax), vmin, vmax),
+@@ -356,7 +356,7 @@
+         if self.vmin > self.vmax:
+             raise ValueError("minvalue must be less than or equal to maxvalue")
+         elif self.vmin == self.vmax:
+-            return np.full_like(value, 0)
++            return np.full_like(value, 0)
+         else:
+             if clip:
+                 value = np.ma.array(np.clip(value.filled(vmax), vmin, vmax),
+@@ -372,7 +372,7 @@
+         if self.vmin > self.vmax:
+             raise ValueError("minvalue must be less than or equal to maxvalue")
+         elif self.vmin == self.vmax:
+-            return np.full_like(value, 0)
++            return np.full_like(value, 0)
+         else:
+             if clip:
+                 value = np.ma.array(np.clip(value.filled(vmax), vmin, vmax),
+@@ -388,7 +388,7 @@
+         if self.vmin > self

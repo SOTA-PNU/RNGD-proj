@@ -1,0 +1,59 @@
+<patch>
+--- a/sympy/core/mod.py
++++ b/sympy/core/mod.py
+@@ -24,6 +24,10 @@ class Mod(Function):
+     def eval(cls, p, q):
+         from sympy.core.add import Add
+         from sympy.core.mul import Mul
++        from sympy.core.numbers import Integer
++        from sympy.core.sympify import sympify
++        from sympy.core.singleton import S
++        from sympy.core.exprtools import gcd_terms
+         from sympy.polys.polytools import gcd
+ 
+         def doit(p, q):
+@@ -31,6 +35,10 @@ class Mod(Function):
+             if p.is_infinite or q.is_infinite or p is nan or q is nan:
+                 return nan
+             if (p == q or p == -q or
++                    p.is_Pow and p.exp.is_Integer and p.base == q or
++                    p.is_integer and q == 1):
++                return S.Zero
++            if (p.is_integer and q.is_integer and
+                     p.is_Pow and p.exp.is_Integer and p.base == q or
+                     p.is_integer and q == 1):
+                 return S.Zero
+@@ -40,6 +48,10 @@ class Mod(Function):
+                 if p.is_Number:
+                     return (p % q)
+                 if q == 2:
++                    if p.is_even:
++                        return S.Zero
++                    elif p.is_odd:
++                        return S.One
+                     if p.is_even:
+                         return S.Zero
+                     elif p.is_odd:
+@@ -50,6 +62,10 @@ class Mod(Function):
+                 d = int(r)
+             except TypeError:
+                 pass
++            else:
++                if type(d) is int:
++                    rv = p - d*q
++                    if (rv*q < 0) == True:
++                        rv += q
++                    return rv
+             else:
+                 if type(d) is int:
+                     rv = p - d*q
+@@ -60,6 +76,10 @@ class Mod(Function):
+             if d.is_negative:
+                 if q.is_negative:
+                     return d
++                elif q.is_positive:
++                    return p
++            elif d.is_positive:
++                if q.is_negative:
++                    return -d
++                elif q.is_positive:

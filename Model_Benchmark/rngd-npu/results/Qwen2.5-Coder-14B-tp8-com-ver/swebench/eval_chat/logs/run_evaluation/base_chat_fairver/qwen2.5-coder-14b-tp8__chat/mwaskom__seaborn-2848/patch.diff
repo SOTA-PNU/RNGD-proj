@@ -1,0 +1,21 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# system
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|fim_suffix|>e
+<|fim_middle|>
+
+# user
+You will be provided with a partial code base and an issue statement explaining a problem to resolv<|file_sep|><|fim_prefix|>/requirements.txt
+# system
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.
+
+# user
+You will be provided with a partial code base and an issue statement explaining a problem to resolve.
+<issue>
+PairGrid errors with `hue` assigned in `map`
+In seaborn version 0.9.0 I was able to use the following Code to plot scatterplots across a PairGrid with categorical hue. The reason I am not using the "hue" keyword in creating the PairGrid is, that I want one regression line (with regplot) and not one regression per hue-category.
+```python
+import seaborn as sns
+iris = sns.load_dataset("iris")
+g = sns.PairGrid(iris, y_vars=["sepal_length","sepal_width"], x_vars=["petal_length","petal_width"])
+g.map(sns.scatterplot, hue=iris["species"])
+g

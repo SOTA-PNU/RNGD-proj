@@ -1,0 +1,59 @@
+<patch>
+--- a/src/_pytest/assertion/util.py
++++ b/src/_pytest/assertion/util.py
+@@ -10,6 +10,7 @@
+ import _pytest._code
+ from _pytest import outcomes
+ from _pytest._io.saferepr import saferepr
++from _pytest.compat import is_py2
+ 
+ # The _reprcompare attribute on the util module is used by the new assertion
+ # interpretation code and assertion rewriter to detect this plugin was
+@@ -21,6 +22,10 @@
+ 
+ def format_explanation(explanation):
+     """This formats an explanation
++
++    Normally all embedded newlines are escaped, however there are
++    three exceptions: \n{, \n} and \n~.  The first two are intended
++    cover nested explanations, see function and attribute explanations
+     for examples (.visit_Call(), visit_Attribute()).  The last one is
+     for when one explanation needs to span multiple lines, e.g. when
+     displaying diffs.
+@@ -30,6 +35,10 @@
+     explanation = explanation
+     lines = _split_explanation(explanation)
+     result = _format_lines(lines)
++    if is_py2:
++        result = [line.decode('utf-8') for line in result]
++    else:
++        result = [line.encode('utf-8') for line in result]
+     return "\n".join(result)
+ 
+ def _split_explanation(explanation):
+@@ -100,6 +109,10 @@
+     return result
+ 
+ def issequence(x):
++    if is_py2:
++        return isinstance(x, (list, tuple))
++    else:
++        return isinstance(x, Sequence) and not isinstance(x, str)
+     return isinstance(x, Sequence) and not isinstance(x, str)
+ 
+ def istext(x):
+@@ -110,6 +123,10 @@
+     return isinstance(x, dict)
+ 
+ def isset(x):
++    if is_py2:
++        return isinstance(x, (set, frozenset))
++    else:
++        return isinstance(x, (set, frozenset))
+     return isinstance(x, (set, frozenset))
+ 
+ def isdatacls(obj):
+@@ -120,6 +137,10 @@
+     return getattr(obj, "__attrs_attrs__", None) is not None
+ 
+ def is

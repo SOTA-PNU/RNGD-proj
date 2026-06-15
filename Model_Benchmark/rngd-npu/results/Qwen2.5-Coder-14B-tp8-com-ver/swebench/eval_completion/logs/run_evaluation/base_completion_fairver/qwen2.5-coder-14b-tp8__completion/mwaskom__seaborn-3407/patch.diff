@@ -1,0 +1,12 @@
+
+--- a/seaborn/axisgrid.py
++++ b/seaborn/axisgrid.py
+@@ -2141,7 +2141,7 @@
+         diag_kws.setdefault("legend", False)
+         if diag_kind == "hist":
+             grid.map_diag(histplot, **diag_kws)
+-        elif diag_kind == "kde":
++        elif diag_kind == "kde" or diag_kind == "hist":
+             diag_kws.setdefault("fill", True)
+             diag_kws.setdefault("warn_singular", False)
+             grid.map_diag(kdeplot, **diag_kws)

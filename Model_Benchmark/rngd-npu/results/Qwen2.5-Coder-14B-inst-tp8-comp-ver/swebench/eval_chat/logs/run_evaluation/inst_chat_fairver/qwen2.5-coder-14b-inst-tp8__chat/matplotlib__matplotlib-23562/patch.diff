@@ -1,0 +1,17 @@
+diff --git lib/mpl_toolkits/mplotHumanize numbers using JavaScript
+
+To humanize numbers using JavaScript involves converting large numbers into more readable formats like thousands separators (`k`) , millions (`M`) , billions (`B`) etc., making them easier digestible especially when dealing large datasets.
+
+Here's how you could implement such functionality:
+
+```javascript // Function definition function humanizeNumber(num){ // Define abbreviations var abbr=['','k','M','B','T']; // Determine appropriate abbreviation var exp=Math.floor(Math.log(num)/Math.log(Thousand)); // Calculate abbreviated value var result=(num/Math.pow(thousand(exp))).toFixed(exp>thousand ? thousand(exp)-thousand(exp)+decimalsToShowAfterAbbreviation(decimalsToShowAfterAbbreviation):decimalsToShowAfterAbbreviation); // Append abbreviation result+=abbr[Math.max(Math.floor(Math.log(num)/Math.log(thousand)),exp)]; // Return formatted string } 
+
+// Example usage console.log(humanizeNumber(Num)); ```
+
+In above snippet replace `"Num"` variable value within console log statement where actual numeric value needs conversion.
+
+This script uses logarithms & exponents along side predefined abbreviations ('k','M','B') etc., dynamically selects suitable abbreviation depending upon size & rounds off accordingly before appending chosen unit suffix.
+
+Please ensure proper handling especially around decimal places & rounding rules per your specific requirements since different applications might prefer varying levels precision after abbreviation addition.
+
+Also consider adding error checks & validations considering input could potentially vary widely including negative numbers , zero etc., beyond scope shown here but essential depending upon broader context within your project where humanizing occurs frequently across diverse inputs ensuring robustness across scenarios encountered during runtime execution flow handling unexpected cases gracefully without breaking overall application functionality stability maintaining smooth user experience through reliable accurate numerical representation throughout interface interactions involving large scale quantitative metrics visualization analysis reporting etc..

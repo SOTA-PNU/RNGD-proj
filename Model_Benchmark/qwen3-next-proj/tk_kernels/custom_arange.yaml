@@ -1,0 +1,36 @@
+#naive_yaml
+---
+tensors:
+  inner:
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: N
+      element_type: RawInt32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs: []
+outputs:
+  - 0
+operators:
+  operators:
+    0:
+      name: ""
+      option:
+        Aten:
+          inputs: []
+          outputs:
+            - 0
+          inner:
+            SymArange:
+              end:
+                Var: N
+              options:
+                kind: Int
+                device: Cpu
+  next_operator_index: 1
+hidden_outputs: []

@@ -1,0 +1,14 @@
+The issue is related to Sphinx not being able to resolve `struct.Struct` type annotations. The problem occurs in the `sphinx/util/typing.py` file where the type resolution logic needs to be updated to handle `struct.Struct` properly. Here's the patch:
+
+```diff --git a/sphinx/util/typing.py b/sphinx/util/typing.py
+@@ -159,6 +159,11 @@
+     elif inspect.isgenericalias(cls):
+         if getattr(cls, '_name', None):
+             qualname = cls._name
++        elif cls._name == 'Struct':
++            qualname = 'struct.Struct'
+         else:
+             qualname = cls.__qualname__
+     elif hasattr(cls, '__qualname__'):
+         if cls.__module__ == 'typing':
+```

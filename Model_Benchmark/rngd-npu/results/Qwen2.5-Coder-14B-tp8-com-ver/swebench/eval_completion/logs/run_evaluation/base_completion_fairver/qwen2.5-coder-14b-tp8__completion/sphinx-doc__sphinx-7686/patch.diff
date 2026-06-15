@@ -1,0 +1,53 @@
+<patch>
+--- a/sphinx/ext/autosummary/generate.py
++++ b/sphinx/ext/autosummary/generate.py
+@@ -40,6 +40,7 @@
+ 
+ import argparse
+ import locale
++import os
+ import pkgutil
+ import pydoc
+ import re
+@@ -110,6 +111,7 @@
+     def __init__(self, app: Any) -> None:
+         if isinstance(app, Builder):
+             warnings.warn('The first argument for AutosummaryRenderer has been '
++                          'changed to Sphinx object',
+                           RemovedInSphinx50Warning, stacklevel=2)
+         if template_dir:
+             warnings.warn('template_dir argument for AutosummaryRenderer is deprecated.',
+@@ -118,6 +120,7 @@
+             system_templates_path = [os.path.join(package_dir, 'ext', 'autosummary', 'templates')]
+             loader = SphinxTemplateLoader(app.srcdir, app.config.templates_path,
+                                           system_templates_path)
++            loader.add_path(os.path.join(package_dir, 'ext', 'autosummary', 'templates'))
+ 
+             self.env = SandboxedEnvironment(loader=loader)
+             self.env.filters['escape'] = rst.escape
+@@ -126,6 +129,7 @@
+                 self.env.add_extension("jinja2.ext.i18n")
+                 self.env.install_gettext_translations(app.translator)  # type: ignore
+         elif isinstance(app, Builder):
++            warnings.warn('The first argument for AutosummaryRenderer has been '
++                          'changed to Sphinx object',
+                           RemovedInSphinx50Warning, stacklevel=2)
+             if app.app.translator:
+                 self.env.add_extension("jinja2.ext.i18n")
+@@ -134,6 +138,7 @@
+ 
+     def exists(self, template_name: str) -> bool:
+         """Check if template file exists."""
++        warnings.warn('AutosummaryRenderer.exists() is deprecated.',
++                      RemovedInSphinx50Warning, stacklevel=2)
+         try:
+             self.env.get_template(template_name)
+             return True
+@@ -142,6 +147,7 @@
+             return False
+ 
+     def render(self, template_name: str, context: Dict) -> str:
++        """Render a template file."""
+         try:
+             template = self.env.get_template(template_name)
+         except TemplateNotFound

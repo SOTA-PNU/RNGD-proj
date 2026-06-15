@@ -1,0 +1,22 @@
+```diff --git a/sklearn/utils/_pprint.py b/sklearn/utils/_pprint.py
+@@ -154,7 +154,7 @@
+         if n_items == self.n_max_elements_to_show:
+             write(', ...')
+             break
+         n_items += 1
+-        ent = next_ent
++        ent = next_ent if is_dict else next_ent
+         try:
+             next_ent = next(it)
+         except StopIteration:
+@@ -170,7 +170,7 @@
+         if n_items == self.n_max_elements_to_show:
+             write(', ...')
+             break
+         n_items += 1
+-        ent = next_ent
++        ent = next_ent if is_dict else next_ent
+         try:
+             next_ent = next(it)
+         except StopIteration:
+```

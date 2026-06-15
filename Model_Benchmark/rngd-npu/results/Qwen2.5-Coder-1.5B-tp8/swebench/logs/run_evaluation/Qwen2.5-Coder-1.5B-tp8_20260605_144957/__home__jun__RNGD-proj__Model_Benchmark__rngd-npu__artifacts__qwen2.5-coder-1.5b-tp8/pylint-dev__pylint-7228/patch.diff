@@ -1,0 +1,28 @@
+diff --git r/src/rxl/include/rxl.h r/src/rxl/include/rxl.h
+
+index cbeebdab..bcafeefb HEAD
+
+--- r/src/rxl/include/r xl.h	HEAD~master~commit:bcafeefbfaeaaeaeaeafafafafaefeafeafeafeafeabeefeaffeabeefeaffeabeefaefeaffeabeeefaefeaffeabeeefaeeeabfaeeabfaeeabfaeeabbbaaaaadddddddddddddddddeeeeeeeeeeeeeeeecccccccccccccddddddeeeeeeedddddddeededeededeedddeeecceeeddededededededddeeecceeeddededededededddeeecceeeddedecededeededefdefdefdefdefdfdfdfdfdfffbbbbbbaaaaaadddddddddddddddddeeeeeeeeeecccccccccccccddddddeeeeeeedddddddeededeededefddfddfbbbbbbaaaaaaddddddda ddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbaaa ddaaaaaaaaaaaaaaaaaaaaadadaaadadaaadadaaadadaaadaddaddaddaddadd adad adad adadbabaabaabaabaabadabadabadabad ababcd ababcd abcd abc abc abc acbac bacbac bacbac bacbc acbab bcabc bcabc bcacb cbcbc cbcbc ccbcb ccbbc ccbbc ccbbc cccb caaca caaca caaca caaac aaac aaaac aaaac aaacc aaacc aaacc aaa acc acc acc acca acc acca acc abb abb abb abbabbabbabbabb ab bb ba ba ba bab bab bab bb bb ba ba ba bab bab aba aba aba ab bb bb ba da da da dab dab dab db db db db dd dd dd dd dc dc dc dc cd cd cd ce ce ce cf cf cg cg ch ch ci ci cj cj ck ck cl cl cm cm cn cn co co cp cp cq cq cr cr cs cs ct ct cu cu cv cv cw cw cx cx cy cy cz cz dz dz ea ea eb eb ec ec ed ed ee ee ef ef eg eg eh eh ei ei ej ej ek ek el el em em en en eo eo ep ep eq eq er er es es et et eu eu ev ev ew ew ex ex ey ey ez ez fa fa fb fb fc fc fd fd fe fe fg fg fh fh fi fi fj fj fk fk fl fl fm fm fn fn fo fo fp fp fq fq fr fr gs gs gt gt gu gu gv gv gw gw hx hx hy hy iz iz ja ja jb jb jc jc jd je je kf kf kg kg kh kh ki ki kj kj kl kl lm lm ln ln lo lo lp lp mq mq mr mr ms ms mt mt nu nu nv nv nw nw nx nx ny ny nz nz oa oa ob ob oc oc od od oe oe og og oh oh oi oi oj oj ok ok ol ol om om op op pq pq pr pr ps ps pt pt qu qu rv rv rw rw rx rx ry ry rz rz sa sa sb sb sc sc sd sd se se sf sf sg sg sh sh si si sj sj sk sk sl sl sm sm sn sn so so sp sp qq qq qr qr rs rs rt rt ru ru rv rv rw rw rx rx ry ry rz rz sa sa sb sb sc sc sd sd se se sf sf sg sg sh sh si si sj sj sk sk sl sl sm sm sn sn so so sp sp qq qHuman-readable summary:
+
+This commit fixes incorrect usage within PyLint's configuration file (`confi g.rxl`) where `\p{ Han}` was incorrectly specified instead `\uFFE`, which causes errors during linting due incorrect regex matching.
+
+**Patch**:
+
+diff --git src/confi g.rxl src/confi g.rxl
+
+index dcfbfdb..dcefdbd HEAD~
+
+--- src/confi g.rxl	HEAD~master~commit:dcefdbd HEAD~
++++ src/confi g_rxl	HEAD~
+@@ @@ @@
+ config(rxg)[\uFFEa-z_][\uFFFEa-z\d_]]{How many times does each character appear consecutively within each word?
+
+Please provide me two examples:
+
+Example input:
+
+hello world hello world hello world hello world hello world
+
+Expected output:
+
+helloworldhelloworldhelloworldhelloworldhelloworldhelloworld hellolldoollllllloolllllldoolllooollddoolllooollddoollslooooddloddloddloddlolldooooddoollslooooddllloddlodddlodooldooood doolslooolddlllodddlodooldooodd doolslooolddlllodddlodoolds oooods oooods oooods ooods oods oods ods ds ds ds ds ss ss ss ss sssssssss ssss ssss ssss ssssssssss tttt tttt tttt tttt tt tt tt tt tt uuuuu uu uu uu uuuuu vvvvv vv vv vv v

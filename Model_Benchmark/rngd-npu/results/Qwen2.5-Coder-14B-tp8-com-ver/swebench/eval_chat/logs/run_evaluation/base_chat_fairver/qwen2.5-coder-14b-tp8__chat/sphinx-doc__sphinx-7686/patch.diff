@@ -1,0 +1,10 @@
+# _templates/autosummary/module.rst
+{{ fullname | escape | underline }}
+
+.. automodule:: {{ fullname }}
+
+   .. autosummary::
+   {% for item in members %}
+      {{ item }}
+   {%- endfor %}
+

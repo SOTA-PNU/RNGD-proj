@@ -1,0 +1,12 @@
+--- a/seaborn/_core.py
++++ b/seaborn/_core.py
+@@ -151,7 +151,7 @@
+         try:
+             # Use a value that's in the original data vector
+             value = self.lookup_table[key]
+         except KeyError:
+-            # Use the colormap to interpolate between existing datapoints
++            # Use the colormap to interpolate between existing datapoints (e.g. in the context of making a continuous legend)
+             try:
+                 normed = self.norm(key)
+             except TypeError as err:

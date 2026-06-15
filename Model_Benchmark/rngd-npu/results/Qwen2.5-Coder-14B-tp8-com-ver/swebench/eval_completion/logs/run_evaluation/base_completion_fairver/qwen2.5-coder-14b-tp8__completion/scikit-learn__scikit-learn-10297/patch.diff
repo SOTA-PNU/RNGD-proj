@@ -1,0 +1,42 @@
+<patch>
+--- a/sklearn/linear_model/ridge.py
++++ b/sklearn/linear_model/ridge.py
+@@ -10,6 +10,7 @@
+ from abc import ABCMeta, abstractmethod
+ import warnings
+ import numpy as np
++import scipy as sp
+ from scipy import linalg
+ from scipy import sparse
+ from scipy.sparse import linalg as sp_linalg
+@@ -119,6 +120,7 @@ def _solve_sparse_cg(X, y, alpha, max_iter=None, tol=1e-3, verbose=0):
+     if n_features > n_samples:
+         def create_mv(curr_alpha):
+             def _mv(x):
++                x = sp.sparse.csr_matrix(x)
+                 return X1.matvec(X1.rmatvec(x)) + curr_alpha * x
+             return _mv
+     else:
+@@ -130,6 +132,7 @@ def _solve_sparse_cg(X, y, alpha, max_iter=None, tol=1e-3, verbose=0):
+             def _mv(x):
++                x = sp.sparse.csr_matrix(x)
+                 return X1.rmatvec(X1.matvec(x)) + curr_alpha * x
+             return _mv
+ 
+@@ -140,6 +143,7 @@ def _solve_sparse_cg(X, y, alpha, max_iter=None, tol=1e-3, verbose=0):
+             y_column = X1.rmatvec(y_column)
+             C = sp_linalg.LinearOperator(
+                 (n_features, n_features), matvec=mv, dtype=X.dtype)
++            C = sp.sparse.csr_matrix(C)
+             coefs[i], info = sp_linalg.cg(C, y_column, maxiter=max_iter,
+                                           tol=tol)
+         if info < 0:
+@@ -158,6 +162,7 @@ def _solve_lsqr(X, y, alpha, max_iter=None, tol=1e-3):
+     n_samples, n_features = X.shape
+     coefs = np.empty((y.shape[1], n_features), dtype=X.dtype)
+     n_iter = np.empty(y.shape[1], dtype=np.int32)
++    X = sp.sparse.csr_matrix(X)
+ 
+     # According to the lsqr documentation, alpha = damp^2.
+     sqrt_alpha = np.sqrt(alpha)
+@@ -170,6 +1

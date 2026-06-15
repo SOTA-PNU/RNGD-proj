@@ -1,0 +1,42 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# Neighbors
+
+## Nearest Neighbors
+
+The `sklearn.neighbors` module implements the k-nearest neighbors algorithm.
+
+The principle is to identify the k closest data points, or neighbors, to a
+new, unknown observation (see [Figure 1](#fig:neighbors_1)).
+
+![Figure 1: Nearest Neighbors classification](figures/plot_classification_1.png)
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Nearest Neighbors classification</span></p>
+
+The `k` neighbors are then used to predict the label of an unknown observation
+by majority vote. The `k` neighbors can also be used to predict a continuous
+variable by averaging their individual values.
+
+The `k` neighbors are identified either with a brute force search of all
+observations in the training set or by using one of the KD-Tree or Ball Tree
+algorithms.
+
+The `k` neighbors algorithm is available in scikit-learn via the
+[`KNeighborsClassifier`](generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier)
+and
+[`KNeighborsRegressor`](generated/sklearn.neighbors.KNeighborsRegressor.html#sklearn.neighbors.KNeighborsRegressor)
+classes.
+
+### Classification
+
+The [`KNeighborsClassifier`](generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier)
+class implements the k-nearest neighbors algorithm for classification.
+
+The `k` neighbors algorithm for classification is very simple: given a new,
+unknown observation, identify the `k` closest observations in the training
+set and assign the predominant class among these neighbors.
+
+The number of neighbors considered, `k`, is a free parameter. A small `k`
+means that the algorithm will approximate the training set noise, rather than
+the shape of the distributions.
+
+The [`KNeighborsClassifier`](generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier)
+class provides a `predict_proba` method,

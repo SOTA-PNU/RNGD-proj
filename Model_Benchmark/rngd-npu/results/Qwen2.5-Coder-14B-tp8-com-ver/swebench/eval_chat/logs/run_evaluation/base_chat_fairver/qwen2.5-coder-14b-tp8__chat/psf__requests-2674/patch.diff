@@ -1,0 +1,37 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# system
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.
+
+# issue
+urllib3 exceptions passing through requests API
+I don't know if it's a design goal of requests to hide urllib3's exceptions and wrap them around requests.exceptions types.
+
+(If it's not IMHO it should be, but that's another discussion)
+
+If it is, I have at least two of them passing through that I have to catch in addition to requests' exceptions. They are requests.packages.urllib3.exceptions.DecodeError and requests.packages.urllib3.exceptions.TimeoutError (this one I get when a proxy timeouts)
+
+Thanks!
+
+
+# code
+[start of README.rst]
+1 Requests: HTTP for Humans
+2 =========================
+3 
+4 .. image:: https://img.shields.io/pypi/v/requests.svg
+5     :target: https://pypi.python.org/pypi/requests
+6 
+7 .. image:: https://img.shields.io/pypi/dm/requests.svg
+8         :target: https://pypi.python.org/pypi/requests
+9 
+10 
+11 
+12 
+13 Requests is an Apache2 Licensed HTTP library, written in Python, for human
+14 beings.
+15 
+16 Most existing Python modules for sending HTTP requests are extremely
+17 verbose and cumbersome. Python's builtin urllib2 module provides most of
+18 the HTTP capabilities you should need, but the api is thoroughly broken.
+19 It requires an enormous amount of work (even method overrides) to
+2

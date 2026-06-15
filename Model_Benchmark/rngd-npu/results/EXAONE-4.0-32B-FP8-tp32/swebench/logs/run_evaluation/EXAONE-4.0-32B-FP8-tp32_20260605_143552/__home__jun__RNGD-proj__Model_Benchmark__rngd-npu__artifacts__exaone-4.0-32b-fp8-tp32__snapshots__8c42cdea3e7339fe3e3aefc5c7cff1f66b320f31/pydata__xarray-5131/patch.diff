@@ -1,0 +1,23 @@
+<patch>
+--- a/xarray/core/groupby.py
++++ b/xarray/core/groupby.py
+@@ -267,7 +267,7 @@
+         if len(group_indices) == 0:
+             if bins is not None:
+                 raise ValueError(
+-                 "None of the data falls within bins with edges %r" % bins
++                 "None of the data falls within bins with edges %r" % bins
+                 )
+             else:
+                 raise ValueError(
+@@ -283,7 +283,7 @@
+         if group.dims == (group.name,) and _unique_and_monotonic(group):
+             # no need to factorize
+             group_indices = np.arange(group.size)
+-             if not squeeze:
++             if not squeeze:
+                 # use slices to do views instead of fancy indexing
+                 # equivalent to: group_indices = group_indices.reshape(-1, 1)
+                 group_indices = [slice(i, i + 1) for i in group_indices]
+             unique_coord = group
+         else:

@@ -1,0 +1,34 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# system
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.
+
+# issue
+matematica code printer does not handle floats and derivatives correctly
+In its current state the mathematica code printer does not handle Derivative(func(vars), deriver) 
+e.g. Derivative(f(t), t) yields Derivative(f(t), t) instead of D[f[t],t]
+
+Also floats with exponents are not handled correctly e.g. 1.0e-4 is not converted to 1.0*^-4
+
+This has an easy fix by adding the following lines to MCodePrinter:
+
+
+def _print_Derivative(self, expr):
+        return "D[%s]" % (self.stringify(expr.args, ", "))
+
+def _print_Float(self, expr):
+        res =str(expr)
+        return res.replace('e','*^') 
+
+
+# code
+[start of README.rst]
+1 SymPy
+2 =====
+3 
+4 |pypi version| |pypi download| |Build status| |Gitter Badge| |Zenodo Badge|
+5 
+6 .. |pypi version| image:: https://img.shields.io/pypi/v/sympy.svg
+7    :target: https://pypi.python.org/pypi/sympy
+8 .. |pypi download| image:: https://img.shields.io/pypi/dm/sympy.svg
+9    :target: https://pypi.python.org/pypi/sympy
+10 .. |Build status| image:: https

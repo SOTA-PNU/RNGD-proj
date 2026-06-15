@@ -1,0 +1,46 @@
+{
+  "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-inst-tp8",
+  "max_tokens": 256,
+  "ignore_eos": true,
+  "single_stream": {
+    "ttft_s": 0.34238,
+    "n_tokens": 258,
+    "itl_s_p50": 0.0328,
+    "itl_s_p95": 0.03347,
+    "decode_tps": 30.49
+  },
+  "sweep": [
+    {
+      "concurrency": 1,
+      "n_requests": 16,
+      "wall_s": 135.983,
+      "total_tokens": 4096,
+      "agg_tps": 30.1,
+      "tokens_per_req": 256
+    },
+    {
+      "concurrency": 8,
+      "n_requests": 16,
+      "wall_s": 18.202,
+      "total_tokens": 4096,
+      "agg_tps": 225.0,
+      "tokens_per_req": 256
+    },
+    {
+      "concurrency": 32,
+      "n_requests": 64,
+      "wall_s": 23.167,
+      "total_tokens": 16384,
+      "agg_tps": 707.2,
+      "tokens_per_req": 256
+    },
+    {
+      "concurrency": 64,
+      "n_requests": 128,
+      "wall_s": 25.676,
+      "total_tokens": 32768,
+      "agg_tps": 1276.2,
+      "tokens_per_req": 256
+    }
+  ]
+}

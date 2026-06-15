@@ -1,0 +1,30 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+@@ -291,7 +291,7 @@
+ def _separable(transform):
+     """
+     Calculate the separability of outputs.
+ 
+-    Parameters
++    Parameters
+     ----------
+     transform : `astropy.modeling.Model`
+         A transform (usually a compound model).
+ 
+@@ -304,6 +304,10 @@
+     if (transform_matrix := transform._calculate_separability_matrix()) is not NotImplemented:
+         return transform_matrix
+     elif isinstance(transform, CompoundModel):
++        if isinstance(transform.left, CompoundModel) and isinstance(transform.right, CompoundModel):
++            sepleft = _separable(transform.left)
++            sepright = _separable(transform.right)
++            return np.block([[sepleft, np.zeros((sepleft.shape[0], sepright.shape[1]))],
++                            [np.zeros((sepright.shape[0], sepleft.shape[1])), sepright]])
+         sepleft = _separable(transform.left)
+         sepright = _separable(transform.right)
+         return _operators[transform.op](sepleft, sepright)
+@@ -316,7 +320,7 @@
+ # Maps modeling operators to a function computing and represents the
+ # relationship of axes as an array of 0-es and 1-s
+-_operators = {'&': _cstack, '|': _cdot, '+': _arith_oper, '-': _arith_oper,
++_operators = {'&': _cstack, '|': _cdot, '+': _arith_oper, '-': _arith_oper,
+               '*': _arith_oper, '/': _arith_oper, '**': _arith_oper}

@@ -1,0 +1,31 @@
+<think>
+Okay, let's see. The user is having an issue where using \p{Han} in a regular expression in their .pylintrc file causes an error. The error message says there's a bad escape \p at position 1. Hmm, I remember that in Python, the re module doesn't support Perl-compatible regular expressions like \p{...} by default. Those are part of PCRE, but Python's re uses a different engine. Oh right, to use Unicode property escapes like \p{Han}, Python's regex module needs to be using the regex module instead of re, or maybe with some flags?
+
+Wait, the user is trying to use \p{Han} in a regex that Pylint is processing. The Pylint configuration is trying to compile this regex, but it's failing because Python's standard re module doesn't recognize \p{Han}. So the problem is that when Pylint reads the regex from the config file, it's using the re.compile function, which can't handle those Unicode property escapes.
+
+Looking at the code provided, specifically in the pylint/config/argument.py file, there's a function called _regexp_csv_transfomer which uses re.compile on each pattern. That's probably where the error is happening. The user's regex is being passed here, and since re doesn't support \p{Han}, it throws an error.
+
+So how to fix this? Maybe Pylint needs to use a different regex module that supports Unicode properties, like the regex module (注意: not the standard re module). The regex module in Python does support \p{...} syntax. But the current code is using re.compile. So perhaps the solution is to replace re.compile with regex.compile, but that would require installing the regex package as a dependency. However, I don't know if Pylint is already using that. Let me check the code again.
+
+Looking at the _TYPE_TRANSFORMERS dictionary, the 'regexp' type uses re.compile. The _regexp_csv_transfomer uses this. So when the user's config is parsed, it's trying to compile the regex with re, which doesn't support \p{Han}.
+
+So the fix would be to change the code to use the regex module instead of re for compiling these regex patterns. But wait, does Pylint have the regex module as a dependency? Probably not by default. So this might require adding a dependency on the regex package. However, the user might not have it installed, which would cause another error. Alternatively, maybe there's a way to adjust the regex pattern to be compatible with the re module.
+
+Wait, another approach: Maybe the user is using a version of Python that supports \p{...} in the re module. Starting from Python 3.11, the re module has experimental support for Unicode property escapes if the regex is compiled with the re.UNICODE flag. But the user is on Python 3.9.13, which is older than that. So that's not an option here.
+
+Therefore, the only way is to switch from using the standard re module to the third-party regex module. But how to do that in Pylint's code? Let me check the code again. The _regexp_csv_transfomer function uses re.compile. So changing that to use import regex as re? Or perhaps import the regex module and use it there.
+
+But modifying the code to use regex instead of re would require changing the imports and possibly the dependencies. Let me look at the code in argument.py. The imports include 'import re' in line 14. So, in the _regexp_csv_transfomer function, replacing re.compile with regex.compile. But first, they need to import regex. However, if Pylint doesn't have regex as a dependency, this would break for others. So maybe this is a feature request for Pylint to support regex with the regex module, but the user is expecting a fix.
+
+Alternatively, maybe the user can escape the regex properly. Wait, \p{Han} in a raw string might need to be handled differently. But in Python's re, it's not supported. So the only way is to use the regex module.
+
+So the patch would involve replacing the re.compile with regex.compile in the relevant functions. Let's look at the _regexp_csv_transfomer function. In the code, line 103 is:
+
+def _regexp_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+
+Then, in line 105-106:
+
+for pattern in _csv_transformer(value):
+    patterns.append(re.compile(pattern))
+
+So changing that to use the regex module. But how to import it? The code currently has 'import re' in line 14. So perhaps changing that import to 'import regex as re'? But that would break if the regex module isn't installed. However, the user is facing this issue, so they might be willing to install

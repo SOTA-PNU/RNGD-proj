@@ -1,0 +1,44 @@
+2026-06-09 21:41:40,039 - INFO - Creating container for pylint-dev__pylint-7228...
+2026-06-09 21:41:40,235 - INFO - Container for pylint-dev__pylint-7228 created: 6a928b35861f83b5df291d22f7af599549127283c0c7300f258e7308c4f0dba0
+2026-06-09 21:41:40,441 - INFO - Container for pylint-dev__pylint-7228 started: 6a928b35861f83b5df291d22f7af599549127283c0c7300f258e7308c4f0dba0
+2026-06-09 21:41:40,442 - INFO - Intermediate patch for pylint-dev__pylint-7228 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/pylint-dev__pylint-7228/patch.diff, now applying to container...
+2026-06-09 21:41:40,600 - INFO - >>>>> Applied Patch:
+Checking patch pylint/config/argument.py...
+Hunk #1 succeeded at 134 (offset 31 lines).
+Applied patch pylint/config/argument.py cleanly.
+
+2026-06-09 21:41:41,174 - INFO - Git diff before:
+diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+index 3c2951517..f19e4a8e1 100644
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -134,7 +134,7 @@ _TYPE_TRANSFORMERS: dict[str, Callable[[str], _ArgumentTypes]] = {
+     "regexp_csv": _regexp_csv_transfomer,
+     "regexp_paths_csv": _regexp_paths_csv_transfomer,
+     "string": pylint_utils._unquote,
+-    "yn": _yn_transformer,
++    "yn": _yn_transformer,  # type: ignore[arg-type]
+ }
+ """Type transformers for all argument types.
+2026-06-09 21:41:41,174 - INFO - Eval script for pylint-dev__pylint-7228 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/pylint-dev__pylint-7228/eval.sh; copying to container...
+2026-06-09 21:41:47,839 - INFO - Test runtime: 6.58 seconds
+2026-06-09 21:41:47,840 - INFO - Test output for pylint-dev__pylint-7228 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/pylint-dev__pylint-7228/test_output.txt
+2026-06-09 21:41:47,954 - INFO - Git diff after:
+diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+index 3c2951517..f19e4a8e1 100644
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -134,7 +134,7 @@ _TYPE_TRANSFORMERS: dict[str, Callable[[str], _ArgumentTypes]] = {
+     "regexp_csv": _regexp_csv_transfomer,
+     "regexp_paths_csv": _regexp_paths_csv_transfomer,
+     "string": pylint_utils._unquote,
+-    "yn": _yn_transformer,
++    "yn": _yn_transformer,  # type: ignore[arg-type]
+ }
+ """Type transformers for all argument types.
+2026-06-09 21:41:47,954 - INFO - Grading answer for pylint-dev__pylint-7228...
+2026-06-09 21:41:47,957 - INFO - report: {'pylint-dev__pylint-7228': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/config/test_config.py::test_regex_error', 'tests/config/test_config.py::test_csv_regex_error']}, 'PASS_TO_PASS': {'success': ['tests/config/test_config.py::test_can_read_toml_env_variable', 'tests/config/test_config.py::test_unknown_message_id', 'tests/config/test_config.py::test_unknown_option_name', 'tests/config/test_config.py::test_unknown_short_option_name', 'tests/config/test_config.py::test_unknown_confidence', 'tests/config/test_config.py::test_empty_confidence', 'tests/config/test_config.py::test_unknown_yes_no', 'tests/config/test_config.py::test_unknown_py_version', 'tests/config/test_config.py::test_short_verbose', 'tests/config/test_config.py::test_argument_separator'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pylint-dev__pylint-7228: resolved: False
+2026-06-09 21:41:47,957 - INFO - Attempting to stop container sweb.eval.pylint-dev__pylint-7228.base_completion_fairver...
+2026-06-09 21:42:04,811 - INFO - Attempting to remove container sweb.eval.pylint-dev__pylint-7228.base_completion_fairver...
+2026-06-09 21:42:04,836 - INFO - Container sweb.eval.pylint-dev__pylint-7228.base_completion_fairver removed.

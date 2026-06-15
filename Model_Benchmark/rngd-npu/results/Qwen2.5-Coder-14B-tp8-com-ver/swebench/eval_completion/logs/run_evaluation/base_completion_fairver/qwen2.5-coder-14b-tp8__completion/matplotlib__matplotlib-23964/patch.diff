@@ -1,0 +1,11 @@
+
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -666,6 +666,8 @@
+             for ps_name, xs_names in stream:
+                 self._pswriter.write(f"/{ps_name} {{\n")
+                 for x, name in xs_names:
++                    if curr_stream is None:
++                        continue
+                     self._pswriter.write(f"{x:g} 0 m /{name:s} glyphshow\n")
+                 self._pswriter.write("} bind def\n")

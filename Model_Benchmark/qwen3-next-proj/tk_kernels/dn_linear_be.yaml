@@ -1,0 +1,250 @@
+#naive_yaml
+# BATCHED-EXPERT NPU Linear (FLOAT32):
+#   y[e,t,o] = sum_i x[e,t,i] * W[e,o,i]   ==  for each expert e: F.linear(x[e], W[e])
+#
+# This is dn_linear.yaml ('ti,oi->to') with a leading EXPERT-BATCH axis "e" added to
+# EVERY tensor and EVERY read/write shape -- the SAME proven batch-axis trick as
+# dn_step_mh.yaml (head axis "h"). The "e" axis is a genuine batch axis: present in
+# source storage for both reads, NEVER tiled (broadcast) and NEVER reduced; it simply
+# survives untouched into the output. The contraction reduce axis stays "i" ONLY.
+#
+# Each expert e runs the SAME matmul independently. One dispatch covers ALL active
+# experts instead of E separate dn_linear dispatches.
+#
+# Inputs:  0 = x[e,t,i]   (experts x tokens x in_features)
+#          1 = W[e,o,i]   (experts x out_features x in_features  == stacked nn.Linear.weight)
+# Output:  2 = y[e,t,o]   (experts x tokens x out_features)
+#
+#   read0 = x[e,t,i] broadcast (tiled) along the new output axis "o" -> [e,t,i,o]
+#           (the broadcast/tiled read MUST be read0, per dn_linear.yaml's note)
+#   read1 = W[e,o,i] broadcast (tiled) along the token axis "t"      -> [e,o,i,t]
+#   inst#2: tmp = x *_f W   (MulF, Float32)
+#   inst#3: y[e,t,o] = sum over "i" of tmp   (LocalReduceAddF over "i" ONLY -- "e" survives)
+---
+tensors:
+  inner:
+    # input 0: x[e,t,i]  (experts x tokens x in_features)
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: E
+              - Var: T
+              - Var: I
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # input 1: W[e,o,i]  (experts x out_features x in_features)
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: E
+              - Var: O
+              - Var: I
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # output 2: y[e,t,o]  (experts x tokens x out_features)
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: E
+              - Var: T
+              - Var: O
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: dn_linear_be_f32
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                # read0: x[e,t,i] broadcast (tiled) along the new output axis "o"
+                #   "e","t","i" already in storage; tile adds ONLY the new "o" axis
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "e"
+                              stride: 1
+                          size:
+                            Var: E
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "o"
+                          stride: 1
+                      size:
+                        Var: O
+                # read1: W[e,o,i] broadcast (tiled) along the token axis "t"
+                #   (contraction axis "i" shared with read0; "e" shared batch axis)
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "e"
+                              stride: 1
+                          size:
+                            Var: E
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "o"
+                              stride: 1
+                          size:
+                            Var: O
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "i"
+                              stride: 1
+                          size:
+                            Var: I
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "t"
+                          stride: 1
+                      size:
+                        Var: T
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  # tmp[e,t,o,i] = x[e,t,i] * W[e,o,i]   (per-element product)
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+                  # y[e,t,o] = sum over contraction axis "i" of tmp   ("e" survives)
+                  - def: 3
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddF
+                        operand:
+                          Tensor: 2
+                        axes:
+                          Tag:
+                            - inner: "i"
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "e"
+                            stride: 1
+                        size:
+                          Var: E
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "o"
+                            stride: 1
+                        size:
+                          Var: O
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "e"
+                            stride: 1
+                        size:
+                          Var: E
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "o"
+                            stride: 1
+                        size:
+                          Var: O
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

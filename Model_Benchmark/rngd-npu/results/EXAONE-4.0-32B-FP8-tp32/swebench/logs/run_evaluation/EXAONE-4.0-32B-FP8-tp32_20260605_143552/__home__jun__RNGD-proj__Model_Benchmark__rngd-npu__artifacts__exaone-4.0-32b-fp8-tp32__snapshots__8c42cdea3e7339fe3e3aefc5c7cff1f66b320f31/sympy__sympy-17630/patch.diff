@@ -1,0 +1,27 @@
+The issue occurs when block-multiplying matrices containing ZeroMatrix blocks, where the multiplication results in a Zero object that doesn't have the required 'cols' attribute. The fix involves modifying the `_blockmul` method in `sympy/matrices/expressions/matexpr.py` to handle ZeroMatrix blocks properly.
+
+Here's the patch:
+
+```diff --git a/sympy/matrices/expressions/matexpr.py b/sympy/matrices/expressions/matexpr.py
+@@ -80,7 +80,11 @@
+     def colblocksizes(self):
+         return [self.blocks[0, i].cols for i in range(self.blockshape[1])]
+ 
+-    def _blockmul(self, other):
++    def _blockmul(self, other):
+         if not self.colblocksizes == other.rowblocksizes:
+             raise ShapeError("`self` and `other` have incompatible block structures")
+         matrices = [self.blocks[i, j] * other.blocks[j, k]
+@@ -88,6 +92,10 @@
+         return MatAdd(*matrices, check=True).doit()
+ 
+     def _eval_transpose(self):
++        from sympy.matrices.expressions.transpose import Transpose
++        return Transpose(self)
++
++    def _eval_inverse(self):
++        from sympy.matrices.expressions.inverse import Inverse
+         return Transpose(self)
+ 
+     def _eval_power(self, exp):
+```

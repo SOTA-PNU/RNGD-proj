@@ -1,0 +1,20 @@
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -61,7 +61,7 @@
+     if datatype == "comment":
+         comment_text += line + "\n"
+         continue
+-
++    if datatype == "command":
+         if command_lines == "":
+             initial_comments = comment_text
+             comment_text = ""
+@@ -72,7 +72,7 @@
+         if err_specs != {}:
+             warnings.warn(
+                 "This file contains multiple command blocks. Please verify",
+-                AstropyUserWarning,
++                AstropyUserWarning,
+             )
+             command_lines += line + "\n"
+             continue

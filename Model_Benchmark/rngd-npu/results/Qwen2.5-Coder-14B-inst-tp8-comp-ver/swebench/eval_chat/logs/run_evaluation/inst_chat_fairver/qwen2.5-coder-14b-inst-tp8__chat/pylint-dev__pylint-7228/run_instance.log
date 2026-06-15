@@ -1,0 +1,24 @@
+2026-06-09 21:51:00,685 - INFO - Creating container for pylint-dev__pylint-7228...
+2026-06-09 21:51:00,900 - INFO - Container for pylint-dev__pylint-7228 created: 4fb80654c3fbdc7088c635e4ce6de08e33137400c0a99df3ae1b4ad903f0e561
+2026-06-09 21:51:01,099 - INFO - Container for pylint-dev__pylint-7228 started: 4fb80654c3fbdc7088c635e4ce6de08e33137400c0a99df3ae1b4ad903f0e561
+2026-06-09 21:51:01,099 - INFO - Intermediate patch for pylint-dev__pylint-7228 written to logs/run_evaluation/inst_chat_fairver/qwen2.5-coder-14b-inst-tp8__chat/pylint-dev__pylint-7228/patch.diff, now applying to container...
+2026-06-09 21:51:01,256 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-09 21:51:01,352 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-09 21:51:01,438 - INFO - >>>>> Applied Patch:
+patching file setup.cfg
+patching file tox.ini
+patch unexpectedly ends in middle of line
+
+2026-06-09 21:51:01,942 - INFO - Git diff before:
+
+2026-06-09 21:51:01,942 - INFO - Eval script for pylint-dev__pylint-7228 written to logs/run_evaluation/inst_chat_fairver/qwen2.5-coder-14b-inst-tp8__chat/pylint-dev__pylint-7228/eval.sh; copying to container...
+2026-06-09 21:51:09,311 - INFO - Test runtime: 7.26 seconds
+2026-06-09 21:51:09,312 - INFO - Test output for pylint-dev__pylint-7228 written to logs/run_evaluation/inst_chat_fairver/qwen2.5-coder-14b-inst-tp8__chat/pylint-dev__pylint-7228/test_output.txt
+2026-06-09 21:51:09,412 - INFO - Git diff after:
+
+2026-06-09 21:51:09,412 - INFO - Grading answer for pylint-dev__pylint-7228...
+2026-06-09 21:51:09,417 - INFO - report: {'pylint-dev__pylint-7228': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/config/test_config.py::test_regex_error', 'tests/config/test_config.py::test_csv_regex_error']}, 'PASS_TO_PASS': {'success': ['tests/config/test_config.py::test_can_read_toml_env_variable', 'tests/config/test_config.py::test_unknown_message_id', 'tests/config/test_config.py::test_unknown_option_name', 'tests/config/test_config.py::test_unknown_short_option_name', 'tests/config/test_config.py::test_unknown_confidence', 'tests/config/test_config.py::test_empty_confidence', 'tests/config/test_config.py::test_unknown_yes_no', 'tests/config/test_config.py::test_unknown_py_version', 'tests/config/test_config.py::test_short_verbose', 'tests/config/test_config.py::test_argument_separator'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pylint-dev__pylint-7228: resolved: False
+2026-06-09 21:51:09,418 - INFO - Attempting to stop container sweb.eval.pylint-dev__pylint-7228.inst_chat_fairver...
+2026-06-09 21:51:24,745 - INFO - Attempting to remove container sweb.eval.pylint-dev__pylint-7228.inst_chat_fairver...
+2026-06-09 21:51:24,764 - INFO - Container sweb.eval.pylint-dev__pylint-7228.inst_chat_fairver removed.

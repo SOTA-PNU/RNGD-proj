@@ -1,0 +1,50 @@
+<patch>
+--- a/sympy/integrals/intpoly.py
++++ b/sympy/integrals/intpoly.py
+@@ -94,7 +94,7 @@
+     if max_degree is not None:
+         result = {}
+         if not isinstance(expr, list):
+-            raise TypeError('Input polynomials must be list of expressions')
++            raise TypeError('Input polynomials must be a list of expressions')
+         result_dict = main_integrate(0, facets, hp_params, max_degree)
+         for polys in expr:
+             if polys not in result:
+@@ -104,7 +104,7 @@
+                     integral_value += result_dict[1] * monom
+                 else:
+                     coeff = LC(monom)
+-                    integral_value += result_dict[monom / coeff] * coeff
++                    integral_value += result_dict[monom / coeff] * coeff
+                 result[polys] = integral_value
+         return result
+     return main_integrate(expr, facets, hp_params)
+@@ -113,7 +113,7 @@
+     """Function to translate the problem of integrating univariate/bivariate
+     polynomials over a 2-Polytope to integrating over it's boundary facets.
+     This is done using Generalized Stokes Theorem and Euler Theorem.
+-    Parameters
++    Parameters:
+     ===========
+     expr : The input polynomial
+     facets : Facets(Line Segments) of the 2-Polytope
+@@ -122,7 +122,7 @@
+     Optional Parameters:
+     max_degree : The maximum degree of any monomial of the input polynomial.
+     >>> from sympy.abc import x, y
+-    >>> from sympy.integrals.intpoly import main_integrate,\
++    >>> from sympy.integrals.intpoly import main_integrate, \
+     hyperplane_parameters
+     >>> from sympy.geometry.polygon import Polygon
+     >>> from sympy.geometry.point import Point
+@@ -132,7 +132,7 @@
+     325/6
+     """
+     dims = (x, y)
+-    dim_length = len(dims)
++    dim_length = len(dims) - 1
+     result = {}
+     integral_value = S.Zero
+     if max_degree:
+@@ -141,7 +141,7 @@
+         grad_terms = [[0, 0

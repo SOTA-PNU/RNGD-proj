@@ -1,0 +1,49 @@
+2026-06-05 14:49:34,307 - INFO - Creating container for sympy__sympy-17630...
+2026-06-05 14:49:35,015 - INFO - Container for sympy__sympy-17630 created: 1ee922f732df9b5cc4ca76098dd472917a9d87386a8b4a7f7029856ca309eb40
+2026-06-05 14:49:35,361 - INFO - Container for sympy__sympy-17630 started: 1ee922f732df9b5cc4ca76098dd472917a9d87386a8b4a7f7029856ca309eb40
+2026-06-05 14:49:35,362 - INFO - Intermediate patch for sympy__sympy-17630 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/sympy__sympy-17630/patch.diff, now applying to container...
+2026-06-05 14:49:35,526 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:49:35,615 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:49:35,742 - INFO - >>>>> Applied Patch:
+patching file sympy/matrices/expressions/blockmatrix.py
+Hunk #1 succeeded at 152 with fuzz 3 (offset 72 lines).
+
+2026-06-05 14:49:36,157 - INFO - Git diff before:
+diff --git a/sympy/matrices/expressions/blockmatrix.py b/sympy/matrices/expressions/blockmatrix.py
+index 95302a05ca..bb63864233 100644
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -152,7 +152,7 @@ def rowblocksizes(self):
+ 
+     @property
+     def colblocksizes(self):
+-        return [self.blocks[0, i].cols for i in range(self.blockshape[1])]
++        return [getattr(self.blocks[0, i], 'cols', 0) for i in range(self.blockshape[1])]
+ 
+     def structurally_equal(self, other):
+         return (isinstance(other, BlockMatrix)
+2026-06-05 14:49:36,158 - INFO - Eval script for sympy__sympy-17630 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/sympy__sympy-17630/eval.sh; copying to container...
+2026-06-05 14:49:39,121 - INFO - Test runtime: 2.91 seconds
+2026-06-05 14:49:39,122 - INFO - Test output for sympy__sympy-17630 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/sympy__sympy-17630/test_output.txt
+2026-06-05 14:49:39,215 - INFO - Git diff after:
+diff --git a/sympy/matrices/expressions/blockmatrix.py b/sympy/matrices/expressions/blockmatrix.py
+index 95302a05ca..bb63864233 100644
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -152,7 +152,7 @@ def rowblocksizes(self):
+ 
+     @property
+     def colblocksizes(self):
+-        return [self.blocks[0, i].cols for i in range(self.blockshape[1])]
++        return [getattr(self.blocks[0, i], 'cols', 0) for i in range(self.blockshape[1])]
+ 
+     def structurally_equal(self, other):
+         return (isinstance(other, BlockMatrix)
+2026-06-05 14:49:39,215 - INFO - Grading answer for sympy__sympy-17630...
+2026-06-05 14:49:39,219 - INFO - report: {'sympy__sympy-17630': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_issue_17624', 'test_zero_matrix_add']}, 'PASS_TO_PASS': {'success': ['test_bc_matmul', 'test_bc_matadd', 'test_bc_transpose', 'test_bc_dist_diag', 'test_block_plus_ident', 'test_BlockMatrix', 'test_block_collapse_explicit_matrices', 'test_BlockMatrix_trace', 'test_BlockMatrix_Determinant', 'test_squareBlockMatrix', 'test_BlockDiagMatrix', 'test_blockcut', 'test_reblock_2x2', 'test_deblock', 'test_sort_key', 'test_matadd_sympify', 'test_matadd_of_matrices', 'test_doit_args', 'test_generic_identity'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-17630: resolved: False
+2026-06-05 14:49:39,220 - INFO - Attempting to stop container sweb.eval.sympy__sympy-17630.Llama-3.3-70B-Instruct-tp32_20260605_144252...
+2026-06-05 14:49:54,438 - INFO - Attempting to remove container sweb.eval.sympy__sympy-17630.Llama-3.3-70B-Instruct-tp32_20260605_144252...
+2026-06-05 14:49:54,457 - INFO - Container sweb.eval.sympy__sympy-17630.Llama-3.3-70B-Instruct-tp32_20260605_144252 removed.
+2026-06-05 14:49:54,458 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-17630:latest...
+2026-06-05 14:49:54,522 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-17630:latest removed.

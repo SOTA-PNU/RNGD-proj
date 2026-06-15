@@ -1,0 +1,19 @@
+diff --git a/django/contrib/auth/tokens.py b/django/contrib/auth/tokens.py
+@@ -79,7 +79,7 @@
+     def _make_hash_value(self, user, timestamp):
+         """
+         Hash the user's primary key and some user state that's sure to change
+-        after a password reset to produce a token that invalidated when it's
++        after a password reset to produce a token that is invalidated when it's
+         used:
+         1. The password field will change upon a password reset (even if the
+            same password is chosen, due to password salting).
+@@ -96,7 +96,8 @@
+         login_timestamp = '' if user.last_login is None else user.last_login.replace(microsecond=0, tzinfo=None)
+         return str(user.pk) + user.password + str(login_timestamp) + str(timestamp)
+-        """
++        """
++        We also include the user's email in the hash to ensure the token is invalidated if the email changes.
+         """
+-    return str(user.pk) + user.password + str(login_timestamp) + str(timestamp)
++    return str(user.pk) + user.password + str(login_timestamp) + str(timestamp) + str(user.email)

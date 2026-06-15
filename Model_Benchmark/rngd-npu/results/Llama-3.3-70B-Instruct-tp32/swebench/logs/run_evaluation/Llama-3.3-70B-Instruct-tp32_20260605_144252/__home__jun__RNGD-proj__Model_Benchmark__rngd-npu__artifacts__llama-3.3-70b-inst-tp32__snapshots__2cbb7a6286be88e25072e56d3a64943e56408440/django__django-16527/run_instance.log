@@ -1,0 +1,32 @@
+2026-06-05 14:44:45,442 - INFO - Creating container for django__django-16527...
+2026-06-05 14:44:47,393 - INFO - Container for django__django-16527 created: e7f72d33feada98ee24445cd5d7867f0cf50b6a55eef2403df84c10fc77081f9
+2026-06-05 14:44:47,583 - INFO - Container for django__django-16527 started: e7f72d33feada98ee24445cd5d7867f0cf50b6a55eef2403df84c10fc77081f9
+2026-06-05 14:44:47,584 - INFO - Intermediate patch for django__django-16527 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/django__django-16527/patch.diff, now applying to container...
+2026-06-05 14:44:47,756 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:44:47,839 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:44:47,964 - INFO - >>>>> Applied Patch:
+patching file django/contrib/admin/templatetags/admin_modify.py
+Hunk #1 succeeded at 96 with fuzz 2 (offset -6 lines).
+patching file django/contrib/admin/templatetags/admin_modify.py
+Hunk #1 succeeded at 96 with fuzz 2 (offset -6 lines).
+patching file django/contrib/admin/templatetags/admin_modify.py
+Hunk #1 succeeded at 96 with fuzz 2 (offset -6 lines).
+patching file django/contrib/admin/templatetags/admin_modify.py
+Hunk #1 succeeded at 96 with fuzz 2 (offset -6 lines).
+patch unexpectedly ends in middle of line
+
+2026-06-05 14:44:48,655 - INFO - Git diff before:
+
+2026-06-05 14:44:48,655 - INFO - Eval script for django__django-16527 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/django__django-16527/eval.sh; copying to container...
+2026-06-05 14:44:54,187 - INFO - Test runtime: 5.43 seconds
+2026-06-05 14:44:54,188 - INFO - Test output for django__django-16527 written to logs/run_evaluation/Llama-3.3-70B-Instruct-tp32_20260605_144252/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__llama-3.3-70b-inst-tp32__snapshots__2cbb7a6286be88e25072e56d3a64943e56408440/django__django-16527/test_output.txt
+2026-06-05 14:44:54,296 - INFO - Git diff after:
+
+2026-06-05 14:44:54,296 - INFO - Grading answer for django__django-16527...
+2026-06-05 14:44:54,298 - INFO - report: {'django__django-16527': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_submit_row_save_as_new_add_permission_required (admin_views.test_templatetags.AdminTemplateTagsTest.test_submit_row_save_as_new_add_permission_required)']}, 'PASS_TO_PASS': {'success': ['test_choice_links (admin_views.test_templatetags.DateHierarchyTests.test_choice_links)', 'test_choice_links_datetime (admin_views.test_templatetags.DateHierarchyTests.test_choice_links_datetime)', 'admin_modify template tags follow the standard search pattern', 'admin_list template tags follow the standard search pattern', 'test_override_show_save_and_add_another (admin_views.test_templatetags.AdminTemplateTagsTest.test_override_show_save_and_add_another)', 'submit_row template tag should pass whole context.'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-16527: resolved: False
+2026-06-05 14:44:54,298 - INFO - Attempting to stop container sweb.eval.django__django-16527.Llama-3.3-70B-Instruct-tp32_20260605_144252...
+2026-06-05 14:45:11,460 - INFO - Attempting to remove container sweb.eval.django__django-16527.Llama-3.3-70B-Instruct-tp32_20260605_144252...
+2026-06-05 14:45:11,489 - INFO - Container sweb.eval.django__django-16527.Llama-3.3-70B-Instruct-tp32_20260605_144252 removed.
+2026-06-05 14:45:11,490 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-16527:latest...
+2026-06-05 14:45:12,566 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-16527:latest removed.

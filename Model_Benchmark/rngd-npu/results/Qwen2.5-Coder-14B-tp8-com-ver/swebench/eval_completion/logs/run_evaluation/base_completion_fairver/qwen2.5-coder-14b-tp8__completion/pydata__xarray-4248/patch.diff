@@ -1,0 +1,52 @@
+<patch>
+--- a/xarray/core/formatting.py
++++ b/xarray/core/formatting.py
+@@ -1,6 +1,7 @@
+ """String formatting routines for __repr__.
+ """
+ import contextlib
++import re
+ import functools
+ from datetime import datetime, timedelta
+ from itertools import chain, zip_longest
+@@ -10,6 +11,7 @@ from typing import Hashable
+ import numpy as np
+ import pandas as pd
+ from pandas.errors import OutOfBoundsDatetime
++from xarray.core.utils import is_scalar
+ 
+ from .duck_array_ops import array_equiv
+ from .options import OPTIONS
+@@ -130,6 +132,10 @@ def format_item(x, timedelta_format=None, quote_strings=True):
+     elif isinstance(x, (str, bytes)):
+         return repr(x) if quote_strings else x
+     elif isinstance(x, (float, np.float_)):
++        if np.isnan(x):
++            return "nan"
++        elif np.isinf(x):
++            return "inf" if x > 0 else "-inf"
+         return f"{x:.4}"
+     else:
+         return str(x)
+@@ -140,6 +146,10 @@ def format_items(x):
+     x = np.asarray(x)
+     timedelta_format = "datetime"
+     if np.issubdtype(x.dtype, np.timedelta64):
++        if np.all(np.isnan(x)):
++            return ["nan"] * x.size
++        elif np.all(np.isinf(x)):
++            return ["inf" if x > 0 else "-inf" for x in x]
+         x = np.asarray(x, dtype="timedelta64[ns]")
+         day_part = x[~pd.isnull(x)].astype("timedelta64[D]").astype("timedelta64[ns]")
+         time_needed = x[~pd.isnull(x)] != day_part
+@@ -150,6 +160,10 @@ def format_items(x):
+             timedelta_format = "date"
+         elif np.logical_not(time_needed).all():
+             timedelta_format = "time"
++    elif np.issubdtype(x.dtype, np.number):
++        if np.all(np.isnan(x)):
++            return ["nan"] * x.size
++        elif np.all(np.isinf(x)):
++            return ["inf" if x > 0 else "-inf" for x in x]
+ 
+     formatted

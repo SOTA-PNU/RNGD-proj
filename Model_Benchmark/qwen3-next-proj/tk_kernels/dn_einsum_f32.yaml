@@ -1,0 +1,183 @@
+#naive_yaml
+# DeltaNet kv-read core (FLOAT32): out[v] = sum_k S[k,v] * k[k]  (einsum 'kv,k->v')
+# fp32 variant of dn_einsum.yaml. Realized on the vector engine (kind: EinsumByVe)
+# as a broadcast-multiply followed by a reduction over the contraction axis "k":
+#   1) read0 = k[k] tiled (broadcast) along the new axis "v" -> [k,v]
+#   2) read1 = S[k,v]
+#   3) vector_ops inst #2: tmp[k,v] = k[k] *_f S[k,v]   (MulF, Float32)
+#   4) vector_ops inst #3: out[v]   = sum over "k" of tmp (LocalReduceAddF)
+# The contraction axis "k" appears in both reads but is ABSENT from the write
+# output shape, so it is the reduced/summed dimension.
+#
+# fp32 NOTE: MulF (Binary) + LocalReduceAddF (Reduce) are the float ops; the
+# *Fxp / *Int variants are integer-only and rejected by the VE type checker for
+# f32 operands (tensor_kernel/vector_ops/type_checker.rs). dn_gate.yaml confirms
+# the fp32 MulF + Float32 element_type path runs on the NPU.
+#
+# IMPORTANT (load-bearing): the broadcast/tiled read MUST be read0 (first), else
+# validation fails with "EinsumByVe should have broadcast" (tactic_kernel/mod.rs).
+---
+tensors:
+  inner:
+    # input 0: k[k]  (the DeltaNet key/query vector, length d_k)
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # input 1: S[k,v]  (the DeltaNet recurrent state, d_k x d_v)
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # output 2: out[v]  (the read-out value vector, length d_v)
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: deltanet_kv_read_f32
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                # read0: k[k] broadcast (tiled) along the new axis "v" -> [k,v]
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "v"
+                          stride: 1
+                      size:
+                        Var: V
+                # read1: S[k,v]  (contraction axis "k" shared with read0)
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  # tmp[k,v] = k[k] * S[k,v]   (per-element product, broadcast over v)
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+                  # out[v] = sum over contraction axis "k" of tmp[k,v]
+                  - def: 3
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddF
+                        operand:
+                          Tensor: 2
+                        axes:
+                          Tag:
+                            - inner: "k"
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

@@ -1,0 +1,12 @@
+
+--- a/sklearn/neighbors/base.py
++++ b/sklearn/neighbors/base.py
+@@ -106,7 +106,7 @@
+     def __init__(self, n_neighbors=None, radius=None,
+                  algorithm='auto', leaf_size=30, metric='minkowski',
+                  p=2, metric_params=None, n_jobs=1):
+-        self.n_neighbors = n_neighbors
++        self.n_neighbors = int(n_neighbors) if n_neighbors is not None else None
+         self.radius = radius
+         self.algorithm = algorithm
+         self.leaf_size = leaf_size

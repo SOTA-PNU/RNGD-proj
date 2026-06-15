@@ -1,0 +1,959 @@
+#naive_yaml
+# DeltaNet GATED-DELTA-RULE single recurrent step, fully fused as ONE multi-op
+# fp32 DFG (7 chained SymTacticKernel operators). Composed from the phase-1
+# validated op-blocks: dn_decay (Elementwise MulF), dn_einsum_f32 (EinsumByVe
+# contraction kv,k->v), dn_delta (Elementwise SubF + MulF), dn_rank1 (EinsumByVe
+# outer product + Elementwise AddF).
+#
+# Equations (in order):
+#   S1[k,v]   = S[k,v] * decay            (decay materialized to [K,V] by caller)
+#   kv[v]     = sum_k S1[k,v]*k[k]        (EinsumByVe contraction over "k")
+#   delta[v]  = (v[v] - kv[v]) * beta     (beta materialized to [V] by caller)
+#   Sout[k,v] = S1[k,v] + k[k]*delta[v]   (rank-1 outer-product update)
+#   out[v]    = sum_k Sout[k,v]*q[k]      (EinsumByVe contraction over "k")
+#
+# Tensor ids:
+#   inputs : 0=S[k,v] 1=q[k] 2=k[k] 3=v[v] 4=beta_full[v] 5=decay_full[k,v]
+#   inter  : 6=S1[k,v] 7=kv[v] 8=tmp[v]=(v-kv) 9=delta[v] 10=outer[k,v] 11=Sout[k,v]
+#   output : 11=Sout[k,v] 12=out[v]
+#
+# Operator chain (next_operator_index=7):
+#   op0 Elementwise MulF : S1   = S  * decay   (0,5 -> 6)
+#   op1 EinsumByVe  ctr  : kv   = sum_k S1*k   (read0=k tiled v, read1=S1; 2,6 -> 7)
+#   op2 Elementwise SubF : tmp  = v  - kv      (3,7 -> 8)
+#   op3 Elementwise MulF : delta= tmp* beta    (8,4 -> 9)
+#   op4 EinsumByVe outer : outer= k  * delta   (read0=k tiled v, read1=delta tiled k; 2,9 -> 10)
+#   op5 Elementwise AddF : Sout = S1 + outer   (6,10 -> 11)
+#   op6 EinsumByVe  ctr  : out  = sum_k Sout*q (read0=q tiled v, read1=Sout; 1,11 -> 12)
+#
+# fp32 ops: Binary MulF/SubF/AddF; reduction LocalReduceAddF (the *Fxp/*Int ops
+# are integer-only). For EinsumByVe the broadcast/tiled read MUST be read0 else
+# "EinsumByVe should have broadcast". Contraction axis "k" shared across both
+# reads and ABSENT from the write/output shape (= the reduced dim). Outer product
+# = EinsumByVe with NO Reduce inst, both axes survive into the output.
+---
+tensors:
+  inner:
+    0:   # S[k,v]  prior recurrent state
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    1:   # q[k]  query vector
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    2:   # k[k]  key vector
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    3:   # v[v]  value vector
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    4:   # beta_full[v]  per-head scalar materialized to [V]
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    5:   # decay_full[k,v]  per-head scalar (= exp(g_t)) materialized to [K,V]
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    6:   # S1[k,v] = S * decay
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    7:   # kv[v] = sum_k S1[k,v]*k[k]
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    8:   # tmp[v] = v - kv
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    9:   # delta[v] = tmp * beta
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    10:  # outer[k,v] = k[k] * delta[v]
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    11:  # Sout[k,v] = S1 + outer   (graph output)
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    12:  # out[v] = sum_k Sout[k,v]*q[k]   (graph output)
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+outputs:
+  - 11
+  - 12
+operators:
+  operators:
+    # op0: S1[k,v] = S[k,v] * decay_full[k,v]   (Elementwise MulF)
+    0:
+      name: dn_step_decay
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 5
+          output: 6
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "k"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "k"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    # op1: kv[v] = sum_k S1[k,v]*k[k]   (EinsumByVe contraction)
+    #   read0 = k[k] broadcast along new axis "v"  (broadcast read MUST be read0)
+    #   read1 = S1[k,v]
+    1:
+      name: dn_step_kv_read
+      option:
+        SymTacticKernel:
+          inputs:
+            - 2
+            - 6
+          output: 7
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "v"
+                          stride: 1
+                      size:
+                        Var: V
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+                  - def: 3
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddF
+                        operand:
+                          Tensor: 2
+                        axes:
+                          Tag:
+                            - inner: "k"
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+    # op2: tmp[v] = v[v] - kv[v]   (Elementwise SubF)
+    2:
+      name: dn_step_delta_sub
+      option:
+        SymTacticKernel:
+          inputs:
+            - 3
+            - 7
+          output: 8
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: SubF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    # op3: delta[v] = tmp[v] * beta_full[v]   (Elementwise MulF)
+    3:
+      name: dn_step_delta_mul_beta
+      option:
+        SymTacticKernel:
+          inputs:
+            - 8
+            - 4
+          output: 9
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    # op4: outer[k,v] = k[k] * delta[v]   (EinsumByVe outer product, NO reduce)
+    #   read0 = k[k] broadcast along new axis "v"  (broadcast read MUST be read0)
+    #   read1 = delta[v] broadcast along new axis "k"
+    4:
+      name: dn_step_rank1_outer
+      option:
+        SymTacticKernel:
+          inputs:
+            - 2
+            - 9
+          output: 10
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "v"
+                          stride: 1
+                      size:
+                        Var: V
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "k"
+                          stride: 1
+                      size:
+                        Var: K
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "k"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "k"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+    # op5: Sout[k,v] = S1[k,v] + outer[k,v]   (Elementwise AddF)
+    5:
+      name: dn_step_rank1_add_state
+      option:
+        SymTacticKernel:
+          inputs:
+            - 6
+            - 10
+          output: 11
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: AddF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "k"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "k"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    # op6: out[v] = sum_k Sout[k,v]*q[k]   (EinsumByVe contraction)
+    #   read0 = q[k] broadcast along new axis "v"  (broadcast read MUST be read0)
+    #   read1 = Sout[k,v]
+    6:
+      name: dn_step_out_read
+      option:
+        SymTacticKernel:
+          inputs:
+            - 1
+            - 11
+          output: 12
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "v"
+                          stride: 1
+                      size:
+                        Var: V
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+                  - def: 3
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddF
+                        operand:
+                          Tensor: 2
+                        axes:
+                          Tag:
+                            - inner: "k"
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+  next_operator_index: 7
+hidden_outputs: []

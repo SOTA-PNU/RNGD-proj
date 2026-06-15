@@ -1,0 +1,19 @@
+--- a/sklearn/compose/_column_transformer.py
++++ b/sklearn/compose/_column_transformer.py
+@@ -859,7 +859,7 @@
+                 output.columns = names_out
+                 return output
+-
++        if not Xs:
++            return np.zeros((X.shape[0], 0))
+         return np.hstack(Xs)
+ 
+@@ -862,7 +862,7 @@
+         """
+         Record which transformer produced which column.
+         """
+-        idx = 0
++        idx = 0
+         self.output_indices_ = {}
+ 
+         for transformer_idx, (name, _, _, _) in enumerate(

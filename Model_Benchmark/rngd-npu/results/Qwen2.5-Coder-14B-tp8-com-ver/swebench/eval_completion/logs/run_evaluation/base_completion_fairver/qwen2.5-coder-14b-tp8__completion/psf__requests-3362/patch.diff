@@ -1,0 +1,66 @@
+<patch>
+--- a/requests/utils.py
++++ b/requests/utils.py
+@@ -1,6 +1,6 @@
+ # -*- coding: utf-8 -*-
+ 
+-"""
++"""Requests: HTTP for Humans
+ 
+ Requests is the only *Non-GMO* HTTP library for Python, safe for human
+ consumption.
+@@ -10,6 +10,7 @@
+ 
+ Feature Support
+ ---------------
++
+ Requests is ready for today's web.
+ 
+ - International Domains and URLs
+@@ -20,6 +21,7 @@
+ - Elegant Key/Value Cookies
+ - Automatic Decompression
+ - Automatic Content Decoding
++- Unicode Response Bodies
+ - Multipart File Uploads
+ - HTTP(S) Proxy Support
+ - Connection Timeouts
+@@ -30,6 +32,7 @@
+ - Thread-safety
+ 
+ Requests supports Python 2.6 — 3.5, and runs great on PyPy.
++
+ Installation
+ ------------
+ 
+@@ -40,6 +43,7 @@
+ 
+ Documentation
+ -------------
++
+ Fantastic documentation is available at http://docs.python-requests.org/, for a limited time only.
+ 
+ How to Contribute
+@@ -50,6 +54,7 @@
+ #. Fork `the repository`_ on GitHub to start making your changes to the **master** branch (or branch off of it).
+ #. Write a test which shows that the bug was fixed or that the feature works as expected.
+ #. Send a pull request and bug the maintainer until it gets merged and published. :) Make sure to add yourself to AUTHORS_.
++
+ .. _`the repository`: http://github.com/kennethreitz/requests
+ .. _AUTHORS: https://github.com/kennethreitz/requests/blob/master/AUTHORS.rst
+ .. _Contributor Friendly: https://github.com/kennethreitz/requests/issues?direction=desc&labels=Contributor+Friendly&page=1&sort=updated&state=open
+@@ -60,6 +65,7 @@
+ 
+ def dict_to_sequence(d):
+     """Returns an internal sequence dictionary update."""
++
+     if hasattr(d, 'items'):
+         d = d.items()
+ 
+@@ -70,6 +76,7 @@
+     total_length = 0
+     current_position = 0
+ 
++    # Check if the object has a __len__ method
+     if hasattr(o, '__len__'):
+         total_length = len(o)

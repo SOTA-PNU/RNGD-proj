@@ -1,0 +1,48 @@
+<patch>
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -25,6 +25,7 @@
+ 
+ __all__ = ["is_separable", "separability_matrix"]
+ 
++
+ def is_separable(transform):
+     """
+     A separability test for the outputs of a transform.
+@@ -104,6 +105,7 @@
+     """
+     if transform.n_inputs == 1 and transform.n_outputs > 1:
+         is_separable = np.array([False] * transform.n_outputs).T
++        return is_separable
+     separable_matrix = _separable(transform)
+     is_separable = separable_matrix.sum(1)
+     is_separable = np.where(is_separable != 1, False, True)
+@@ -113,6 +115,7 @@
+     Compute the correlation between outputs and inputs.
+ 
+     Parameters
++    ----------
+     transform : `~astropy.modeling.core.Model`
+         A (compound) model.
+ 
+@@ -121,6 +124,7 @@
+         A boolean correlation matrix of shape (n_outputs, n_inputs).
+         Indicates the dependence of outputs on inputs. For completely
+         independent outputs, the diagonal elements are True and
++        off-diagonal elements are False.
+ 
+     Examples
+@@ -130,6 +134,7 @@
+         array([[ True, False], [False,  True]]...)
+     >>> separability_matrix(Shift(1) & Shift(2) | Rotation2D(2))
+         array([[ True,  True], [ True,  True]]...)
++    >>> separability_matrix(Shift(1) & Shift(2) | Mapping([0, 1, 0, 1]) | \
+         Polynomial2D(1) & Polynomial2D(2))
+         array([[ True,  True], [ True,  True]]...)
+     >>> separability_matrix(Shift(1) & Shift(2) | Mapping([0, 1, 0, 1]))
+@@ -139,6 +144,7 @@
+         array([[ True, False], [False,  True], [ True, False], [False,  True]]...)
+ 
+     """
++    if transform.n_inputs == 1 and transform.n_outputs > 1:
++        return np.ones((transform.n_outputs, transform.n_inputs

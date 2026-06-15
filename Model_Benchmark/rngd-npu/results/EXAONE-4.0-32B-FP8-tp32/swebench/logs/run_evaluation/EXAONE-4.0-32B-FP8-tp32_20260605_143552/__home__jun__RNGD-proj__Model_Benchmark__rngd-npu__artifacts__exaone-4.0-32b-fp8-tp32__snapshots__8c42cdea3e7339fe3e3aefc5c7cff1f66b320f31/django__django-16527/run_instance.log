@@ -1,0 +1,47 @@
+2026-06-05 14:37:53,419 - INFO - Creating container for django__django-16527...
+2026-06-05 14:37:54,350 - INFO - Container for django__django-16527 created: 10222a53578ad01e4df84f200e97607b37f01a006896ad30a757ec9ba40fbbf6
+2026-06-05 14:37:54,511 - INFO - Container for django__django-16527 started: 10222a53578ad01e4df84f200e97607b37f01a006896ad30a757ec9ba40fbbf6
+2026-06-05 14:37:54,512 - INFO - Intermediate patch for django__django-16527 written to logs/run_evaluation/EXAONE-4.0-32B-FP8-tp32_20260605_143552/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__exaone-4.0-32b-fp8-tp32__snapshots__8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31/django__django-16527/patch.diff, now applying to container...
+2026-06-05 14:37:54,645 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:37:54,715 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:37:54,791 - INFO - >>>>> Applied Patch:
+patching file django/contrib/admin/templatetags/admin_modify.py
+Hunk #1 succeeded at 37 with fuzz 3 (offset -65 lines).
+
+2026-06-05 14:37:55,387 - INFO - Git diff before:
+diff --git a/django/contrib/admin/templatetags/admin_modify.py b/django/contrib/admin/templatetags/admin_modify.py
+index 9df4b7aadb..bfa3517c21 100644
+--- a/django/contrib/admin/templatetags/admin_modify.py
++++ b/django/contrib/admin/templatetags/admin_modify.py
+@@ -38,6 +38,7 @@ def prepopulated_fields_js(context):
+                 "allowUnicode": getattr(field["field"].field, "allow_unicode", False),
+             }
+         )
++        # Added has_add_permission check for show_save_as_new
+ 
+     context.update(
+         {
+2026-06-05 14:37:55,387 - INFO - Eval script for django__django-16527 written to logs/run_evaluation/EXAONE-4.0-32B-FP8-tp32_20260605_143552/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__exaone-4.0-32b-fp8-tp32__snapshots__8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31/django__django-16527/eval.sh; copying to container...
+2026-06-05 14:38:01,190 - INFO - Test runtime: 5.71 seconds
+2026-06-05 14:38:01,190 - INFO - Test output for django__django-16527 written to logs/run_evaluation/EXAONE-4.0-32B-FP8-tp32_20260605_143552/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__exaone-4.0-32b-fp8-tp32__snapshots__8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31/django__django-16527/test_output.txt
+2026-06-05 14:38:01,314 - INFO - Git diff after:
+diff --git a/django/contrib/admin/templatetags/admin_modify.py b/django/contrib/admin/templatetags/admin_modify.py
+index 9df4b7aadb..bfa3517c21 100644
+--- a/django/contrib/admin/templatetags/admin_modify.py
++++ b/django/contrib/admin/templatetags/admin_modify.py
+@@ -38,6 +38,7 @@ def prepopulated_fields_js(context):
+                 "allowUnicode": getattr(field["field"].field, "allow_unicode", False),
+             }
+         )
++        # Added has_add_permission check for show_save_as_new
+ 
+     context.update(
+         {
+2026-06-05 14:38:01,314 - INFO - Grading answer for django__django-16527...
+2026-06-05 14:38:01,315 - INFO - report: {'django__django-16527': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_submit_row_save_as_new_add_permission_required (admin_views.test_templatetags.AdminTemplateTagsTest.test_submit_row_save_as_new_add_permission_required)']}, 'PASS_TO_PASS': {'success': ['test_choice_links (admin_views.test_templatetags.DateHierarchyTests.test_choice_links)', 'test_choice_links_datetime (admin_views.test_templatetags.DateHierarchyTests.test_choice_links_datetime)', 'admin_modify template tags follow the standard search pattern', 'admin_list template tags follow the standard search pattern', 'test_override_show_save_and_add_another (admin_views.test_templatetags.AdminTemplateTagsTest.test_override_show_save_and_add_another)', 'submit_row template tag should pass whole context.'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-16527: resolved: False
+2026-06-05 14:38:01,315 - INFO - Attempting to stop container sweb.eval.django__django-16527.EXAONE-4.0-32B-FP8-tp32_20260605_143552...
+2026-06-05 14:38:17,034 - INFO - Attempting to remove container sweb.eval.django__django-16527.EXAONE-4.0-32B-FP8-tp32_20260605_143552...
+2026-06-05 14:38:17,059 - INFO - Container sweb.eval.django__django-16527.EXAONE-4.0-32B-FP8-tp32_20260605_143552 removed.
+2026-06-05 14:38:17,059 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-16527:latest...
+2026-06-05 14:38:17,930 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-16527:latest removed.

@@ -1,0 +1,800 @@
+[
+  {
+    "combo": {},
+    "started_at": 1780979757.0265014,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780979772,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.792,
+      "ttft_s_p50": 3.0517,
+      "ttft_s_p95": 51.4766,
+      "itl_s_p50": 0.09206,
+      "itl_s_p95": 0.09411,
+      "output_tps_per_request_p50": 10.27,
+      "aggregate_output_tps": 1785.81,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 4096
+    },
+    "started_at": 1780979928.2014184,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780979941,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.164,
+      "ttft_s_p50": 3.0352,
+      "ttft_s_p95": 50.1342,
+      "itl_s_p50": 0.08965,
+      "itl_s_p95": 0.09271,
+      "output_tps_per_request_p50": 10.56,
+      "aggregate_output_tps": 1818.38,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 8192
+    },
+    "started_at": 1780980093.5183299,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780980106,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.549,
+      "ttft_s_p50": 3.0311,
+      "ttft_s_p95": 51.1209,
+      "itl_s_p50": 0.0923,
+      "itl_s_p95": 0.09362,
+      "output_tps_per_request_p50": 10.35,
+      "aggregate_output_tps": 1788.78,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 16384
+    },
+    "started_at": 1780980261.2448888,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780980274,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{model_name=\"/home/jun/RN"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.617,
+      "ttft_s_p50": 3.0217,
+      "ttft_s_p95": 50.3832,
+      "itl_s_p50": 0.09009,
+      "itl_s_p95": 0.09125,
+      "output_tps_per_request_p50": 10.5,
+      "aggregate_output_tps": 1812.68,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 32768
+    },
+    "started_at": 1780980427.210013,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780980441,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.18,
+      "ttft_s_p50": 3.0383,
+      "ttft_s_p95": 50.5878,
+      "itl_s_p50": 0.09021,
+      "itl_s_p95": 0.09177,
+      "output_tps_per_request_p50": 10.47,
+      "aggregate_output_tps": 1805.65,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 40960
+    },
+    "started_at": 1780980596.715412,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780980609,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.06,
+      "ttft_s_p50": 3.0113,
+      "ttft_s_p95": 50.4631,
+      "itl_s_p50": 0.08998,
+      "itl_s_p95": 0.09231,
+      "output_tps_per_request_p50": 10.49,
+      "aggregate_output_tps": 1819.69,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 65536
+    },
+    "started_at": 1780980762.039625,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780980775,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.2,
+      "ttft_s_p50": 3.0093,
+      "ttft_s_p95": 50.5519,
+      "itl_s_p50": 0.0905,
+      "itl_s_p95": 0.09224,
+      "output_tps_per_request_p50": 10.45,
+      "aggregate_output_tps": 1805.39,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 131072
+    },
+    "started_at": 1780980928.5262072,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780980941,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{model_name=\"/home/jun/RN"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.915,
+      "ttft_s_p50": 3.058,
+      "ttft_s_p95": 50.7848,
+      "itl_s_p50": 0.09044,
+      "itl_s_p95": 0.09155,
+      "output_tps_per_request_p50": 10.4,
+      "aggregate_output_tps": 1808.95,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 8
+    },
+    "started_at": 1780981094.707966,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780981108,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.983,
+      "ttft_s_p50": 3.0273,
+      "ttft_s_p95": 50.5559,
+      "itl_s_p50": 0.09047,
+      "itl_s_p95": 0.09214,
+      "output_tps_per_request_p50": 10.45,
+      "aggregate_output_tps": 1795.71,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 16
+    },
+    "started_at": 1780981265.070759,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780981278,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.366,
+      "ttft_s_p50": 3.0277,
+      "ttft_s_p95": 50.9487,
+      "itl_s_p50": 0.09046,
+      "itl_s_p95": 0.09221,
+      "output_tps_per_request_p50": 10.38,
+      "aggregate_output_tps": 1803.34,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 32
+    },
+    "started_at": 1780981431.7027988,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780981445,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{model_name=\"/home/jun/RN"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.017,
+      "ttft_s_p50": 3.0342,
+      "ttft_s_p95": 50.8375,
+      "itl_s_p50": 0.09123,
+      "itl_s_p95": 0.09255,
+      "output_tps_per_request_p50": 10.39,
+      "aggregate_output_tps": 1795.3,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 64
+    },
+    "started_at": 1780981598.9568517,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780981612,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.22,
+      "ttft_s_p50": 3.0489,
+      "ttft_s_p95": 50.6385,
+      "itl_s_p50": 0.09046,
+      "itl_s_p95": 0.09209,
+      "output_tps_per_request_p50": 10.43,
+      "aggregate_output_tps": 1792.8,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 128
+    },
+    "started_at": 1780981766.4666967,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780981779,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{model_name=\"/home/jun/RN"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.844,
+      "ttft_s_p50": 3.0292,
+      "ttft_s_p95": 50.9941,
+      "itl_s_p50": 0.09142,
+      "itl_s_p95": 0.09304,
+      "output_tps_per_request_p50": 10.36,
+      "aggregate_output_tps": 1797.43,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 256
+    },
+    "started_at": 1780981933.7398276,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780981946,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.338,
+      "ttft_s_p50": 3.0478,
+      "ttft_s_p95": 51.2883,
+      "itl_s_p50": 0.09225,
+      "itl_s_p95": 0.09379,
+      "output_tps_per_request_p50": 10.29,
+      "aggregate_output_tps": 1791.35,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 4096
+    },
+    "started_at": 1780982101.2130501,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780982114,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 148.023,
+      "ttft_s_p50": 3.059,
+      "ttft_s_p95": 52.4034,
+      "itl_s_p50": 0.09207,
+      "itl_s_p95": 0.09379,
+      "output_tps_per_request_p50": 10.13,
+      "aggregate_output_tps": 1770.97,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 8192
+    },
+    "started_at": 1780982270.6696072,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780982284,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.279,
+      "ttft_s_p50": 3.07,
+      "ttft_s_p95": 50.6514,
+      "itl_s_p50": 0.09127,
+      "itl_s_p95": 0.0941,
+      "output_tps_per_request_p50": 10.42,
+      "aggregate_output_tps": 1792.08,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 16384
+    },
+    "started_at": 1780982438.2350585,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780982451,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.784,
+      "ttft_s_p50": 3.0186,
+      "ttft_s_p95": 50.6685,
+      "itl_s_p50": 0.09058,
+      "itl_s_p95": 0.09203,
+      "output_tps_per_request_p50": 10.43,
+      "aggregate_output_tps": 1810.58,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 32768
+    },
+    "started_at": 1780982604.3659444,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780982617,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{engine=\"0\",model_name=\"/"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.966,
+      "ttft_s_p50": 3.027,
+      "ttft_s_p95": 50.6073,
+      "itl_s_p50": 0.09038,
+      "itl_s_p95": 0.09199,
+      "output_tps_per_request_p50": 10.44,
+      "aggregate_output_tps": 1808.32,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 65536
+    },
+    "started_at": 1780982770.743172,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780982782,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{model_name=\"/home/jun/RN"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 144.125,
+      "ttft_s_p50": 3.0387,
+      "ttft_s_p95": 50.6002,
+      "itl_s_p50": 0.09027,
+      "itl_s_p95": 0.09149,
+      "output_tps_per_request_p50": 10.45,
+      "aggregate_output_tps": 1818.87,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 131072
+    },
+    "started_at": 1780982936.1503708,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+            "created": 1780982948,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "d5f22bbc-9996-4ccd-a7a4-4d0fa24696a7",
+            "max_prompt_len": 32768,
+            "max_context_len": 32768
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8\"} 0\n# HELP furiosa_llm_prefix_cache_hits Prefix cache hits, in terms of number of cached tokens.\n# TYPE furiosa_llm_prefix_cache_hits counter\nfuriosa_llm_prefix_cache_hits{model_name=\"/home/jun/RN"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.739,
+      "ttft_s_p50": 3.0605,
+      "ttft_s_p95": 51.0112,
+      "itl_s_p50": 0.09139,
+      "itl_s_p95": 0.09403,
+      "output_tps_per_request_p50": 10.36,
+      "aggregate_output_tps": 1798.72,
+      "total_output_tokens": 262144
+    },
+    "status": "ok"
+  }
+]

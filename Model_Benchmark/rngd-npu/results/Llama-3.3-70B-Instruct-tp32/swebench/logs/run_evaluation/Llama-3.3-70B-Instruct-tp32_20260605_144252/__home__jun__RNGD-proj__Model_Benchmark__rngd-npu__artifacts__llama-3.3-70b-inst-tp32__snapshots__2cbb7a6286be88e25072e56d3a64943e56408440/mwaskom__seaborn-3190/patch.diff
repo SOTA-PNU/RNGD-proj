@@ -1,0 +1,46 @@
+--- a/seaborn/_core/scales.py
++++ b/seaborn/_core/scales.py
+@@ -325,7 +325,7 @@
+     def _setup(
+         self, data: Series, prop: Property, axis: Axis | None = None,
+     ) -> Scale:
+-        new = copy(self)
++        new = copy(self)
+         if new._tick_params is None:
+             new = new.tick()
+         if new._label_params is None:
+@@ -344,7 +344,7 @@
+         forward, inverse = new._get_transform()
+ 
+         mpl_scale = new._get_scale(str(data.name), forward, inverse)
+-
++        # Check if data is boolean
+         if axis is None:
+             axis = PseudoAxis(mpl_scale)
+             axis.update_units(data)
+@@ -349,7 +349,7 @@
+         mpl_scale.set_default_locators_and_formatters(axis)
+         new._matplotlib_scale = mpl_scale
+ 
+-        normalize: Optional[Callable[[ArrayLike], ArrayLike]]
++        normalize: Optional[Callable[[ArrayLike], ArrayLike]]
+         if prop.normed:
+             if new.norm is None:
+                 vmin, vmax = data.min(), data.max()
+@@ -357,7 +357,14 @@
+                 vmin, vmax = new.norm
+             vmin, vmax = axis.convert_units((vmin, vmax))
+             a = forward(vmin)
+-            b = forward(vmax) - forward(vmin)
++            # Check if data is boolean
++            if data.dtype.kind == 'b':
++                b = 1.0
++            else:
++                b = forward(vmax) - forward(vmin)
++
++            # Handle the case where b is zero
++            if b == 0:
++                b = 1.0
+ 
+             def normalize(x):
+                 return (x - a) / b

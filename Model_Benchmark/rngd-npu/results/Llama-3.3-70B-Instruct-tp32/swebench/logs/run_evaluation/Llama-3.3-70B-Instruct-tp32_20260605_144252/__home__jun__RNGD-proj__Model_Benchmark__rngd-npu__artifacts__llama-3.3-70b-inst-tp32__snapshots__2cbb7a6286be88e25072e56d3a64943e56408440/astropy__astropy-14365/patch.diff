@@ -1,0 +1,10 @@
+diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py
+@@ -62,7 +62,7 @@
+     _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
+ 
+-    _command_re = r"READ [TS]ERR(\s+[0-9]+)+"
++    _command_re = r"(?i)READ [TS]ERR(\s+[0-9]+)+"
+ 
+     sep = delimiter
+     if delimiter is None:
+         sep = r"\s+"

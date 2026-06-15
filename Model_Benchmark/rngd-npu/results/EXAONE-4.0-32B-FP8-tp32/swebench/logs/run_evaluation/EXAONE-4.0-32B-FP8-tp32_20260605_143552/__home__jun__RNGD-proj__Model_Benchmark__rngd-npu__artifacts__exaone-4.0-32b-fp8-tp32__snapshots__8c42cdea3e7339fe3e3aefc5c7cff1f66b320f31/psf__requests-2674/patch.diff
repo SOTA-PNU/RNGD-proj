@@ -1,0 +1,34 @@
+diff --git a/requests/adapters.py b/requests/adapters.py
+@@ -221,67 +221,77 @@
+         return self.build_response(request, resp)
+ 
+     except (ProtocolError, socket.error) as err:
+-        raise ConnectionError(err, request=request)
++        raise ConnectionError(err, request=request) from None
+ 
+     except MaxRetryError as e:
++        if isinstance(e.reason, ConnectTimeoutError):
++            raise ConnectTimeout(e, request=request) from None
++
++        if isinstance(e.reason, ResponseError):
++            raise RetryError(e, request=request) from None
++
++        raise ConnectionError(e, request=request) from None
+ 
+     except _ProxyError as e:
+         raise ProxyError(e)
+ 
+     except (_SSLError, _HTTPError) as e:
++        if isinstance(e, _SSLError):
++            raise SSLError(e, request=request) from None
++
++        if isinstance(e, ReadTimeoutError):
++            raise ReadTimeout(e, request=request) from None
++
++        if isinstance(e, DecodeError):
++            raise ResponseError(e, request=request) from None
++
++        if isinstance(e, TimeoutError):
++            raise RetryError(e, request=request) from None
++
+         raise

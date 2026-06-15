@@ -1,0 +1,8 @@
+$ flask routes
+ * Tip: There are .env or .flaskenv files present. Do "pip install python-dotenv" to use them.
+Endpoint                                                 Methods    Rule
+-------------------------------------------------------  ---------  ------------------------------------------------
+admin_blueprint.home                                      GET        /home
+test_subdomain_blueprint.home                             GET        /home
+static                                                    GET        /static/<path:filename>
+...

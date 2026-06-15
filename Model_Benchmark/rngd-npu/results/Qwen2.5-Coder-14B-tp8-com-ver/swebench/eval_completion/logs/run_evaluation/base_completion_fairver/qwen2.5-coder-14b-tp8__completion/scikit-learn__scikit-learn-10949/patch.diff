@@ -1,0 +1,30 @@
+
+--- a/sklearn/utils/validation.py
++++ b/sklearn/utils/validation.py
+@@ -1,6 +1,7 @@
+ """Utilities for input validation"""
+ 
+ import warnings
++import pandas as pd
+ import numbers
+ 
+ import numpy as np
+@@ -10,6 +11,7 @@
+ from scipy import __version__ as scipy_version
+ from distutils.version import LooseVersion
+ 
++from ..exceptions import DataConversionWarning
+ from ..externals import six
+ from ..utils.fixes import signature
+ from .. import get_config as _get_config
+@@ -100,6 +102,10 @@ def check_array(array, accept_sparse=False, accept_large_sparse=True,
+     if force_all_finite:
+         _assert_all_finite(array,
+                            allow_nan=force_all_finite == 'allow-nan')
++    if isinstance(array, pd.DataFrame) and warn_on_dtype:
++        warnings.warn("Data with input dtype object was converted to float64.",
++                      DataConversionWarning)
++
+     shape_repr = _shape_repr(array.shape)
+     if ensure_min_samples > 0:
+         n_samples = _num_samples(array)

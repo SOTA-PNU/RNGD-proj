@@ -1,0 +1,14 @@
+The issue occurs because the `\p{Han}` Unicode property escape is not being properly handled in the pylint configuration. The error suggests that pylint is trying to parse this as a literal backslash followed by 'p' rather than as a Unicode property escape.
+
+Here's the patch to fix this issue:
+
+```diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+@@ -125,6 +125,7 @@
+     "regexp_paths_csv": _regexp_paths_csv_transfomer,
+     "string": pylint_utils._unquote,
+     "yn": _yn_transformer,
++    "regexp": re.compile,
+     "regexp_csv": _regexp_csv_transfomer,
+     "regexp_paths_csv": _regexp_paths_csv_transfomer,
+     "string": pylint_utils._unquote,
+```

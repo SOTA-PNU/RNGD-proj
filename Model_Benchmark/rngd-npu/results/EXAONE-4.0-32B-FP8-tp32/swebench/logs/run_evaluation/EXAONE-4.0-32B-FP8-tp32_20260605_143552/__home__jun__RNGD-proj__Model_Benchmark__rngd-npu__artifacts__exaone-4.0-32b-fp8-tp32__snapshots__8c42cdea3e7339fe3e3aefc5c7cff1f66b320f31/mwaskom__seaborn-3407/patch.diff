@@ -1,0 +1,23 @@
+<patch>
+--- a/seaborn/axisgrid.py
++++ b/seaborn/axisgrid.py
+@@ -1488,6 +1488,14 @@
+                 ax.yaxis.offsetText.set_visible(False)
+                 ax.yaxis.label.set_visible(False)
+ 
++    if self._hue_var is not None:
++        hue = self.data[self._hue_var]
++    else:
++        hue = None
++
++    if self._dropna:
++        not_na = ~none_na
++        if hue is not None:
++            not_na &= hue.notna()
++    else:
++        not_na = ~none_na
+ 
+         # Here is the main generator loop
+         for (i, row_name), (j, col_name), (k, hue_name) in product(enumerate(row_masks),
+                                                                   enumerate(col_masks),
+                                                                   enumerate(hue_masks)):

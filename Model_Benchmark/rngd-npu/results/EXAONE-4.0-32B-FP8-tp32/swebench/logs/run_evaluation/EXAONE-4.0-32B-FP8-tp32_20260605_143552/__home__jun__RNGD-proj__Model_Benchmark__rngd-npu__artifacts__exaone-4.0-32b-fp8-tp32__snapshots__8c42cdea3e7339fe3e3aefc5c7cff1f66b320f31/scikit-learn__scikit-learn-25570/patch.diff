@@ -1,0 +1,90 @@
+<patch>
+--- a/sklearn/compose/_column_transformer.py
++++ b/sklearn/compose/_column_transformer.py
+@@ -216,7 +216,7 @@
+         if hasattr(trans, "get_feature_names_out"):
+             raise AttributeError(
+                 f"Transformer {name} (type {type(trans).__name__}) does "
+-                 "not provide get_feature_names_out."
++                 "not provide get_feature_names_out."
+             )
+         return trans.get_feature_names_out(names)
+     def get_feature_names_out(self, input_features=None):
+@@ -274,7 +274,7 @@
+         if not transformer_with_feature_names_out:
+             # No feature names
+             return np.array([], dtype=object)
+-
++
+         return self._add_prefix_for_feature_names_out(
+             transformer_with_feature_names_out
+         )
+     def _add_prefix_for_feature_names_out(self, transformer_with_feature_names_out):
+@@ -289,7 +289,7 @@
+         names_repr = str(top_6_overlap[:5])[:-1] + ", ...]"
+         raise ValueError(
+             f"Output feature names: {names_repr} are not unique. Please set "
+-             "verbose_feature_names_out=True to add prefixes to feature names"
++             "verbose_feature_names_out=True to add prefixes to feature names"
+         )
+     def _update_fitted_transformers(self, transformers):
+@@ -303,7 +303,7 @@
+         assert not list(fitted_transformers)
+         self.transformers_ = transformers_
+         self._name_to_fitted_passthrough = {}
+-
++
+         return self
+     def _validate_output(self, result):
+         """
+@@ -310,7 +310,7 @@
+         names = [
+             name for name, _, _, _ in self._iter(fitted=True, replace_strings=True)
+         ]
+-
++
+         for Xs, name in zip(result, names):
+             if not getattr(Xs, "ndim", 0) == 2:
+                 raise ValueError(
+@@ -320,10 +320,10 @@
+         self._record_output_indices(Xs)
+         idx = 0
+         self.output_indices_ = {}
+-
++
+         for transformer_idx, (name, _, _, _) in enumerate(
+             self._iter(fitted=True, replace_strings=True)
+         ):
+             n_columns = Xs[transformer_idx].shape[1]
+             self.output_indices_[name] = slice(idx, idx + n_columns)
+             idx += n_columns
+-
++
+         # `_iter` only generates transformers that have a non empty
+         # selection. Here we set empty slices for transformers that
+         # generate no output, which are safe for indexing
+         all_names = [t[0] for t in self.transformers] + ["remainder"]
+         for name in all_names:
+             if name not in self.output_indices_:
+                 self.output_indices_[name] = slice(0, 0)
+-
++
+         # `_iter` only generates transformers that have a non empty
+         # selection. Here we set empty slices for transformers that
+         # generate no output, which are safe for indexing
+         all_names = [t[0] for t in self.transformers] + ["remainder"]
+         for name in all_names:
+             if name not in self.output_indices_:
+                 self.output_indices_[name] = slice(0, 0)
+-
++
+         return self
+     def _log_message(self, name, idx, total):
+         if not self.verbose:
+             return None
+@@ -334,7 +334,7 @@
+         return "(%d of %d) Processing %s" % (idx, total, name)
+     def _fit_transform(self, X, y, func, fitted=False, column_as_strings=False):
+         """
+-
++
