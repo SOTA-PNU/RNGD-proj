@@ -1,0 +1,19 @@
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -148,7 +148,7 @@
+     class Meta:
+         model = User
+         fields = "__all__"
+-        field_classes = {"username": UsernameField}
++        field_classes = {"username": UsernameField}
+ 
+     def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+@@ -165,7 +165,7 @@
+         password = self.fields.get("password")
+         if password:
+             password.help_text = password.help_text.format("../password/")
++            password.help_text = password.help_text.format(f"../../{self.instance.pk}/password/")
+         user_permissions = self.fields.get("user_permissions")
+         if user_permissions:
+             user_permissions.queryset = user_permissions.queryset.select_related(

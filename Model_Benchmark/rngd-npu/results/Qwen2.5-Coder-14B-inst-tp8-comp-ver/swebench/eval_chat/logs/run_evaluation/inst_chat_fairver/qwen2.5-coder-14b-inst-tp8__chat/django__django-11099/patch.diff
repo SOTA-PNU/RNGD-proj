@@ -1,0 +1,10 @@
+diff --git src/django/contrib/auth/validators.py src/django/contrib/auth/validators.py  
+index fdbbfae..cddcdaa  6  
+--- src/django/contrib/auth/validators.py  
++++ src/django/contrib/auth/validators.py  
+@@ -9 ,7 +9 ,7 @@ class ASCIIUsernameValidator(validators.RegexValidator):  
+      message=_('Enter  
+      flags=re.ASCII  
+  
+@@ -  
+```

@@ -1,0 +1,72 @@
+<patch>
+--- a/seaborn/_core/scales.py
++++ b/seaborn/_core/scales.py
+@@ -348,7 +348,7 @@
+     def _setup(self, data, prop, axis=None):
+         new = copy(self)
+         if new._tick_params is None:
+-            new = new.tick()
++            new = new.tick()
+         if new._label_params is None:
+             new = new.label()
+ 
+@@ -356,7 +356,7 @@
+         vmin, vmax = axis.convert_units((vmin, vmax))
+         a = forward(vmin)
+         b = forward(vmax) - forward(vmin)
+-        def normalize(x):
++        def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -365,7 +365,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -374,7 +374,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -383,7 +383,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -392,7 +392,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -401,7 +401,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -410,7 +410,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -419,7 +419,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -428,7 +428,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -437,7 +437,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@ -446,7 +446,7 @@
+         def normalize(x):
+             return (x - a) / b
+ 
+         def normalize(x):
+@@

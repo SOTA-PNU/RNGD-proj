@@ -1,0 +1,61 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar 20 14:30:00 2019
+
+@author: joshu
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import os
+import sys
+import time
+import datetime
+import math
+import random
+import scipy
+import scipy.stats
+import scipy.optimize
+import scipy.integrate
+import scipy.special
+import scipy.interpolate
+import scipy.signal
+import scipy.fftpack
+import scipy.linalg
+import scipy.sparse
+import scipy.sparse.linalg
+import scipy.spatial
+import scipy.spatial.distance
+import scipy.spatial.transform
+import scipy.stats
+import scipy.stats.mstats
+import scipy.stats.distributions
+import scipy.stats.kde
+import scipy.stats.mstats_basic
+import scipy.stats.mstats_extras
+import scipy.stats.mstats_multivariate
+import scipy.stats.mstats_regression
+import scipy.stats.mstats_tests
+import scipy.stats.mstats_univariate
+import scipy.stats.mstats_zscore
+import scipy.stats.mstats_zscore_basic
+import scipy.stats.mstats_zscore_extras
+import scipy.stats.mstats_zscore_multivariate
+import scipy.stats.mstats_zscore_regression
+import scipy.stats.mstats_zscore_tests
+import scipy.stats.mstats_zscore_univariate
+import scipy.stats.mstats_zscore_zscore
+import scipy.stats.mstats_zscore_zscore_basic
+import scipy.stats.mstats_zscore_zscore_extras
+import scipy.stats.mstats_zscore_zscore_multivariate
+import scipy.stats.mstats_zscore_zscore_regression
+import scipy.stats.mstats_zscore_zscore_tests
+import scipy.stats.mstats_zscore_zscore_univariate
+import scipy.stats.mstats_zscore_zscore_zscore
+import scipy.stats.mstats_zscore_zscore_zscore_basic
+import scipy.stats.mstats_zscore_zscore_zscore_extras
+import scipy.stats.mstats_zscore_zscore_zscore_multivariate
+import scipy.stats

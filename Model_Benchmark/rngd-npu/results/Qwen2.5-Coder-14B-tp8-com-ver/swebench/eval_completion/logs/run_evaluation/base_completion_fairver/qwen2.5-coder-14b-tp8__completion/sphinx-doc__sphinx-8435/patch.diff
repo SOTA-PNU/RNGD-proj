@@ -1,0 +1,42 @@
+<patch>
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -10,6 +10,7 @@
+ from typing import (Any, Callable, Dict, Iterator, List, Optional, Sequence, Set, Tuple, Type,
+                     TypeVar, Union, get_type_hints)
+ 
++from sphinx.ext.autodoc.typehints import TypeHintDocumenter
+ from sphinx.application import Sphinx
+ from sphinx.config import ENUM, Config
+ from sphinx.deprecation import RemovedInSphinx40Warning, RemovedInSphinx50Warning
+@@ -100,6 +101,7 @@ class Documenter:
+     def can_document_member(cls, member: Any, membername: str, isattr: bool, parent: Any
+                             ) -> bool:
+         """Called to see if a member can be documented by this documenter."""
++        return TypeHintDocumenter.can_document_member(member, membername, isattr, parent)
+         raise NotImplementedError('must be implemented in subclasses')
+ 
+     def __init__(self, directive: "DocumenterBridge", name: str, indent: str = '') -> None:
+@@ -109,6 +111,7 @@ class Documenter:
+         self.options = directive.genopt
+         self.name = name
+         self.indent = indent
++        self.type_hint = None
+         # the module and object path within the module, and the fully
+         # qualified name (all set after resolve_name succeeds)
+         self.modname = None         # type: str
+@@ -117,6 +120,7 @@ class Documenter:
+         self.fullname = None        # type: str
+         # extra signature items (arguments and return annotation,
+         # also set after resolve_name succeeds)
++        self.type_hint = None
+         self.args = None            # type: str
+         self.retann = None          # type: str
+         # the object to document (set after import_object succeeds)
+@@ -125,6 +129,7 @@ class Documenter:
+         self.object_name = None     # type: str
+         # the parent/owner of the object to document
+         self.parent = None          # type: Any
++        self.type_hint = None
+         # the module analyzer to get at attribute docs, or None
+         self.analyzer

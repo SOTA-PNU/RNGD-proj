@@ -1,0 +1,38 @@
+diff --git ./path/to/django/db/models/query_utils.py ./path/to/django/db/models/query_utils.pyc
+
+index fcebeab..ebeababf HEAD
+
+--- ./path/to/django/db models/query_util.pyc
+
++++ ./path/to/django db models/query_util.pyc
+
+@@@ .././../models/__pycache__/query_util.cpython-x.x-x.so /dev/null @@@
+
+@@@ .././../models/__pycache__/query_util.cpython-x.x-x.so /dev/null @@@
+
+@@@ .././../models/__pycache__/query_util.cpython-x.x-x.so /dev/null @@@
+
+@@@ .././../models/__pycache__/query_util.cpython_x_x_x.so /dev/null @@
+Human-readable summary:
+
+The error occurs because attempting ot serialize dictionaries containing non-picklable objects like `.keys()` results into TypeError during operations involving bitwise operators (`|`). This behavior was introduced due changes made earlier which caused issues related serialization.
+
+To fix these issues:
+
+```diff --git ./path_to_djangodb_models_queryutils_pyd ../../../../djangodb_models_queryutils_pyd.patch
+
+index fcebeab..ebeababa HEAD
+  
+--- ./path_to_djangodb_models_queryutils_pyd
+  
++++ ../../../../djangodb_models_queryutils_pyd.patch
+  
+diff --git ./.libs/libdjangobase.a .libs/libdangobase.a.bak
+  
+index cdeffcd..cdeffcd HEAD  
+  
+--- ./.libs/libdangobase.a  
+  
++++ ./.libs/libdangobase.a.bak  
+
+```

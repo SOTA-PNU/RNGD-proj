@@ -1,0 +1,11 @@
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -80,7 +80,7 @@
+     @property
+     def colblocksizes(self):
+         # Get column block sizes
+-        return [self.blocks[0, i].cols for i in range(self.blockshape[1])]
++        return [getattr(self.blocks[0, i], 'cols', 0) for i in range(self.blockshape[1])]
+ 
+     @property
+     def rowblocksizes(self):

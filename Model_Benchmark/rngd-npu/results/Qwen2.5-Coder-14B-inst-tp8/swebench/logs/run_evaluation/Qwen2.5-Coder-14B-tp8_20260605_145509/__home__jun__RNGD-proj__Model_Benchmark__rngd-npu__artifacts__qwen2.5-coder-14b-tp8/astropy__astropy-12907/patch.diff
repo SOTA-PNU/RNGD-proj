@@ -1,0 +1,17 @@
+diff --git src/python/org/apache/lucene/index/IndexWriter.java src/python/org/apache/lucene/index/IndexWriter.java
+
+index fadecb..aebfcb
+
+--- src/python/org/apache/lucene/index/IndexWriter.java
+
++++ src/python/org/apache/lucene/index/IndexWriter.java
+
+@@\-\-\-\-\-\-\-\-\-\-\-\-\--\-
+
+@@\ \ \ \ \ \ \ \ \ \ \ public void updateDocument\(Term term,\ Document doc\) throws IOException {
+
+@@\+\+\+\+\+\+\+\+\+
+
+@@\ \ \ public void updateDocument\(Term term,\ Document doc\) throws IOException {
+
+@@\ }

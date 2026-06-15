@@ -1,0 +1,11 @@
+--- a/seaborn/_oldcore.py
++++ b/seaborn/_oldcore.py
+@@ -146,7 +146,7 @@
+         data = plotter.plot_data.get("hue", pd.Series(dtype=float))
+ 
+         if data.isna().all():
+-            if palette is not None:
++            if palette is not None and not isinstance(palette, (dict, list)):
+             msg = "Ignoring `palette` because no `hue` variable has been assigned."
+             warnings.warn(msg, stacklevel=4)
+         else:

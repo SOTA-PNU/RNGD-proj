@@ -1,0 +1,65 @@
+
+
+import os
+
+
+os.system('echo Hello World')
+
+print()
+
+print()
+
+
+def foo():
+
+
+
+return 
+
+
+if '__main__'
+
+== '__main__':
+    
+foo()
+
+print()
+
+
+def bar():
+
+    
+
+return 
+
+
+if '__main__
+
+== '__main__':
+    
+bar()
+
+
+
+
+### Expected Output ###
+
+
+
+Hello World
+
+
+### Actual Output ###
+
+
+
+Hello World
+
+
+
+
+
+## Solution ##
+
+To fix这个问题，我们需要移除代码中的所有尾随空格。以下是修改后的代码：
+

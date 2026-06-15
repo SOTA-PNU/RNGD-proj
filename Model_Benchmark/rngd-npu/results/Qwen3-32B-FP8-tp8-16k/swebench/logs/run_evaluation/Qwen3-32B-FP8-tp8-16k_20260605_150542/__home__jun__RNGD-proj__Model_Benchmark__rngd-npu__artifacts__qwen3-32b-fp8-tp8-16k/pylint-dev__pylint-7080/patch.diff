@@ -1,0 +1,31 @@
+<think>
+Okay, let's see. The user is reporting that when they run Pylint with --recursive=y, the ignore-paths setting in their pyproject.toml isn't being respected. Specifically, files in src/gen/ are being checked, but they should be ignored based on the regex in ignore-paths.
+
+Looking at the code in expand_modules.py, the function _is_ignored_file checks if a file should be ignored. The current logic checks the basename against ignore_list and ignore_list_re, and the full path against ignore_list_paths_re. But the problem is that when processing directories recursively, maybe the regex isn't being applied correctly to the full path.
+
+Wait, in the code, for a given element (file or directory), it's checking if the basename is in the ignore list or matches the regex. But the ignore-paths is supposed to match the full path. The user's regex is "^src/gen/.*$", which should match the full path of the files in src/gen. However, in the current implementation, the _is_in_ignore_list_re is called with the element (the full path) in the case of ignore_list_paths_re. But maybe when processing directories recursively, the element is a subdirectory, and the check isn't happening correctly.
+
+Wait, in the expand_modules function, when processing a directory (like 'src/'), it's expanding all the submodules. The code for expanding modules might not be applying the ignore-paths correctly during the recursive expansion. Let me look at the code again.
+
+In expand_modules.py, when the code is handling a directory (something is a directory), it uses modutils.get_module_files to get all the module files in that directory. The get_module_files function is called with the ignore_list and ignore_list_re. But the problem is that the ignore_list_paths_re isn't being passed to that function. The get_module_files is part of astroid's modutils, and perhaps it's not using the ignore_list_paths_re parameter from the expand_modules function. 
+
+Looking at line 144-146 in expand_modules.py:
+
+if _is_in_ignore_list_re(
+    os.path.basename(subfilepath), ignore_list_re
+) or _is_in_ignore_list_re(subfilepath, ignore_list_paths_re):
+    continue
+
+So here, for each subfilepath (the full path of the file being considered), it checks if the basename matches any regex in ignore_list_re, or the full path matches ignore_list_paths_re. That seems correct. But why is the user's regex not working?
+
+Wait, maybe when the code is expanding recursively, the initial directory (src/) is being processed, and then the subdirectories (like src/gen/) are being added. But during the recursive expansion, the ignore-paths isn't being checked properly. Let me think about the flow.
+
+In the expand_modules function, when a directory is processed (like 'src/'), the code first checks if the directory itself is ignored. If not, it proceeds to collect all module files in that directory. However, when collecting the module files, the code uses modutils.get_module_files, which might not take into account the ignore_list_paths_re. Wait, the get_module_files function is part of astroid's modutils. Let me check how that function works. The get_module_files function is supposed to list all Python files in a directory, considering namespaces and such. But the parameters passed to it here are ignore_list and list_all (which is is_namespace). The problem is that the ignore_list_paths_re isn't being passed to get_module_files. Therefore, when collecting the subfiles, the ignore-paths regex isn't being applied. That's the issue!
+
+So, the expand_modules function in Pylint is not passing the ignore_list_paths_re to modutils.get_module_files. As a result, when recursively expanding the modules, the ignore-paths regex isn't considered when collecting the subfiles. Therefore, even if a file's path matches the ignore-paths, it's not being filtered out because the get_module_files call doesn't know about the ignore_list_paths_re.
+
+The fix would be to modify the call to modutils.get_module_files to include the ignore_list_paths_re. However, looking at the modutils.get_module_files function's parameters, I don't see an option to pass in ignore patterns. Wait, perhaps the current implementation of get_module_files in astroid doesn't support that. If that's the case, then the Pylint code isn't applying the ignore-paths correctly during recursive expansion because it's not passing the necessary parameters to the function that collects the files.
+
+So, the solution is to adjust the code in expand_modules.py to ensure that when collecting subfiles, the ignore_list_paths_re is considered. But since get_module_files doesn't support that, perhaps the code should filter the files after retrieving them from get_module_files. 
+
+Looking at the code in expand_modules.py, after getting the subfilepath from get_module_files, the code checks if the sub

@@ -1,0 +1,21 @@
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -1698,7 +1698,7 @@
+ class LogNorm(Normalize):
+     """
+     Normalize a given value to the 0-1 range on a log scale.
+-    """
++    """
+     Parameters
+     ----------
+     vmin, vmax : float
+         The minimum and maximum value of the dataset.
+@@ -1706,7 +1706,7 @@
+     """
+     def __init__(self, vmin=None, vmax=None, clip=False):
+         super().__init__(vmin=vmin, vmax=vmax, clip=clip)
+-        self._scale = scale.LogScale(nonpositive='mask')
++        self._scale = scale.LogScale(nonpositive='clip')
+ 
+     def __call__(self, value, clip=None):
+         if clip is None:

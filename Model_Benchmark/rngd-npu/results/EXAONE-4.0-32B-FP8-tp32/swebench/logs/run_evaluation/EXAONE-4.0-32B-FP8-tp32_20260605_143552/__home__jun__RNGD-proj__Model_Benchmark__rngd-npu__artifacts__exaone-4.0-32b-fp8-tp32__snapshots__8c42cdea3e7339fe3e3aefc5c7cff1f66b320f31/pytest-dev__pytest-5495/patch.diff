@@ -1,0 +1,13 @@
+The issue is about improving the assertion rewriting message for byte strings. The current message shows ASCII ordinal values (like 52) which is confusing. Here's the patch to make the message more readable:
+
+```diff --git a/src/_pytest/assertion/util.py b/src/_pytest/assertion/util.py
+@@ -167,7 +167,7 @@ def _notin_text(term, text, verbose=0):
+     diff = _diff_text(correct_text, text, verbose)
+     newdiff = ["%s is contained here:" % saferepr(term, maxsize=42)]
+     for line in diff:
+-        if line.startswith("Skipping"):
++        if line.startswith("Skipping %s identical leading characters in diff, use -v to show") % i:
+             continue
+         if line.startswith("- "):
+             continue
+```

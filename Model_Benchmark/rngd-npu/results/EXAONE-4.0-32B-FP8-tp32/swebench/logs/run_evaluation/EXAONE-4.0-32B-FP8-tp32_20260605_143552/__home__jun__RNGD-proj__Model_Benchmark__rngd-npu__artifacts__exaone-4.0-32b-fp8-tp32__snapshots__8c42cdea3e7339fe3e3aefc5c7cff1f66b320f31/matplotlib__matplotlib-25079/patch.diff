@@ -1,0 +1,75 @@
+<patch>
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -289,7 +289,7 @@
+         if clip is None:
+             clip = self.clip
+
+-        result, is_scalar = self.process_value(value)
++        result, is_scalar = self.process_value(value)
+
+         if self.vmin is None or self.vmax is None:
+             self.autoscale_None(result)
+@@ -303,7 +303,7 @@
+         if vmin > vmax:
+             raise ValueError("minvalue must be less than or equal to maxvalue")
+         elif vmin == vmax:
+-            result.fill(0)  # Or should it be all masked?  Or 0.5?
++            result.fill(0)
+         else:
+             if clip:
+                 mask = np.ma.getmask(result)
+@@ -310,7 +310,7 @@
+             result = np.ma.array(np.clip(result.filled(vmax), vmin, vmax),
+                                  mask=mask)
+         if not np.isfinite([t_vmin, t_vmax]).all():
+-            raise ValueError("Invalid vmin or vmax")
++            raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+         t_value /= (t_vmax - t_vmin)
+         t_value = np.ma.masked_invalid(t_value, copy=False)
+
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -310,7 +310,7 @@
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+         t_value /= (t_vmax - t_vmin)
+         t_value = np.ma.masked_invalid(t_value, copy=False)
+
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -310,7 +310,7 @@
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+         t_value /= (t_vmax - t_vmin)
+         t_value = np.ma.masked_invalid(t_value, copy=False)
+
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -310,7 +310,7 @@
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+         t_value /= (t_vmax - t_vmin)
+         t_value = np.ma.masked_invalid(t_value, copy=False)
+
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -310,7 +310,7 @@
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+         t_value /= (t_vmax - t_vmin)
+         t_value = np.ma.masked_invalid(t_value, copy=False)
+
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -310,7 +310,7 @@
+         if not np.isfinite([t_vmin, t_vmax]).all():
+             raise ValueError("Invalid vmin or vmax")
+         t_value -= t_vmin
+         t_value /= (t_vmax - t_vmin)
+         t_value = np.ma.masked_invalid(t

@@ -1,0 +1,172 @@
+#naive_yaml
+---
+tensors:
+  inner:
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: M
+              - Var: N
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: M
+              - Var: N
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: M
+              - Var: N
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: deltanet_gate_sigmoid_mul
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "0"
+                              stride: 1
+                          size:
+                            Var: M
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "1"
+                              stride: 1
+                          size:
+                            Var: N
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "0"
+                              stride: 1
+                          size:
+                            Var: M
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "1"
+                              stride: 1
+                          size:
+                            Var: N
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Unary:
+                        operator: Sigmoid
+                        operand:
+                          Tensor: 0
+                    source: ""
+                  - def: 3
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 1
+                        rhs:
+                          Tensor: 2
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "0"
+                            stride: 1
+                        size:
+                          Var: M
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "1"
+                            stride: 1
+                        size:
+                          Var: N
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "0"
+                            stride: 1
+                        size:
+                          Var: M
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "1"
+                            stride: 1
+                        size:
+                          Var: N
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

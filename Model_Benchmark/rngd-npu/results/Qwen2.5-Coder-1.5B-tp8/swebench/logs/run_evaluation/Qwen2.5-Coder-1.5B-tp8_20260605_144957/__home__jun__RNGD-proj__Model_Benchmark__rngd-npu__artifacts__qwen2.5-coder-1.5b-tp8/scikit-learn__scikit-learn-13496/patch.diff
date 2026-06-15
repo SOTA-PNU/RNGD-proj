@@ -1,0 +1,576 @@
+diff --git ./README.rst ./README.rst.patch.new
+
+index fbeaebd..bceabec HEAD
+
+--- ./README.rst.patch.new	Thu Jan XX XXXX XX XXXX XXXX UTC
+
++++ ./README.rST	Thu Jan XX XXXX XX YYYY YYYY UTC
+
+@@ @@ @@ @@
+@@ @@ @@ @@
+@@ @@ ```python
+
+
+class IsolatedForests(BaseEstimator):
+
+   ...
+
+   @property  
+   @deprecated(reason="'behavior==' old'' argument deprecate.")
+   property behavior:
+
+       ...
+   
+       ...
+
+       ...
+   
+       ...
+
+       ...
+   
+      ...  
+
+      ...  
+
+      ... 
+
+      ...
+
+      
+@endclass
+
+
+
+@endmodule
+
+
+
+@endpackage
+
+
+
+@endproject
+
+
+
+
+endfile
+
+
+
+
+endsection
+
+
+
+
+enddocument
+
+
+
+
+
+/endbody
+
+
+
+
+
+/endhtml>
+
+
+
+diff --git ./src/sk learn/ensemble/iforest.pyc ./src/sk learn/ensemble/iforest.pyc.patch.new
+
+index cdeabcf..eefabcg HEAD
+
+--- src/sk learn/ensemble/isofor pyc.patch.new	Thu Jan XX XXXXXX YY YYYYYY YYYY UTC
+
++++ src/sk learn/ensemble/isofor pyc.patch.new	Thu Jan xx XXXXXXXYY YYYYYYYYY UTC
+
+
+from .iforests_base_pydantic_vv.vv.vv.vv.vvvvvvvvvvv vv v v v v vv v vv \
+import BaseEstimator
+
+
+from typing_extensions \
+import Literal
+
+
+...
+
+...
+
+...
+...
+...
+......
+
+
+def predict_proba(
+	self,
+
+	X,
+
+	y,
+
+	scores_only=True,
+
+
+):
+
+	if hasattr(scores_only,'type'):
+
+	    assert type(scores_only)==Literal['bool'],\
+		    "'scores_only'"\
+		    +"should either take boolean values"
+
+	else:
+
+	    assert type(scores_only)==bool,\
+		    "'scores-only'"\
+		    +"should either take boolean values"
+
+
+	if hasattr(y,'type'):
+
+
+	    assert type(y)==Literal['int','float'],\
+	        "'y'"\
+	        +"should either take integer values"
+
+	else:
+
+
+	    assert type(y)==int,\
+	        "'y'"\
+
+
+
+
+
+
+	def predict_proba(
+	self,
+
+	X,
+
+
+	y,
+
+
+
+	scoresOnly=True,
+
+
+):
+
+	if hasattr(scoresOnly,'type'):
+
+
+
+	    	assert(type(scoresOnly)=='bool'),\
+
+
+
+
+
+
+
+
+
+	    	assert(type(scorer),'str'),\
+
+
+
+
+
+
+
+
+
+	    	assert(len(scorers)>len(estimulators)),\
+
+
+
+
+
+
+
+
+
+
+	    	for scorer,score_type,score_params,\
+
+
+
+
+
+
+
+
+
+
+	    		in zip(estimulators,score_types,score_params):\
+
+
+
+
+
+
+
+
+
+
+
+
+
+	    			score_type=socre_type.lower()
+
+	    			score_params={key:value.replace('"','').replace("'","") \
+
+
+
+
+
+
+
+	    				for key,value \
+
+
+
+
+
+
+
+							in iter(score_params.items())}
+
+					try:\
+
+
+
+
+
+
+
+
+
+
+
+
+
+						func=getattr(estimator,"score_%ss"%score_type)
+
+					except AttributeError:\
+
+
+
+
+
+
+
+
+
+
+
+						raise TypeError("%r doesn't provide scoring method '%ss'%!"%(estimator.__class__.__name__,score_type))
+
+				return func(*args,**kwargs)
+
+
+			elif scorer=='accuracy':
+
+				return accuracy(*args,**kwargs)
+
+			elif scorer=='precision':
+
+				return precision(*args,**kwargs)
+
+			elif scorer=='recall':
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				return recall(*args,**kwargs)
+
+
+
+			elif scorer.startswith(('roc_auc_',)):
+
+
+
+				try:\
+
+
+
+
+
+
+
+
+
+
+
+
+
+					func=getattr(estimator,"roc_auc_%ss"%score_name.split('_')[::-][:-len(score_name.split('_'))])
+
+					args=args+(target_names,)if target_names!=Noneelse args
+
+
+
+					args=args+(sample_weights,)if len(sample_weights)!=Noneelse args
+
+
+
+					args=args+(multi_class,multi_class_strategy,multi_label,micro_average,\
+
+
+
+
+
+
+
+
+
+							warn_for,warmstart,binary_separate_threshold)\
+
+
+
+
+
+
+
+						except AttributeError:\
+
+
+
+
+
+
+
+
+
+
+
+							raise TypeError("%r doesn't provide scoring method '%ss'%!"%(estimator.__class__.__name__,score_name))
+
+				
+			
+		
+	
+
+	
+	
+
+
+	def predict_proba(
+
+	self,X,y,
+
+
+
+	scoresOnly=True,
+
+
+):
+
+	if hasattr(scoringOnly,'type'):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		    	assert(type(scorer)=='str'),\
+
+
+
+
+
+
+
+
+		    	assert(len(scorers)>len(estimulators)),\
+
+
+
+
+
+
+
+
+
+
+		    	for scaler,score_type,score_params,\
+
+
+
+
+
+
+
+
+
+
+	    		in zip(esitulators,socre_types,socre_params):\
+
+
+
+
+
+
+
+
+
+
+
+
+
+	    			scoreType=socreType.lower()
+
+	    			scoreParams={key:value.replace('"','').replace("'","") \
+
+
+
+
+
+
+
+	    				for key,value \inasiter(scoreParams.items())}
+
+				
+			
+		
+
+	
+	
+
+
+	def predict_proba(
+
+	self,X,y,
+
+
+
+	scoresOnly=True,
+
+
+):
+
+	if hasattr(scoring Only,'type'):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		    assert(type(scorer)=='str'),\
+
+
+
+
+
+
+
+
+		    .assert(len(scorers)>len(esitimators)),\
+
+
+
+
+
+
+
+
+
+
+		    	for scaler,_,_,\�.
+
+
+
+
+
+
+
+		    		in zip(esitifiers,[],'')):
+
+
+
+
+
+		    			func=getattr(estimatator,"roc_auc_%ss"%scale_name.split('_')[::-][:-len(scale_name.split('_'))])
+
+			
+
+			
+
+	
+
+	
+	
+
+
+	diff --git ../LICENSE ../LICENSE.diff.old

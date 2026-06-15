@@ -1,0 +1,42 @@
+<patch>
+--- a/sympy/printing/mathematica.py
++++ b/sympy/printing/mathematica.py
+@@ -1,6 +1,6 @@
+ """
+ Mathematica code printer
+ """
+-from __future__ import print_function, division
++from __future__ import print_function, division, absolute_import
+ 
+ from sympy.printing.codeprinter import CodePrinter
+ from sympy.printing.str import StrPrinter
+@@ -10,6 +10,7 @@
+ from sympy.printing.precedence import precedence
+ 
+ # Used in MCodePrinter._print_Function(self)
++from sympy.core.function import Derivative
+ known_functions = {
+     "exp": [(lambda x: True, "Exp")],
+     "log": [(lambda x: True, "Log")],
+@@ -17,6 +18,7 @@
+     "cos": [(lambda x: True, "Cos")],
+     "tan": [(lambda x: True, "Tan")],
+     "cot": [(lambda x: True, "Cot")],
++    "Derivative": [(lambda x: isinstance(x, Derivative), "D")],
+     "asin": [(lambda x: True, "ArcSin")],
+     "acos": [(lambda x: True, "ArcCos")],
+     "atan": [(lambda x: True, "ArcTan")],
+@@ -24,6 +26,7 @@
+     "sinh": [(lambda x: True, "Sinh")],
+     "cosh": [(lambda x: True, "Cosh")],
+     "tanh": [(lambda x: True, "Tanh")],
++    "Derivative": [(lambda x: isinstance(x, Derivative), "D")],
+     "coth": [(lambda x: True, "Coth")],
+     "sech": [(lambda x: True, "Sech")],
+     "csch": [(lambda x: True, "Csch")],
+@@ -31,6 +34,7 @@
+     "asinh": [(lambda x: True, "ArcSinh")],
+     "acosh": [(lambda x: True, "ArcCosh")],
+     "atanh": [(lambda x: True, "ArcTanh")],
++    "Derivative": [(lambda x: isinstance(x, Derivative), "D")],
+     "acoth": [(lambda x: True, "ArcCo

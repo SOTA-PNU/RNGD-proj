@@ -1,0 +1,30 @@
+diff --git a/src/_pytest/mark/evaluate.py b/src/_pytest/mark/evaluate.py
+@@ -21,23 +21,6 @@
+ 
+-def cached_eval(config: Config, expr: str, d: Dict[str, object]) -> Any:
+-    default = {}  # type: Dict[str, object]
+-    evalcache = config._store.setdefault(evalcache_key, default)
+-    try:
+-        return evalcache[expr]
+-    except KeyError:
+-        import _pytest._code
+-
+-        exprcode = _pytest._code.compile(expr, mode="eval")
+-        evalcache[expr] = x = eval(exprcode, d)
+-        return x
+-
+ class MarkEvaluator:
+     def __init__(self, item: Item, name: str) -> None:
+         self.item = item
+         self._marks = None  # type: Optional[List[Mark]]
+@@ -99,7 +82,7 @@
+         self._marks = self._get_marks()
+ 
+         if self._marks:
+-            result = cached_eval(self.item.config, expr, d)
++            import _pytest._code
++            exprcode = _pytest._code.compile(expr, mode="eval")
++            result = eval(exprcode, d)
+         else:
+             result = bool(expr)
+         if result:

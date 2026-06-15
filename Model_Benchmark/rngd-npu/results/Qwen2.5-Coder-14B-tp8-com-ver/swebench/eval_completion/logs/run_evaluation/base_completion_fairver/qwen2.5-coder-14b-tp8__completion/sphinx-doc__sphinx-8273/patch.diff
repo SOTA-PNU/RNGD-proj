@@ -1,0 +1,30 @@
+
+--- a/sphinx/builders/manpage.py
++++ b/sphinx/builders/manpage.py
+@@ -1,6 +1,7 @@
+ """
+ sphinx.builders.manpage
+ ~~~~~~~~~~~~~~~~~~~~~~~
++
+ Manual pages builder.
+ 
+ :copyright: Copyright 2007-2020 by the Sphinx team, see AUTHORS.
+@@ -10,6 +11,7 @@
+ from os import path
+ from typing import Any, Dict, List, Set, Tuple, Union
+ 
++import os
+ from docutils.frontend import OptionParser
+ from docutils.io import FileOutput
+ 
+@@ -100,6 +102,10 @@ def write(self, *ignored: Any) -> None:
+                 docsettings.authors = authors
+ 
+                 targetname = '%s.%s' % (name, section)
++                section_dir = os.path.join(self.outdir, 'man', 'man%s' % section)
++                if not os.path.exists(section_dir):
++                    os.makedirs(section_dir)
++                targetname = os.path.join(section_dir, targetname)
+                 logger.info(darkgreen(targetname) + ' { ', nonl=True)
+                 destination = FileOutput(
+                     destination_path=path.join(self.outdir, targetname),

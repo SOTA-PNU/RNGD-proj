@@ -1,0 +1,15 @@
+<patch>
+--- src/test_example/test_example_module_test_case_a.bash.patch.txt ---
++++ src/test_example_module_test_case_a.bash.patch.txt
+
+@@@ ./src/example/module_name/__init__.py @@@ @@@
+@@@ ./src/example/module_name/__main__.py @@@ @@@
+--- ./src/example/module_name/utils/__init__.py @@@@@@@@@@@@@@@@@@@@@@ @@
++++ ./src/example/module_name/utils/__init__.py @@@@@@@@@@@@@@@@@@
+<span class="c">+#!/usr/bin/env bash</span><br>@@./src/example/module_name/utils/euclidean_distance_calculation_utils.bash.patch.txt ---
++++./src.example.module_name.utils/euclidean_distance_calculation_utils.bash.patch.txt
+
+<span class="c">#!/usr/bin/env bash</span><br>@@./tests/unit_tests/src/test_example_module_test_case_a.test_script_patch.txt ---
++++./tests/unit_tests/src/test_example_module_test_case_a.test_script_patch.text
+
+<span class="c">#!/bin/bash</span><br>@end.diff

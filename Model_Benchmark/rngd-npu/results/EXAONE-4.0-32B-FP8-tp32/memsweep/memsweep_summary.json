@@ -1,0 +1,800 @@
+[
+  {
+    "combo": {},
+    "started_at": 1780547024.5451517,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780547077,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.293,
+      "ttft_s_p50": 14.852,
+      "ttft_s_p95": 23.4443,
+      "itl_s_p50": 0.21149,
+      "itl_s_p95": 0.32772,
+      "output_tps_per_request_p50": 3.75,
+      "aggregate_output_tps": 696.23,
+      "total_output_tokens": 101853
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 4096
+    },
+    "started_at": 1780547234.6482608,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780547289,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 148.257,
+      "ttft_s_p50": 12.9756,
+      "ttft_s_p95": 22.6978,
+      "itl_s_p50": 0.2176,
+      "itl_s_p95": 0.32396,
+      "output_tps_per_request_p50": 3.72,
+      "aggregate_output_tps": 694.46,
+      "total_output_tokens": 102958
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 8192
+    },
+    "started_at": 1780547449.8022027,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780547503,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 147.93,
+      "ttft_s_p50": 14.8647,
+      "ttft_s_p95": 24.7719,
+      "itl_s_p50": 0.21429,
+      "itl_s_p95": 0.33121,
+      "output_tps_per_request_p50": 3.78,
+      "aggregate_output_tps": 697.85,
+      "total_output_tokens": 103233
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 16384
+    },
+    "started_at": 1780547664.9506621,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780547717,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.03,
+      "ttft_s_p50": 14.3162,
+      "ttft_s_p95": 23.2871,
+      "itl_s_p50": 0.21393,
+      "itl_s_p95": 0.32635,
+      "output_tps_per_request_p50": 3.71,
+      "aggregate_output_tps": 695.75,
+      "total_output_tokens": 101601
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 32768
+    },
+    "started_at": 1780547875.105962,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780547925,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.102,
+      "ttft_s_p50": 13.5773,
+      "ttft_s_p95": 22.5196,
+      "itl_s_p50": 0.20588,
+      "itl_s_p95": 0.32676,
+      "output_tps_per_request_p50": 3.79,
+      "aggregate_output_tps": 709.57,
+      "total_output_tokens": 102960
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 40960
+    },
+    "started_at": 1780548081.0849385,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780548134,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 148.33,
+      "ttft_s_p50": 14.4367,
+      "ttft_s_p95": 23.2852,
+      "itl_s_p50": 0.21203,
+      "itl_s_p95": 0.3351,
+      "output_tps_per_request_p50": 3.73,
+      "aggregate_output_tps": 696.58,
+      "total_output_tokens": 103324
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 65536
+    },
+    "started_at": 1780548296.38843,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780548344,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 147.12,
+      "ttft_s_p50": 13.6404,
+      "ttft_s_p95": 22.7107,
+      "itl_s_p50": 0.21065,
+      "itl_s_p95": 0.33067,
+      "output_tps_per_request_p50": 3.78,
+      "aggregate_output_tps": 702.48,
+      "total_output_tokens": 103349
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_model_len": 131072
+    },
+    "started_at": 1780548504.0900853,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780548557,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.902,
+      "ttft_s_p50": 15.1403,
+      "ttft_s_p95": 23.227,
+      "itl_s_p50": 0.21408,
+      "itl_s_p95": 0.33142,
+      "output_tps_per_request_p50": 3.75,
+      "aggregate_output_tps": 691.5,
+      "total_output_tokens": 101583
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 8
+    },
+    "started_at": 1780548714.8049796,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780548763,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 138.228,
+      "ttft_s_p50": 13.6932,
+      "ttft_s_p95": 23.0245,
+      "itl_s_p50": 0.20691,
+      "itl_s_p95": 0.3228,
+      "output_tps_per_request_p50": 3.8,
+      "aggregate_output_tps": 745.8,
+      "total_output_tokens": 103090
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 16
+    },
+    "started_at": 1780548913.5035641,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780548965,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 140.535,
+      "ttft_s_p50": 14.2263,
+      "ttft_s_p95": 22.813,
+      "itl_s_p50": 0.2191,
+      "itl_s_p95": 0.33254,
+      "output_tps_per_request_p50": 3.71,
+      "aggregate_output_tps": 716.86,
+      "total_output_tokens": 100744
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 32
+    },
+    "started_at": 1780549117.6140633,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780549165,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.769,
+      "ttft_s_p50": 12.8856,
+      "ttft_s_p95": 21.9897,
+      "itl_s_p50": 0.20623,
+      "itl_s_p95": 0.3235,
+      "output_tps_per_request_p50": 3.83,
+      "aggregate_output_tps": 710.03,
+      "total_output_tokens": 104211
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 64
+    },
+    "started_at": 1780549324.9035153,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780549377,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 134.332,
+      "ttft_s_p50": 14.3191,
+      "ttft_s_p95": 23.6366,
+      "itl_s_p50": 0.21433,
+      "itl_s_p95": 0.32358,
+      "output_tps_per_request_p50": 3.76,
+      "aggregate_output_tps": 741.69,
+      "total_output_tokens": 99633
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 128
+    },
+    "started_at": 1780549522.8517609,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780549570,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 148.174,
+      "ttft_s_p50": 13.5926,
+      "ttft_s_p95": 22.5867,
+      "itl_s_p50": 0.21191,
+      "itl_s_p95": 0.32222,
+      "output_tps_per_request_p50": 3.8,
+      "aggregate_output_tps": 699.16,
+      "total_output_tokens": 103597
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_batch_size": 256
+    },
+    "started_at": 1780549731.35312,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780549784,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 151.566,
+      "ttft_s_p50": 14.024,
+      "ttft_s_p95": 22.9588,
+      "itl_s_p50": 0.20625,
+      "itl_s_p95": 0.33398,
+      "output_tps_per_request_p50": 3.77,
+      "aggregate_output_tps": 682.18,
+      "total_output_tokens": 103395
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 4096
+    },
+    "started_at": 1780549946.7504628,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780549993,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.899,
+      "ttft_s_p50": 13.6348,
+      "ttft_s_p95": 22.1063,
+      "itl_s_p50": 0.21261,
+      "itl_s_p95": 0.33398,
+      "output_tps_per_request_p50": 3.78,
+      "aggregate_output_tps": 704.83,
+      "total_output_tokens": 103539
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 8192
+    },
+    "started_at": 1780550151.4117553,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780550202,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 135.586,
+      "ttft_s_p50": 14.3425,
+      "ttft_s_p95": 23.6429,
+      "itl_s_p50": 0.21775,
+      "itl_s_p95": 0.32405,
+      "output_tps_per_request_p50": 3.75,
+      "aggregate_output_tps": 735.66,
+      "total_output_tokens": 99745
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 16384
+    },
+    "started_at": 1780550350.6369503,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780550397,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 145.398,
+      "ttft_s_p50": 13.7983,
+      "ttft_s_p95": 23.0309,
+      "itl_s_p50": 0.21211,
+      "itl_s_p95": 0.3286,
+      "output_tps_per_request_p50": 3.75,
+      "aggregate_output_tps": 700.77,
+      "total_output_tokens": 101890
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 32768
+    },
+    "started_at": 1780550553.648215,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780550604,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 146.716,
+      "ttft_s_p50": 14.7712,
+      "ttft_s_p95": 22.855,
+      "itl_s_p50": 0.21097,
+      "itl_s_p95": 0.33333,
+      "output_tps_per_request_p50": 3.87,
+      "aggregate_output_tps": 699.19,
+      "total_output_tokens": 102582
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 65536
+    },
+    "started_at": 1780550763.921852,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780550810,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 139.103,
+      "ttft_s_p50": 13.6721,
+      "ttft_s_p95": 22.2061,
+      "itl_s_p50": 0.20716,
+      "itl_s_p95": 0.31601,
+      "output_tps_per_request_p50": 3.79,
+      "aggregate_output_tps": 730.91,
+      "total_output_tokens": 101671
+    },
+    "status": "ok"
+  },
+  {
+    "combo": {
+      "max_num_batched_tokens": 131072
+    },
+    "started_at": 1780550960.960987,
+    "server_info": {
+      "/models": {
+        "object": "list",
+        "data": [
+          {
+            "id": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+            "created": 1780551011,
+            "object": "model",
+            "owned_by": "furiosa-ai",
+            "artifact_id": "736c80d9-da1f-4ee5-806b-1ad825b78109",
+            "max_prompt_len": 131072,
+            "max_context_len": 131072
+          }
+        ]
+      },
+      "/../metrics": "# HELP furiosa_llm_num_requests_running Number of requests currently running on RNGD.\n# TYPE furiosa_llm_num_requests_running gauge\nfuriosa_llm_num_requests_running{engine=\"0\",model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\"} 0\n# HELP furiosa_llm_num_requests_waiting Number of requests waiting to be processed.\n# TYPE furiosa_llm_num_requests_waiting gauge\nfuriosa_llm_num_requests_waiting{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_kv_cache_usage_percent KV-cache usage. 1 means 100 percent usage.\n# TYPE furiosa_llm_kv_cache_usage_percent gauge\nfuriosa_llm_kv_cache_usage_percent{model_name=\"/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31\",engine=\"0\"} 0\n# HELP furiosa_llm_prefix_cache_h"
+    },
+    "bench": {
+      "model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
+      "concurrency": 256,
+      "prompt_tokens_target": 256,
+      "max_tokens": 512,
+      "successes": 512,
+      "failures": 0,
+      "wall_clock_s": 147.628,
+      "ttft_s_p50": 14.0569,
+      "ttft_s_p95": 22.8716,
+      "itl_s_p50": 0.21425,
+      "itl_s_p95": 0.3326,
+      "output_tps_per_request_p50": 3.78,
+      "aggregate_output_tps": 701.72,
+      "total_output_tokens": 103594
+    },
+    "status": "ok"
+  }
+]

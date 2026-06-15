@@ -1,0 +1,21 @@
+
+diff --git a/src/flask/config.py b/src/flask/config.py
+index 0000000..0000000 100644
+--- a/src/flask/config.py
++++ b/src/flask/config.py
+@@ -237,6 +237,7 @@ class Config(dict):
+         :param load: A callable that takes a file handle and returns a
+             mapping of loaded data from the file.
+         :type load: ``Callable[[Reader], Mapping]`` where ``Reader``
++            implements a ``read`` method.
+             :param silent: Ignore the file if it doesn't exist.
+         :return: ``True`` if the file was loaded successfully.
+ 
+@@ -245,6 +246,7 @@ class Config(dict):
+         """
+         filename = os.path.join(self.root_path, filename)
+ 
++        mode = kwargs.get("mode", "r")
+         try:
+             with open(filename, mode) as f:
+                 obj = load(f)

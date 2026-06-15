@@ -1,0 +1,32 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:furiosa_llm.server.models:Loading LLM from artifact: ./artifacts/mini-qwen3-as-next
+[2m2026-06-10T15:48:49.191257649+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: artifacts/mini-qwen3-as-next
+Traceback (most recent call last):
+  File "/home/jun/furiosa/bin/furiosa-llm", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/main.py", line 28, in main
+    args.dispatch_function(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/serve.py", line 385, in serve
+    run_server(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/app.py", line 536, in run_server
+    app = init_app(args)
+          ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/app.py", line 389, in init_app
+    llm = load_llm_from_args(args, served_model_name=served_model_name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/models.py", line 42, in load_llm_from_args
+    return LLM(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 216, in __init__
+    self._init_from_artifact(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 349, in _init_from_artifact
+    artifact = NextGenArtifact.load_without_blob(artifact_path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: unknown variant `qwen3_next`, expected one of `llama`, `exaone4`, `qwen2`, `qwen3`, `qwen3_moe`, `gpt_oss` at line 1 column 281
+
+Location:
+    furiosa-llm-common/src/artifact/types/next_gen.rs:238:34

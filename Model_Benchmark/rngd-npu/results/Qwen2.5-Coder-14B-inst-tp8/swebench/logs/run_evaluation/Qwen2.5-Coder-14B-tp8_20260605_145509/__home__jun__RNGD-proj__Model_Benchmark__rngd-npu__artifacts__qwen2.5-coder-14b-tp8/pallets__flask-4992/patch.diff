@@ -1,0 +1,43 @@
+diff --git src/flask/config.py src/flaska/config.py  
+index cccfcbf..cddcdaa  
+--- src/flaska/config.py  
++++ src/flaska/config.py  
+@@\@ \-\-\-\-\-\-\-\-\-\-\-\-\ \+\+\+\+\+\+\+\+\+\+\++\ \@\@\@\@\@\@\@\@\@\@ \(\(diff\.py\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\) \(new\)  
+@@\@ \(\(src\/flaska\/config\.py\)\)\(\(src\/flaska\/config\.py\)\)\(\(src\/flaska\/confi\(g\.py\)\)\(\(src\/flaska\/confi\(g\.py\)\)\(\(src\/flaska\/confi\(g\.py\)\)\(\(src\/flaska\/confi\(g\.py\)\)\(\(src\/flaska/confi(g\.py\))\(src/f(laska/confi(g\.py))\(src/f(laska/confi(g\.py))\(src/f(laska/confi(g\.py))\(sr(c/f(laska/confi(g\.p)y))\(sr(c/f(laska/confi(g\.p)y))\(sr(c/f(laska/confi(g\.p)y))\(sr(c/f(laska/c(o(nfi)(g.p)y))) sr(c/(f/l(as(ka/c(o(nfi)(g.p)y))) sr(c/(f/l(as(ka/c(o(nfi)(g.p)y))) sr(c/(f/l(as(ka/c(o(nfi)(g.p)y))) sr(c/(f/l(a(s(ka/c(o(nfi)(g.p)y))) sr(c/(f/l(a(s(ka/c(o(nfi)(g.p)y))) sr(c/(f/l(a(s(ka/c(o(nfi)(g.p)y))) s(r(/c(f/a(s(ka/c(o(nfi)(g(py)))) s(r(/c(f/a(s/k(a/c/o/nfig(py)))) s(r(/c(f/a/s/k(a/c/o/nfig(py)))) s(r(/c(f/a/s/k(a/c/o/nfig(py)))) s(r(/cf/as/k(a/c/o/nfig(py)))) s(r(/cf/as/k(a)/o/nfig(py)))) s(r(/cf/as/k)/o/nfig(py]))) s(r(cf/as/k)/o/nfig(py]))) s(rc(f/as/k)/o/nfig(py]))) r(fc(as/k)/o/nig(py]))) fc(as/k)/o/ng(py]))) fc(as)/(k/o/ng(py]))) fc()/k/o/ng(py])) fc()/k/o/ng()) fc()/k/)n()) fc()//n()) fc()//()) fc()///()) fc()////()) fc()/////) fc()//////) fc()///////)  
+@@ \(-\-\-\-\-\-\-\-\-\-\-\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\\(-\\\(-\\\(-\\\(-\\\(-\\\(-\\\(-\\\(-\\\(-\\\(-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+@@ \\tdef \\tfrom\_file(self,\ \\tfilename:\\tstr,\ \\tload:\\tc.Callable\[\[t.IO\[t.Any]\], \\tt.Mapping]\), \\tsilent:\\tbool=\False): \\tbody:\r\n\r\n\t\tfilename \\= os\\.path\\.join(self\\.root\_path,\r\n\t\t\tfilename\r\n\t\t)
+
+---
+
+diff --git src/flaskan/config.c src/flaskan/config.c  
+index cccfcbf..cddcdaa  
+--- src(flaskan/config.c  
++++ src(flaskan/config.c  
+
+---
+
+diff --git test/test_flaskan/test_config.c test/test_flaskan/test_config.c  
+
+---
+
+diff --git test/test_flaskan/test_appcontext.c test/test_flaskan/test_appcontext.c  
+
+---
+
+diff --git test/conftest.h test/conftest.h  
+
+---
+
+diff --git docs/source/api.rst docs/source/api.rst  
+
+---
+
+diff --git examples/minimal/app.py examples/minimal/app.py  
+
+---
+
+diff --git examples/minimal/static/style.css examples/minimal/static/style.css  
+
+---
+
+diff --git examples/minimal/templates/index.html examples/minimal/templates/index.html

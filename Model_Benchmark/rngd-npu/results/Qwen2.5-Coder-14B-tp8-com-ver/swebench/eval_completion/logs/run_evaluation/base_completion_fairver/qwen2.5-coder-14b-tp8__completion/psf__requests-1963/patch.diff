@@ -1,0 +1,54 @@
+<patch>
+--- a/requests/sessions.py
++++ b/requests/sessions.py
+@@ -85,7 +85,7 @@
+ 
+     def resolve_redirects(self, resp, req, stream=False, timeout=None,
+                           verify=True, cert=None, proxies=None):
+-        """Receives a Response. Returns a generator of Responses."""
++        """Receives a Response. Returns a generator of Responses, preserving the original request method."""
+ 
+         i = 0
+ 
+@@ -104,7 +104,7 @@
+ 
+             # Release the connection back into the pool.
+             resp.close()
+-            url = resp.headers['location']
++            url = resp.headers.get('location')
+ 
+             # Handle redirection without scheme (see: RFC 1808 Section 4)
+             if url.startswith('//'):
+@@ -112,7 +112,7 @@
+ 
+             # The scheme should be lower case...
+             parsed = urlparse(url)
+-            url = parsed.geturl()
++            url = parsed.geturl().lower()
+ 
+             # Facilitate non-RFC2616-compliant 'location' headers
+             # (e.g. '/path/to/resource' instead of 'http://domain.tld/path/to/resource')
+@@ -121,7 +121,7 @@
+             else:
+                 url = requote_uri(url)
+ 
+-            prepared_request.url = to_native_string(url)
++            prepared_request.url = to_native_string(url).lower()
+ 
+             # http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
+             if (resp.status_code == codes.see_other and
+@@ -130,7 +130,7 @@
+ 
+             # Do what the browsers do, despite standards...
+             # First, turn 302s into GETs.
+-            if resp.status_code == codes.found and method != 'HEAD':
++            if resp.status_code == codes.found and method != 'HEAD' and method != 'POST':
+                 method = 'GET'
+ 
+             # Second, if a POST is responded to with a 301, turn it into a GET.
+@@ -140,7 +140,7 @@
+                 method = 'GET'
+ 
+             prepared_request.method = method
+-            headers = prepared_request.headers
++           

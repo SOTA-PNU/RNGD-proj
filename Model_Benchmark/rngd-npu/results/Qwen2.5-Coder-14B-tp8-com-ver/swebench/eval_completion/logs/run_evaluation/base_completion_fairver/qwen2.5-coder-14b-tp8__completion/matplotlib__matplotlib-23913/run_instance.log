@@ -1,0 +1,101 @@
+2026-06-09 21:40:02,632 - INFO - Creating container for matplotlib__matplotlib-23913...
+2026-06-09 21:40:05,395 - INFO - Container for matplotlib__matplotlib-23913 created: 1e95e305e17c797a8eaeb51742fb148d5e9161af98070a5f4364871b40b9a387
+2026-06-09 21:40:05,734 - INFO - Container for matplotlib__matplotlib-23913 started: 1e95e305e17c797a8eaeb51742fb148d5e9161af98070a5f4364871b40b9a387
+2026-06-09 21:40:05,734 - INFO - Intermediate patch for matplotlib__matplotlib-23913 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/matplotlib__matplotlib-23913/patch.diff, now applying to container...
+2026-06-09 21:40:05,915 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-09 21:40:05,984 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-09 21:40:06,041 - INFO - >>>>> Applied Patch:
+patching file lib/matplotlib/legend.py
+Reversed (or previously applied) patch detected!  Assuming -R.
+Hunk #1 succeeded at 291 (offset 256 lines).
+Hunk #2 succeeded at 298 (offset 256 lines).
+Hunk #3 succeeded at 392 (offset 292 lines).
+Hunk #4 succeeded at 399 (offset 292 lines).
+Hunk #5 succeeded at 405 (offset 291 lines).
+Hunk #6 succeeded at 412 (offset 291 lines).
+
+2026-06-09 21:40:07,014 - INFO - Git diff before:
+diff --git a/lib/matplotlib/legend.py b/lib/matplotlib/legend.py
+index 9e5b903d59..c0a366e5a3 100644
+--- a/lib/matplotlib/legend.py
++++ b/lib/matplotlib/legend.py
+@@ -291,7 +291,6 @@ handler_map : dict or None
+ 
+ class Legend(Artist):
+     """
+-    Place a legend on the axes at location loc.
+     """
+ 
+     # 'best' is only implemented for axes legends
+@@ -393,7 +392,6 @@ class Legend(Artist):
+         self._fontsize = self.prop.get_size_in_points()
+ 
+         self.texts = []
+-        self.legendHandles = []
+         self._legend_title_box = None
+ 
+         #: A dictionary with the extra handler mappings for this Legend
+@@ -407,7 +405,6 @@ class Legend(Artist):
+         self.markerscale = val_or_rc(markerscale, 'legend.markerscale')
+         self.scatterpoints = val_or_rc(scatterpoints, 'legend.scatterpoints')
+         self.borderpad = val_or_rc(borderpad, 'legend.borderpad')
+-        self.labelspacing = val_or_rc(labelspacing, 'legend.labelspacing')
+         self.handlelength = val_or_rc(handlelength, 'legend.handlelength')
+         self.handleheight = val_or_rc(handleheight, 'legend.handleheight')
+         self.handletextpad = val_or_rc(handletextpad, 'legend.handletextpad')
+@@ -415,7 +412,6 @@ class Legend(Artist):
+         self.columnspacing = val_or_rc(columnspacing, 'legend.columnspacing')
+         self.shadow = val_or_rc(shadow, 'legend.shadow')
+         # trim handles and labels if illegal label...
+-        _lab, _hand = [], []
+         for label, handle in zip(labels, handles):
+             if isinstance(label, str) and label.startswith('_'):
+                 _api.warn_external(f"The label {label!r} of {handle!r} starts "
+2026-06-09 21:40:07,015 - INFO - Eval script for matplotlib__matplotlib-23913 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/matplotlib__matplotlib-23913/eval.sh; copying to container...
+2026-06-09 21:40:25,547 - INFO - Test runtime: 18.42 seconds
+2026-06-09 21:40:25,550 - INFO - Test output for matplotlib__matplotlib-23913 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/matplotlib__matplotlib-23913/test_output.txt
+2026-06-09 21:40:25,671 - INFO - Git diff after:
+diff --git a/lib/matplotlib/legend.py b/lib/matplotlib/legend.py
+index 9e5b903d59..c0a366e5a3 100644
+--- a/lib/matplotlib/legend.py
++++ b/lib/matplotlib/legend.py
+@@ -291,7 +291,6 @@ handler_map : dict or None
+ 
+ class Legend(Artist):
+     """
+-    Place a legend on the axes at location loc.
+     """
+ 
+     # 'best' is only implemented for axes legends
+@@ -393,7 +392,6 @@ class Legend(Artist):
+         self._fontsize = self.prop.get_size_in_points()
+ 
+         self.texts = []
+-        self.legendHandles = []
+         self._legend_title_box = None
+ 
+         #: A dictionary with the extra handler mappings for this Legend
+@@ -407,7 +405,6 @@ class Legend(Artist):
+         self.markerscale = val_or_rc(markerscale, 'legend.markerscale')
+         self.scatterpoints = val_or_rc(scatterpoints, 'legend.scatterpoints')
+         self.borderpad = val_or_rc(borderpad, 'legend.borderpad')
+-        self.labelspacing = val_or_rc(labelspacing, 'legend.labelspacing')
+         self.handlelength = val_or_rc(handlelength, 'legend.handlelength')
+         self.handleheight = val_or_rc(handleheight, 'legend.handleheight')
+         self.handletextpad = val_or_rc(handletextpad, 'legend.handletextpad')
+@@ -415,7 +412,6 @@ class Legend(Artist):
+         self.columnspacing = val_or_rc(columnspacing, 'legend.columnspacing')
+         self.shadow = val_or_rc(shadow, 'legend.shadow')
+         # trim handles and labels if illegal label...
+-        _lab, _hand = [], []
+         for label, handle in zip(labels, handles):
+             if isinstance(label, str) and label.startswith('_'):
+                 _api.warn_external(f"The label {label!r} of {handle!r} starts "
+2026-06-09 21:40:25,671 - INFO - Grading answer for matplotlib__matplotlib-23913...
+2026-06-09 21:40:25,690 - INFO - report: {'matplotlib__matplotlib-23913': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['lib/matplotlib/tests/test_legend.py::test_legend_draggable[True]', 'lib/matplotlib/tests/test_legend.py::test_legend_draggable[False]']}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_no_args', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_positional_handles_labels', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_positional_handles_only', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_positional_labels_only', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_three_args', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_kwargs_handles_only', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_kwargs_labels_only', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_kwargs_handles_labels', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_parasite', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_legend_handle_label', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_legend_no_args', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_legend_label_arg', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_legend_label_three_args', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_legend_label_three_args_pluskw', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_legend_kw_args', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_label_incorrect_length_exception'], 'failure': ['lib/matplotlib/tests/test_legend.py::test_legend_ordereddict', 'lib/matplotlib/tests/test_legend.py::test_legend_auto1[png]', 'lib/matplotlib/tests/test_legend.py::test_legend_auto1[pdf]', 'lib/matplotlib/tests/test_legend.py::test_legend_auto2[png]', 'lib/matplotlib/tests/test_legend.py::test_legend_auto2[pdf]', 'lib/matplotlib/tests/test_legend.py::test_legend_auto3[png]', 'lib/matplotlib/tests/test_legend.py::test_legend_auto3[pdf]', 'lib/matplotlib/tests/test_legend.py::test_various_labels[png]', 'lib/matplotlib/tests/test_legend.py::test_various_labels[pdf]', 'lib/matplotlib/tests/test_legend.py::test_legend_label_with_leading_underscore', 'lib/matplotlib/tests/test_legend.py::test_labels_first[png]', 'lib/matplotlib/tests/test_legend.py::test_multiple_keys[png]', 'lib/matplotlib/tests/test_legend.py::test_alpha_rgba[png]', 'lib/matplotlib/tests/test_legend.py::test_alpha_rcparam[png]', 'lib/matplotlib/tests/test_legend.py::test_fancy[png]', 'lib/matplotlib/tests/test_legend.py::test_fancy[pdf]', 'lib/matplotlib/tests/test_legend.py::test_framealpha[png]', 'lib/matplotlib/tests/test_legend.py::test_framealpha[pdf]', 'lib/matplotlib/tests/test_legend.py::test_rc[png]', 'lib/matplotlib/tests/test_legend.py::test_rc[pdf]', 'lib/matplotlib/tests/test_legend.py::test_legend_expand[png]', 'lib/matplotlib/tests/test_legend.py::test_legend_expand[pdf]', 'lib/matplotlib/tests/test_legend.py::test_hatching[png]', 'lib/matplotlib/tests/test_legend.py::test_hatching[pdf]', 'lib/matplotlib/tests/test_legend.py::test_legend_remove', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_legend_handler_map', 'lib/matplotlib/tests/test_legend.py::TestLegendFunction::test_warn_mixed_args_and_kwargs', 'lib/matplotlib/tests/test_legend.py::TestLegendFigureFunction::test_warn_args_kwargs', 'lib/matplotlib/tests/test_legend.py::test_legend_stackplot[png]', 'lib/matplotlib/tests/test_legend.py::test_cross_figure_patch_legend', 'lib/matplotlib/tests/test_legend.py::test_nanscatter', 'lib/matplotlib/tests/test_legend.py::test_legend_repeatcheckok', 'lib/matplotlib/tests/test_legend.py::test_not_covering_scatter[png]', 'lib/matplotlib/tests/test_legend.py::test_not_covering_scatter_transform[png]', 'lib/matplotlib/tests/test_legend.py::test_linecollection_scaled_dashes', 'lib/matplotlib/tests/test_legend.py::test_handler_numpoints', 'lib/matplotlib/tests/test_legend.py::test_text_nohandler_warning', 'lib/matplotlib/tests/test_legend.py::test_empty_bar_chart_with_legend', 'lib/matplotlib/tests/test_legend.py::test_shadow_framealpha', 'lib/matplotlib/tests/test_legend.py::test_legend_title_empty', 'lib/matplotlib/tests/test_legend.py::test_legend_proper_window_extent', 'lib/matplotlib/tests/test_legend.py::test_window_extent_cached_renderer', 'lib/matplotlib/tests/test_legend.py::test_legend_title_fontprop_fontsize', 'lib/matplotlib/tests/test_legend.py::test_legend_alignment[center]', 'lib/matplotlib/tests/test_legend.py::test_legend_alignment[left]', 'lib/matplotlib/tests/test_legend.py::test_legend_alignment[right]', 'lib/matplotlib/tests/test_legend.py::test_legend_set_alignment[center]', 'lib/matplotlib/tests/test_legend.py::test_legend_set_alignment[left]', 'lib/matplotlib/tests/test_legend.py::test_legend_set_alignment[right]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_single[red]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_single[none]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_single[color2]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_list', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_linecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_markeredgecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_markerfacecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_single[red]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_single[none]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_single[color2]', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_linecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_markeredgecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_markeredgecolor_short', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_markerfacecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_labelcolor_rcparam_markerfacecolor_short', 'lib/matplotlib/tests/test_legend.py::test_get_set_draggable', 'lib/matplotlib/tests/test_legend.py::test_alpha_handles', 'lib/matplotlib/tests/test_legend.py::test_warn_big_data_best_loc', 'lib/matplotlib/tests/test_legend.py::test_no_warn_big_data_when_loc_specified', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_input_multiple_label[label_array0]', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_input_multiple_label[label_array1]', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_input_multiple_label[label_array2]', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_input_single_label[one]', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_input_single_label[1]', 'lib/matplotlib/tests/test_legend.py::test_plot_multiple_input_single_label[int]', 'lib/matplotlib/tests/test_legend.py::test_plot_single_input_multiple_label[label_array0]', 'lib/matplotlib/tests/test_legend.py::test_plot_single_input_multiple_label[label_array1]', 'lib/matplotlib/tests/test_legend.py::test_plot_single_input_multiple_label[label_array2]', 'lib/matplotlib/tests/test_legend.py::test_legend_face_edgecolor', 'lib/matplotlib/tests/test_legend.py::test_legend_text_axes', 'lib/matplotlib/tests/test_legend.py::test_handlerline2d', 'lib/matplotlib/tests/test_legend.py::test_subfigure_legend', 'lib/matplotlib/tests/test_legend.py::test_setting_alpha_keeps_polycollection_color', 'lib/matplotlib/tests/test_legend.py::test_legend_markers_from_line2d', 'lib/matplotlib/tests/test_legend.py::test_ncol_ncols[png]', 'lib/matplotlib/tests/test_legend.py::test_ncol_ncols[pdf]']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-23913: resolved: False
+2026-06-09 21:40:25,691 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-23913.base_completion_fairver...
+2026-06-09 21:40:41,643 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-23913.base_completion_fairver...
+2026-06-09 21:40:41,669 - INFO - Container sweb.eval.matplotlib__matplotlib-23913.base_completion_fairver removed.
+2026-06-09 21:40:41,670 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-23913:latest...
+2026-06-09 21:40:48,243 - INFO - Image swebench/sweb.eval.x86_64.matplotlib_1776_matplotlib-23913:latest removed.

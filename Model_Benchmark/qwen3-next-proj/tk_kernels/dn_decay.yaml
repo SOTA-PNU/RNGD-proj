@@ -1,0 +1,183 @@
+#naive_yaml
+# DeltaNet DECAY gate:  Sout[k,v] = S[k,v] * decay
+#
+# `decay` is a per-head SCALAR that multiplies every element of the [k,v] state.
+# SCALAR-BROADCAST CHOICE (verified): we pass `decay` as a SAME-SHAPE [K,V]
+# input (caller does torch.full((K,V), decay) or decay.expand(K,V)).
+#
+# WHY same-shape and not a [1] tensor: in #naive_yaml the Elementwise verifier
+# (npu-ir .../tensor_kernel/mod.rs) requires every read's post-tile shape to
+# match the op's iteration shape EXACTLY. A [1] scalar cannot be stretched to
+# [K,V]:
+#   * Read.tiles ADD a new axis on top of the size-1 base -> rank+1 ([1,K,V] /
+#     [s_1=1, 0_0=K, 1_0=V]) which mismatches the [K,V] of the other read.
+#   * Declaring a stride-0 base of size K/V over a [1] storage -> "Input tensor
+#     mismatch" (read base shape must equal the actual tensor shape).
+#   * A same-rank size-1 axis does NOT auto-broadcast (size must match).
+# So a runtime scalar is materialized to [K,V] by the caller; both reads are
+# plain [K,V] with labels "0","1" and the op is a single MulF (fp32 binary op;
+# *Fxp ops are integer-only and rejected on f32).
+---
+tensors:
+  inner:
+    0:   # S[k,v] : DeltaNet recurrent state (d_k x d_v)
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    1:   # decay[k,v] : per-head scalar, materialized to [K,V] by the caller
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    2:   # Sout[k,v] : decayed state
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: deltanet_decay
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "0"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "1"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "0"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "1"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "0"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "1"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "0"
+                            stride: 1
+                        size:
+                          Var: K
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "1"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

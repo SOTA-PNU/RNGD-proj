@@ -1,0 +1,31 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# system
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.
+
+# issue
+delete() on instances of models without any dependencies doesn't clear PKs.
+Description
+
+Deleting any model with no dependencies not updates the PK on the model. It should be set to None after .delete() call.
+See Django.db.models.deletion:276-281. Should update the model line 280.
+
+# code
+[start of README.rst]
+1 Django is a high-level Python Web framework that encourages rapid development
+2 and clean, pragmatic design. Thanks for checking it out.
+3 
+4 All documentation is in the "``docs``" directory and online at
+5 https://docs.djangoproject.com/en/stable/. If you're just getting started,
+6 here's how we recommend you read the docs:
+7 
+8 * First, read ``docs/intro/install.txt`` for instructions on installing Django.
+9 
+10 * Next, work through the tutorials in order (``docs/intro/tutorial01.txt``,
+11   ``docs/intro/tutorial02.txt``, etc.).
+12 
+13 * If you want to set up an actual deployment server, read
+14   ``docs/howto/deployment/index.txt`` for instructions.
+15 
+16 * You'll probably want to read through the topical guides (in ``docs/topics``)
+17   next; from there you can jump to the HOWTOs (in ``docs/howto``) for specific
+18   problems, and

@@ -1,0 +1,57 @@
+<patch>
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -1,6 +1,6 @@
+ # Licensed under a 3-clause BSD style license - see LICENSE.rst
+ """
+-This package contains functions for reading and writing QDP tables that are
++This package contains functions for reading and writing QDP tables that are not meant to be used directly, but instead are available as readers/writers in
+ `astropy.table`. See :ref:`astropy:table_io` for more details.
+ """
+ import copy
+@@ -10,6 +10,7 @@
+ import re
+ import warnings
+ from collections.abc import Iterable
++from string import ascii_uppercase
+ 
+ import numpy as np
+ 
+@@ -17,6 +18,7 @@
+ from astropy.utils.exceptions import AstropyUserWarning
+ 
+ from . import basic, core
++from .basic import _get_type_from_list_of_lines
+ 
+ 
+ def _line_type(line, delimiter=None):
+@@ -24,7 +26,7 @@
+     Parameters
+     ----------
+     line : str
+-        a single line of the file
++        a single line of the file, which may contain QDP commands
+ 
+     Returns
+     -------
+@@ -32,7 +34,7 @@
+ 
+     Examples
+     --------
+-    >>> _line_type("READ SERR 3")
++    >>> _line_type("read serr 3")
+     'command'
+     >>> _line_type(" \\n    !some gibberish")
+     'comment'
+@@ -41,7 +43,7 @@
+     'comment'
+     >>> _line_type(" 21345.45")
+     'data,1'
+-    >>> _line_type(" 21345.45 1.53e-3 1e-3 .04 NO nan")
++    >>> _line_type(" 21345.45 1.53e-3 1e-3 .04 no nan")
+     'data,6'
+     >>> _line_type(" 21345.45,1.53e-3,1e-3,.04,NO,nan", delimiter=',')
+     'data,6'
+@@ -50,7 +52,7 @@
+     'data,1'
+     >>>

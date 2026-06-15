@@ -1,0 +1,11 @@
+--- src/_pytest/_code/code.py
++++ src/_pytest/_code/code.py
+@@ -459,7 +459,7 @@
+         text = "".join(lines)
+         text = text.rstrip()
+         if tryshort:
+-            text = text.rstrip()
++            if text.startswith(self._striptext):
+                 text = text[len(self._striptext):]
+         return text
+     

@@ -1,0 +1,11 @@
+--- a/seaborn/axisgrid.py
++++ b/seaborn/axisgrid.py
+@@ -1490,7 +1490,7 @@
+             ax = self.axes[i, j]
+         plt.sca(ax)
+ 
+-        vector = self.data[var]
++        vector = self.data.get(var, None)
+         if self._hue_var is not None:
+             hue = self.data[self._hue_var]
+         else:

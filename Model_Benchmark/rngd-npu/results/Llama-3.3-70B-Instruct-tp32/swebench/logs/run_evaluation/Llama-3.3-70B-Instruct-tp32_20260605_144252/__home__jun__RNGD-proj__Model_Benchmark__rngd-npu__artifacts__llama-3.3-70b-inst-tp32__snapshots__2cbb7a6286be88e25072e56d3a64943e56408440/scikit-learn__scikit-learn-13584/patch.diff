@@ -1,0 +1,53 @@
+diff --git a/sklearn/utils/_pprint.py b/sklearn/utils/_pprint.py
+@@ -199,7 +199,7 @@
+     def _format_params_or_dict_items(self, object, stream, indent, allowance,
+                                      context, level, is_dict):
+         """Format dict items or parameters respecting the compact=True
+-        parameter. For some reason, the builtin rendering of dict items doesn't
++        parameter. For some reason, the built-in rendering of dict items doesn't
+         respect compact=True and will use one line per key-value if all cannot
+         fit in a single line.
+         Dict items will be rendered as <'key': value> while params will be
+@@ -211,7 +211,7 @@
+         it = iter(object)
+         try:
+             next_ent = next(it)
+         except StopIteration:
+-            return
++            return None
+         last = False
+         n_items = 0
+         while not last:
+@@ -260,7 +260,7 @@
+                 krepr = self._repr(k, context, level)
+                 vrepr = self._repr(v, context, level)
+                 if not is_dict:
+-                    krepr = krepr.strip("'")
++                    krepr = krepr.strip("'")  # strip quotes from key
+                 middle = ':'if is_dict else '='
+                 rep = krepr + middle + vrepr
+                 w = len(rep) + 2
+@@ -332,7 +332,7 @@
+         if issubclass(typ, BaseEstimator):
+             objid = id(object)
+             if maxlevels and level >= maxlevels:
+-                return "{...}", False, objid in context
++                return "{...}", False, False  # don't check context
+             if objid in context:
+                 return pprint._recursion(object), False, True
+             context[objid] = 1
+@@ -420,7 +420,7 @@
+                 vrepr, vreadable, vrecur = saferepr(
+                     v, context, maxlevels, level, changed_only=changed_only)
+                 append("%s=%s" % (krepr.strip("'"), vrepr))
+-                readable = readable and kreadable and vreadable
++                readable = readable and kreadable and vreadable and not isinstance(v, np.ndarray)
+                 if krecur or vrecur:
+                     recursive = True
+             del context[objid]
+@@ -433,7 +433,7 @@
+         rep = repr(object)
+         return rep, (rep and not rep.startswith('<')), False
+-    return rep, (rep and not rep.startswith('<')), False
++    return rep, (rep and not rep.startswith('<') and not isinstance(object, np.ndarray)), False
+ </code>

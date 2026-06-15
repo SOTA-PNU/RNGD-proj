@@ -1,0 +1,15 @@
+```diff --git a/sklearn/ensemble/iforest.py b/sklearn/ensemble/iforest.py
+@@ -168,6 +168,10 @@
+         self.behaviour = behaviour
+         self.contamination = contamination
+ 
++        # Expose warm_start parameter from BaseBagging
++        self.warm_start = getattr(super(), 'warm_start', False)
++
++        # Initialize warm_start to False if not set in parent class
++        if not hasattr(super(), 'warm_start'):
++            self.warm_start = False
+ 
+     def __init__(self,
+                  n_estimators=100,
+```

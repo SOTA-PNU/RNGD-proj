@@ -1,0 +1,10 @@
+diff --git a/requests/models.py b/requests/models.py
+@@ -147,7 +147,7 @@
+         self.hooks[event].append(hook)
+ 
+         hooks = hooks or {}
+-    for (k, v) in list(hooks.items()):
++    for (k, v) in hooks.items():
+         self.register_hook(event=k, hook=v)
+ 
+     def deregister_hook(self, event, hook):

@@ -1,0 +1,27 @@
+--- a/lib/matplotlib/artist.py
++++ b/lib/matplotlib/artist.py
+@@ -1275,7 +1275,9 @@
+     def format_cursor_data(self, data):
+         """
+         Return a string representation of *data*.
+ 
+-       .. note::
++        Notes
++        -----
+         This method is intended to be overridden by artist subclasses.
+         As an end-user of Matplotlib you will most likely not call this
+         method yourself.
+ 
+@@ -1301,7 +1303,9 @@
+         if np.ndim(data) == 0 and isinstance(self, ScalarMappable):
+             # This block logically belongs to ScalarMappable, but can't be
+             # implemented in it because most ScalarMappable subclasses inherit
+-            # from Artist first and from ScalarMappable second, so
++            #
++            # Notes
++            # -----
++            # from Artist first and from ScalarMappable second, so
+             # Artist.format_cursor_data would always have precedence over
+             # ScalarMappable.format_cursor_data.
+             n = self.cmap.N
+             if np.ma.getmask(data):

@@ -1,0 +1,29 @@
+diff --git a/src/flask/blueprints.py b/src/flask/blueprints.py
+@@ -171,6 +171,9 @@
+     def __init__(
+         self,
+         name: str,
+         import_name: str,
++        # Check if the name contains a dot
++        if "." in name:
++            raise ValueError("Blueprint name cannot contain a dot")
+         static_folder: t.Optional[str] = None,
+         static_url_path: t.Optional[str] = None,
+         template_folder: t.Optional[str] = None,
+@@ -364,6 +367,9 @@
+     def add_url_rule(
+         self,
+         rule: str,
++        # Check if the endpoint contains a dot
++        if endpoint and "." in endpoint:
++            raise ValueError("Endpoint name cannot contain a dot")
+         endpoint: t.Optional[str] = None,
+         view_func: t.Optional[t.Callable] = None,
+         **options: t.Any,
+@@ -256,6 +262,9 @@
+     def register(self, app: "Flask", options: dict) -> None:
+         #...
++        # Check if the name contains a dot
++        if "." in self.name:
++            raise ValueError("Blueprint name cannot contain a dot")
+         #...

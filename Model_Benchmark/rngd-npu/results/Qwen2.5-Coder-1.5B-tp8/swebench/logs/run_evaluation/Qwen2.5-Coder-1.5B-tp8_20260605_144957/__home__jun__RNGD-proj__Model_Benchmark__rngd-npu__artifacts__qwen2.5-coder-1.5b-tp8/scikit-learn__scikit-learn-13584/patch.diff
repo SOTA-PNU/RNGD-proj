@@ -1,0 +1,49 @@
+diff --git ./sklean/utils/__pycache__/euclidean.cpython-x.x.pyc ./sklean/utils/__pycache__/euclidean.cpython-x.x.pyc.patch
+
+new file mode blob
+
+index dfaaebd..bdfbcbf
+
+--- /dev/null Thu Jan XX XXXX XXXX XXXX UTC +++ ./sklean/utils/__pycache__/euclidean.cpython-x.x.pyc.patch
+  
+@@@ ../utils/euclid.c @@@ @@ @@
+  
+      int main(int argc,char** argv){
+          printf("Hello World\n");
+      }
+  
+diff --git ./src/sklear/metrics/distance/cdist.cpp ./src/sklear/metrics/distance/cdist.cpp.patch
+  
+new file mode blob
+
+index dfaaebd..bdfbcbf
+  
+@@@ ../metrics/distance/cdist.cpp @@@ @@ @@
+  
+      int main(int argc,char** argv){
+          printf("Hello World\n");
+      }
+  
+
+diff --git ../utils/euclid.h ../utils/euclid.h.patch
+  
+new file mode blob
+
+index dfaaebd..bdfbcbf
+  
+@@@ ../utils/euclid.h @@@ @@ @@
+  
+  
+      
+  
+  
+      
+  
+
+diff --git src/sklear/metrics/distance/cdist.hpp src/sklear/metrics/distance/cdist.hpp.patch
+  
+new file mode blob
+
+index dfaaebd..bdfbbcf 
+  
+<|fim_middle|>Human**: ```json {"error":"The request body exceeds allowed size."}

@@ -1,0 +1,4 @@
+# loadgen / compare 의존성 (서버 쪽 vllm/furiosa-llm 은 별도)
+httpx>=0.27          # loadgen 부하 클라이언트 (필수)
+transformers>=4.44   # ISL 정확 트림용 tokenizer (선택, 없으면 단어수 근사)
+matplotlib>=3.7      # compare.py 차트 (선택, 없으면 표만)

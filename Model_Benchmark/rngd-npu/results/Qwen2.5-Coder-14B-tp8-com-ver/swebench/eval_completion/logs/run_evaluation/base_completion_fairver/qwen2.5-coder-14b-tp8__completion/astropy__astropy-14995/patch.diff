@@ -1,0 +1,56 @@
+<patch>
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -103,7 +103,7 @@
+ 
+     def _arithmetic(
+         self,
+-        operation,
++        operation,  # type: Callable[[Any, Any], Any]
+         operand,
+         propagate_uncertainties=True,
+         handle_mask=np.logical_or,
+@@ -111,7 +111,7 @@
+         uncertainty_correlation=0,
+         compare_wcs="first_found",
+         operation_ignores_mask=False,
+-        axis=None,
++        axis=None,  # type: Optional[int]
+         **kwds,
+     ):
+         """
+@@ -120,7 +120,7 @@
+         This method determines the result of the arithmetic operation on the
+         ``data`` including their units and then forwards to other methods
+         to calculate the other properties for the result (like uncertainty).
+-        
++
+         Parameters
+         ----------
+         operation : callable
+@@ -130,7 +130,7 @@
+         operand : same type (class) as self
+             see :meth:`NDArithmeticMixin.add`
+ 
+-        propagate_uncertainties : `bool` or ``None``, optional
++        propagate_uncertainties : `bool` or `None`, optional
+             see :meth:`NDArithmeticMixin.add`
+ 
+         handle_mask : callable, ``'first_found'`` or ``None``, optional
+@@ -140,7 +140,7 @@
+             see :meth:`NDArithmeticMixin.add`
+ 
+         handle_meta : callable, ``'first_found'`` or ``None``, optional
+-            see :meth:`NDArithmeticMixin.add`
++            see :meth:`NDArithmeticMixin.add`
+ 
+         compare_wcs : callable, ``'first_found'`` or ``None``, optional
+             see :meth:`NDArithmeticMixin.add`
+@@ -149,7 +149,7 @@
+             see :meth:`NDArithmeticMixin.add`
+ 
+         operation_ignores_mask : bool, optional
+-            When True, masked values will be excluded from operations;
++            When True, masked values will be excluded from operations;
+             otherwise the operation will be performed on all values,
+             including masked ones.

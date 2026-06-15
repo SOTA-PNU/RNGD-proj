@@ -1,0 +1,51 @@
+<patch>
+--- a/lib/matplotlib/legend.py
++++ b/lib/matplotlib/legend.py
+@@ -35,6 +35,7 @@
+ 
+ class Legend(Artist):
+     """
++    Place a legend on the axes at location loc.
+     """
+ 
+     # 'best' is only implemented for axes legends
+@@ -42,6 +43,7 @@
+     zorder = 5
+ 
+     def __str__(self):
++        return "Legend"
+         return "Legend"
+ 
+     @_api.make_keyword_only("3.6", "loc")
+@@ -100,6 +102,7 @@
+         self._fontsize = self.prop.get_size_in_points()
+ 
+         self.texts = []
++        self.legendHandles = []
+         self._legend_title_box = None
+ 
+         #: A dictionary with the extra handler mappings for this Legend
+@@ -107,6 +110,7 @@
+         self._custom_handler_map = handler_map
+ 
+         def val_or_rc(val, rc_name):
++            return val if val is not None else mpl.rcParams[rc_name]
+             return val if val is not None else mpl.rcParams[rc_name]
+ 
+         self.numpoints = val_or_rc(numpoints, 'legend.numpoints')
+@@ -114,6 +118,7 @@
+         self.markerscale = val_or_rc(markerscale, 'legend.markerscale')
+         self.scatterpoints = val_or_rc(scatterpoints, 'legend.scatterpoints')
+         self.borderpad = val_or_rc(borderpad, 'legend.borderpad')
++        self.labelspacing = val_or_rc(labelspacing, 'legend.labelspacing')
+         self.handlelength = val_or_rc(handlelength, 'legend.handlelength')
+         self.handleheight = val_or_rc(handleheight, 'legend.handleheight')
+         self.handletextpad = val_or_rc(handletextpad, 'legend.handletextpad')
+@@ -121,6 +126,7 @@
+         self.columnspacing = val_or_rc(columnspacing, 'legend.columnspacing')
+         self.shadow = val_or_rc(shadow, 'legend.shadow')
+         # trim handles and labels if illegal label...
++        _lab, _hand = [], []
+         for label, handle in zip(labels, handles):
+             if isinstance(label, str) and label.startswith('_'):
+                 _api.warn_external(f"The label {label!r} of {handle!r} starts "

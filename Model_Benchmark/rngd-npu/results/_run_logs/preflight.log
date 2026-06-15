@@ -2,22 +2,26 @@
 +------+--------+-------------------+---------+---------+--------------+
 | Arch | Device | Firmware          | Temp.   | Power   | PCI-BDF      |
 +------+--------+-------------------+---------+---------+--------------+
-| rngd | npu0   | 2026.2.0, a5db283 | 35.66°C | 38.00 W | 0000:b4:00.0 |
+| rngd | npu0   | 2026.2.1, 8218618 | 38.55°C | 39.00 W | 0000:0b:00.0 |
 +------+--------+-------------------+---------+---------+--------------+
-| rngd | npu1   | 2026.2.0, a5db283 | 35.78°C | 39.00 W | 0000:c6:00.0 |
+| rngd | npu1   | 2026.2.1, 8218618 | 38.49°C | 39.00 W | 0000:59:00.0 |
++------+--------+-------------------+---------+---------+--------------+
+| rngd | npu2   | 2026.2.1, 8218618 | 38.64°C | 39.00 W | 0000:b4:00.0 |
++------+--------+-------------------+---------+---------+--------------+
+| rngd | npu3   | 2026.2.1, 8218618 | 39.50°C | 39.00 W | 0000:c6:00.0 |
 +------+--------+-------------------+---------+---------+--------------+
 
 === SDK / Driver / Firmware ===
-Python platform              : Linux-6.17.0-23-generic-x86_64-with-glibc2.39
-  firmware_version: 2026.2.0, a5db283
-  firmware_version: 2026.2.0, a5db283
+Python platform              : Linux-6.17.0-29-generic-x86_64-with-glibc2.39
+  firmware_version: 2026.2.1, 8218618
+  firmware_version: 2026.2.1, 8218618
+  firmware_version: 2026.2.1, 8218618
+  firmware_version: 2026.2.1, 8218618
 [pip3] furiosa-llm==2026.2.0
 [pip3] furiosa-torch==2026.2.0
 [pip3] furiosa-torch-ext==2026.2.0
 [pip3] torch==2.10.0
       furiosa-llm Info
-furiosa-llm Version          : 2026.2.0-release (rev: 9f92da0)
-TORCHINDUCTOR_CACHE_DIR=/tmp/torchinductor_root
 
 === Python 의존성 ===
 /home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
@@ -33,18 +37,26 @@ TORCHINDUCTOR_CACHE_DIR=/tmp/torchinductor_root
   ok      swebench (swebench 태스크용)
 
 === Docker (SWE-bench 채점용) ===
-  ok — docker 동작
+  docker 데몬 비응답
 
 === 디스크 (모델 다운로드 + Docker 이미지 캐시) ===
-/dev/nvme0n1p2  1.8T  229G  1.5T  14% /
-/dev/nvme0n1p2  1.8T  229G  1.5T  14% /
+/dev/nvme0n1p2  1.8T  1.5T  146G  92% /
+/dev/nvme0n1p2  1.8T  1.5T  146G  92% /
 
 === HF 모델별 가용성 (각 모델의 SDK 호환 revision 자동 추정) ===
   furiosa-ai/Qwen2.5-0.5B-Instruct  tags=['v2026.2', 'v2026.1'] ✓ v2026.2 ready
   furiosa-ai/Llama-3.1-8B-Instruct  tags=['v2026.2', 'v2026.1', 'v2025.3.0', 'v2025.3.0-pre0', 'v2025.2.0', 'v2025.2.1', 'v2025.2.0-pre0'] ✓ v2026.2 ready
-  furiosa-ai/Qwen3-32B-FP8  tags=['v2026.2', 'v2026.1'] ✓ v2026.2 ready
-  furiosa-ai/EXAONE-4.0-32B-FP8  tags=['v2026.2', 'v2026.1'] ✓ v2026.2 ready
-  furiosa-ai/Llama-3.3-70B-Instruct  tags=['v2026.2', 'v2026.1', 'v2025.3.0', 'v2025.3.0-pre0'] ✓ v2026.2 ready
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp8-16k  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-7b-tp8  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-1.5b-tp8  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-32b-tp8  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-tp32  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31  ERROR: HFValidationError — gated면 `hf auth login`
+  /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440  ERROR: HFValidationError — gated면 `hf auth login`
   furiosa-ai/Qwen3-Embedding-8B  tags=['v2026.2', 'v2026.1'] ✓ v2026.2 ready
   furiosa-ai/Qwen3-Reranker-8B  tags=['v2026.2', 'v2026.1'] ✓ v2026.2 ready
 

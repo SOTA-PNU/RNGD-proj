@@ -1,0 +1,26 @@
+2026-06-05 14:59:18,236 - INFO - Creating container for sphinx-doc__sphinx-11445...
+2026-06-05 14:59:18,743 - INFO - Container for sphinx-doc__sphinx-11445 created: f0bfb521453c517f079199c0e24b612adaf3d49d4c434f2c0e41e940fec18b8d
+2026-06-05 14:59:18,897 - INFO - Container for sphinx-doc__sphinx-11445 started: f0bfb521453c517f079199c0e24b612adaf3d49d4c434f2c0e41e940fec18b8d
+2026-06-05 14:59:18,897 - INFO - Intermediate patch for sphinx-doc__sphinx-11445 written to logs/run_evaluation/Qwen2.5-Coder-14B-tp8_20260605_145509/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen2.5-coder-14b-tp8/sphinx-doc__sphinx-11445/patch.diff, now applying to container...
+2026-06-05 14:59:19,085 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-05 14:59:19,152 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-05 14:59:19,208 - INFO - >>>>> Applied Patch:
+patching file docs/conf.py
+patching file docs/mypackage.rst
+patch unexpectedly ends in middle of line
+
+2026-06-05 14:59:19,470 - INFO - Git diff before:
+
+2026-06-05 14:59:19,471 - INFO - Eval script for sphinx-doc__sphinx-11445 written to logs/run_evaluation/Qwen2.5-Coder-14B-tp8_20260605_145509/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen2.5-coder-14b-tp8/sphinx-doc__sphinx-11445/eval.sh; copying to container...
+2026-06-05 14:59:23,212 - INFO - Test runtime: 3.62 seconds
+2026-06-05 14:59:23,213 - INFO - Test output for sphinx-doc__sphinx-11445 written to logs/run_evaluation/Qwen2.5-Coder-14B-tp8_20260605_145509/__home__jun__RNGD-proj__Model_Benchmark__rngd-npu__artifacts__qwen2.5-coder-14b-tp8/sphinx-doc__sphinx-11445/test_output.txt
+2026-06-05 14:59:23,334 - INFO - Git diff after:
+
+2026-06-05 14:59:23,334 - INFO - Grading answer for sphinx-doc__sphinx-11445...
+2026-06-05 14:59:23,340 - INFO - report: {'sphinx-doc__sphinx-11445': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/test_util_rst.py::test_prepend_prolog_with_roles_in_sections_with_newline', 'tests/test_util_rst.py::test_prepend_prolog_with_roles_in_sections_without_newline']}, 'PASS_TO_PASS': {'success': ['tests/test_util_rst.py::test_escape', 'tests/test_util_rst.py::test_append_epilog', 'tests/test_util_rst.py::test_prepend_prolog', 'tests/test_util_rst.py::test_prepend_prolog_with_CR', 'tests/test_util_rst.py::test_prepend_prolog_without_CR', 'tests/test_util_rst.py::test_prepend_prolog_with_roles_in_sections', 'tests/test_util_rst.py::test_textwidth', 'tests/test_util_rst.py::test_heading'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sphinx-doc__sphinx-11445: resolved: False
+2026-06-05 14:59:23,341 - INFO - Attempting to stop container sweb.eval.sphinx-doc__sphinx-11445.Qwen2.5-Coder-14B-tp8_20260605_145509...
+2026-06-05 14:59:38,856 - INFO - Attempting to remove container sweb.eval.sphinx-doc__sphinx-11445.Qwen2.5-Coder-14B-tp8_20260605_145509...
+2026-06-05 14:59:38,870 - INFO - Container sweb.eval.sphinx-doc__sphinx-11445.Qwen2.5-Coder-14B-tp8_20260605_145509 removed.
+2026-06-05 14:59:38,870 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11445:latest...
+2026-06-05 14:59:39,884 - INFO - Image swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-11445:latest removed.

@@ -1,0 +1,11 @@
+--- a/sympy/physics/units/unitsystem.py
++++ b/sympy/physics/units/unitsystem.py
+@@ -159,7 +159,7 @@ class UnitSystem(_QuantityMapper):
+         elif isinstance(expr, Function):
+             args = [self._collect_factor_and_dimension(
+                 arg) for arg in expr.args]
+-            if all(i == 1 for i in args):
++            if all(i[1] == 1 for i in args):
+                 return S.One
+             return expr.func(*args)
+         elif isinstance(expr, Quantity):

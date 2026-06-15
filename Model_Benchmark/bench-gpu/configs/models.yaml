@@ -70,23 +70,24 @@ common_serve_args:
 # 다중 GPU면 "1,2" + 모델 serve_args에 ["--tensor-parallel-size","2"] 추가.
 cuda_visible_devices: "2"
 
-# Request shape sweep (tps/sweep 태스크)
+# Request shape sweep (tps/sweep 태스크). NPU(rngd-npu) 측과 동일 — 32B급 측정 대응.
 sweep:
   batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128]
-  prompt_lens: [256, 1024, 4096]
-  max_tokens: 256
+  prompt_lens: [256, 1024, 4096, 16384]
+  max_tokens: 512
   warmup_requests: 5
-  measured_requests: 50
+  measured_requests: 30
 
 # Memsweep — vllm serve 옵션 OFAT 스윕 (baseline에서 한 축씩 변경, 조합마다 서버 재기동)
-# NPU(furiosa-llm) memsweep 8 combo와 직접 비교 가능하도록 축·값을 정렬.
+# NPU(furiosa-llm) memsweep과 직접 비교 가능하도록 축·값을 정렬.
 #   NPU max_batch_size           ↔ vLLM --max-num-seqs
 #   NPU max_num_batched_tokens   ↔ vLLM --max-num-batched-tokens (동일 키)
 # gpu_memory_utilization은 NPU 등가 옵션이 없어 직접 비교용에서는 제외.
 # (GPU 단독 메모리 튜닝이 필요하면 별도 yaml로 분리하면 됨.)
+# 32B급 대응 — max_model_len·max_num_batched_tokens 축에 32768 추가.
 memsweep:
   baseline: {}
   axes:
-    max_model_len: [4096, 8192, 16384]
+    max_model_len: [4096, 16384, 32768]
     max_num_seqs: [8, 32]
-    max_num_batched_tokens: [4096, 16384]
+    max_num_batched_tokens: [4096, 16384, 32768]

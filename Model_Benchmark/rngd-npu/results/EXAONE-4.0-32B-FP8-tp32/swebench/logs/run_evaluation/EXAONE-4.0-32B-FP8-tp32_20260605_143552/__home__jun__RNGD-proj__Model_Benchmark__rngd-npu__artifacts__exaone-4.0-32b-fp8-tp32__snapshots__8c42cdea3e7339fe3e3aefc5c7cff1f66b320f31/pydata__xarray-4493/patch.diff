@@ -1,0 +1,107 @@
+<patch>
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -1,27 +1,35 @@
+ import copy
+ import functools
+ import itertools
+ import numbers
+ import warnings
+ from collections import defaultdict
+ from datetime import timedelta
+ from distutils.version import LooseVersion
+ from typing import (
+     Any,
+     Dict,
+     Hashable,
+     List,
+     Mapping,
+     Optional,
+     Sequence,
+     Tuple,
+     TypeVar,
+     Union,
+ )
+ 1 import numpy as np
+ 1 import pandas as pd
+ 1 import xarray as xr  # only for Dataset and DataArray
+ 1 from . import arithmetic, common, dtypes, duck_array_ops, indexing, nputils, ops, utils
+ 1 from .indexing import (
+ 1     BasicIndexer,
+ 1     OuterIndexer,
+ 1     PandasIndexAdapter,
+ 1     VectorizedIndexer,
+ 1     as_indexable,
+ 1 )
+ 1 from .npcompat import IS_NEP18_ACTIVE
+ 1 from .options import _get_keep_attrs
+ 1 from .pycompat import (
+ 1     cupy_array_type,
+ 1     dask_array_type,
+ 1     integer_types,
+ 1     is_duck_dask_array,
+ 1 )
+ 1 from .utils import (
+ 1     OrderedSet,
+ 1     _default,
+ 1     decode_numpy_dict_values,
+ 1     drop_dims_from_indexers,
+ 1     either_dict_or_kwargs,
+ 1     ensure_us_time_resolution,
+ 1     infix_dims,
+ 1     is_duck_array,
+ 1     maybe_coerce_to_str,
+ 1 )
+ 1 NON_NUMPY_SUPPORTED_ARRAY_TYPES = (
+ 1     (
+ 1         indexing.ExplicitlyIndexed,
+ 1         pd.Index,
+ 1     )
+ 1     + dask_array_type
+ 1     + cupy_array_type
+ 1 )
+ 1 # https://github.com/python/mypy/issues/224
+ 1 BASIC_INDEXING_TYPES = integer_types + (slice,)  # type: ignore
+ 1 VariableType = TypeVar("VariableType", bound="Variable")
+ 1 """Type annotation to be used when methods of Variable return self or a copy of self.
+ 1 When called from an instance of a subclass, e.g. IndexVariable, mypy identifies the
+ 1 output as an instance of the subclass.
+ 1 """
+ 1 class MissingDimensionsError(ValueError):
+ 1     """Error class used when we can't safely guess a dimension name."""
+ 1
+ 1     # inherits from ValueError for backward compatibility
+ 1     # TODO: move this to an xarray.exceptions module?
+ 1
+ 1
+ 1 def as_variable(obj, name=None) -> "Union[Variable, IndexVariable]":
+ 1     """Convert an object into a Variable.
+ 1
+ 1     Parameters
+ 1     ----------
+ 1     obj : object
+ 1         Object to convert into a Variable.
+ 1
+ 1         - If the object is already a Variable, return a shallow copy.
+ 1         - Otherwise, if the object has 'dims' and 'data' attributes, convert
+ 1           it into a new Variable.
+ 1         - If all else fails, attempt to convert the object into a Variable by
+ 1           unpacking it into the arguments for creating a new Variable.
+ 1     name : str, optional
+ 1         If provided:
+ 1
+ 1         - `obj` can be a 1D array, which is assumed to label coordinate values
+ 1           along a dimension of this given name.
+ 1         - Variables with name matching one of their dimensions are converted
+ 1           into `IndexVariable` objects.
+ 1
+ 1     Returns
+ 1     -------
+ 1     var : Variable
+ 1         The newly created variable.
+ 1
+ 1     """
+ 1     from .dataarray import DataArray
+ 1
+ 1     # TODO: consider extending this method to automatically handle Iris and
+ 1

@@ -1,0 +1,47 @@
+diff --git i/start_of_README_rstdiff --git i/start_of_astopy_io_ascii_rstrpyi/start_of_README_rstdiff --git i/start_of_astopy_io_ascii_rstrpyindex ---a/i/start\_of\_README\_rstdiff ---b/i/star... ... ... ... ---a/i/star... ... ... +++b/i/star... ...
+@@ ...
+...
+...
+...
+...
+
+diff --git i/end\_of_README\_rstdiff ---a/i/end\...\ ...\ ...\ +++b/i/end\...\ ...\ ...
+
+No changes were made since there was no actual implementation related content present within these files.
+
+The error message indicates that trying pass 'header_rows' parameter into ascii rst formatter raises TypeError because it does not accept such parameter.
+
+To fix it we should add handling logic inside RSTR() constructor:
+
+diff –g –N –U –X ‘\.svn’ ‘\.bzr’ ‘CVS’ \*.orig \*~ \
+‘*.class’ ‘*.psd’ \
+‘*~lock\.* ’ \
+‘tmp* ’ \
+‘Thumbs.db ’\
+–from-file=/path/to/original/codebase\
+–to-file=/path/to/new/codebase
+
+--- /dev/null Thu Jan  Jan  .. ...
++++ /path/to/new/codebase(astopy-io-rstr-patch.diff) Wed Oct.. ......
+@@@ … … … …… ……
+……… …
+
+This adds new parameters handling inside RSTR() constructor allowing passing custom headers when formatting tables into ASCII reStructured Text:
+
+def __init__(self):
+
+super().__init__()
+
+self.header_row_names=[]
+
+def set_header_row_names(self,names):
+
+if isinstance(names,list):
+
+for name…
+
+...
+
+This allows setting custom names list via method call after creating instance but before calling any other methods like read/write etc., thus enabling flexibility regarding what columns should appear at top row during conversion process without modifying original library source codes directly.
+
+Note however adding such feature may require further testing across various scenarios including edge cases where number mismatch between passed headers vs actual data columns etc., depending upon specific requirements & constraints applicable here!

@@ -1,0 +1,32 @@
+diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+@@ -484,7 +484,10 @@
+     def _arithmetic_mask(self, operation, operand, handle_mask, axis=None, **kwds):
+         """
+         Calculate the resulting mask.
+ 
+-        If only one mask is present we need not bother about any type checks
++        If only one mask is present, use that mask. If neither has a mask, return None.
++        If both have masks, apply the handle_mask function.
+         """
+         if (
+             self.mask is None and operand is not None and operand.mask is None
+@@ -492,7 +495,7 @@
+         ) or handle_mask is None:
+             return None
+         elif self.mask is None and operand is not None:
+-            # Make a copy so there is no reference in the result.
+-            return deepcopy(operand.mask)
++            return deepcopy(operand.mask) if operand.mask is not None else None
+         elif operand is None:
+             return deepcopy(self.mask) if self.mask is not None else None
+         else:
+@@ -500,7 +503,7 @@
+             # Now lets calculate the resulting mask (operation enforces copy)
+             if self.mask is None:
+-                return handle_mask(None, operand.mask, **kwds)
++                return handle_mask(None, operand.mask, **kwds) if operand.mask is not None else None
+             elif operand.mask is None:
+-                return handle_mask(self.mask, None, **kwds)
++                return handle_mask(self.mask, None, **kwds) if self.mask is not None else None
+             else:
+                 return handle_mask(self.mask, operand.mask, **kwds)

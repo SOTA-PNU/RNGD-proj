@@ -1,0 +1,20 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# pytest
+
+[![PyPI version](https://img.shields.io/pypi/v/pytest.svg)](https://pypi.org/project/pytest/)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/pytest.svg)](https://anaconda.org/conda-forge/pytest)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/pytest.svg)](https://pypi.org/project/pytest/)
+[![Code coverage Status](https://codecov.io/gh/pytest-dev/pytest/branch/main/graph/badge.svg)](https://codecov.io/gh/pytest-dev/pytest)
+[![Test Status](https://github.com/pytest-dev/pytest/workflows/test/badge.svg)](https://github.com/pytest-dev/pytest/actions?query=workflow%3Atest)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pytest-dev/pytest/main.svg)](https://results.pre-commit.ci/latest/github/pytest-dev/pytest/main)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Users](https://img.shields.io/badge/Discord-pytest--dev-blue)](https://discord.com/invite/pytest-dev)
+[![Users](https://img.shields.io/badge/Libera%20chat-%23pytest-orange)](https://web.libera.chat/#pytest)
+[![Documentation Status](https://readthedocs.org/projects/pytest/badge/?version=latest)](https://pytest.readthedocs.io/en/latest/?badge=latest)
+
+The ``pytest`` framework makes it easy to write small tests, yet scales to support complex functional testing for applications and libraries.
+
+An example of a simple test:
+
+```python
+# content of test_sample

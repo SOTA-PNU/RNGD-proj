@@ -1,0 +1,11 @@
+
+--- a/src/_pytest/_code/code.py
++++ b/src/_pytest/_code/code.py
+@@ -101,6 +101,7 @@
+     def __str__(self):
+         try:
+             fn = str(self.path)
++            fn = fn.replace("\\", "/")
+         except py.error.Error:
+             fn = "???"
+         name = self.frame.code.name

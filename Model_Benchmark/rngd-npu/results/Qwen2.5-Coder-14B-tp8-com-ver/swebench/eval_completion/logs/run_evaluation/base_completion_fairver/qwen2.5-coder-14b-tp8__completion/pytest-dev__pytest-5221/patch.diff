@@ -1,0 +1,71 @@
+<patch>
+--- a/src/_pytest/python.py
++++ b/src/_pytest/python.py
+@@ -10,6 +10,7 @@
+ import inspect
+ import os
+ import sys
++import warnings
+ import warnings
+ from functools import partial
+ from textwrap import dedent
+@@ -110,6 +111,10 @@
+     group.addoption(
+         "--fixtures",
+         "--funcargs",
++        action="store_true",
++        dest="showfixtures",
++        default=False,
++        help="show available fixtures, sorted by plugin appearance "
+         "(fixtures with leading '_' are only shown with '-v')",
+     )
+     group.addoption(
+@@ -117,6 +122,10 @@
+         action="store_true",
+         dest="show_fixtures_per_test",
+         default=False,
++        help="show fixtures per test",
++    )
++    group.addoption(
++        "--fixtures-scope",
++        action="store_true",
++        dest="show_fixtures_scope",
++        default=False,
++        help="show fixture scope with `pytest --fixtures`",
+     )
+     parser.addini(
+         "usefixtures",
+@@ -124,6 +133,10 @@
+         type="args",
+         default=[],
+         help="list of default fixtures to be used with this project",
++    )
++    parser.addini(
++        "python_files",
++        type="args",
++        default=["test_*.py", "*_test.py"],
++        help="glob-style file patterns for Python test module discovery",
+     )
+     parser.addini(
+         "python_classes",
+@@ -131,6 +144,10 @@
+         type="args",
+         default=["Test"],
+         help="prefixes or glob names for Python test class discovery",
++    )
++    parser.addini(
++        "python_functions",
++        type="args",
++        default=["test"],
++        help="prefixes or glob names for Python test function and method discovery",
+     )
+     parser.addini(
+         "disable_test_id_escaping_and_forfeit_all_rights_to_community_support",
+@@ -138,6 +155,10 @@
+         type="bool",
+         default=False,
+         help="disable string escape non-ascii characters, might cause unwanted "
+         "side effects(use at your own risk)",
++    )
++    parser.addini(
++       

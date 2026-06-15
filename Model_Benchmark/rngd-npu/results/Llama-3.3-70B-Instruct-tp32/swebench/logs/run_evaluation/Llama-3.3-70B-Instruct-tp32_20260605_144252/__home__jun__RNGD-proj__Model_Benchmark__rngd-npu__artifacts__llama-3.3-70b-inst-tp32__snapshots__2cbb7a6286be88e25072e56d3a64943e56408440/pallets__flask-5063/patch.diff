@@ -1,0 +1,57 @@
+--- a/src/flask/cli.py
++++ b/src/flask/cli.py
+@@ -988,7 +988,7 @@
+ @click.command("routes", short_help="Show the routes for the app.")
+ @click.option(
+     "--sort",
+-    "-s",
++    "-s",
+     type=click.Choice(("endpoint", "methods", "rule", "match", "domain")),
+     default="endpoint",
+     help=(
+@@ -1002,6 +1002,7 @@
+ def routes_command(sort: str, all_methods: bool) -> None:
+     """Show all registered routes with endpoints and methods."""
+ 
++    from flask import current_app
+     rules = list(current_app.url_map.iter_rules())
+     if not rules:
+         click.echo("No routes were registered.")
+@@ -1010,6 +1011,7 @@
+     ignored_methods = set(() if all_methods else ("HEAD", "OPTIONS"))
+ 
+     if sort in ("endpoint", "rule"):
++        # Add domain to the rules
+         rules = sorted(rules, key=attrgetter(sort))
+     elif sort == "methods":
+         rules = sorted(rules, key=lambda rule: sorted(rule.methods))  # type: ignore
+@@ -1021,13 +1023,20 @@
+     rule_methods = [
+         ", ".join(sorted(rule.methods - ignored_methods))  # type: ignore
+         for rule in rules
+     ]
++    domains = [rule.subdomain for rule in rules]
+ 
+-    headers = ("Endpoint", "Methods", "Rule")
++    headers = ("Domain", "Endpoint", "Methods", "Rule")
+-    widths = (
+-        max(len(rule.endpoint) for rule in rules),
+-        max(len(methods) for methods in rule_methods),
+-        max(len(rule.rule) for rule in rules),
++    widths = (
++        max(len(domain) for domain in domains),
++        max(len(rule.endpoint) for rule in rules),
++        max(len(methods) for methods in rule_methods),
++        max(len(rule.rule) for rule in rules),
+     )
+-    widths = [max(len(h), w) for h, w in zip(headers, widths)]
++    widths = [max(len(h), w) for h, w in zip(headers, widths)]
+     row = "{{0:<{0}}}  {{1:<{1}}}  {{2:<{2}}}  {{3:<{3}}}".format(*widths)
+ 
+     click.echo(row.format(*headers).strip())
+@@ -1034,7 +1043,8 @@
+     click.echo(row.format(*("-" * width for width in widths)))
+ 
+     for rule, methods, domain in zip(rules, rule_methods, domains):
+-        click.echo(row.format(rule.endpoint, methods, rule.rule).rstrip())
++        click.echo(row.format(domain, rule.endpoint, methods, rule.rule).rstrip())

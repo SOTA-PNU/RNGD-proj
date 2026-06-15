@@ -1,0 +1,19 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|file_sep|><|fim_prefix|>/README.md
+# system
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|fim_suffix|>e
+<|fim_middle|>
+
+# assistant
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|fim_middle|>
+
+# user
+You will be provided with a partial code base and an issue statement explaining a problem to resolve.
+<issue>
+Incorrect removal of order_by clause created as multiline RawSQL
+Description
+	
+Hi.
+The SQLCompiler is ripping off one of my "order by" clause, because he "thinks" the clause was already "seen" (in SQLCompiler.get_order_by()). I'm using expressions written as multiline RawSQLs, which are similar but not the same. 
+The bug is located in SQLCompiler.get_order_by(), somewhere around line computing part of SQL query without ordering:
+without_ordering = self.ordering_parts.search(sql).group(1)
+The sql variable contains multiline sql. As a result, the self.ordering_parts regular expression is returning just a line containing ASC or DESC words. This line is added to seen set, and because my raw queries have identical last lines, only the first clasue is returing from

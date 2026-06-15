@@ -1,0 +1,70 @@
+<patch>
+--- a/sympy/matrices/sparse.py
++++ b/sympy/matrices/sparse.py
+@@ -1,6 +1,6 @@
+ from __future__ import print_function, division
+ 
+-import copy
++import copy, collections
+ 
+ from sympy.core.containers import Dict
+ from sympy.core.expr import Expr
+@@ -10,6 +10,7 @@
+ from sympy.core.singleton import S
+ from sympy.functions import Abs
+ from sympy.functions.elementary.miscellaneous import sqrt
++from sympy.utilities.iterables import uniq
+ from sympy.utilities.misc import filldedent
+ 
+ from .matrices import MatrixBase, ShapeError, a2idx
+@@ -17,6 +18,7 @@
+ from .dense import Matrix
+ import collections
+ 
++
+ class SparseMatrix(MatrixBase):
+     """
+     A sparse matrix (a matrix with a large number of zero elements).
+@@ -24,6 +26,7 @@
+     Examples
+     ========
+ 
++    >>> from sympy.matrices import SparseMatrix
+     >>> SparseMatrix(2, 2, range(4))
+     Matrix([
+     [0, 1],
+@@ -31,6 +34,7 @@
+     >>> SparseMatrix(2, 2, {(1, 1): 2})
+     Matrix([
+     [0, 0],
++    [0, 2]])
+ 
+     See Also
+     ========
+@@ -38,6 +42,7 @@
+     """
+ 
+     def __new__(cls, *args, **kwargs):
++        self = object.__new__(cls)
+         if len(args) == 1 and isinstance(args[0], SparseMatrix):
+             self.rows = args[0].rows
+             self.cols = args[0].cols
+@@ -45,6 +50,7 @@
+             return self
+ 
+         self._smat = {}
++        self.rows = 0
++        self.cols = 0
+ 
+         if len(args) == 3:
+             self.rows = as_int(args[0])
+@@ -52,6 +58,7 @@
+ 
+             if isinstance(args[2], collections.Callable):
+                 op = args[2]
++                self.rows = args[0]
++                self.cols = args[1]
+                 for i in range(self.rows):
+                     for j in range(self.cols):
+                         value = self._sympify(
+@@ -

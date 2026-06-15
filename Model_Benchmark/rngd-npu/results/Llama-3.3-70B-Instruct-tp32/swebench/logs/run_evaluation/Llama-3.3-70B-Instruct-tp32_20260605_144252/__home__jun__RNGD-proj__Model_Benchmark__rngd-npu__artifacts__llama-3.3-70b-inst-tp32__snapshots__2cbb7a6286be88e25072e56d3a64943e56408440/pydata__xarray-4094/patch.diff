@@ -1,0 +1,28 @@
+--- a/xarray/core/dataarray.py
++++ b/xarray/core/dataarray.py
+@@ -1898,7 +1898,7 @@
+     def to_unstacked_dataset(self, dim, level=0):
+         """Unstack DataArray expanding to Dataset along a given level of a
+         stacked coordinate.
+ 
+-        This is the inverse operation of Dataset.to_stacked_array.
++        This is the inverse operation of Dataset.to_stacked_array. It now supports single dimension variables.
+ 
+         Parameters
+         ----------
+         dim : str
+@@ -1920,7 +1920,7 @@
+         variables = idx.levels[level_number]
+         variable_dim = idx.names[level_number]
+ 
+-        # pull variables out of datarray
++        # pull variables out of datarray, handling single dimension variables
+         data_dict = {}
+         for k in variables:
+             if self.ndim == 1:
+                 data_dict[k] = self
+             else:
+                 data_dict[k] = self.sel({variable_dim: k}).squeeze(drop=True)
+ 
+         # unstacked dataset
+         return Dataset(data_dict)

@@ -1,0 +1,149 @@
+#naive_yaml
+---
+tensors:
+  inner:
+    0:
+      shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "4"}]}}}
+      element_type: Float32
+      buffer: []
+      name: "S_init"
+      source: Unknown
+      buffer_type: Sram
+    1:
+      shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "3"}, {Var: "4"}]}}}
+      element_type: Float32
+      buffer: []
+      name: "X_seq"
+      source: Unknown
+      buffer_type: Sram
+    2:
+      shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "4"}]}}}
+      element_type: Float32
+      buffer: []
+      name: "S_final"
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: deltanet_loop
+      option:
+        Loop:
+          inner:
+            operators:
+              - name: step_accumulate
+                option:
+                  SymTacticKernel:
+                    inputs:
+                      - 3
+                      - 4
+                    output: 5
+                    inner:
+                      inner:
+                        reads:
+                          - input:
+                              shape:
+                                inner:
+                                  - tag: {LabelStride: {label: {inner: "0"}, stride: 1}}
+                                    size: {Var: "4"}
+                              element_type: Float32
+                            table_lookup: None
+                            has_transmutation: false
+                            subtraction: None
+                            paddings: []
+                            slides: []
+                            strides: []
+                            tiles: []
+                          - input:
+                              shape:
+                                inner:
+                                  - tag: {LabelStride: {label: {inner: "0"}, stride: 1}}
+                                    size: {Var: "4"}
+                              element_type: Float32
+                            table_lookup: None
+                            has_transmutation: false
+                            subtraction: None
+                            paddings: []
+                            slides: []
+                            strides: []
+                            tiles: []
+                        ein_ops: ~
+                        vector_ops:
+                          inputs:
+                            - 0
+                            - 1
+                          insts:
+                            - def: 2
+                              expr:
+                                Binary:
+                                  operator: AddFxp
+                                  lhs: {Tensor: 0}
+                                  rhs: {Tensor: 1}
+                              source: ""
+                        write:
+                          input:
+                            shape:
+                              inner:
+                                - tag: {LabelStride: {label: {inner: "0"}, stride: 1}}
+                                  size: {Var: "4"}
+                            element_type: Float32
+                          output:
+                            shape:
+                              inner:
+                                - tag: {LabelStride: {label: {inner: "0"}, stride: 1}}
+                                  size: {Var: "4"}
+                            element_type: Float32
+                          has_transmutation: false
+                      kind: Elementwise
+                      sparsity: None
+            interface:
+              loop_index: 6
+              limit: 3
+              dynamic_limit: ~
+              initial_states:
+                - 0
+              captured_inputs:
+                - 1
+              final_states:
+                - 2
+              local_tensors:
+                inner:
+                  3:
+                    shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "4"}]}}}
+                    element_type: Float32
+                    buffer: []
+                    name: "S_inner_in"
+                    source: Unknown
+                    buffer_type: Sram
+                  4:
+                    shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "4"}]}}}
+                    element_type: Float32
+                    buffer: []
+                    name: "X_step"
+                    source: Unknown
+                    buffer_type: Sram
+                  5:
+                    shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "4"}]}}}
+                    element_type: Float32
+                    buffer: []
+                    name: "S_inner_out"
+                    source: Unknown
+                    buffer_type: Sram
+                  6:
+                    shape: {DynamicUnlabeledShape: {inner: {sizes: [{Var: "1"}]}}}
+                    element_type: Index
+                    buffer: []
+                    name: "loop_idx"
+                    source: Unknown
+                    buffer_type: Sram
+              inner_initial_states:
+                - 3
+              inner_final_states:
+                - 5
+  next_operator_index: 1
+hidden_outputs: []

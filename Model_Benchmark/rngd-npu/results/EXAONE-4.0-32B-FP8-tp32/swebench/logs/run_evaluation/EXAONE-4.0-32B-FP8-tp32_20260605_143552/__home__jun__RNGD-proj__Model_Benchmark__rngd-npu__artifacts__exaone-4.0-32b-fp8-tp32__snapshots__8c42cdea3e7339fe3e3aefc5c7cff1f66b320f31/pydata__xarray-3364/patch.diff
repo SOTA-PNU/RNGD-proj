@@ -1,0 +1,28 @@
+--- a/xarray/core/concat.py
++++ b/xarray/core/concat.py
+@@ -117,7 +117,7 @@ def _dataset_concat(
+         if k not in concat_over:
+             # Compare the variable of all datasets vs. the one
+-            v_lhs = datasets[0].variables[k].load()
++            v_lhs = datasets[0].variables[k]
+             # We'll need to know later on if variables are equal.
+             computed = []
+             for ds_rhs in datasets[1:]:
+@@ -124,7 +124,7 @@ def _dataset_concat(
+                 computed.append(v_rhs)
+                 if not getattr(v_lhs, compat)(v_rhs):
+                     concat_over.add(k)
+-                    equals[k] = False
++                    equals[k] = False
+                     # computed variables are not to be re-computed
+                     # again in the future
+                     for ds, v in zip(datasets[1:], computed):
+@@ -133,7 +133,7 @@ def _dataset_concat(
+                     break
+                 else:
+                     equals[k] = True
+-            equals[k] = True
++                    equals[k] = True
+ 
+             elif opt == "all":
+                 concat_over.update(

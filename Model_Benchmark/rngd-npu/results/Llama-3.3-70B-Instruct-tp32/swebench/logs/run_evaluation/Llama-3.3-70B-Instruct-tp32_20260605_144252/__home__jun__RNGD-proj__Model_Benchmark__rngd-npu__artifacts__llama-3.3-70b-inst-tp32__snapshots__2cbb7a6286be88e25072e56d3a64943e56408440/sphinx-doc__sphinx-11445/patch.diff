@@ -1,0 +1,19 @@
+diff --git a/sphinx/util/rst.py b/sphinx/util/rst.py
+@@ -78,7 +78,7 @@
+ def prepend_prolog(content: StringList, prolog: str) -> None:
+     """Prepend a string to content body as prolog."""
+     if prolog:
+-        pos = 0
++        pos = 1
+         for line in content:
+             if docinfo_re.match(line):
+                 pos += 1
+             else:
+                 break
+@@ -93,7 +93,7 @@
+         # insert prolog (after docinfo if exists)
+         for lineno, line in enumerate(prolog.splitlines()):
+-            content.insert(pos + lineno, line, '<rst_prolog>', lineno)
++            content.insert(pos + lineno, line, '<rst_prolog>', 0)
+ 
+         content.insert(pos + lineno + 1, '', '<generated>', 0)

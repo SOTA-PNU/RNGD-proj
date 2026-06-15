@@ -1,0 +1,12 @@
+
+--- a/pylint/checkers/misc.py
++++ b/pylint/checkers/misc.py
+@@ -100,7 +100,7 @@
+         regex_string = rf"#\s*({notes}|{self.config.notes_rgx})\b"
+     else:
+         regex_string = rf"#\s*({notes})\b"
+-    self._fixme_pattern = re.compile(regex_string, re.I)
++    self._fixme_pattern = re.compile(regex_string, re.IGNORECASE)
+ 
+ def process_module(self, node: nodes.Module) -> None:
+     """Inspect the source file to find encoding problem."""

@@ -1,0 +1,36 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:furiosa_llm.server.models:Loading LLM from artifact: ./artifacts/mini-qwen3-moe-tp8
+[2m2026-06-10T04:16:49.388590875+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: artifacts/mini-qwen3-moe-tp8
+[2m2026-06-10T04:16:49.472935914+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::commons[0m[2m:[0m Loading artifact with schema version: 3.0
+[2m2026-06-10T04:16:49.475764601+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Loaded target artifact: SchemaVersion { major: 3, minor: 0 }
+[2m2026-06-10T04:16:49.47581133+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Parallelism Config: tp=8, pp=1, dp=1
+
+thread '<unnamed>' (1194029) panicked at /home/runner/_work/furiosa-runtime/furiosa-runtime/furiosa-generator/src/next_gen/hf_compat_next_gen.rs:367:13:
+Unsupported model metadata: ModelMetadata { model_type: Some(Qwen3Moe), task: Some(Generate), llm_config: LLMConfig { optimization_config: OptimizationConfig { attention_type: PAGED_ATTENTION }, quantization_config: Some(QuantizationConfig { weight: BF16, activation: BF16, kv_cache: Some(BF16) }) }, hf_configs: HfConfig(Object {"vocab_size": Number(151936), "max_position_embeddings": Number(4096), "hidden_size": Number(512), "intermediate_size": Number(1536), "num_hidden_layers": Number(2), "num_attention_heads": Number(8), "use_sliding_window": Bool(false), "sliding_window": Null, "num_key_value_heads": Number(2), "hidden_act": String("silu"), "initializer_range": Number(0.02), "rms_norm_eps": Number(1e-6), "use_cache": Bool(true), "attention_bias": Bool(false), "attention_dropout": Number(0.0), "rope_parameters": Object {"rope_theta": Number(5000000.0), "rope_type": String("default")}, "decoder_sparse_step": Number(1), "moe_intermediate_size": Number(256), "num_experts_per_tok": Number(2), "num_local_experts": Number(8), "norm_topk_prob": Bool(true), "output_router_logits": Bool(false), "router_aux_loss_coef": Number(0.001), "mlp_only_layers": Array [], "pad_token_id": Null, "bos_token_id": Null, "eos_token_id": Null, "tie_word_embeddings": Bool(false), "return_dict": Bool(true), "output_hidden_states": Bool(false), "dtype": String("bfloat16"), "chunk_size_feed_forward": Number(0), "is_encoder_decoder": Bool(false), "architectures": Array [String("Qwen3MoeForCausalLM")], "id2label": Object {"0": String("LABEL_0"), "1": String("LABEL_1")}, "label2id": Object {"LABEL_0": Number(0), "LABEL_1": Number(1)}, "problem_type": Null, "_name_or_path": String("./mini_models/mini-qwen3-moe"), "transformers_version": String("5.1.0"), "head_dim": Number(64), "model_type": String("qwen3_moe"), "output_attentions": Bool(false)}), model_weight_path: None, trust_remote_code: Some(false), use_binary_seq_class: Some(false) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Traceback (most recent call last):
+  File "/home/jun/furiosa/bin/furiosa-llm", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/main.py", line 28, in main
+    args.dispatch_function(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/serve.py", line 385, in serve
+    run_server(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/app.py", line 536, in run_server
+    app = init_app(args)
+          ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/app.py", line 389, in init_app
+    llm = load_llm_from_args(args, served_model_name=served_model_name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/models.py", line 42, in load_llm_from_args
+    return LLM(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 216, in __init__
+    self._init_from_artifact(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 383, in _init_from_artifact
+    self.engine = NativeLLMEngine(
+                  ^^^^^^^^^^^^^^^^
+pyo3_runtime.PanicException: Unsupported model metadata: ModelMetadata { model_type: Some(Qwen3Moe), task: Some(Generate), llm_config: LLMConfig { optimization_config: OptimizationConfig { attention_type: PAGED_ATTENTION }, quantization_config: Some(QuantizationConfig { weight: BF16, activation: BF16, kv_cache: Some(BF16) }) }, hf_configs: HfConfig(Object {"vocab_size": Number(151936), "max_position_embeddings": Number(4096), "hidden_size": Number(512), "intermediate_size": Number(1536), "num_hidden_layers": Number(2), "num_attention_heads": Number(8), "use_sliding_window": Bool(false), "sliding_window": Null, "num_key_value_heads": Number(2), "hidden_act": String("silu"), "initializer_range": Number(0.02), "rms_norm_eps": Number(1e-6), "use_cache": Bool(true), "attention_bias": Bool(false), "attention_dropout": Number(0.0), "rope_parameters": Object {"rope_theta": Number(5000000.0), "rope_type": String("default")}, "decoder_sparse_step": Number(1), "moe_intermediate_size": Number(256), "num_experts_per_tok": Number(2), "num_local_experts": Number(8), "norm_topk_prob": Bool(true), "output_router_logits": Bool(false), "router_aux_loss_coef": Number(0.001), "mlp_only_layers": Array [], "pad_token_id": Null, "bos_token_id": Null, "eos_token_id": Null, "tie_word_embeddings": Bool(false), "return_dict": Bool(true), "output_hidden_states": Bool(false), "dtype": String("bfloat16"), "chunk_size_feed_forward": Number(0), "is_encoder_decoder": Bool(false), "architectures": Array [String("Qwen3MoeForCausalLM")], "id2label": Object {"0": String("LABEL_0"), "1": String("LABEL_1")}, "label2id": Object {"LABEL_0": Number(0), "LABEL_1": Number(1)}, "problem_type": Null, "_name_or_path": String("./mini_models/mini-qwen3-moe"), "transformers_version": String("5.1.0"), "head_dim": Number(64), "model_type": String("qwen3_moe"), "output_attentions": Bool(false)}), model_weight_path: None, trust_remote_code: Some(false), use_binary_seq_class: Some(false) }

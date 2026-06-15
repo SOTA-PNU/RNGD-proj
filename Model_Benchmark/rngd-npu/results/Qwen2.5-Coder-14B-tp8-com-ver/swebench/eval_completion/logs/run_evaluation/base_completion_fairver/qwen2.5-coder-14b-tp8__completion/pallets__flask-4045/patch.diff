@@ -1,0 +1,50 @@
+<patch>
+--- a/src/flask/blueprints.py
++++ b/src/flask/blueprints.py
+@@ -36,6 +36,10 @@
+     def add_url_rule(
+         self,
+         rule: str,
++        endpoint: t.Optional[str] = None,
++        view_func: t.Optional[t.Callable] = None,
++        **options: t.Any,
++    ) -> None:
+         """Like :meth:`Flask.add_url_rule` but for a blueprint.  The endpoint for
+         the :func:`url_for` function is prefixed with the name of the blueprint.
+         """
+@@ -43,6 +47,10 @@
+             assert "." not in endpoint, "Blueprint endpoints should not contain dots"
+         if view_func and hasattr(view_func, "__name__"):
+             assert (
++                "." not in view_func.__name__
++            ), "Blueprint view function name should not contain dots"
++        self.record(lambda s: s.add_url_rule(rule, endpoint, view_func, **options))
++
++    def register_blueprint(self, blueprint: "Blueprint", **options: t.Any) -> None:
++        """Register a :class:`~flask.Blueprint` on this blueprint. Keyword
++        arguments passed to this method will override the defaults set
++        on the blueprint.
++
++        .. versionadded:: 2.0
++        """
++        self._blueprints.append((blueprint, options))
++
++    def register(self, app: "Flask", options: dict) -> None:
++        """Called by :meth:`Flask.register_blueprint` to register all
++        views and callbacks registered on the blueprint with the
++        application. Creates a :class:`.BlueprintSetupState` and calls
++        each :meth:`record` callbackwith it.
++
++        :param app: The application this blueprint is being registered
++            with.
++        :param options: Keyword arguments forwarded from
++            :meth:`~Flask.register_blueprint`.
++        :param first_registration: Whether this is the first time this
++            blueprint has been registered on the application.
++        """
++        first_registration = False
++
++        if self.name in app.blueprints:
++            assert app.blueprints[self.name] is self, (
++                "A name collision occurred between blueprints"
++                f" {self!r} and {app.blueprints[self.name]!r

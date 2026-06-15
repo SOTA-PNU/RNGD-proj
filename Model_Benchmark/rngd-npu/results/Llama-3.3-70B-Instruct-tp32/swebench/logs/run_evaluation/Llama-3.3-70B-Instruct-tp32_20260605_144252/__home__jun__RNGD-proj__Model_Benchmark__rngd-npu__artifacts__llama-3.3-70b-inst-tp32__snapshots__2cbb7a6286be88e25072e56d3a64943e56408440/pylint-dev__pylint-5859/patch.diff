@@ -1,0 +1,26 @@
+diff --git a/pylint/checkers/misc.py b/pylint/checkers/misc.py
+@@ -119,7 +119,7 @@
+     def open(self):
+         super().open()
+
+-        notes = "|".join(re.escape(note) for note in self.config.notes)
++        notes = "|".join(re.escape(note) for note in self.config.notes if note)
+         if self.config.notes_rgx:
+             regex_string = rf"#\s*({notes}|{self.config.notes_rgx})\b"
+         else:
+@@ -192,7 +192,7 @@
+         # emit warnings if necessary
+-        match = self._fixme_pattern.search("#" + comment_text.lower())
++        match = self._fixme_pattern.search(comment_text.lower())
+         if match:
+             self.add_message(
+                 "fixme",
+@@ -128,6 +128,9 @@
+         if self.config.notes_rgx:
+             regex_string = rf"#\s*({notes}|{self.config.notes_rgx})\b"
+         else:
++            if not notes:
++                return
+             regex_string = rf"#\s*({notes})\b"
+ 
+         self._fixme_pattern = re.compile(regex_string, re.I)

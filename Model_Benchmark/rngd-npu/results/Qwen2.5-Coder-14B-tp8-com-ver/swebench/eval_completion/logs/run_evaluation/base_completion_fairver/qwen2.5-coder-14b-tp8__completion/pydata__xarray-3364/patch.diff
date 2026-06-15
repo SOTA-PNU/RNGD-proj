@@ -1,0 +1,58 @@
+
+--- a/xarray/core/concat.py
++++ b/xarray/core/concat.py
+@@ -1,6 +1,7 @@
+ import pandas as pd
+ 
+ from . import dtypes, utils
++from .merge import merge
+ from .alignment import align
+ from .merge import _VALID_COMPAT, unique_variable
+ from .variable import IndexVariable, Variable, as_variable
+@@ -10,6 +11,7 @@
+ from .dataarray import DataArray
+ 
+ 
++def _ignore_missing_variables(objs, dim, data_vars, coords):
++    # Determine which variables to concatenate and which to ignore
++    concat_vars = set()
++    ignore_vars = set()
++    for obj in objs:
++        concat_vars.update(k for k, v in obj.variables.items() if dim in v.dims)
++        ignore_vars.update(k for k in obj.variables if k not in concat_vars)
++
++    # Create new objects with only the variables to concatenate
++    new_objs = []
++    for obj in objs:
++        new_obj = obj.copy()
++        for var in ignore_vars:
++            new_obj = new_obj.drop(var)
++        new_objs.append(new_obj)
++
++    return new_objs
++
++
+ def concat(
+     objs,
+     dim,
+@@ -17,6 +23,7 @@
+     coords="different",
+     compat="equals",
+     positions=None,
++    ignore_missing=False,
+     fill_value=dtypes.NA,
+     join="outer",
+ ):
+@@ -24,6 +31,10 @@
+     objs = list(objs)
+ 
+     if ignore_missing:
++        objs = _ignore_missing_variables(objs, dim, data_vars, coords)
++
++    # Concatenate the objects
++    result = merge(objs, compat=compat, join=join)
++
++    # Add the concatenated dimension
+     dim, coord = _calc_concat_dim_coord(dim)
+     if coord is not None:
+         result[coord.name] = coord

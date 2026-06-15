@@ -1,0 +1,12 @@
+
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -201,7 +201,7 @@ class DurationField(Field):
+     def to_python(self, value):
+         if value is None:
+             return value
+-        if isinstance(value, datetime.timedelta):
++        if isinstance(value, (datetime.timedelta, str)):
+             return value
+         try:
+             parsed = parse_duration(value)

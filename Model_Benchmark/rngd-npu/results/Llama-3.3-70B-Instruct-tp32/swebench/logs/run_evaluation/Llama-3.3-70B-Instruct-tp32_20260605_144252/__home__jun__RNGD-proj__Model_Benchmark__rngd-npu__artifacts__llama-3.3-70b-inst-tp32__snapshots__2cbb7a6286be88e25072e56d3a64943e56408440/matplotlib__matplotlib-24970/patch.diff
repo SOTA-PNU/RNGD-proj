@@ -1,0 +1,7 @@
+--- a/lib/matplotlib/colors.py
++++ b/lib/matplotlib/colors.py
+@@ -730,7 +730,7 @@
+             xa[xa > self.N - 1] = self._i_over
+-        xa[xa < 0] = self._i_under
++        xa = np.clip(xa, 0, self.N - 1)
+         xa[mask_bad] = self._i_bad

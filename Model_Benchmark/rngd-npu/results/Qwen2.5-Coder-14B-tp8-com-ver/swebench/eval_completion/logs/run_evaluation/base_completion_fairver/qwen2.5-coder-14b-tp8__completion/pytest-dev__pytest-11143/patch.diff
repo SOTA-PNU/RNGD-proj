@@ -1,0 +1,63 @@
+<patch>
+--- a/src/_pytest/assertion/rewrite.py
++++ b/src/_pytest/assertion/rewrite.py
+@@ -1,6 +1,6 @@
+ """Rewrite assertion AST to produce nice error messages."""
+ import ast
+-import errno
++import os
+ import functools
+ import importlib.abc
+ import importlib.machinery
+@@ -10,6 +10,7 @@
+ import struct
+ import sys
+ import tokenize
++import types
+ import io
+ import itertools
+ import os
+@@ -17,6 +18,7 @@
+ from typing import Optional
+ from typing import Sequence
+ from typing import Set
++from typing import Tuple
+ from typing import TYPE_CHECKING
+ from typing import Union
+ 
+@@ -24,6 +26,7 @@
+ from _pytest._io.saferepr import DEFAULT_REPR_MAX_SIZE
+ from _pytest._io.saferepr import saferepr
+ from _pytest._version import version
++from _pytest.assertion import util
+ from _pytest.assertion.util import (  # noqa: F401
+     format_explanation as _format_explanation,
+ )
+@@ -31,6 +34,7 @@
+ from _pytest.config import Config
+ from _pytest.main import Session
+ from _pytest.pathlib import absolutepath
++from _pytest.pathlib import fnmatch_ex
+ from _pytest.stash import StashKey
+ 
+ if TYPE_CHECKING:
+@@ -40,6 +44,7 @@
+ 
+ assertstate_key = StashKey["AssertionState"]()
+ 
++PYTEST_TAG = f"{sys.implementation.cache_tag}-pytest-{version}"
+ PYC_EXT = ".py" + (__debug__ and "c" or "o")
+ PYC_TAIL = "." + PYTEST_TAG + PYC_EXT
+ 
+@@ -47,6 +52,7 @@
+     """PEP302/PEP451 import hook which rewrites asserts."""
+ 
+     def __init__(self, config: Config) -> None:
++        self.config = config
+         self.fnpats = config.getini("python_files")
+         self.session: Optional[Session] = None
+         self._rewritten_names: Dict[str, Path] = {}
+@@ -54,6 +60,7 @@
+         self._basenames_to_check_rewrite = {"conftest"}
+         self._marked_for_rewrite_cache: Dict[str, bool] = {}
+         self._

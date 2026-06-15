@@ -1,0 +1,12 @@
+
+--- a/django/conf/global_settings.py
++++ b/django/conf/global_settings.py
+@@ -399,7 +399,7 @@
+ # The numeric mode to set newly-uploaded files to. The value should be a mode
+ # you'd pass directly to os.chmod; see https://docs.python.org/library/os.html#files-and-directories.
+ FILE_UPLOAD_PERMISSIONS = None
+-FILE_UPLOAD_DIRECTORY_PERMISSIONS = None
++FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
+ 
+ # Python module path where user will place custom format definition.
+ # The directory where this setting is pointing should contain subdirectories

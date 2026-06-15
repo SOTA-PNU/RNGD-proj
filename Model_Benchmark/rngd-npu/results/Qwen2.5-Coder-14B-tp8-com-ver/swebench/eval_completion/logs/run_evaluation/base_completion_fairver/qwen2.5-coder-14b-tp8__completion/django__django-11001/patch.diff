@@ -1,0 +1,46 @@
+<patch>
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -129,7 +129,7 @@
+     def get_group_by(self, select, order_by):
+         """
+         Return a list of 2-tuples of form (sql, params).
+-
++
+         The logic of what exactly the GROUP BY clause contains is hard
+         to describe in other words than "if it passes the test suite,
+         then it is correct".
+@@ -137,7 +137,7 @@
+         #     SomeModel.objects.annotate(Count('somecol'))
+         #     GROUP BY: all fields of the model
+         #
+-        #    SomeModel.objects.values('name').annotate(Count('somecol'))
++        #    SomeModel.objects.values('name').annotate(Count('somecol'))
+         #    GROUP BY: name
+         #
+         #    SomeModel.objects.annotate(Count('somecol')).values('name')
+@@ -145,7 +145,7 @@
+         #    GROUP BY: name, pk
+         #
+         #    SomeModel.objects.values('name').annotate(Count('somecol')).values('pk')
+-        #    GROUP BY: name, pk
++        #    GROUP BY: name, pk
+         #
+         # In fact, the self.query.group_by is the minimal set to GROUP BY. It
+         # can't be ever restricted to a smaller set, but additional columns in
+@@ -153,7 +153,7 @@
+         # order_by, or even
+         # filter calls can alter the GROUP BY clause.
+         #
+-        # The query.group_by is either None (no GROUP BY at all), True
++        # The query.group_by is either None (no GROUP BY at all), True
+         # (group by select fields), or a list of expressions to be added
+         # to the group by.
+         if self.query.group_by is None:
+@@ -161,7 +161,7 @@
+         expressions = []
+         if self.query.group_by is not True:
+             # If the group by is set to a list (by .values() call most likely),
+-            # then we need to add everything in it to the GROUP BY clause.
++            # then we need to add everything in it to the GROUP BY clause.
+             # Backwards compatibility hack for setting

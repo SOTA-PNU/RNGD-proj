@@ -1,0 +1,40 @@
+You are an expert software engineer. You are given an issue statement and the relevant part of a code base. Produce one valid unified diff patch that resolves the issue. Output only the patch, with no explanation. Start with diff --git. Use exact file paths from the provided repository context. Do not use placeholder paths such as some_file.py. Every hunk must include a valid @@ header and every changed/context line must begin with space, +, or -. Do not wrap the patch in markdown fences.<|fim_middle|>
+<|file_sep|><|fim_prefix|>/README.md
+#<|fim_suffix|>
+<|fim_middle|> astropy-nddata-mask-propagation-bug
+<|file_sep|><|fim_prefix|>/astropy/nddata/mixins/ndarithmetic.py
+diff --git a/astropy/nddata/mixins/ndarithmetic.py b/astropy/nddata/mixins/ndarithmetic.py
+index 0000000..0000000 100644
+--- a/astropy/nddata/mixins/ndarithmetic.py
++++ b/astropy/nddata/mixins/ndarithmetic.py
+@@ -1,27 +1,35 @@
+ def euclidean(a, b):
+-    while b:
+-        a, b = b, a % b
+-    return a
++    if b == 0:
++        return a
++    return euclidean(b, a % b)
+ 
+ 
+ def bresenham(x0, y0, x1, y1):
+     points = []
+     dx = abs(x1 - x0)
+     dy = abs(y1 - y0)
+-    sx = 1 if x0 < x1 else -1
+-    sy = 1 if y0 < y1 else -1
+-    err = dx - dy
++    x, y = x0, y0
++    sx = -1 if x0 > x1 else 1
++    sy = -1 if y0 > y1 else 1
+ 
+-    while True:
+-        points.append((x0, y0))
+-        if x0 == x1 and y0 == y1:
+-            break
+-        e2 = 2 * err
+-        if e2 > -dy:
++    if dx > dy:
++        err = dx / 2.0
++        while x != x1:
++            points.append((x,

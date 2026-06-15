@@ -1,0 +1,10 @@
+diff --git src/django/conf/global_settings.py src/django/conf/global_settings.py  
+index fadecdd..aebcdefe..aebcdefe  
+--- src/django/conf/global_settings.py  
++++ src/django/conf/global_settings.py  
+@@ -file_upload_permissions_line_number_here,-file_upload_permissions_line_number_here,+file_upload_permissions_line_number_here @@  
+```python  
+FILE_UPLOAD_PERMISSION_DEFAULT_VALUE= int(perm_value_str)
+
+if perm_value_str.startswith("octal"):
+```

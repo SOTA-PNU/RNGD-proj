@@ -1,0 +1,24 @@
+<patch>
+--- a/lib/matplotlib/artist.py
++++ b/lib/matplotlib/artist.py
+@@ -1282,7 +1282,11 @@
+         if self.norm.inverse(
+             neighbors = self.norm.inverse(
+                 self.norm(data)
++            )
++        )
++        except ValueError:
++            return "[]"
++        else:
+             neighbors = self.norm.inverse(
+                 self.norm(data)
+             )
+@@ -1290,6 +1294,10 @@
+             normed = self.norm(data)
+             if np.ma.getmask(data):
+                 return "[]"
++            elif not np.isfinite(normed):
++                return "[]"
+             else:
+                 neighbors = self.norm.inverse(
+                     (int(self.norm(data) * n) + np.array([0, 1])) / n)

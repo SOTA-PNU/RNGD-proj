@@ -1,0 +1,15 @@
+diff --git ./django/core/mail/__init__.py ./django/core/mail/__init__.py
+
+index fbeaebd..eabfcbf  
+--- ./django/core/mail/__init__.py  
++++ ./django/core/mail/__init__.py  
+@@ @@ @@ @@
+ class EmailMessage(Message):  
+      """A message suitable as input into send_mail()."""  
+  
+      subject_template_name=None  
+      body_template_name=None  
+  
+      template_context_processors=[]  
+
+```

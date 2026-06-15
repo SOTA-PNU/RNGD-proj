@@ -1,0 +1,40 @@
+
+--- ./README.md
+
++++ ./README.md
+
+@@@ 
+
+   Features
+  
+   ---------
+
+  
+
+   ...
+
+  
+
+   Installation
+  
+   
+
+--- ./tests/test_adapt...
+
++++ tests/test_adapter...
+
+@@@ 
+
+      assert exc.response.status_code == status
+  
+      assert exc.response.text.startswith('<html>')
+  
+  
+
+      ...
+
+  
+          yield pytest.raises(RequestException)
+
+          yield pytest.raises(ConnectionRefusedErr...
+

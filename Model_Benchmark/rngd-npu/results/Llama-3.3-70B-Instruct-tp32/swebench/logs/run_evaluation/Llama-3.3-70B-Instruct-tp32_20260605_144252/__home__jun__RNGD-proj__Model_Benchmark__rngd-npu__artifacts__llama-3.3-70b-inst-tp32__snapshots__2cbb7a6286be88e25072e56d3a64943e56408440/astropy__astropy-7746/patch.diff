@@ -1,0 +1,20 @@
+--- a/astropy/wcs/wcs.py
++++ b/astropy/wcs/wcs.py
+@@ -1223,7 +1223,7 @@
+             if ra_dec_order and sky == 'input':
+                 xy = self._denormalize_sky(xy)
+             output = func(xy, origin)
+-            if ra_dec_order and sky == 'output':
++            if ra_dec_order and sky == 'output' and xy.size > 0:
+                 output = self._normalize_sky(output)
+                 return (output[:, 0].reshape(axes[0].shape),
+                         output[:, 1].reshape(axes[0].shape))
+@@ -1268,7 +1268,7 @@
+             axes = [np.asarray(x) for x in axes]
+             origin = int(origin)
+         except Exception:
+-            raise TypeError("When providing more than two arguments, they must be "
++            raise TypeError("When providing more than two arguments, they must be a 1-D array for each axis, followed by an origin.")
+             #raise TypeError("When providing more than two arguments, they must be "
+             #                "a 1-D array for each axis, followed by an origin.")
+         return _return_list_of_arrays(axes, origin)

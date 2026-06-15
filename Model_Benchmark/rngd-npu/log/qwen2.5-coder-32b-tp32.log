@@ -1,0 +1,48 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/config.json "HTTP/1.1 200 OK"
+INFO:furiosa_llm.artifact.resolver:Found bucket preset for model_type=qwen2, hidden_size=5120, intermediate_size=27648
+INFO:furiosa_llm.artifact.resolver:Filtered bucket preset by max_model_len=32768
+INFO:furiosa_llm.artifact.validator:The computed bucket limits are 32768
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen2.5-Coder-32B-Instruct/revision/main "HTTP/1.1 200 OK"
+Fetching 24 files:   0%|          | 0/24 [00:00<?, ?it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/.gitattributes "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/LICENSE "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00001-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/merges.txt "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00003-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00002-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/.gitattributes "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/LICENSE "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/merges.txt "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen2.5-Coder-32B-Instruct/xet-read-token/381fc969f78efac66bc87ff7ddeadb7e73c218a7 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen2.5-Coder-32B-Instruct/xet-read-token/381fc969f78efac66bc87ff7ddeadb7e73c218a7 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen2.5-Coder-32B-Instruct/xet-read-token/381fc969f78efac66bc87ff7ddeadb7e73c218a7 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/.gitattributes "HTTP/1.1 200 OK"
+Fetching 24 files:   4%|▍         | 1/24 [00:00<00:15,  1.52it/s]INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/merges.txt "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen2.5-Coder-32B-Instruct/381fc969f78efac66bc87ff7ddeadb7e73c218a7/LICENSE "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00004-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00005-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00006-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00007-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00008-of-00014.safetensors "HTTP/1.1 302 Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00010-of-00014.safetensors "HTTP/1.1 302 Found"
+/home/jun/furiosa/lib/python3.12/site-packages/huggingface_hub/file_download.py:744: UserWarning: Not enough free disk space to download the file. The expected file size is: 4876.06 MB. The target location /home/jun/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-32B-Instruct/blobs only has 0.02 MB free disk space.
+  warnings.warn(
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00009-of-00014.safetensors "HTTP/1.1 302 Found"
+/home/jun/furiosa/lib/python3.12/site-packages/huggingface_hub/file_download.py:744: UserWarning: Not enough free disk space to download the file. The expected file size is: 4876.06 MB. The target location /home/jun/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-32B-Instruct/blobs only has 0.01 MB free disk space.
+  warnings.warn(
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct/resolve/381fc969f78efac66bc87ff7ddeadb7e73c218a7/model-00011-of-00014.safetensors "HTTP/1.1 302 Found"
+/home/jun/furiosa/lib/python3.12/site-packages/huggingface_hub/file_download.py:744: UserWarning: Not enough free disk space to do

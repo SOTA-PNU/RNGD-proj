@@ -1,0 +1,581 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:furiosa_llm.server.models:Loading LLM from artifact: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440
+INFO:furiosa_llm.tokenizer.tokenizer:For some LLaMA V1 models, initializing the fast tokenizer may take a long time. To reduce the initialization time, consider using 'hf-internal-testing/llama-tokenizer' instead of the original tokenizer.
+[2m2026-06-04T22:00:28.4562528+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440
+[2m2026-06-04T22:00:44.886868038+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::commons[0m[2m:[0m Loading artifact with schema version: 3.0
+[2m2026-06-04T22:00:46.915558836+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Loaded target artifact: SchemaVersion { major: 3, minor: 0 }
+[2m2026-06-04T22:00:46.915712001+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Parallelism Config: tp=32, pp=1, dp=1
+[2m2026-06-04T22:00:48.655948514+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Loading the target model ...
+[2m2026-06-04T22:00:48.659691322+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:0:0-3, npu:0:4-7, npu:1:0-3, npu:1:4-7, npu:2:0-3, npu:2:4-7, npu:3:0-3, npu:3:4-7]) started
+[2m2026-06-04T22:00:57.149172101+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#0 allocation plan: Binary=615.5 MiB, Model weights=32.9 GiB, Reserved IO memory=4.0 GiB
+[2m2026-06-04T22:01:46.42004138+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m Resolve 46 pipeline for 1 DP groups (DP=1, PP=1) in 57.76s
+[2m2026-06-04T22:01:46.421205144+09:00[0m [32m INFO[0m [2mfuriosa_generator::backing_file[0m[2m:[0m Total size of parameters loaded: 131.5 GiB in 49.271584 s
+[2m2026-06-04T22:01:59.0315603+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Loading the target model took 70.375468222s
+[2m2026-06-04T22:02:00.904399709+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#0 KV cache=10.0 GiB
+[2m2026-06-04T22:02:01.018253084+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Computed bucket limits: max_executable_len=131072
+[2m2026-06-04T22:02:01.039127992+09:00[0m [32m INFO[0m [2mfuriosa_generator::structured_output::manager[0m[2m:[0m Initializing structured output manager for backend: Auto
+[2m2026-06-04T22:02:02.985215152+09:00[0m [32m INFO[0m [2mfuriosa_generator::structured_output::manager[0m[2m:[0m XGrammar backend is initialized.
+[2m2026-06-04T22:02:04.553772131+09:00[0m [32m INFO[0m [2mfuriosa_generator::structured_output::manager[0m[2m:[0m LLGuidance backend is initialized.
+[2m2026-06-04T22:02:04.554178943+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m DP entry DpId(0) → device [npu0pe0-3, npu0pe4-7, npu1pe0-3, npu1pe4-7, npu2pe0-3, npu2pe4-7, npu3pe0-3, npu3pe4-7]
+[2m2026-06-04T22:02:04.706701536+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::scheduler::request_management::task_selector[0m[2m:[0m Initializing TaskSelector([[npu:0:0-3, npu:0:4-7, npu:1:0-3, npu:1:4-7, npu:2:0-3, npu:2:4-7, npu:3:0-3, npu:3:4-7]]) with config: TaskSelectorConfig { enable_jit_compilation: false }, 45 AOT wired pipelines
+[2m2026-06-04T22:02:04.709435847+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::scheduler::memory_manager[0m[2m:[0m Initialize KVCacheManager with config: KVCacheConfig(kv_cache_memory: {[npu:0:0-3, npu:0:4-7, npu:1:0-3, npu:1:4-7, npu:2:0-3, npu:2:4-7, npu:3:0-3, npu:3:4-7]: Buffer { addr: 0x100000000, size: 0x27e105600, device: Npu([npu:0:0-3, npu:0:4-7, npu:1:0-3, npu:1:4-7, npu:2:0-3, npu:2:4-7, npu:3:0-3, npu:3:4-7], Dram) }}, KVCachePlan(global_attention_config: LayerConfig(attention_type: Global, unit_block_size: 512, block_size: 2048, num_chips: 4), global_kv_cache_tensors: 160, aux_attention_config: None, aux_kv_cache_tensors: 0)), is_prefix_cache_enabled: true
+[2m2026-06-04T22:02:04.710906166+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::scheduler::memory_manager[0m[2m:[0m Configured KV cache blocks, global_num_blocks: 130675, aux_num_blocks: None
+[2m2026-06-04T22:02:04.718321814+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m max_kv_len=130674 (from KV cache blocks across 1 DP device(s))
+[2m2026-06-04T22:02:04.718181241+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m Eager scheduler has started with: SchedulerConfig { scheduler_kind: None, npu_queue_limit: 1, max_processing_samples: 65536, spare_blocks_ratio: 0.0, estimation_time_limit_ms: None, prefix_cache_config: PrefixCacheConfig { enabled: true, lookahead_requests: 2 }, experimental_scheduling_loop_type: Eager, experimental_aggressive_batching: false, max_concurrency: None, max_num_batched_tokens: Some(65536), data_parallel_routing_policy: PrefixAware }
+INFO:furiosa_llm.server.chat_utils:Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+INFO:     Started server process [931762]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53148 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53158 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53170 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53170 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53170 - "GET /healthz HTTP/1.1" 404 Not Found
+INFO:furiosa_llm.server.chat_utils:Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+INFO:     127.0.0.1:53180 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53198 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53210 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53216 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49330 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49332 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49334 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49338 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49342 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49352 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49358 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49360 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49374 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49388 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49396 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49404 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49418 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49422 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49430 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49432 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49448 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49458 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49468 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49470 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49486 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49494 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49504 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49508 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49522 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49528 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49544 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49550 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49558 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49564 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49574 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49584 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49592 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49596 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49612 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49628 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49662 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49672 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49674 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49676 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49680 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49694 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49702 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49718 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49720 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49734 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49750 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49760 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49772 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49788 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49800 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49806 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49820 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49836 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49852 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49856 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49302 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49306 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49318 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49326 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49642 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49650 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49658 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49860 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49870 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49880 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49886 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49890 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49896 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49904 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49914 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49930 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49936 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49952 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49968 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49972 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49978 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49992 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50000 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50004 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50018 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50022 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50034 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50042 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50044 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50054 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50066 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50074 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50076 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50088 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50104 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50116 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50120 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50132 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50148 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50152 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50158 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50164 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50168 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50180 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50194 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50198 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50210 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50212 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50238 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50254 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50260 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50268 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50272 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50276 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50292 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50308 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50324 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50326 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50332 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50336 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50350 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50356 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50358 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50370 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50376 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50384 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50390 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50396 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50404 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50414 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50440 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50456 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50460 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50470 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50482 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50494 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50506 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50514 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50520 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50532 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50548 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50550 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50558 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50568 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50584 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50588 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50590 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50606 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50610 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50626 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50638 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50648 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50664 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50674 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50686 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50700 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50714 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50726 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50736 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50738 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50754 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50766 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50772 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50786 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50796 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50810 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50822 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50824 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50844 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50848 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50860 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50868 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50876 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50882 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50900 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50908 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50924 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50936 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50952 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50966 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50978 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50990 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50994 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51008 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51020 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51036 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51050 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51054 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51066 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51082 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51086 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51092 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51098 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51102 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51116 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51128 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51138 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51140 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51154 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51166 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51182 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51190 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51192 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51196 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51206 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51216 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51230 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51232 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51240 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51242 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51244 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51246 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51256 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51266 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51278 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51290 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51292 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51308 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51312 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51326 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51340 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51346 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51356 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51360 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51374 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51382 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51386 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51394 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51400 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51416 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51428 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51430 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51440 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51456 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51470 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51478 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51482 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51498 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51512 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51514 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51528 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51536 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51542 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51546 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51558 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51574 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51588 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51590 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51592 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51608 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51624 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51632 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51638 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 177.0 tokens/s, Avg generation throughput: 16.1 tokens/s, Running: 8 reqs, Waiting: 248 reqs, RNGD KV cache usage: 0.3%, Prefix cache hit rate: 99.4%, Wire pipeline hit rate: 96.9%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1238.9 tokens/s, Avg generation throughput: 15.3 tokens/s, Running: 50 reqs, Waiting: 206 reqs, RNGD KV cache usage: 0.4%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 96.9%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1239.0 tokens/s, Avg generation throughput: 40.5 tokens/s, Running: 92 reqs, Waiting: 164 reqs, RNGD KV cache usage: 0.7%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 91.2%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1032.5 tokens/s, Avg generation throughput: 53.0 tokens/s, Running: 127 reqs, Waiting: 129 reqs, RNGD KV cache usage: 1.1%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 91.2%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1120.9 tokens/s, Avg generation throughput: 85.7 tokens/s, Running: 164 reqs, Waiting: 92 reqs, RNGD KV cache usage: 1.7%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 86.1%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1061.9 tokens/s, Avg generation throughput: 107.4 tokens/s, Running: 200 reqs, Waiting: 56 reqs, RNGD KV cache usage: 2.6%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 81.6%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1061.9 tokens/s, Avg generation throughput: 129.0 tokens/s, Running: 236 reqs, Waiting: 20 reqs, RNGD KV cache usage: 3.6%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 81.6%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 708.0 tokens/s, Avg generation throughput: 301.2 tokens/s, Running: 254 reqs, Waiting: 2 reqs, RNGD KV cache usage: 5.8%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 77.5%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 508.0 tokens/s, Running: 254 reqs, Waiting: 2 reqs, RNGD KV cache usage: 9.7%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 79.5%
+INFO:     127.0.0.1:44604 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44620 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44626 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44632 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44642 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44648 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44652 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44664 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44666 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44678 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44688 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44690 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44694 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44710 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44722 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59894 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59906 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59920 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59926 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59940 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59946 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 265.5 tokens/s, Avg generation throughput: 430.7 tokens/s, Running: 247 reqs, Waiting: 9 reqs, RNGD KV cache usage: 11.7%, Prefix cache hit rate: 99.6%, Wire pipeline hit rate: 81.2%
+INFO:     127.0.0.1:59962 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59972 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59984 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59990 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59998 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60004 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60020 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60024 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60026 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60028 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60034 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60048 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60062 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60066 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60074 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60076 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60078 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60082 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60094 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60102 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60118 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60122 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60130 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60140 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60154 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60166 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60176 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60192 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60218 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60208 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60220 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60222 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60224 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60236 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60238 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 885.0 tokens/s, Avg generation throughput: 122.5 tokens/s, Running: 242 reqs, Waiting: 14 reqs, RNGD KV cache usage: 10.4%, Prefix cache hit rate: 99.7%, Wire pipeline hit rate: 78.8%
+INFO:     127.0.0.1:50202 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50216 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50232 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50242 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50244 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50262 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50270 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50274 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50284 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50286 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50294 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50306 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50312 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50328 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50330 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50334 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50352 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50360 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50366 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50374 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50392 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50410 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50398 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50428 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50432 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50438 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50442 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50458 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50450 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50464 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50478 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50484 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50492 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50496 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50508 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50512 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50518 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50522 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50536 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50542 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50554 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1062.0 tokens/s, Avg generation throughput: 143.7 tokens/s, Running: 236 reqs, Waiting: 20 reqs, RNGD KV cache usage: 8.9%, Prefix cache hit rate: 99.7%, Wire pipeline hit rate: 78.8%
+INFO:     127.0.0.1:58122 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58130 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58146 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58154 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58166 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58176 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58186 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58202 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58210 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58212 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58216 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58232 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58246 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58250 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58264 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58266 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58282 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58292 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58298 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58314 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58324 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58340 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58344 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58358 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58388 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58402 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58408 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58422 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58434 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58442 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58450 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58456 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41452 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41468 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41484 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41494 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41504 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41512 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1061.9 tokens/s, Avg generation throughput: 140.1 tokens/s, Running: 231 reqs, Waiting: 25 reqs, RNGD KV cache usage: 7.4%, Prefix cache hit rate: 99.7%, Wire pipeline hit rate: 75.8%
+INFO:     127.0.0.1:41524 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41534 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41540 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41546 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41552 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41560 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41564 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41568 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41582 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41586 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41592 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41596 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41600 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41618 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41634 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41650 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41666 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41668 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41682 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41696 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41698 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41702 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41710 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41724 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41736 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41722 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41744 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41738 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41740 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39540 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39552 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39568 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39576 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39588 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1062.0 tokens/s, Avg generation throughput: 138.6 tokens/s, Running: 231 reqs, Waiting: 25 reqs, RNGD KV cache usage: 6.2%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 75.8%
+INFO:     127.0.0.1:39616 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39632 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39602 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39648 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39662 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39676 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39680 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39694 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39696 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39700 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39712 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39722 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39734 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39746 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39752 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39766 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39774 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39786 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39834 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39838 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39850 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39872 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39886 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39896 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39900 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39914 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39922 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42696 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42710 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42720 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42726 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42742 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42748 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1062.0 tokens/s, Avg generation throughput: 138.6 tokens/s, Running: 231 reqs, Waiting: 25 reqs, RNGD KV cache usage: 5.0%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 73.0%
+INFO:     127.0.0.1:42764 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42766 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42778 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42792 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42794 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42808 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42820 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42832 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42838 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42840 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42852 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42868 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42876 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42892 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42894 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42910 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42914 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42930 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42938 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42948 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42950 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42956 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42970 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42978 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42992 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43004 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43012 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43026 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43042 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38982 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38990 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39000 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39002 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39012 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39024 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1062.0 tokens/s, Avg generation throughput: 138.6 tokens/s, Running: 231 reqs, Waiting: 25 reqs, RNGD KV cache usage: 3.8%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 70.4%
+INFO:     127.0.0.1:39036 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39040 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39052 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39054 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39064 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39076 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 885.0 tokens/s, Avg generation throughput: 119.1 tokens/s, Running: 253 reqs, Waiting: 3 reqs, RNGD KV cache usage: 4.3%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 70.4%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 147.5 tokens/s, Avg generation throughput: 507.9 tokens/s, Running: 254 reqs, Waiting: 2 reqs, RNGD KV cache usage: 8.2%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 70.0%
+INFO:     127.0.0.1:50378 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38076 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 29.5 tokens/s, Avg generation throughput: 508.0 tokens/s, Running: 253 reqs, Waiting: 2 reqs, RNGD KV cache usage: 11.9%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 71.9%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 88.5 tokens/s, Avg generation throughput: 395.8 tokens/s, Running: 135 reqs, Waiting: 0 reqs, RNGD KV cache usage: 7.4%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 72.6%
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+[2m2026-06-04T22:05:38.112837283+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m Scheduler exits normally
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 164.2 tokens/s, Running: 0 reqs, Waiting: 0 reqs, RNGD KV cache usage: 0.3%, Prefix cache hit rate: 99.8%, Wire pipeline hit rate: 76.8%
+INFO:     Application shutdown complete.
+INFO:     Finished server process [931762]

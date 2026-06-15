@@ -1,0 +1,187 @@
+#naive_yaml
+# DeltaNet kv-read core: out[v] = sum_k S[k,v] * k[k]   (einsum 'kv,k->v')
+# Realized on the vector engine (kind: EinsumByVe) as a broadcast-multiply
+# followed by a reduction over the contraction axis "k":
+#   1) read0 = k[k] tiled (broadcast) along the new axis "v" -> [k,v]
+#   2) read1 = S[k,v]
+#   3) vector_ops inst #2: tmp[k,v] = k[k] *_int S[k,v]   (MulInt, RawInt32)
+#   4) vector_ops inst #3: out[v]   = sum over "k" of tmp  (LocalReduceAddFxpSat)
+# The contraction axis "k" appears in both reads but is ABSENT from the write
+# output shape, so it is the reduced/summed dimension.
+#
+# NOTE on element_type: the naive_yaml vector ALU ops (MulFxp/MulInt/AddFxp/
+# LocalReduce*) are fixed-point/integer only. f32 operands are rejected by the
+# VE type checker ("Input type mismatch(op: *_fxp, operand: f32)",
+# tensor_kernel/vector_ops/type_checker.rs:92). All shipping naive_yaml kernels
+# (custom_add.yaml, moe_blockwise_compute_wg_idx.yaml) use RawInt32 for exactly
+# this reason, so this kernel uses RawInt32. The contraction math is identical
+# to torch.einsum('kv,k->v').
+#
+# IMPORTANT (load-bearing): the broadcast/tiled read MUST be read0 (first). If
+# the already-2D read is placed first, validation fails with
+# "EinsumByVe should have broadcast" (tactic_kernel/mod.rs:317).
+---
+tensors:
+  inner:
+    # input 0: k[k]  (the DeltaNet key/query vector, length d_k)
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+      element_type: RawInt32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # input 1: S[k,v]  (the DeltaNet recurrent state, d_k x d_v)
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: K
+              - Var: V
+      element_type: RawInt32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    # output 2: out[v]  (the read-out value vector, length d_v)
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: V
+      element_type: RawInt32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+outputs:
+  - 2
+operators:
+  operators:
+    0:
+      name: deltanet_kv_read
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 1
+          output: 2
+          inner:
+            inner:
+              reads:
+                # read0: k[k] broadcast (tiled) along the new axis "v" -> [k,v]
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                    element_type: RawInt32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles:
+                    - axis:
+                        LabelStride:
+                          label:
+                            inner: "v"
+                          stride: 1
+                      size:
+                        Var: V
+                # read1: S[k,v]  (contraction axis "k" shared with read0)
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "k"
+                              stride: 1
+                          size:
+                            Var: K
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "v"
+                              stride: 1
+                          size:
+                            Var: V
+                    element_type: RawInt32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  # tmp[k,v] = k[k] * S[k,v]   (per-element product, broadcast over v)
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulInt
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+                  # out[v] = sum over contraction axis "k" of tmp[k,v]
+                  - def: 3
+                    expr:
+                      Reduce:
+                        operator: LocalReduceAddFxpSat
+                        operand:
+                          Tensor: 2
+                        axes:
+                          Tag:
+                            - inner: "k"
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: RawInt32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "v"
+                            stride: 1
+                        size:
+                          Var: V
+                  element_type: RawInt32
+                has_transmutation: false
+            kind: EinsumByVe
+            sparsity: None
+  next_operator_index: 1
+hidden_outputs: []

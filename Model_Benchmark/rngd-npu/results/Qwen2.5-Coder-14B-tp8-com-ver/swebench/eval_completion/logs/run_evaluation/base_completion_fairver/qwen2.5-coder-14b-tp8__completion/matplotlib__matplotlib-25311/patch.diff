@@ -1,0 +1,38 @@
+<patch>
+--- a/lib/matplotlib/offsetbox.py
++++ b/lib/matplotlib/offsetbox.py
+@@ -10,6 +10,7 @@
+ import numpy as np
+ 
+ import matplotlib as mpl
++import pickle
+ from matplotlib import _api, _docstring
+ import matplotlib.artist as martist
+ import matplotlib.path as mpath
+@@ -101,6 +102,7 @@ def _get_packed_offsets(widths, total, sep, mode="fixed"):
+     """
+     Pack boxes specified by their *widths*.
+ 
++    This function is used to pack boxes in a horizontal layout.
+     For simplicity of the description, the terminology used here assumes a
+     horizontal layout, but the function works equally for a vertical layout.
+ 
+@@ -110,6 +112,7 @@ def _get_packed_offsets(widths, total, sep, mode="fixed"):
+     - 'fixed': The elements are packed tight to the left with a spacing of
+       *sep* in between. If *total* is *None* the returned total will be the
+       right edge of the last box. A non-*None* total will be passed unchecked
++      to the output. In particular this means that right edge of the last
+       box may be further to the right than the returned total.
+ 
+     - 'expand': Distribute the boxes with equal spacing so that the left edge
+@@ -118,6 +121,7 @@ def _get_packed_offsets(widths, total, sep, mode="fixed"):
+       *None* is accepted and considered equal to 1. The total is returned unchanged
+       (except for the conversion *None* to 1). If the total is smaller than
+       the sum of the widths, the laid out boxes will overlap.
++      This mode is used when the total width is not known in advance.
+ 
+     - 'equal': If *total* is given, the total space is divided in N equal
+       ranges and each box is left-aligned within its subspace.
+@@ -126,6 +130,7 @@ def _get_packed_offsets(widths, total, sep, mode="fixed"):
+       ``(max(widths) + sep)``. The total width is then calculated to be ``N * (max(widths) + sep)``.
+       This mode is used when the total width is known in advance.

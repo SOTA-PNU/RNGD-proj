@@ -1,0 +1,28 @@
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -494,7 +494,7 @@
+     def update_normal(self, mappable):
+         """
+         Update solid patches, lines, etc.
+ 
+-        This is meant to be called when the norm of the image or contour plot
++        This is meant to be called when the norm of the image or contour plot to which this colorbar belongs changes.
+ 
+         If the norm on the mappable is different than before, this resets the
+         locator and formatter for the axis, so if these have been customized,
+@@ -506,6 +506,7 @@
+         _log.debug('colorbar update normal %r %r', mappable.norm, self.norm)
+         self.mappable = mappable
+         self.set_alpha(mappable.get_alpha())
++        self.ax.clear()
+         self.cmap = mappable.cmap
+         if mappable.norm!= self.norm:
+             self.norm = mappable.norm
+@@ -521,6 +522,7 @@
+         self.stale = True
+ 
+     def update_bruteforce(self, mappable):
++        self.ax.clear()
+         self.mappable = mappable
+         self.set_alpha(mappable.get_alpha())
+         self.cmap = mappable.cmap

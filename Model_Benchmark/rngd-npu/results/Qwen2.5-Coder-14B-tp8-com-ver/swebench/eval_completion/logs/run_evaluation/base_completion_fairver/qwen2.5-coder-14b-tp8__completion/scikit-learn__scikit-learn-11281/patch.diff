@@ -1,0 +1,28 @@
+<patch>
+--- a/README.rst
++++ b/README.rst
+@@ -1,6 +1,6 @@
+ 1 .. -*- mode: rst -*-
+ 2 
+-3 |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |Python27|_ |Python35|_ |PyPi|_ |DOI|_
++3 |Travis|_ |AppVeyor|_ |Codecov|_ |CircleCI|_ |Python27|_ |Python35|_ |PyPi|_ |DOI|_ |MixtureModels|_
+ 4 
+ 5 .. |Travis| image:: https://api.travis-ci.org/scikit-learn/scikit-learn.svg?branch=master
+ 6 .. _Travis: https://travis-ci.org/scikit-learn/scikit-learn
+@@ -10,6 +10,7 @@
+ 11 .. _Codecov: https://codecov.io/github/scikit-learn/scikit-learn?branch=master
+ 12 
+ 13 .. |CircleCI| image:: https://circleci.com/gh/scikit-learn/scikit-learn/tree/master.svg?style=shield&circle-token=:circle-token
++14 .. _MixtureModels: https://github.com/scikit-learn/scikit-learn/issues/12345
+ 15 .. _CircleCI: https://circleci.com/gh/scikit-learn/scikit-learn
+ 16 
+ 17 .. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
+@@ -20,6 +21,7 @@
+ 21 .. _Python35: https://badge.fury.io/py/scikit-learn
+ 22 
+ 23 .. |PyPi| image:: https://badge.fury.io/py/scikit-learn.svg
++24 .. _MixtureModels: https://github.com/scikit-learn/scikit-learn/issues/12345
+ 25 .. _PyPi: https://badge.fury.io/py/scikit-learn
+ 26 
+ 27 .. |DOI| image:: https://zenodo.org/badge/21369/scikit-learn/scikit-learn.svg
+@@ -30,6 +32,7 @@

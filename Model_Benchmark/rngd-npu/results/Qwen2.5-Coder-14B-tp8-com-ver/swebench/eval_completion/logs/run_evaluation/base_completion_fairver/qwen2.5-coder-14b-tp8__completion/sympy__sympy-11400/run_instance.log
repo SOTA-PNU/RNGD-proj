@@ -1,0 +1,99 @@
+2026-06-09 21:44:58,158 - INFO - Creating container for sympy__sympy-11400...
+2026-06-09 21:45:00,269 - INFO - Container for sympy__sympy-11400 created: 5c55ce6cf3ad1d4ce641b2695ebf47b5f988fa579234b932511a78c2985b9187
+2026-06-09 21:45:00,477 - INFO - Container for sympy__sympy-11400 started: 5c55ce6cf3ad1d4ce641b2695ebf47b5f988fa579234b932511a78c2985b9187
+2026-06-09 21:45:00,477 - INFO - Intermediate patch for sympy__sympy-11400 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/sympy__sympy-11400/patch.diff, now applying to container...
+2026-06-09 21:45:00,648 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-09 21:45:00,733 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-09 21:45:00,792 - INFO - >>>>> Applied Patch:
+patching file sympy/printing/ccode.py
+Hunk #1 succeeded at 13 with fuzz 2 (offset -13 lines).
+Hunk #2 succeeded at 22 with fuzz 3 (offset -13 lines).
+Hunk #3 succeeded at 176 with fuzz 1 (offset 60 lines).
+
+2026-06-09 21:45:01,059 - INFO - Git diff before:
+diff --git a/sympy/printing/ccode.py b/sympy/printing/ccode.py
+index 30a07a7b59..7fe2db0894 100644
+--- a/sympy/printing/ccode.py
++++ b/sympy/printing/ccode.py
+@@ -13,6 +13,7 @@
+ 
+ from __future__ import print_function, division
+ 
++from sympy.functions import sinc
+ from sympy.core import S
+ from sympy.core.compatibility import string_types, range
+ from sympy.codegen.ast import Assignment
+@@ -21,8 +22,10 @@
+ from sympy.sets.fancysets import Range
+ 
+ # dictionary mapping sympy function to (argument_conditions, C_function).
++    "sinc": "sinc",
+ # Used in CCodePrinter._print_Function(self)
+ known_functions = {
++    "sinc": "sinc",
+     "Abs": [(lambda x: not x.is_integer, "fabs")],
+     "gamma": "tgamma",
+     "sin": "sin",
+@@ -175,6 +178,14 @@ def _print_Exp1(self, expr):
+     def _print_Pi(self, expr):
+         return 'M_PI'
+ 
++    def _print_sinc(self, expr):
++        return 'sinc(%s)' % self._print(expr.args[0])
++        return 'M_PI'
++
++    def _print_sinc(self, expr):
++        return 'sinc(%s)' % self._print(expr.args[0])
++        return 'M_PI'
++
+     def _print_Infinity(self, expr):
+         return 'HUGE_VAL'
+2026-06-09 21:45:01,082 - INFO - Eval script for sympy__sympy-11400 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/sympy__sympy-11400/eval.sh; copying to container...
+2026-06-09 21:45:03,080 - INFO - Test runtime: 1.90 seconds
+2026-06-09 21:45:03,081 - INFO - Test output for sympy__sympy-11400 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/sympy__sympy-11400/test_output.txt
+2026-06-09 21:45:03,195 - INFO - Git diff after:
+diff --git a/sympy/printing/ccode.py b/sympy/printing/ccode.py
+index 30a07a7b59..7fe2db0894 100644
+--- a/sympy/printing/ccode.py
++++ b/sympy/printing/ccode.py
+@@ -13,6 +13,7 @@
+ 
+ from __future__ import print_function, division
+ 
++from sympy.functions import sinc
+ from sympy.core import S
+ from sympy.core.compatibility import string_types, range
+ from sympy.codegen.ast import Assignment
+@@ -21,8 +22,10 @@
+ from sympy.sets.fancysets import Range
+ 
+ # dictionary mapping sympy function to (argument_conditions, C_function).
++    "sinc": "sinc",
+ # Used in CCodePrinter._print_Function(self)
+ known_functions = {
++    "sinc": "sinc",
+     "Abs": [(lambda x: not x.is_integer, "fabs")],
+     "gamma": "tgamma",
+     "sin": "sin",
+@@ -175,6 +178,14 @@ def _print_Exp1(self, expr):
+     def _print_Pi(self, expr):
+         return 'M_PI'
+ 
++    def _print_sinc(self, expr):
++        return 'sinc(%s)' % self._print(expr.args[0])
++        return 'M_PI'
++
++    def _print_sinc(self, expr):
++        return 'sinc(%s)' % self._print(expr.args[0])
++        return 'M_PI'
++
+     def _print_Infinity(self, expr):
+         return 'HUGE_VAL'
+2026-06-09 21:45:03,206 - INFO - Grading answer for sympy__sympy-11400...
+2026-06-09 21:45:03,209 - INFO - report: {'sympy__sympy-11400': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_ccode_Relational', 'test_ccode_sinc']}, 'PASS_TO_PASS': {'success': [], 'failure': ['test_printmethod', 'test_ccode_sqrt', 'test_ccode_Pow', 'test_ccode_constants_mathh', 'test_ccode_constants_other', 'test_ccode_Rational', 'test_ccode_Integer', 'test_ccode_functions', 'test_ccode_inline_function', 'test_ccode_exceptions', 'test_ccode_user_functions', 'test_ccode_boolean', 'test_ccode_Piecewise', 'test_ccode_Piecewise_deep', 'test_ccode_ITE', 'test_ccode_settings', 'test_ccode_Indexed', 'test_ccode_Indexed_without_looking_for_contraction', 'test_ccode_loops_matrix_vector', 'test_dummy_loops', 'test_ccode_loops_add', 'test_ccode_loops_multiple_contractions', 'test_ccode_loops_addfactor', 'test_ccode_loops_multiple_terms', 'test_dereference_printing', 'test_Matrix_printing', 'test_ccode_reserved_words', 'test_ccode_sign', 'test_ccode_Assignment']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-11400: resolved: False
+2026-06-09 21:45:03,212 - INFO - Attempting to stop container sweb.eval.sympy__sympy-11400.base_completion_fairver...
+2026-06-09 21:45:18,433 - INFO - Attempting to remove container sweb.eval.sympy__sympy-11400.base_completion_fairver...
+2026-06-09 21:45:18,451 - INFO - Container sweb.eval.sympy__sympy-11400.base_completion_fairver removed.
+2026-06-09 21:45:18,452 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-11400:latest...
+2026-06-09 21:45:18,560 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-11400:latest removed.

@@ -1,0 +1,5550 @@
+{
+ "Dfg": {
+  "graph": {
+   "tensors": {
+    "inner": {
+     "0": {
+      "shape": {
+       "UnlabeledShape": {
+        "inner": {
+         "sizes": [
+          256,
+          4096
+         ]
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": {
+       "Some": {
+        "tensor_uids": [
+         {
+          "PyTorch": {
+           "node": "l_a_",
+           "index": 0
+          }
+         }
+        ]
+       }
+      },
+      "metadata": []
+     },
+     "1": {
+      "shape": {
+       "UnlabeledShape": {
+        "inner": {
+         "sizes": [
+          4096,
+          4096
+         ]
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": {
+       "Some": {
+        "tensor_uids": [
+         {
+          "PyTorch": {
+           "node": "l_b_",
+           "index": 0
+          }
+         }
+        ]
+       }
+      },
+      "metadata": []
+     },
+     "6": {
+      "shape": {
+       "UnlabeledShape": {
+        "inner": {
+         "sizes": [
+          256,
+          4096
+         ]
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "19": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 8
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 64
+              }
+             },
+             "size": 8
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 64
+            }
+           ]
+          },
+          "tail_shape_alignment": 16
+         }
+        }
+       }
+      },
+      "element_type": "Bfloat16",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "21": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 8
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 64
+              }
+             },
+             "size": 8
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 64
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape_alignment": 16
+         }
+        }
+       }
+      },
+      "element_type": "Bfloat16",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "22": {
+      "shape": {
+       "DramShape": {
+        "inner": {
+         "inter_chip_axes": {
+          "inner": [
+           {
+            "tag": "Broadcast",
+            "size": 1
+           }
+          ]
+         },
+         "intra_chip_axes": {
+          "axes": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 1
+             }
+            },
+            "size": 4096,
+            "stride": 4096
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1
+             }
+            },
+            "size": 4096,
+            "stride": 1
+           }
+          ],
+          "offset": 0
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Dram",
+      "name": "",
+      "source": {
+       "Some": {
+        "tensor_uids": [
+         {
+          "PyTorch": {
+           "node": "l_b_",
+           "index": 0
+          }
+         }
+        ]
+       }
+      },
+      "metadata": []
+     },
+     "23": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1024
+              }
+             },
+             "size": 4
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 16
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 1024
+            }
+           ]
+          },
+          "tail_shape_alignment": 8
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "24": {
+      "shape": {
+       "SplitDramShape": {
+        "inner": {
+         "split": {
+          "axes": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8,
+            "stride": 2097152
+           }
+          ],
+          "offset": 0
+         },
+         "inner": {
+          "inter_chip_axes": {
+           "inner": [
+            {
+             "tag": "Broadcast",
+             "size": 1
+            }
+           ]
+          },
+          "intra_chip_axes": {
+           "axes": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 512,
+             "stride": 4096
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 4096,
+             "stride": 1
+            }
+           ],
+           "offset": 0
+          }
+         },
+         "valid_sizes": []
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "26": {
+      "shape": {
+       "SplitDramShape": {
+        "inner": {
+         "split": {
+          "axes": [],
+          "offset": 0
+         },
+         "inner": {
+          "inter_chip_axes": {
+           "inner": []
+          },
+          "intra_chip_axes": {
+           "axes": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 256,
+             "stride": 4096
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 4096,
+             "stride": 1
+            }
+           ],
+           "offset": 0
+          }
+         },
+         "valid_sizes": []
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "28": {
+      "shape": {
+       "DramShape": {
+        "inner": {
+         "inter_chip_axes": {
+          "inner": [
+           {
+            "tag": "Broadcast",
+            "size": 1
+           }
+          ]
+         },
+         "intra_chip_axes": {
+          "axes": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 1
+             }
+            },
+            "size": 256,
+            "stride": 4096
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1
+             }
+            },
+            "size": 4096,
+            "stride": 1
+           }
+          ],
+          "offset": 0
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "31": {
+      "shape": {
+       "BufferShape": {
+        "inner": {
+         "chip_shape": {
+          "inner": []
+         },
+         "cluster_shape": {
+          "inner": []
+         },
+         "partitioning_shape": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1024
+             }
+            },
+            "size": 4
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 16
+             }
+            },
+            "size": 16
+           }
+          ]
+         },
+         "in_slice_shape": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 1
+             }
+            },
+            "size": 16
+           }
+          ]
+         },
+         "tail_shape": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1
+             }
+            },
+            "size": 1024
+           }
+          ]
+         },
+         "tail_shape_alignment": 8
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "32": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "2"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1024
+              }
+             },
+             "size": 4
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "2"
+               },
+               "stride": 256
+              }
+             },
+             "size": 2
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "2"
+               },
+               "stride": 32
+              }
+             },
+             "size": 8
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "2"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 1024
+            }
+           ]
+          },
+          "tail_shape_alignment": 8
+         }
+        }
+       }
+      },
+      "element_type": "Bfloat16",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "33": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "2"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 8
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "2"
+               },
+               "stride": 256
+              }
+             },
+             "size": 2
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "2"
+               },
+               "stride": 64
+              }
+             },
+             "size": 4
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "2"
+               },
+               "stride": 1
+              }
+             },
+             "size": 64
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape_alignment": 16
+         }
+        }
+       }
+      },
+      "element_type": "Bfloat16",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "35": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "2"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1024
+              }
+             },
+             "size": 4
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 8
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 16
+              }
+             },
+             "size": 2
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 16
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 1024
+            }
+           ]
+          },
+          "tail_shape_alignment": 8
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "36": {
+      "shape": {
+       "BufferShape": {
+        "inner": {
+         "chip_shape": {
+          "inner": []
+         },
+         "cluster_shape": {
+          "inner": []
+         },
+         "partitioning_shape": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1024
+             }
+            },
+            "size": 4
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 32
+             }
+            },
+            "size": 8
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 16
+             }
+            },
+            "size": 2
+           }
+          ]
+         },
+         "in_slice_shape": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 1
+             }
+            },
+            "size": 16
+           }
+          ]
+         },
+         "tail_shape": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1
+             }
+            },
+            "size": 1024
+           }
+          ]
+         },
+         "tail_shape_alignment": 8
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "38": {
+      "shape": {
+       "DramShape": {
+        "inner": {
+         "inter_chip_axes": {
+          "inner": [
+           {
+            "tag": "Broadcast",
+            "size": 1
+           }
+          ]
+         },
+         "intra_chip_axes": {
+          "axes": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 1
+             }
+            },
+            "size": 256,
+            "stride": 4096
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1
+             }
+            },
+            "size": 4096,
+            "stride": 1
+           }
+          ],
+          "offset": 0
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Dram",
+      "name": "",
+      "source": {
+       "Some": {
+        "tensor_uids": [
+         {
+          "PyTorch": {
+           "node": "l_a_",
+           "index": 0
+          }
+         }
+        ]
+       }
+      },
+      "metadata": []
+     },
+     "39": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 8
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 64
+              }
+             },
+             "size": 8
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 64
+            }
+           ]
+          },
+          "tail_shape_alignment": 16
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "40": {
+      "shape": {
+       "SplitDramShape": {
+        "inner": {
+         "split": {
+          "axes": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8,
+            "stride": 512
+           }
+          ],
+          "offset": 0
+         },
+         "inner": {
+          "inter_chip_axes": {
+           "inner": [
+            {
+             "tag": "Broadcast",
+             "size": 1
+            }
+           ]
+          },
+          "intra_chip_axes": {
+           "axes": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 256,
+             "stride": 4096
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 512,
+             "stride": 1
+            }
+           ],
+           "offset": 0
+          }
+         },
+         "valid_sizes": []
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "44": {
+      "shape": {
+       "SplitShape": {
+        "inner": {
+         "split": {
+          "inner": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 512
+             }
+            },
+            "size": 8
+           }
+          ]
+         },
+         "inner": {
+          "chip_shape": {
+           "inner": []
+          },
+          "cluster_shape": {
+           "inner": []
+          },
+          "partitioning_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1024
+              }
+             },
+             "size": 4
+            },
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 32
+              }
+             },
+             "size": 16
+            }
+           ]
+          },
+          "in_slice_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "0"
+               },
+               "stride": 1
+              }
+             },
+             "size": 32
+            }
+           ]
+          },
+          "tail_shape": {
+           "inner": [
+            {
+             "tag": {
+              "LabelStride": {
+               "label": {
+                "inner": "1"
+               },
+               "stride": 1
+              }
+             },
+             "size": 1024
+            }
+           ]
+          },
+          "tail_shape_alignment": 8
+         }
+        }
+       }
+      },
+      "element_type": "Bfloat16",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     },
+     "48": {
+      "shape": {
+       "DramShape": {
+        "inner": {
+         "inter_chip_axes": {
+          "inner": []
+         },
+         "intra_chip_axes": {
+          "axes": [
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "0"
+              },
+              "stride": 1
+             }
+            },
+            "size": 256,
+            "stride": 4096
+           },
+           {
+            "tag": {
+             "LabelStride": {
+              "label": {
+               "inner": "1"
+              },
+              "stride": 1
+             }
+            },
+            "size": 4096,
+            "stride": 1
+           }
+          ],
+          "offset": 0
+         }
+        }
+       }
+      },
+      "element_type": "Float32",
+      "buffer": "b''",
+      "buffer_type": "Sram",
+      "name": "",
+      "source": "Unknown",
+      "metadata": []
+     }
+    }
+   },
+   "inputs": [
+    0,
+    1
+   ],
+   "outputs": [
+    6
+   ],
+   "operators": {
+    "operators": {
+     "29": {
+      "name": "#PreLower:17#PostLower:29#PreCommandGen:29",
+      "option": {
+       "HostToDram": {
+        "input": 1,
+        "output": 22,
+        "sparsity": "None"
+       }
+      },
+      "metadata": []
+     },
+     "30": {
+      "name": "#PreLower:17#PostLower:30#PreCommandGen:30",
+      "option": {
+       "View": {
+        "input": 22,
+        "output": 24,
+        "offset_in_bytes": 0
+       }
+      },
+      "metadata": []
+     },
+     "31": {
+      "name": "#PreLower:17#PostLower:31#PreCommandGen:31",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         24
+        ],
+        "outputs": [
+         23
+        ],
+        "operation": {
+         "Seq": {
+          "outer_loop": [
+           8
+          ],
+          "original_split_sizes": null,
+          "schedule_config": "Empty",
+          "inner": [
+           [
+            [],
+            [
+             {
+              "inner": {
+               "tensors": {
+                "inner": {
+                 "0": {
+                  "shape": {
+                   "DramShape": {
+                    "inner": {
+                     "inter_chip_axes": {
+                      "inner": [
+                       {
+                        "tag": "Broadcast",
+                        "size": 1
+                       }
+                      ]
+                     },
+                     "intra_chip_axes": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 512,
+                        "stride": 4096
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 4096,
+                        "stride": 1
+                       }
+                      ],
+                      "offset": 0
+                     }
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "2": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 16
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 1024
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 }
+                }
+               },
+               "inputs": [
+                0
+               ],
+               "outputs": [
+                2
+               ],
+               "operators": {
+                "operators": {
+                 "3": {
+                  "name": "",
+                  "option": {
+                   "LowLevelLower": {
+                    "input": 0,
+                    "output": 2
+                   }
+                  },
+                  "metadata": []
+                 }
+                },
+                "next_operator_index": 4
+               },
+               "hidden_outputs": [],
+               "producer_map": {
+                "2": 3
+               },
+               "copies": {}
+              },
+              "sources": [
+               {
+                "External": 0
+               }
+              ],
+              "tiled_loop_indices": [
+               []
+              ]
+             }
+            ]
+           ]
+          ]
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "37": {
+      "name": "#PreLower:14#PostLower:37#PreCommandGen:37",
+      "option": {
+       "DramToHost": {
+        "input": 28,
+        "output": 6
+       }
+      },
+      "metadata": []
+     },
+     "44": {
+      "name": "mm#Kernelized:11#PreLower:11#PostLower:44#PreCommandGen:44",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         32,
+         33
+        ],
+        "outputs": [
+         35
+        ],
+        "operation": {
+         "Seq": {
+          "outer_loop": [
+           8
+          ],
+          "original_split_sizes": [
+           8
+          ],
+          "schedule_config": "Empty",
+          "inner": [
+           [
+            [],
+            [
+             {
+              "inner": {
+               "tensors": {
+                "inner": {
+                 "0": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 256
+                         }
+                        },
+                        "size": 2
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 1024
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "1": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 256
+                         }
+                        },
+                        "size": 2
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 4
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 64
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "2": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 16
+                         }
+                        },
+                        "size": 2
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 16
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 1024
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "3": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 256
+                         }
+                        },
+                        "size": 2
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 2
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 32
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "4": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 256
+                         }
+                        },
+                        "size": 2
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 4
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 2
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 16
+                         }
+                        },
+                        "size": 2
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 4
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 4
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "5": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 16
+                         }
+                        },
+                        "size": 2
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 4
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 4
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 32
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 }
+                }
+               },
+               "inputs": [
+                0,
+                1
+               ],
+               "outputs": [
+                2
+               ],
+               "operators": {
+                "operators": {
+                 "0": {
+                  "name": "",
+                  "option": {
+                   "LowLevelReshape": {
+                    "input": 0,
+                    "output": 3,
+                    "buffer_type": "Sram"
+                   }
+                  },
+                  "metadata": []
+                 },
+                 "1": {
+                  "name": "",
+                  "option": {
+                   "LowLevelReshape": {
+                    "input": 1,
+                    "output": 4,
+                    "buffer_type": "Sram"
+                   }
+                  },
+                  "metadata": []
+                 },
+                 "2": {
+                  "name": "",
+                  "option": {
+                   "LowLevelReshape": {
+                    "input": 5,
+                    "output": 2,
+                    "buffer_type": "Sram"
+                   }
+                  },
+                  "metadata": []
+                 },
+                 "3": {
+                  "name": "mm#Kernelized:11#PreLower:11",
+                  "option": {
+                   "LowLevelTuContraction": {
+                    "input": 3,
+                    "filter": 4,
+                    "vrfs": [],
+                    "output": 5,
+                    "inner": {
+                     "dpe_element_type": "Bfloat16",
+                     "trf_element_type": "Bfloat16",
+                     "split": {
+                      "axes": []
+                     },
+                     "chip": {
+                      "axes": []
+                     },
+                     "cluster": {
+                      "axes": []
+                     },
+                     "slice_dummy": {
+                      "axes": []
+                     },
+                     "pe": {
+                      "axes": []
+                     },
+                     "slice": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4,
+                        "is_input_tile": false,
+                        "is_filter_tile": true,
+                        "is_contraction": false
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8,
+                        "is_input_tile": true,
+                        "is_filter_tile": false,
+                        "is_contraction": false
+                       }
+                      ]
+                     },
+                     "ve_gat": {
+                      "axes": []
+                     },
+                     "gat": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 256
+                         }
+                        },
+                        "size": 2,
+                        "is_input_tile": false,
+                        "is_filter_tile": false,
+                        "is_contraction": true
+                       }
+                      ]
+                     },
+                     "segment": {
+                      "axes": []
+                     },
+                     "outer_acc": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 32,
+                        "is_input_tile": false,
+                        "is_filter_tile": true,
+                        "is_contraction": false
+                       }
+                      ]
+                     },
+                     "ve_acc": {
+                      "axes": []
+                     },
+                     "acc": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32,
+                        "is_input_tile": false,
+                        "is_filter_tile": false,
+                        "is_contraction": true
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 4,
+                        "is_input_tile": false,
+                        "is_filter_tile": false,
+                        "is_contraction": true
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "2"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 2,
+                        "is_input_tile": false,
+                        "is_filter_tile": false,
+                        "is_contraction": true
+                       }
+                      ]
+                     },
+                     "shift_reuse_acc": {
+                      "axes": []
+                     },
+                     "feed_reuse": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 4,
+                        "is_input_tile": true,
+                        "is_filter_tile": false,
+                        "is_contraction": false
+                       }
+                      ]
+                     },
+                     "feed_reuse_acc": {
+                      "axes": []
+                     },
+                     "mac_rows": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 16
+                         }
+                        },
+                        "size": 2,
+                        "is_input_tile": true,
+                        "is_filter_tile": false,
+                        "is_contraction": false
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 4
+                         }
+                        },
+                        "size": 4,
+                        "is_input_tile": true,
+                        "is_filter_tile": false,
+                        "is_contraction": false
+                       }
+                      ]
+                     },
+                     "dpe_reg_tile": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32,
+                        "is_input_tile": false,
+                        "is_filter_tile": true,
+                        "is_contraction": false
+                       }
+                      ]
+                     },
+                     "dpe_elementwise": {
+                      "axes": []
+                     },
+                     "lat": {
+                      "axes": []
+                     },
+                     "ve_reduce_labels": []
+                    },
+                    "tail_padding": [
+                     0,
+                     0
+                    ],
+                    "reduce_mode": "Add",
+                    "slidings": [],
+                    "ve_pass": {
+                     "inputs": [
+                      "Sram"
+                     ],
+                     "pass_contexts": [
+                      {
+                       "ve_pass": {
+                        "input_shape": {
+                         "shape": [
+                          [
+                           "Partitioning",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1024
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "2"
+                                 },
+                                 "stride": 256
+                                }
+                               },
+                               "size": 2
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ],
+                          [
+                           "InSlice",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 4
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 8
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": [
+                               {
+                                "Outer": {
+                                 "inner": "ve_way"
+                                }
+                               }
+                              ]
+                             }
+                            }
+                           ]
+                          ]
+                         ],
+                         "packing": {
+                          "map": {}
+                         },
+                         "offset_shape": {
+                          "map": {
+                           "inner": []
+                          }
+                         },
+                         "indirect_vecs": {
+                          "id_to_ind_access": {}
+                         },
+                         "tail_alignment": 8,
+                         "calculation_buffer_config": "NoConfig"
+                        },
+                        "input_element_type": "Float32",
+                        "rhs_shapes": [],
+                        "branch_log_shape": null,
+                        "cache_shape": null,
+                        "cache_element_type": null,
+                        "cache_size_in_8way": null,
+                        "original_shape": null,
+                        "output_shape": {
+                         "shape": [
+                          [
+                           "Partitioning",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1024
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 16
+                                }
+                               },
+                               "size": 16
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ],
+                          [
+                           "InSlice",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 4
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ]
+                         ],
+                         "packing": {
+                          "map": {}
+                         },
+                         "offset_shape": {
+                          "map": {
+                           "inner": []
+                          }
+                         },
+                         "indirect_vecs": {
+                          "id_to_ind_access": {}
+                         },
+                         "tail_alignment": 8,
+                         "calculation_buffer_config": "NoConfig"
+                        },
+                        "output_element_type": "Float32",
+                        "nodes": [
+                         {
+                          "alu_id": 21,
+                          "pass_op": {
+                           "GlobalReduce": {
+                            "op": "GlobalReduceAddF",
+                            "reduction_ratio": 2,
+                            "promoted_partitioning_shape": {
+                             "inner": [
+                              {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1024
+                                }
+                               },
+                               "size": 4
+                              },
+                              {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 8
+                              },
+                              {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 16
+                                }
+                               },
+                               "size": 2
+                              }
+                             ]
+                            }
+                           }
+                          },
+                          "branches": [
+                           {
+                            "operand": null,
+                            "operand2": null,
+                            "valid_branch_ids": "ValidAlways"
+                           }
+                          ]
+                         }
+                        ],
+                        "gen_branch": "WithNone",
+                        "aug_branch": "WithNone",
+                        "write_log": false,
+                        "is_split_concat_noop": true,
+                        "num_branch_ids": 1,
+                        "is_valid_count_simulated_by_branch": false,
+                        "cache_write_back_option": "WriteBack"
+                       },
+                       "lhs": {
+                        "External": 0
+                       },
+                       "rhs_map": {
+                        "vrfs": [],
+                        "scalar_reg_srams": []
+                       },
+                       "branch_log": null,
+                       "interleaving_group_0_operand": null,
+                       "input_shape": null,
+                       "output_shape": {
+                        "shape": [
+                         [
+                          "Partitioning",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1024
+                               }
+                              },
+                              "size": 4
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 16
+                               }
+                              },
+                              "size": 16
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ],
+                         [
+                          "InSlice",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 32
+                               }
+                              },
+                              "size": 32
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 4
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 4
+                               }
+                              },
+                              "size": 4
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 32
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ]
+                        ],
+                        "packing": {
+                         "map": {}
+                        },
+                        "offset_shape": {
+                         "map": {
+                          "inner": []
+                         }
+                        },
+                        "indirect_vecs": {
+                         "id_to_ind_access": {}
+                        },
+                        "tail_alignment": 8,
+                        "calculation_buffer_config": "NoConfig"
+                       }
+                      }
+                     ],
+                     "mask_operands": []
+                    },
+                    "acc_major_mode": "RowMajor",
+                    "input_zero_point": "None",
+                    "filter_zero_point": "None"
+                   }
+                  },
+                  "metadata": []
+                 }
+                },
+                "next_operator_index": 4
+               },
+               "hidden_outputs": [],
+               "producer_map": {
+                "0": null,
+                "5": 3,
+                "2": 2,
+                "4": 1,
+                "1": null,
+                "3": 0
+               },
+               "copies": {}
+              },
+              "sources": [
+               {
+                "External": 0
+               },
+               {
+                "External": 1
+               }
+              ],
+              "tiled_loop_indices": [
+               [],
+               []
+              ]
+             }
+            ]
+           ]
+          ]
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "45": {
+      "name": "mm#Kernelized:11#PreLower:11#PostLower:45#PreCommandGen:45",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         35
+        ],
+        "outputs": [
+         36
+        ],
+        "operation": {
+         "Fold": {
+          "fold_loop": [
+           8
+          ],
+          "tiled_loop_indices": [
+           []
+          ],
+          "inner": {
+           "tensors": {
+            "inner": {
+             "0": {
+              "shape": {
+               "BufferShape": {
+                "inner": {
+                 "chip_shape": {
+                  "inner": []
+                 },
+                 "cluster_shape": {
+                  "inner": []
+                 },
+                 "partitioning_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "1"
+                      },
+                      "stride": 1024
+                     }
+                    },
+                    "size": 4
+                   },
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 32
+                     }
+                    },
+                    "size": 8
+                   },
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 16
+                     }
+                    },
+                    "size": 2
+                   }
+                  ]
+                 },
+                 "in_slice_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 1
+                     }
+                    },
+                    "size": 16
+                   }
+                  ]
+                 },
+                 "tail_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "1"
+                      },
+                      "stride": 1
+                     }
+                    },
+                    "size": 1024
+                   }
+                  ]
+                 },
+                 "tail_shape_alignment": 8
+                }
+               }
+              },
+              "element_type": "Float32",
+              "buffer": "b''",
+              "buffer_type": "Sram",
+              "name": "",
+              "source": "Unknown",
+              "metadata": []
+             },
+             "1": {
+              "shape": {
+               "BufferShape": {
+                "inner": {
+                 "chip_shape": {
+                  "inner": []
+                 },
+                 "cluster_shape": {
+                  "inner": []
+                 },
+                 "partitioning_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "1"
+                      },
+                      "stride": 1024
+                     }
+                    },
+                    "size": 4
+                   },
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 32
+                     }
+                    },
+                    "size": 8
+                   },
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 16
+                     }
+                    },
+                    "size": 2
+                   }
+                  ]
+                 },
+                 "in_slice_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 1
+                     }
+                    },
+                    "size": 16
+                   }
+                  ]
+                 },
+                 "tail_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "1"
+                      },
+                      "stride": 1
+                     }
+                    },
+                    "size": 1024
+                   }
+                  ]
+                 },
+                 "tail_shape_alignment": 8
+                }
+               }
+              },
+              "element_type": "Float32",
+              "buffer": "b''",
+              "buffer_type": "Sram",
+              "name": "",
+              "source": "Unknown",
+              "metadata": []
+             },
+             "2": {
+              "shape": {
+               "BufferShape": {
+                "inner": {
+                 "chip_shape": {
+                  "inner": []
+                 },
+                 "cluster_shape": {
+                  "inner": []
+                 },
+                 "partitioning_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "1"
+                      },
+                      "stride": 1024
+                     }
+                    },
+                    "size": 4
+                   },
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 32
+                     }
+                    },
+                    "size": 8
+                   },
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 16
+                     }
+                    },
+                    "size": 2
+                   }
+                  ]
+                 },
+                 "in_slice_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "0"
+                      },
+                      "stride": 1
+                     }
+                    },
+                    "size": 16
+                   }
+                  ]
+                 },
+                 "tail_shape": {
+                  "inner": [
+                   {
+                    "tag": {
+                     "LabelStride": {
+                      "label": {
+                       "inner": "1"
+                      },
+                      "stride": 1
+                     }
+                    },
+                    "size": 1024
+                   }
+                  ]
+                 },
+                 "tail_shape_alignment": 8
+                }
+               }
+              },
+              "element_type": "Float32",
+              "buffer": "b''",
+              "buffer_type": "Sram",
+              "name": "",
+              "source": "Unknown",
+              "metadata": []
+             }
+            }
+           },
+           "inputs": [
+            0,
+            1
+           ],
+           "outputs": [
+            2
+           ],
+           "operators": {
+            "operators": {
+             "0": {
+              "name": "",
+              "option": {
+               "LowLevelBinaryOp": {
+                "lhs": 0,
+                "rhs": 1,
+                "vrfs": [],
+                "output": 2,
+                "lhs_pre_process": {
+                 "inputs": [],
+                 "insts": []
+                },
+                "rhs_pre_process": {
+                 "inputs": [],
+                 "insts": []
+                },
+                "bin_op": {
+                 "def": 2,
+                 "expr": {
+                  "Binary": {
+                   "operator": "AddF",
+                   "lhs": {
+                    "Tensor": 0
+                   },
+                   "rhs": {
+                    "Tensor": 1
+                   }
+                  }
+                 },
+                 "source": ""
+                },
+                "post_process": {
+                 "inputs": [],
+                 "insts": []
+                }
+               }
+              },
+              "metadata": []
+             }
+            },
+            "next_operator_index": 1
+           },
+           "hidden_outputs": [],
+           "producer_map": {
+            "0": null,
+            "1": null,
+            "2": 0
+           },
+           "copies": {}
+          },
+          "has_index": false,
+          "has_initial_tensors": false,
+          "schedule_config": "Empty"
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "48": {
+      "name": "#PreLower:15#PostLower:48#PreCommandGen:48",
+      "option": {
+       "HostToDram": {
+        "input": 0,
+        "output": 38,
+        "sparsity": "None"
+       }
+      },
+      "metadata": []
+     },
+     "49": {
+      "name": "#PreLower:15#PostLower:49#PreCommandGen:49",
+      "option": {
+       "View": {
+        "input": 38,
+        "output": 40,
+        "offset_in_bytes": 0
+       }
+      },
+      "metadata": []
+     },
+     "50": {
+      "name": "#PreLower:15#PostLower:50#PreCommandGen:50",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         40
+        ],
+        "outputs": [
+         39
+        ],
+        "operation": {
+         "Seq": {
+          "outer_loop": [
+           8
+          ],
+          "original_split_sizes": null,
+          "schedule_config": "Empty",
+          "inner": [
+           [
+            [],
+            [
+             {
+              "inner": {
+               "tensors": {
+                "inner": {
+                 "0": {
+                  "shape": {
+                   "DramShape": {
+                    "inner": {
+                     "inter_chip_axes": {
+                      "inner": [
+                       {
+                        "tag": "Broadcast",
+                        "size": 1
+                       }
+                      ]
+                     },
+                     "intra_chip_axes": {
+                      "axes": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 256,
+                        "stride": 4096
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 512,
+                        "stride": 1
+                       }
+                      ],
+                      "offset": 0
+                     }
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "2": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 8
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 64
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 }
+                }
+               },
+               "inputs": [
+                0
+               ],
+               "outputs": [
+                2
+               ],
+               "operators": {
+                "operators": {
+                 "3": {
+                  "name": "",
+                  "option": {
+                   "LowLevelLower": {
+                    "input": 0,
+                    "output": 2
+                   }
+                  },
+                  "metadata": []
+                 }
+                },
+                "next_operator_index": 4
+               },
+               "hidden_outputs": [],
+               "producer_map": {
+                "2": 3
+               },
+               "copies": {}
+              },
+              "sources": [
+               {
+                "External": 0
+               }
+              ],
+              "tiled_loop_indices": [
+               []
+              ]
+             }
+            ]
+           ]
+          ]
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "70": {
+      "name": "#PreCommandGen:70",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         48
+        ],
+        "outputs": [
+         26
+        ],
+        "operation": {
+         "Join": {
+          "buffer_type": "Dram"
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "71": {
+      "name": "mm#Kernelized:11#PreLower:11#PostLower:43#PreCommandGen:71",
+      "option": {
+       "LowLevelReshape": {
+        "input": 36,
+        "output": 31,
+        "buffer_type": "Sram"
+       }
+      },
+      "metadata": []
+     },
+     "79": {
+      "name": "#PreLower:14#PostLower:36#PreCommandGen:79",
+      "option": {
+       "View": {
+        "input": 26,
+        "output": 28,
+        "offset_in_bytes": 0
+       }
+      },
+      "metadata": []
+     },
+     "80": {
+      "name": "#Kernelized:10#PreLower:10#PostLower:25#PreCommandGen:80",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         39
+        ],
+        "outputs": [
+         19
+        ],
+        "operation": {
+         "Seq": {
+          "outer_loop": [
+           8
+          ],
+          "original_split_sizes": null,
+          "schedule_config": "Empty",
+          "inner": [
+           [
+            [],
+            [
+             {
+              "inner": {
+               "tensors": {
+                "inner": {
+                 "0": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 8
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 64
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "1": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 8
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 64
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 }
+                }
+               },
+               "inputs": [
+                0
+               ],
+               "outputs": [
+                1
+               ],
+               "operators": {
+                "operators": {
+                 "0": {
+                  "name": "#Kernelized:10#PreLower:10",
+                  "option": {
+                   "LowLevelVePassOps": {
+                    "inputs": [
+                     0
+                    ],
+                    "output": 1,
+                    "inner": {
+                     "inputs": [
+                      "Sram"
+                     ],
+                     "pass_contexts": [
+                      {
+                       "ve_pass": {
+                        "input_shape": {
+                         "shape": [
+                          [
+                           "Partitioning",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 64
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ],
+                          [
+                           "InSlice",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 8
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": [
+                               {
+                                "Outer": {
+                                 "inner": "ve_way"
+                                }
+                               }
+                              ]
+                             }
+                            }
+                           ]
+                          ]
+                         ],
+                         "packing": {
+                          "map": {}
+                         },
+                         "offset_shape": {
+                          "map": {
+                           "inner": []
+                          }
+                         },
+                         "indirect_vecs": {
+                          "id_to_ind_access": {}
+                         },
+                         "tail_alignment": 16,
+                         "calculation_buffer_config": "NoConfig"
+                        },
+                        "input_element_type": "Float32",
+                        "rhs_shapes": [],
+                        "branch_log_shape": null,
+                        "cache_shape": null,
+                        "cache_element_type": null,
+                        "cache_size_in_8way": null,
+                        "original_shape": null,
+                        "output_shape": {
+                         "shape": [
+                          [
+                           "Partitioning",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 64
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ],
+                          [
+                           "InSlice",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 64
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ]
+                         ],
+                         "packing": {
+                          "map": {}
+                         },
+                         "offset_shape": {
+                          "map": {
+                           "inner": []
+                          }
+                         },
+                         "indirect_vecs": {
+                          "id_to_ind_access": {}
+                         },
+                         "tail_alignment": 16,
+                         "calculation_buffer_config": "NoConfig"
+                        },
+                        "output_element_type": "Float32",
+                        "nodes": [
+                         {
+                          "alu_id": 18,
+                          "pass_op": {
+                           "Binary": {
+                            "op": "MinF",
+                            "position": [
+                             0,
+                             1
+                            ]
+                           }
+                          },
+                          "branches": [
+                           {
+                            "operand": {
+                             "Const": {
+                              "v": {
+                               "PoF32": {
+                                "v": 3.3895313892515355e+38
+                               }
+                              }
+                             }
+                            },
+                            "operand2": null,
+                            "valid_branch_ids": "ValidAlways"
+                           }
+                          ]
+                         },
+                         {
+                          "alu_id": 17,
+                          "pass_op": {
+                           "Binary": {
+                            "op": "MaxF",
+                            "position": [
+                             0,
+                             1
+                            ]
+                           }
+                          },
+                          "branches": [
+                           {
+                            "operand": {
+                             "Const": {
+                              "v": {
+                               "PoF32": {
+                                "v": -3.3895313892515355e+38
+                               }
+                              }
+                             }
+                            },
+                            "operand2": null,
+                            "valid_branch_ids": "ValidAlways"
+                           }
+                          ]
+                         }
+                        ],
+                        "gen_branch": "WithNone",
+                        "aug_branch": "WithNone",
+                        "write_log": false,
+                        "is_split_concat_noop": true,
+                        "num_branch_ids": 1,
+                        "is_valid_count_simulated_by_branch": false,
+                        "cache_write_back_option": "WriteBack"
+                       },
+                       "lhs": {
+                        "External": 0
+                       },
+                       "rhs_map": {
+                        "vrfs": [],
+                        "scalar_reg_srams": []
+                       },
+                       "branch_log": null,
+                       "interleaving_group_0_operand": null,
+                       "input_shape": {
+                        "shape": [
+                         [
+                          "Partitioning",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 32
+                               }
+                              },
+                              "size": 8
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 64
+                               }
+                              },
+                              "size": 8
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ],
+                         [
+                          "InSlice",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 32
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 64
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ]
+                        ],
+                        "packing": {
+                         "map": {}
+                        },
+                        "offset_shape": {
+                         "map": {
+                          "inner": []
+                         }
+                        },
+                        "indirect_vecs": {
+                         "id_to_ind_access": {}
+                        },
+                        "tail_alignment": 16,
+                        "calculation_buffer_config": "NoConfig"
+                       },
+                       "output_shape": {
+                        "shape": [
+                         [
+                          "Partitioning",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 32
+                               }
+                              },
+                              "size": 8
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 64
+                               }
+                              },
+                              "size": 8
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ],
+                         [
+                          "InSlice",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 32
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 64
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ]
+                        ],
+                        "packing": {
+                         "map": {}
+                        },
+                        "offset_shape": {
+                         "map": {
+                          "inner": []
+                         }
+                        },
+                        "indirect_vecs": {
+                         "id_to_ind_access": {}
+                        },
+                        "tail_alignment": 16,
+                        "calculation_buffer_config": "NoConfig"
+                       }
+                      }
+                     ],
+                     "mask_operands": []
+                    },
+                    "execution_context": {
+                     "Main": {
+                      "dual_channel": false
+                     }
+                    }
+                   }
+                  },
+                  "metadata": []
+                 }
+                },
+                "next_operator_index": 1
+               },
+               "hidden_outputs": [],
+               "producer_map": {
+                "0": null,
+                "1": 0
+               },
+               "copies": {}
+              },
+              "sources": [
+               {
+                "External": 0
+               }
+              ],
+              "tiled_loop_indices": [
+               []
+              ]
+             }
+            ]
+           ]
+          ]
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "81": {
+      "name": "#PreLower:20#PostLower:28#PreCommandGen:81",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         19
+        ],
+        "outputs": [
+         21
+        ],
+        "operation": {
+         "Seq": {
+          "outer_loop": [
+           8
+          ],
+          "original_split_sizes": null,
+          "schedule_config": "Empty",
+          "inner": [
+           [
+            [],
+            [
+             {
+              "inner": {
+               "tensors": {
+                "inner": {
+                 "0": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 8
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 64
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "3": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 8
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 64
+                         }
+                        },
+                        "size": 8
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 64
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 16
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 }
+                }
+               },
+               "inputs": [
+                0
+               ],
+               "outputs": [
+                3
+               ],
+               "operators": {
+                "operators": {
+                 "4": {
+                  "name": "",
+                  "option": {
+                   "AlignedRepartition": {
+                    "input": 0,
+                    "output": 3
+                   }
+                  },
+                  "metadata": []
+                 }
+                },
+                "next_operator_index": 6
+               },
+               "hidden_outputs": [],
+               "producer_map": {
+                "3": 4
+               },
+               "copies": {}
+              },
+              "sources": [
+               {
+                "External": 0
+               }
+              ],
+              "tiled_loop_indices": [
+               []
+              ]
+             }
+            ]
+           ]
+          ]
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "82": {
+      "name": "#PreLower:14#PostLower:34#PreCommandGen:82",
+      "option": {
+       "LowLevelUnlower": {
+        "input": 31,
+        "output": 48,
+        "limits": []
+       }
+      },
+      "metadata": []
+     },
+     "84": {
+      "name": "mm#Kernelized:11#PreLower:11#PostLower:42#PreCommandGen:84",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         21
+        ],
+        "outputs": [
+         33
+        ],
+        "operation": "Reshape"
+       }
+      },
+      "metadata": []
+     },
+     "85": {
+      "name": "#Kernelized:9#PreLower:9#PostLower:56#PreCommandGen:85",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         23
+        ],
+        "outputs": [
+         44
+        ],
+        "operation": {
+         "Seq": {
+          "outer_loop": [
+           8
+          ],
+          "original_split_sizes": null,
+          "schedule_config": "Empty",
+          "inner": [
+           [
+            [],
+            [
+             {
+              "inner": {
+               "tensors": {
+                "inner": {
+                 "0": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 16
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 1024
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Float32",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 },
+                 "1": {
+                  "shape": {
+                   "BufferShape": {
+                    "inner": {
+                     "chip_shape": {
+                      "inner": []
+                     },
+                     "cluster_shape": {
+                      "inner": []
+                     },
+                     "partitioning_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1024
+                         }
+                        },
+                        "size": 4
+                       },
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 32
+                         }
+                        },
+                        "size": 16
+                       }
+                      ]
+                     },
+                     "in_slice_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "0"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 32
+                       }
+                      ]
+                     },
+                     "tail_shape": {
+                      "inner": [
+                       {
+                        "tag": {
+                         "LabelStride": {
+                          "label": {
+                           "inner": "1"
+                          },
+                          "stride": 1
+                         }
+                        },
+                        "size": 1024
+                       }
+                      ]
+                     },
+                     "tail_shape_alignment": 8
+                    }
+                   }
+                  },
+                  "element_type": "Bfloat16",
+                  "buffer": "b''",
+                  "buffer_type": "Sram",
+                  "name": "",
+                  "source": "Unknown",
+                  "metadata": []
+                 }
+                }
+               },
+               "inputs": [
+                0
+               ],
+               "outputs": [
+                1
+               ],
+               "operators": {
+                "operators": {
+                 "0": {
+                  "name": "#Kernelized:9#PreLower:9",
+                  "option": {
+                   "LowLevelVePassOps": {
+                    "inputs": [
+                     0
+                    ],
+                    "output": 1,
+                    "inner": {
+                     "inputs": [
+                      "Sram"
+                     ],
+                     "pass_contexts": [
+                      {
+                       "ve_pass": {
+                        "input_shape": {
+                         "shape": [
+                          [
+                           "Partitioning",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1024
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 16
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ],
+                          [
+                           "InSlice",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 8
+                                }
+                               },
+                               "size": 128
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 8
+                              },
+                              "aliases": [
+                               {
+                                "Outer": {
+                                 "inner": "ve_way"
+                                }
+                               }
+                              ]
+                             }
+                            }
+                           ]
+                          ]
+                         ],
+                         "packing": {
+                          "map": {}
+                         },
+                         "offset_shape": {
+                          "map": {
+                           "inner": []
+                          }
+                         },
+                         "indirect_vecs": {
+                          "id_to_ind_access": {}
+                         },
+                         "tail_alignment": 8,
+                         "calculation_buffer_config": "NoConfig"
+                        },
+                        "input_element_type": "Float32",
+                        "rhs_shapes": [],
+                        "branch_log_shape": null,
+                        "cache_shape": null,
+                        "cache_element_type": null,
+                        "cache_size_in_8way": null,
+                        "original_shape": null,
+                        "output_shape": {
+                         "shape": [
+                          [
+                           "Partitioning",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1024
+                                }
+                               },
+                               "size": 4
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 32
+                                }
+                               },
+                               "size": 16
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ],
+                          [
+                           "InSlice",
+                           [
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "0"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 32
+                              },
+                              "aliases": []
+                             }
+                            },
+                            {
+                             "Axis": {
+                              "kind": "Orig",
+                              "axis": {
+                               "tag": {
+                                "LabelStride": {
+                                 "label": {
+                                  "inner": "1"
+                                 },
+                                 "stride": 1
+                                }
+                               },
+                               "size": 1024
+                              },
+                              "aliases": []
+                             }
+                            }
+                           ]
+                          ]
+                         ],
+                         "packing": {
+                          "map": {}
+                         },
+                         "offset_shape": {
+                          "map": {
+                           "inner": []
+                          }
+                         },
+                         "indirect_vecs": {
+                          "id_to_ind_access": {}
+                         },
+                         "tail_alignment": 8,
+                         "calculation_buffer_config": "NoConfig"
+                        },
+                        "output_element_type": "Float32",
+                        "nodes": [
+                         {
+                          "alu_id": 18,
+                          "pass_op": {
+                           "Binary": {
+                            "op": "MinF",
+                            "position": [
+                             0,
+                             1
+                            ]
+                           }
+                          },
+                          "branches": [
+                           {
+                            "operand": {
+                             "Const": {
+                              "v": {
+                               "PoF32": {
+                                "v": 3.3895313892515355e+38
+                               }
+                              }
+                             }
+                            },
+                            "operand2": null,
+                            "valid_branch_ids": "ValidAlways"
+                           }
+                          ]
+                         },
+                         {
+                          "alu_id": 17,
+                          "pass_op": {
+                           "Binary": {
+                            "op": "MaxF",
+                            "position": [
+                             0,
+                             1
+                            ]
+                           }
+                          },
+                          "branches": [
+                           {
+                            "operand": {
+                             "Const": {
+                              "v": {
+                               "PoF32": {
+                                "v": -3.3895313892515355e+38
+                               }
+                              }
+                             }
+                            },
+                            "operand2": null,
+                            "valid_branch_ids": "ValidAlways"
+                           }
+                          ]
+                         }
+                        ],
+                        "gen_branch": "WithNone",
+                        "aug_branch": "WithNone",
+                        "write_log": false,
+                        "is_split_concat_noop": true,
+                        "num_branch_ids": 1,
+                        "is_valid_count_simulated_by_branch": false,
+                        "cache_write_back_option": "WriteBack"
+                       },
+                       "lhs": {
+                        "External": 0
+                       },
+                       "rhs_map": {
+                        "vrfs": [],
+                        "scalar_reg_srams": []
+                       },
+                       "branch_log": null,
+                       "interleaving_group_0_operand": null,
+                       "input_shape": {
+                        "shape": [
+                         [
+                          "Partitioning",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1024
+                               }
+                              },
+                              "size": 4
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 32
+                               }
+                              },
+                              "size": 16
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ],
+                         [
+                          "InSlice",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 32
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 1024
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ]
+                        ],
+                        "packing": {
+                         "map": {}
+                        },
+                        "offset_shape": {
+                         "map": {
+                          "inner": []
+                         }
+                        },
+                        "indirect_vecs": {
+                         "id_to_ind_access": {}
+                        },
+                        "tail_alignment": 8,
+                        "calculation_buffer_config": "NoConfig"
+                       },
+                       "output_shape": {
+                        "shape": [
+                         [
+                          "Partitioning",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1024
+                               }
+                              },
+                              "size": 4
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 32
+                               }
+                              },
+                              "size": 16
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ],
+                         [
+                          "InSlice",
+                          [
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "0"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 32
+                             },
+                             "aliases": []
+                            }
+                           },
+                           {
+                            "Axis": {
+                             "kind": "Orig",
+                             "axis": {
+                              "tag": {
+                               "LabelStride": {
+                                "label": {
+                                 "inner": "1"
+                                },
+                                "stride": 1
+                               }
+                              },
+                              "size": 1024
+                             },
+                             "aliases": []
+                            }
+                           }
+                          ]
+                         ]
+                        ],
+                        "packing": {
+                         "map": {}
+                        },
+                        "offset_shape": {
+                         "map": {
+                          "inner": []
+                         }
+                        },
+                        "indirect_vecs": {
+                         "id_to_ind_access": {}
+                        },
+                        "tail_alignment": 8,
+                        "calculation_buffer_config": "NoConfig"
+                       }
+                      }
+                     ],
+                     "mask_operands": []
+                    },
+                    "execution_context": {
+                     "Main": {
+                      "dual_channel": false
+                     }
+                    }
+                   }
+                  },
+                  "metadata": []
+                 }
+                },
+                "next_operator_index": 1
+               },
+               "hidden_outputs": [],
+               "producer_map": {
+                "0": null,
+                "1": 0
+               },
+               "copies": {}
+              },
+              "sources": [
+               {
+                "External": 0
+               }
+              ],
+              "tiled_loop_indices": [
+               []
+              ]
+             }
+            ]
+           ]
+          ]
+         }
+        }
+       }
+      },
+      "metadata": []
+     },
+     "86": {
+      "name": "mm#Kernelized:11#PreLower:11#PostLower:41#PreCommandGen:86",
+      "option": {
+       "SplitOperation": {
+        "inputs": [
+         44
+        ],
+        "outputs": [
+         32
+        ],
+        "operation": "Reshape"
+       }
+      },
+      "metadata": []
+     }
+    },
+    "next_operator_index": 87
+   },
+   "hidden_outputs": [],
+   "producer_map": {
+    "32": 86,
+    "38": 48,
+    "26": 70,
+    "23": 31,
+    "40": 49,
+    "31": 71,
+    "28": 79,
+    "22": 29,
+    "19": 80,
+    "48": 82,
+    "39": 50,
+    "36": 45,
+    "33": 84,
+    "24": 30,
+    "21": 81,
+    "44": 85,
+    "6": 37,
+    "35": 44
+   },
+   "copies": {}
+  },
+  "metadata": {
+   "is_composed_graph": false,
+   "valid_length": null,
+   "tp_config": {
+    "inputs": {},
+    "outputs": {},
+    "operators": {},
+    "fusion_groups": []
+   },
+   "schedule_context": {
+    "fusion_group_tree": null
+   }
+  }
+ }
+}

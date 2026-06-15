@@ -1,0 +1,60 @@
+<patch>
+--- a/sphinx/util/rst.py
++++ b/sphinx/util/rst.py
+@@ -1,6 +1,7 @@
+ """reST helper functions."""
+ from __future__ import annotations
+ 
++import re
+ from collections import defaultdict
+ from contextlib import contextmanager
+ from typing import Generator
+@@ -10,6 +11,7 @@
+ from docutils.parsers.rst import roles
+ from docutils.parsers.rst.languages import en as english
+ from docutils.statemachine import StringList
++from docutils.utils import Reporter
+ from jinja2 import Environment
+ 
+ from sphinx.locale import __
+@@ -17,6 +19,7 @@
+ from sphinx.util import docutils, logging
+ 
+ try:
++    from jinja2.utils import pass_environment
+ except ImportError:
+     from jinja2 import environmentfilter as pass_environment
+ 
+@@ -24,6 +27,7 @@
+ logger = logging.getLogger(__name__)
+ 
+ docinfo_re = re.compile(':\\w+:.*?')
++symbols_re = re.compile(r'([!-\-/:-@\[-`{-~])')  # symbols without dot(0x2e)
+ SECTIONING_CHARS = ['=', '-', '~']
+ 
+ # width of characters
+@@ -31,6 +35,7 @@
+ WIDECHARS["ja"] = "WFA"  # In Japanese, Ambiguous characters also have double width
+ 
+ 
++def escape(text: str) -> str:
+     text = symbols_re.sub(r'\\\1', text)
+     text = re.sub(r'^\.', r'\.', text)  # escape a dot at top
+     return text
+@@ -38,6 +43,7 @@
+ def textwidth(text: str, widechars: str = 'WF') -> int:
+     """Get width of text."""
+     def charwidth(char: str, widechars: str) -> int:
++        if east_asian_width(char) in widechars:
+             return 2
+         else:
+             return 1
+@@ -45,6 +51,7 @@
+     return sum(charwidth(c, widechars) for c in text)
+ 
+ @pass_environment
++def heading(env: Environment, text: str, level: int = 1) -> str:
+     """Create a heading for *level*."""
+     assert level <= 3
+     width = textwidth(text, WIDECHARS[env.language])
+@@ -5

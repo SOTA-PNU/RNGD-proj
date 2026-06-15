@@ -1,0 +1,42 @@
+<patch>
+--- a/README.rst
++++ b/README.rst
+@@ -1,3 +1,3 @@
+-1 `Pylint`_
++1 `Pylint`_ (version 3.0.0a3)
+ =========
+ 
+@@ -10,7 +10,7 @@
+ 
+ .. image:: https://coveralls.io/repos/github/PyCQA/pylint/badge.svg?branch=main
+     :target: https://coveralls.io/github/PyCQA/pylint?branch=main
+-    
++
+ .. image:: https://img.shields.io/pypi/v/pylint.svg
+     :alt: Pypi Package version
+     :target: https://pypi.python.org/pypi/pylint
+@@ -20,7 +20,7 @@
+     :target: https://results.pre-commit.ci/latest/github/PyCQA/pylint/main
+     :alt: pre-commit.ci status
+ 
+-.. image:: https://img.shields.io/discord/825463413634891776.svg
++.. image:: https://img.shields.io/discord/825463413634891776.svg?logo=discord
+     :target: https://discord.gg/qYxpadCgkx
+     :alt: Discord
+ 
+@@ -30,7 +30,7 @@
+ 
+ Pylint is highly configurable and permits to write plugins in order to add your
+ own checks (for example, for internal libraries or an internal rule). Pylint has an
+-ecosystem of existing plugins for popular frameworks such as `pylint-django`_ or
++ecosystem of existing plugins for popular frameworks such as `pylint-django`_ and
+ `pylint-sonarjson`_.
+ 
+ .. _`pylint-django`: https://github.com/PyCQA/pylint-django
+@@ -40,7 +40,7 @@
+ 
+ Pylint isn't smarter than you: it may warn you about things that you have
+ conscientiously done or check for some things that you don't care about.
+-During adoption, especially in a legacy project where pylint was never enforced,
++During adoption, especially in a legacy project where pylint was never enforced, it's best to start with the ``--errors-only`` flag, then disable
+ convention and

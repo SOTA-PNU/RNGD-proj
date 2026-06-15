@@ -1,0 +1,50 @@
+2026-06-09 21:44:58,148 - INFO - Creating container for sympy__sympy-12171...
+2026-06-09 21:45:00,272 - INFO - Container for sympy__sympy-12171 created: 24c5f7d5134aff44877511ab48778828376ac6c7e97688c283f7c21ea347d826
+2026-06-09 21:45:00,479 - INFO - Container for sympy__sympy-12171 started: 24c5f7d5134aff44877511ab48778828376ac6c7e97688c283f7c21ea347d826
+2026-06-09 21:45:00,481 - INFO - Intermediate patch for sympy__sympy-12171 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/sympy__sympy-12171/patch.diff, now applying to container...
+2026-06-09 21:45:00,649 - INFO - Failed to apply patch to container: git apply --verbose
+2026-06-09 21:45:00,723 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-06-09 21:45:00,795 - INFO - >>>>> Applied Patch:
+patching file sympy/printing/mathematica.py
+Hunk #1 succeeded at 2 with fuzz 3 (offset 1 line).
+patch unexpectedly ends in middle of line
+
+2026-06-09 21:45:01,059 - INFO - Git diff before:
+diff --git a/sympy/printing/mathematica.py b/sympy/printing/mathematica.py
+index 4c2ffd81e1..7ff59929ff 100644
+--- a/sympy/printing/mathematica.py
++++ b/sympy/printing/mathematica.py
+@@ -2,7 +2,7 @@
+ Mathematica code printer
+ """
+ 
+-from __future__ import print_function, division
++from __future__ import print_function, division, absolute_import
+ from sympy.printing.codeprinter import CodePrinter
+ from sympy.printing.str import StrPrinter
+ from sympy.printing.precedence import precedence
+2026-06-09 21:45:01,086 - INFO - Eval script for sympy__sympy-12171 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/sympy__sympy-12171/eval.sh; copying to container...
+2026-06-09 21:45:03,910 - INFO - Test runtime: 2.73 seconds
+2026-06-09 21:45:03,912 - INFO - Test output for sympy__sympy-12171 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/sympy__sympy-12171/test_output.txt
+2026-06-09 21:45:04,011 - INFO - Git diff after:
+diff --git a/sympy/printing/mathematica.py b/sympy/printing/mathematica.py
+index 4c2ffd81e1..7ff59929ff 100644
+--- a/sympy/printing/mathematica.py
++++ b/sympy/printing/mathematica.py
+@@ -2,7 +2,7 @@
+ Mathematica code printer
+ """
+ 
+-from __future__ import print_function, division
++from __future__ import print_function, division, absolute_import
+ from sympy.printing.codeprinter import CodePrinter
+ from sympy.printing.str import StrPrinter
+ from sympy.printing.precedence import precedence
+2026-06-09 21:45:04,011 - INFO - Grading answer for sympy__sympy-12171...
+2026-06-09 21:45:04,012 - INFO - report: {'sympy__sympy-12171': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_Derivative']}, 'PASS_TO_PASS': {'success': ['test_Integer', 'test_Rational', 'test_Function', 'test_Pow', 'test_Mul', 'test_constants', 'test_containers', 'test_Integral'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-12171: resolved: False
+2026-06-09 21:45:04,013 - INFO - Attempting to stop container sweb.eval.sympy__sympy-12171.base_completion_fairver...
+2026-06-09 21:45:19,240 - INFO - Attempting to remove container sweb.eval.sympy__sympy-12171.base_completion_fairver...
+2026-06-09 21:45:19,306 - INFO - Container sweb.eval.sympy__sympy-12171.base_completion_fairver removed.
+2026-06-09 21:45:19,307 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.sympy_1776_sympy-12171:latest...
+2026-06-09 21:45:19,389 - INFO - Image swebench/sweb.eval.x86_64.sympy_1776_sympy-12171:latest removed.

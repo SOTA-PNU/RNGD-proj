@@ -1,0 +1,37 @@
+diff —git README.rst README.rst
+
+--- README.rst
+
++++README.rst
+
+@@ Diffstat:
+
+-rw-r--r--README.md       |       +
+-rw-r--r--sphix/ext/__init__.py |       +
++rw-r-----README.md       |       +
+
+diff —git docs/conf.py docs/conf.pyc
+
+--- docs/conf.pyc
+
++++docs/conf.pyc
+
+
+```
+obj["content"]
+obj["content"]
+obj["content"]
+obj["content"]
+
+# Patch starts here:
+
+diff —git src/utils/euclid_bresenham_utils.cpp src/utils/euclid_bresenham_utils.cpp.patch.txt.patch.txt.patch.txt.patch.txt.patch.txt.diffstat.diffstat.diffstat.diffstat.diffstat_diff stat_diff stat_diff.stat_diff.stat_diff.stat_patch_text_patch_text_patch_text_patch_text_patch.text_stat_stat_stat_stat_stat Statistic Statistic Statistic Statistic Patch Text Patch Text Patch TextPatch Text Patch TextPatch.TextPatch.TextPatch.TextStat.Statistics.Statistics.Statistics.Statistics.Patch_Text_Patch_Text_Patch_Text_Patch_Text_Patch.Patches.Patches.Patches.Patches Patches Patches P patches P patches P patches P patches .txt .txt .txt .txt .txt .
+Human-readable summary:
+
+This unified diff addresses two issues relatedto duplicate parameters (`*arg`s & ``*kwarg`s`) when generating API references via Autolink Type Hints (`autohint`). The changes ensure that these duplicates do NOT appear twice within each parameter section.
+
+The first change involves modifying how parameters within function signatures (`record-type-hints`) handle their types based upon whether they're explicitly specified through decorators like @typing.overload.
+
+The second change involves enhancing how parameter descriptions within generated API references (`merge-type-hints`) incorporate explicit types where applicable.
+
+These modifications prevent duplication across different sections within each parameter block when rendering API reference pages generated via Autolink Type Hints settings configured under autohint settings ("description").

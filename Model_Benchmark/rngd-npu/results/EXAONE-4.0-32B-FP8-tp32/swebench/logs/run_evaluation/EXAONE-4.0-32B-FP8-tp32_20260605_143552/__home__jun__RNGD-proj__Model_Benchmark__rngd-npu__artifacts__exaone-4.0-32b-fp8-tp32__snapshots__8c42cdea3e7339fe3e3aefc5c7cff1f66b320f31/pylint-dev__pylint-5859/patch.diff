@@ -1,0 +1,9 @@
+diff --git a/pylint/checkers/misc.py b/pylint/checkers/misc.py
+@@ -119,7 +119,7 @@ def process_tokens(self, tokens):
+                 if disable_option_match:
+                     try:
+                         values = []
+-                         for pragma_repr in (
++                         for p_rep in (
+                             p_rep
+                             for p_rep in parse_pragma(disable_option_match.group(2))

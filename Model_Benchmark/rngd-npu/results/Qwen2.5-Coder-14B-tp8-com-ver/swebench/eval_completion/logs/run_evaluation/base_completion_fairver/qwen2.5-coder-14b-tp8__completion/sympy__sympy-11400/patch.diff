@@ -1,0 +1,30 @@
+
+--- a/sympy/printing/ccode.py
++++ b/sympy/printing/ccode.py
+@@ -26,6 +26,7 @@
+ from sympy.printing.precedence import precedence
+ from sympy.sets.fancysets import Range
+ 
++from sympy.functions import sinc
+ from sympy.core import S
+ from sympy.core.compatibility import string_types, range
+ from sympy.codegen.ast import Assignment
+@@ -34,6 +35,7 @@
+ # dictionary mapping sympy function to (argument_conditions, C_function).
+ # Used in CCodePrinter._print_Function(self)
+ known_functions = {
++    "sinc": "sinc",
+     "Abs": [(lambda x: not x.is_integer, "fabs")],
+     "gamma": "tgamma",
+     "sin": "sin",
+@@ -114,6 +116,10 @@
+         return "M_E"
+ 
+     def _print_Pi(self, expr):
++        return 'M_PI'
++
++    def _print_sinc(self, expr):
++        return 'sinc(%s)' % self._print(expr.args[0])
+         return 'M_PI'
+ 
+     def _print_Infinity(self, expr):

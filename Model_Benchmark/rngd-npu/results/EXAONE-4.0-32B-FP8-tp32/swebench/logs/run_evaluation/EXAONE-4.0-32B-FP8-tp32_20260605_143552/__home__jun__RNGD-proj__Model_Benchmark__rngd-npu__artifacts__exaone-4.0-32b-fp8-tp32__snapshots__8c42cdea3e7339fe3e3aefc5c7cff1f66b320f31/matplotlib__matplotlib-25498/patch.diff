@@ -1,0 +1,85 @@
+<patch>
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -278,7 +278,7 @@
+         if self._extend_lower():
+             extendlen[0] = 0
+         if self._extend_upper():
+             extendlen[1] = 0
+         len = sum(extendlen) + 1
+         shrink = 1 / len
+         offset = extendlen[0] / len
+         # we need to reset the aspect ratio of the axes to account
+         # of the extends...
+         if hasattr(ax, '_colorbar_info'):
+             aspect = ax._colorbar_info['aspect']
+         else:
+             aspect = False
+@@ -303,7 +303,7 @@
+         # now shrink and/or offset to take into account the
+         # extend tri/rectangles.
+         if self._cbar.orientation == 'vertical':
+             if aspect:
+                 self._cbar.ax.set_box_aspect(aspect*shrink)
+             pos = pos.shrunk(1, shrink).translated(0, offset * pos.height)
+         else:
+             if aspect:
+                 self._cbar.ax.set_box_aspect(1/(aspect * shrink))
+             pos = pos.shrunk(shrink, 1).translated(offset * pos.width, 0)
+         return pos
+@@ -310,7 +310,7 @@
+         # define the transform which takes us from old axes coordinates to
+         # new axes coordinates
+         shrinking_trans = mtransforms.BboxTransform(parents_bbox, pb1)
+         # transform each of the axes in parents using the new transform
+         for ax in parents:
+             new_posn = shrinking_trans.transform(ax.get_position(original=True))
+             new_posn = mtransforms.Bbox(new_posn)
+             ax._set_position(new_posn)
+             if panchor is not False:
+                 ax.set_anchor(panchor)
+         cax = fig.add_axes(pbcb, label="<colorbar>")
+         for a in parents:
+             # tell the parent it has a colorbar
+             a._colorbars += [cax]
+         cax._colorbar_info = dict(
+             parents=parents,
+             location=location,
+             shrink=shrink,
+             anchor=anchor,
+             panchor=panchor,
+             fraction=fraction,
+             aspect=aspect0,
+             pad=pad)
+         # and we need to set the aspect ratio by hand...
+         cax.set_anchor(anchor)
+         cax.set_box_aspect(aspect)
+         cax.set_aspect('auto')
+         return cax, kwargs
+@@ -383,10 +383,10 @@
+         # Add extend triangles, and shrink the inner axes to accommodate.
+         # also adds the outline path to self.outline spine:
+         self._do_extends()
+         lower, upper = self.vmin, self.vmax
+         if self._long_axis().get_inverted():
+             # If the axis is inverted, we need to swap the vmin/vmax
+             lower, upper = upper, lower
+         if self.orientation == 'vertical':
+             self.ax.set_xlim(0, 1)
+             self.ax.set_ylim(lower, upper)
+         else:
+             self.ax.set_ylim(0, 1)
+             self.ax.set_xlim(lower, upper)
+         # set up the tick locators and formatters.  A bit complicated because
+         # boundary norms + uniform spacing requires a manual locator.
+         self.update_ticks()
+         if self._filled:
+             ind = np.arange(len(self._values))
+             if self._extend_lower():
+                 ind = ind[1:]
+             if self._extend_upper():
+                 ind = ind[:-1]
+             self._add_solids(X, Y, self._values[ind, np.newaxis])
+         self._update_dividers()
+         if not self.drawedges:
+             self.

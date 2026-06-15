@@ -1,0 +1,36 @@
+diff --git src/docs/qemu-option-trace.rst.inc src/docs/qemu-option-trace.rst.inc  
+new file mode  
+--- /dev/null  
++++ src/docs/qemu-option-trace.rst.inc  
+@@  
+  
+.. cmdusage::
+   
+diff --git src/docs/conf.py src/docs/conf.py  
+--- src/docs/conf.py  
++++ src/docs/conf.py  
+  
+@@  
+  
+extensions.extend(['rst.linkify'])  
+  
+diff --git src/utils/linkify_extension/linkify_extension/__init__.py src/utils/linkify_extension/linkify_extension/__init__.py  
+new file mode  
+--- /dev/null  
++++ src/utils/linkify_extension/linkify_extension/__init__.py  
+  
+@@  
+  
+from .linkifier_factory_factory_method_decorator_factory_decorator_decorator_decorator_decorator_decorator_decorator_decorator_decorator_decorator_factory_method_factory_method_factory_method_factory_method_factory_method_factory_method_factory_method_factory_method_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.linkifier_decorators.decorator.decorator.decorator.decorator.decorator.decorator.decorator.decorator.decorators.decorators.decorators.decorators.decorators.decorators.decorators.decorators.decorators decorators decorators decorators decorators decorators decorators decorators decorators decorator decorator decorator decorator decorator decorator decorator decorator decorator decorator decorator decorator decorator decorator
+  
+def linkified(f):  
+
+return lambda s,*a,**k:f(s,*a,**k).replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace('[','').replace '[ ',' '). replace '] ',' '). replace '] ',' '). replace '] ',' '). replace '] ',' '). replace '] ',' '). replace '] ',' '). replace '] ',' ') . replace '] ',' ') . replace '] ',' ') . replace '] ',' ') . replace '[enable=', '').split(',')  
+
+diff --git setup.cfg setup.cfg  
+--- setup.cfg  
++++ setup.cfg  
+  
+@@  
+  
+install_requires.extend(['rst-linkify'])

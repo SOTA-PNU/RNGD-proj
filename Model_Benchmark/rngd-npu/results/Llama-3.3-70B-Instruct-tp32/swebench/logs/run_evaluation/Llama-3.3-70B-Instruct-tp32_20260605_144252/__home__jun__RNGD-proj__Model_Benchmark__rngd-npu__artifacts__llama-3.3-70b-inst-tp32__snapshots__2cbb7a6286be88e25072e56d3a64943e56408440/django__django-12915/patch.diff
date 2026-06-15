@@ -1,0 +1,35 @@
+diff --git a/django/contrib/staticfiles/handlers.py b/django/contrib/staticfiles/handlers.py
+@@ -49,6 +49,13 @@
+     def serve(self, request):
+         """Serve the request path."""
+         return serve(request, self.file_path(request.path), insecure=True)
+ 
++    async def get_response_async(self, request):
++        try:
++            return self.serve(request)
++        except Http404 as e:
++            return response_for_exception(request, e)
++
+     def get_response(self, request):
+         try:
+             return self.serve(request)
+@@ -73,7 +80,7 @@
+ class ASGIStaticFilesHandler(StaticFilesHandlerMixin, ASGIHandler):
+     """
+     ASGI application which wraps another and intercepts requests for static
+     files, passing them off to Django's static file serving.
+-    """
++    """
+     """
+     def __init__(self, application):
+         self.application = application
+         self.base_url = urlparse(self.get_base_url())
+@@ -86,7 +93,7 @@
+         # Only even look at HTTP requests
+         if scope['type'] == 'http' and self._should_handle(scope['path']):
+             # Serve static content
+-            # (the one thing super() doesn't do is __call__, apparently)
++            # Serve static content
+             return await self.get_response_async(scope["request"])
+         # Hand off to the main app
+         return await self.application(scope, receive, send)

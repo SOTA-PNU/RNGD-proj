@@ -1,0 +1,267 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/metadata/metadata.py:196: UserWarning: model_type='qwen3_next' has no native compiler config; proceeding with the DEFAULT compiler config (experimental). Build/compile only — serve runtime support is not guaranteed.
+  self._optimized_cls = validate_model_support(
+INFO:furiosa_llm.artifact.resolver:Found bucket preset for model_type=qwen3_next, hidden_size=512, intermediate_size=1536
+INFO:furiosa_llm.artifact.resolver:Filtered bucket preset by max_model_len=2048
+INFO:furiosa_llm.artifact.validator:The computed bucket limits are 1024
+INFO:furiosa_llm.utils:Calculated the hashsum in 0.231s for 'mini_models/mini-qwen3-next' (files=6, size=344.28 MB, throughput=1488.87 MB/s)
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py:[CACHE] Accessing found parameter file from cache for model mini-qwen3-next_4L_furiosa.models.language.architecture.qwen3_next_W16A16KV16: /home/jun/.cache/furiosa/llm/param_files/params-1fdfb95ce150-qwen3_next-4L-W16A16KV16-shard_size=5000000000-e622364347d958098e5a30f4417127f34897d8d64e86ea8441d4db1febadf6af.safetensors
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py:[CACHE ACCESS LOG] Wrote cache access log to /home/jun/.cache/furiosa/llm/param_files/params-1fdfb95ce150-qwen3_next-4L-W16A16KV16-shard_size=5000000000-e622364347d958098e5a30f4417127f34897d8d64e86ea8441d4db1febadf6af.safetensors/cache_access_log.txt by atime 2026-06-10 17:05:47
+INFO:furiosa_llm.artifact.builder:Attention buckets: [AttentionBucket(batch_size=1, attention_size=128, kv_cache_size=0),
+ AttentionBucket(batch_size=1, attention_size=1024, kv_cache_size=1023),
+ AttentionBucket(batch_size=1, attention_size=256, kv_cache_size=128)]
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py:Building local pipelines for 3 buckets: [AttentionBucket(batch_size=1, attention_size=128, kv_cache_size=0), AttentionBucket(batch_size=1, attention_size=1024, kv_cache_size=1023), AttentionBucket(batch_size=1, attention_size=256, kv_cache_size=128)]
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py:Number of pipeline builder workers: 1, Number of CPUs per pipeline build worker: 1
+INFO:/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py:Number of compile workers: 1, Number of CPUs per compile worker: 1
+2026-06-10 17:05:51,791	INFO worker.py:2003 -- Started a local Ray instance. View the dashboard at [1m[32mhttp://127.0.0.1:8265 [39m[22m
+/home/jun/furiosa/lib/python3.12/site-packages/ray/_private/worker.py:2051: FutureWarning: Tip: In future versions of Ray, Ray will no longer override accelerator visible devices env var if num_gpus=0 or num_gpus=None (default). To enable this behavior and turn off this error message, set RAY_ACCEL_ENV_VAR_OVERRIDE_ON_ZERO=0
+  warnings.warn(
+Model Tracing Progress:   0%|          | 0/3 [00:00<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:01<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:02<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:03<?, ?it/s][90m(pid=1140099)[0m /home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+[90m(pid=1140099)[0m   from furiosa.models.core.attention.backends import LLMAttentionBackend
+Model Tracing Progress:   0%|          | 0/3 [00:04<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:05<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:06<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:07<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:08<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:09<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:10<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:11<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:12<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:13<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:14<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:15<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:15<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:16<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:17<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:18<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:19<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:19<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:20<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:20<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:21<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:22<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:23<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:23<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:24<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:25<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:25<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:26<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:27<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:28<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:29<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:29<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:30<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:30<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:30<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:30<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:31<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:32<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:32<?, ?it/s]                                                             Model Tracing Progress:   0%|          | 0/3 [00:32<?, ?it/s]Model Tracing Progress:   0%|          | 0/3 [00:32<?, ?it/s]                                                             Model Tracing Progress:  33%|███▎      | 1/3 [00:32<01:04, 32.35s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:32<01:04, 32.35s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:33<01:06, 33.36s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:34<01:08, 34.37s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:34<01:08, 34.37s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:35<01:10, 35.37s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:35<01:10, 35.37s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:35<01:10, 35.37s/it]                                                                     Model Tracing Progress:  33%|███▎      | 1/3 [00:35<01:10, 35.38s/it]Model Tracing Progress:  33%|███▎      | 1/3 [00:35<01:10, 35.38s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:36<00:18, 18.15s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:37<00:18, 18.65s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:38<00:19, 19.15s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:39<00:19, 19.66s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:40<00:20, 20.16s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:41<00:20, 20.66s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:42<00:21, 21.17s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:43<00:21, 21.67s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:44<00:22, 22.17s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:44<00:22, 22.17s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:45<00:22, 22.68s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:46<00:23, 23.18s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:47<00:23, 23.68s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:48<00:24, 24.19s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:49<00:24, 24.69s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:49<00:24, 24.69s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:49<00:24, 24.69s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:50<00:25, 25.19s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:51<00:25, 25.70s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:51<00:25, 25.70s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:52<00:26, 26.20s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:53<00:26, 26.70s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:53<00:26, 26.70s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:54<00:27, 27.21s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:55<00:27, 27.71s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:56<00:28, 28.21s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:57<00:28, 28.72s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:58<00:29, 29.22s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:59<00:29, 29.72s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:59<00:29, 29.72s/it]                                                                     Model Tracing Progress:  67%|██████▋   | 2/3 [00:59<00:29, 29.72s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [00:59<00:29, 29.72s/it]Model Tracing Progress:  67%|██████▋   | 2/3 [01:00<00:30, 30.22s/it]                                                                     Model Tracing Progress: 100%|██████████| 3/3 [01:01<00:00, 20.35s/it]                                                                     Model Tracing Progress: 100%|██████████| 3/3 [01:01<00:00, 20.35s/it]                                                                     Model Tracing Progress: 100%|██████████| 3/3 [01:01<00:00, 20.35s/it]                                                                     [pid=1140099] [INFO][furiosa_llm.metadata.metadata] [1;36m(Loading mini-qwen3-next_4L_furiosa.models.language.architecture.qwen3_next_W16A16KV16)[0m
+[pid=1140099] [WARNING][furiosa.models.language.config] Casting bfloat16 to torch.bfloat16.
+[pid=1140099] [INFO][furiosa.models.common.load.loader] Loading weights from local path: ./mini_models/mini-qwen3-next
+[pid=1140099 fd=stderr] `torch_dtype` is deprecated! Use `dtype` instead!
+[pid=1140099] [INFO][furiosa.models.common.load.loader] Missing weights when loading Qwen3NextForCausalLM: ['model.layers.0.mlp.shared_expert_down_proj.weight', 'model.layers.0.mlp.shared_expert_gate_proj.weight', 'model.layers.0.mlp.shared_expert_up_proj.weight', 'model.layers.1.mlp.shared_expert_down_proj.weight', 'model.layers.1.mlp.shared_expert_gate_proj.weight', 'model.layers.1.mlp.shared_expert_up_proj.weight', 'model.layers.2.mlp.shared_expert_down_proj.weight', 'model.layers.2.mlp.shared_expert_gate_proj.weight', 'model.layers.2.mlp.shared_expert_up_proj.weight', 'model.layers.3.mlp.shared_expert_down_proj.weight', 'model.layers.3.mlp.shared_expert_gate_proj.weight', 'model.layers.3.mlp.shared_expert_up_proj.weight']
+[pid=1140099] [INFO][furiosa.models.common.load.loader] Some weights of the model checkpoint at ./mini_models/mini-qwen3-next were not used when initializing Qwen3NextForCausalLM: ['model.layers.0.mlp.shared_expert.down_proj.weight', 'model.layers.0.mlp.shared_expert.gate_proj.weight', 'model.layers.0.mlp.shared_expert.up_proj.weight', 'model.layers.1.mlp.shared_expert.down_proj.weight', 'model.layers.1.mlp.shared_expert.gate_proj.weight', 'model.layers.1.mlp.shared_expert.up_proj.weight', 'model.layers.2.mlp.shared_expert.down_proj.weight', 'model.layers.2.mlp.shared_expert.gate_proj.weight', 'model.layers.2.mlp.shared_expert.up_proj.weight', 'model.layers.3.mlp.shared_expert.down_proj.weight', 'model.layers.3.mlp.shared_expert.gate_proj.weight', 'model.layers.3.mlp.shared_expert.up_proj.weight']
+- They have been ignored because strict=False.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] Generating ATen graph from torch ir graph.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] ATen graph generation took 4.38 seconds.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] 50 weights will be saved in separate param files instead of in the GraphModule caching.
+[pid=1140099] [WARNING][root] Detected dead nodes: set(). Since `color_dead_nodes_with_1=True`, they will remain in the graph and be assigned a color `1`.
+[pid=1140099] [WARNING][py.warnings] /home/jun/furiosa/lib/python3.12/site-packages/networkx/utils/backends.py:551: UserWarning: The hashes produced for directed graphs changed in version v3.5 due to a bugfix to track in and out edges separately (see documentation).
+  return self.orig_func(*args, **kwargs)
+
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Marking not repeating constants for blocks takes 0.00 seconds
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks took 2.21 seconds
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] Generating ATen graph from torch ir graph.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] ATen graph generation took 0.32 seconds.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] 50 weights will be saved in separate param files instead of in the GraphModule caching.
+[pid=1140099] [WARNING][root] Detected dead nodes: set(). Since `color_dead_nodes_with_1=True`, they will remain in the graph and be assigned a color `1`.
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Marking not repeating constants for blocks takes 0.00 seconds
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks took 0.43 seconds
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] Generating ATen graph from torch ir graph.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/trace.py] ATen graph generation took 4.45 seconds.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] 50 weights will be saved in separate param files instead of in the GraphModule caching.
+[pid=1140099] [WARNING][root] Detected dead nodes: set(). Since `color_dead_nodes_with_1=True`, they will remain in the graph and be assigned a color `1`.
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Marking not repeating constants for blocks takes 0.00 seconds
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [WARNING][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/export/graphmodule.py] Tensor with size will be included in serialized graph. Serialized graph size might be large.
+[pid=1140099] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] Add tensors and supertasks took 2.06 secondsModel Tracing Progress: 100%|██████████| 3/3 [01:01<00:00, 20.35s/it]Model Tracing Progress: 100%|██████████| 3/3 [01:01<00:00, 20.35s/it]Model Tracing Progress: 100%|██████████| 3/3 [01:03<00:00, 21.01s/it]                                                                     2026-06-10 17:06:59,691	INFO worker.py:2003 -- Started a local Ray instance. View the dashboard at [1m[32mhttp://127.0.0.1:8265 [39m[22m
+
+Compilation Progress:   0%|          | 0/9 [00:00<?, ?it/s]Compilation Progress:   0%|          | 0/9 [00:01<?, ?it/s]Compilation Progress:   0%|          | 0/9 [00:02<?, ?it/s]Compilation Progress:   0%|          | 0/9 [00:03<?, ?it/s][36m(pid=1187887)[0m /home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+[36m(pid=1187887)[0m   from furiosa.models.core.attention.backends import LLMAttentionBackend
+Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]                                                           Compilation Progress:   0%|          | 0/9 [00:04<?, ?it/s]Compilation Progress:   0%|          | 0/9 [12:23<?, ?it/s]                                                           [pid=1187887] [INFO][furiosa_llm.parallelize.compiler_config] Bucket batch_size=1 attention_size=128 kv_cache_size=0 is given for tokenwise-kernel compilation.
+[pid=1187887] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3_next, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=Embedding(), end=TransformerBlock(idx=0, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>))
+Bucket configuration: batch_size=1 attention_size=128 kv_cache_size=0
+Using activation dequantization: False
+[pid=1187887] [WARNING][furiosa_llm.parallelize.compiler_config] Failed to create compiler config with No compiler config available for model_type=qwen3_next, task=generate, approx_per_layer_params=0.0026B; using default compiler config.
+[pid=1187887] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compiling stage id: stage_0, symbol values: (SymbolVal(val='128'),), layer range: LayerRange(start=Embedding(), end=TransformerBlock(idx=0, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>))
+[pid=1187887] [INFO][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Generated graph metadata: ---
+is_composed_graph: false
+valid_length: ~
+tp_config:
+  inputs: {}
+  outputs: {}
+  operators: {}
+  fusion_groups: []
+schedule_context:
+  fusion_group_tree: ~
+
+[pid=1187887] [WARNING][py.warnings] /home/jun/furiosa/lib/python3.12/site-packages/networkx/utils/backends.py:551: UserWarning: The hashes produced for directed graphs changed in version v3.5 due to a bugfix to track in and out edges separately (see documentation).
+  return self.orig_func(*args, **kwargs)
+
+[pid=1187887] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] hash for the graph: ab3344aef0d23f6e73c9cc98c79263bd
+[pid=1187887] [INFO][furiosa_llm.parallelize.pipeline.builder.converter] will be using dump_tag as : ab3344aef0d23f6e73c9cc98c79263bd+1_128_128
+[pid=1187887] [ERROR][/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py] Compilation failed for stage id: stage_0, symbol values: (SymbolVal(val='128'),), layer range: LayerRange(start=Embedding(), end=TransformerBlock(idx=0, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>)). Error: Compilation error: Not importable for all cases, as_strided
+aten_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/aten_ops.rs:465:14
+model_compression_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_compression_ops.rs:37:14
+model_rewriter_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_rewriter_ops.rs:41:14
+compiled_ops_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/compiled_ops.rs:43:13
+metadata_err: Not importable as metadata op: Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/metadata_ops.rs:40:14
+marker_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/marker_ops.rs:23:14
+
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/mod.rs:644:13
+[pid=1187887] [INFO][furiosa_llm.parallelize.compiler_config] Creating compiler config
+Model type: qwen3_next, task: generate, ~0.0026B per-layer params
+Layer range details: LayerRange(start=TransformerBlock(idx=0, sub_layer=<SubLayerType.Attention: 'attention'>), end=None)
+Bucket configuration: batch_size=1 attention_size=128 kv_cache_size=0
+Using activation dequantization: False
+[pid=1187887] [WARNING][furiosa_llm.parallelize.compiler_config] Failed to create compiler config with No compiler config available for model_type=qwen3_next, task=generate, approx_per_layer_params=0.0026B; using default compiler config.
+Traceback (most recent call last):
+  File "/home/jun/furiosa/bin/furiosa-llm", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/main.py", line 28, in main
+    args.dispatch_function(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/convert.py", line 214, in convert
+    builder.build(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/artifact/builder.py", line 363, in build
+    target_model_artifact, target_model_pipelines = self._build_model_artifact(
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/artifact/builder.py", line 268, in _build_model_artifact
+    pipeline = next_gen.build_pipeline(
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py", line 1623, in build_pipeline
+    pipeline = get_compiled_pipeline(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py", line 1320, in get_compiled_pipeline
+    ray_results.append(ray.get(done_ref))
+                       ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 22, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 107, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/ray/_private/worker.py", line 2980, in get
+    values, debugger_breakpoint = worker.get_objects(
+                                  ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/ray/_private/worker.py", line 1023, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RuntimeError): [36mray::TaskCompileActor.compile_task()[39m (pid=1187887, ip=10.125.19.138, actor_id=5cd9b63691f08229dd0774a901000000, repr=<furiosa_llm.parallelize.new_pipeline_builder.TaskCompileActor object at 0x7ca1d4ae79e0>)
+               ^^^^^^^^
+RuntimeError: Not importable for all cases, as_strided
+aten_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/aten_ops.rs:465:14
+model_compression_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_compression_ops.rs:37:14
+model_rewriter_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_rewriter_ops.rs:41:14
+compiled_ops_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/compiled_ops.rs:43:13
+metadata_err: Not importable as metadata op: Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/metadata_ops.rs:40:14
+marker_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/marker_ops.rs:23:14
+
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/mod.rs:644:13
+
+During handling of the above exception, another exception occurred:
+
+[36mray::TaskCompileActor.compile_task()[39m (pid=1187887, ip=10.125.19.138, actor_id=5cd9b63691f08229dd0774a901000000, repr=<furiosa_llm.parallelize.new_pipeline_builder.TaskCompileActor object at 0x7ca1d4ae79e0>)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py", line 1165, in compile_task
+    compile_result, hash_val = GraphModuleConverter.compile_gm_and_get_preprocessed_gm_hash(
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/pipeline/builder/converter.py", line 932, in compile_gm_and_get_preprocessed_gm_hash
+    raise RuntimeError(f"Compilation error: {e}")
+RuntimeError: Compilation error: Not importable for all cases, as_strided
+aten_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/aten_ops.rs:465:14
+model_compression_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_compression_ops.rs:37:14
+model_rewriter_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_rewriter_ops.rs:41:14
+compiled_ops_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/compiled_ops.rs:43:13
+metadata_err: Not importable as metadata op: Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/metadata_ops.rs:40:14
+marker_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/marker_ops.rs:23:14
+
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/mod.rs:644:13
+
+The above exception was the direct cause of the following exception:
+
+[36mray::TaskCompileActor.compile_task()[39m (pid=1187887, ip=10.125.19.138, actor_id=5cd9b63691f08229dd0774a901000000, repr=<furiosa_llm.parallelize.new_pipeline_builder.TaskCompileActor object at 0x7ca1d4ae79e0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/new_pipeline_builder.py", line 1184, in compile_task
+    raise RuntimeError(error_message) from e
+RuntimeError: Compilation failed for stage id: stage_0, symbol values: (SymbolVal(val='128'),), layer range: LayerRange(start=Embedding(), end=TransformerBlock(idx=0, sub_layer=<SubLayerType.QkvProjection: 'qkv_projection'>)). Error: Compilation error: Not importable for all cases, as_strided
+aten_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/aten_ops.rs:465:14
+model_compression_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_compression_ops.rs:37:14
+model_rewriter_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/model_rewriter_ops.rs:41:14
+compiled_ops_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/compiled_ops.rs:43:13
+metadata_err: Not importable as metadata op: Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/metadata_ops.rs:40:14
+marker_err: Not importable, Node { origin: Py(0x7c97390ac1f0), name: "as_strided", op: CallFunction, target: TorchOp("aten::as_strided", Py(0x7c9884194f80)), args: [Node("view_copy_3"), List([Int(1), Int(128), Int(4), Int(64)]), List([Int(196608), Int(1536), Int(384), Int(1)]), Int(0)], kwargs: {}, stack_trace: None, meta: {"val": Py(0x7c97390d9310), "tensor_meta": Py(0x7c9738f937d0)}, tensor_meta: Some([TensorMeta { shape: [Const(1), Const(128), Const(4), Const(64)], dtype: Bfloat16, requires_grad: false, stride: [Const(196608), Const(1536), Const(384), Const(1)], memory_format: None, is_quantized: false, qparams: {} }]), users: ["clone_2"] }
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/marker_ops.rs:23:14
+
+
+Location:
+    /root/.cargo/git/checkouts/npu-tools-dec42ebd45bb55cf/5c885c7/crates/npu-torch-common/src/dfg_import/mod.rs:644:13

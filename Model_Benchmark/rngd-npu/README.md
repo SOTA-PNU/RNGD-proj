@@ -33,28 +33,43 @@ bash preflight.sh
 rngd-npu/
 ├── setup.sh              측정 도구 의존성 설치
 ├── preflight.sh          NPU·SDK·Docker·모델 점검
-├── run_all.sh            전체 측정 파이프라인
+├── run_all.sh            전체 측정 파이프라인 (단계별 wrapper)
 ├── eval_swebench.sh      SWE-bench 채점
+├── run_model.sh          한 모델만 빌드/서빙 (단일 카드)
+├── run_model_p.sh        한 모델만 빌드/서빙 (PP 사용)
+├── build_queue.sh        여러 모델을 순차로 빌드하는 큐
+├── quantize_fp8.py       NPU 용 FP8 양자화 변환 단일 스크립트
 ├── requirements.txt      측정용 추가 의존성
-├── orchestrator.py       모델별로 테스트를 자동 실행
-├── analyze.py            결과 모아서 표로 정리
-├── report.py             종합 리포트(REPORT.md) 생성
-├── swebench_eval.py      예측 파일을 Docker로 채점
 ├── configs/
 │   └── models.yaml       모델 목록, 서버 인자, 측정 설정
-├── runners/
-│   ├── server.py         furiosa-llm serve 띄우고 내리는 관리
-│   ├── tps.py            첫 토큰 지연, 토큰 간격, 처리량 측정
-│   ├── memory_sweep.py   서버 옵션을 바꿔가며 측정
-│   ├── embed_bench.py    임베딩·리랭커 처리량 측정
-│   └── swebench_run.py   SWE-bench 추론
-├── docs/
-│   ├── SWEBENCH_SETUP.md   SWE-bench 설명과 환경 구축
-│   ├── RUNNING_BENCHMARKS.md
-│   └── COMPILING_MODELS.md HF 모델을 직접 컴파일하는 방법
-├── artifacts/            직접 빌드한 모델 (선택)
+├── run_all/              run_all.sh 가 호출하는 파이썬 모음
+│   ├── orchestrator.py   모델별로 테스트를 자동 실행
+│   ├── analyze.py        결과 모아서 표로 정리
+│   ├── report.py         종합 리포트(REPORT.md) 생성
+│   ├── swebench_eval.py  예측 파일을 Docker로 채점
+│   └── runners/
+│       ├── server.py         furiosa-llm serve 띄우고 내리는 관리
+│       ├── tps.py            첫 토큰 지연, 토큰 간격, 처리량 측정
+│       ├── memory_sweep.py   서버 옵션을 바꿔가며 측정
+│       ├── embed_bench.py    임베딩·리랭커 처리량 측정
+│       └── swebench_run.py   SWE-bench 추론
+├── artifacts/            직접 빌드한 모델 (.gitignore 됨)
+├── log/                  빌드/서빙 로그
 └── results/              측정 결과 (자동 생성)
 ```
+
+각 영역 자세한 설명은 `Model_Benchmark/info/` 에 별도 정리되어 있습니다.
+
+| 정보성 문서 | 내용 |
+|---|---|
+| [info/README_runallsh.md](../info/README_runallsh.md) | `run_all.sh` + `run_all/` 안 파이썬들의 역할과 데이터 흐름 |
+| [info/README_build.md](../info/README_build.md) | `furiosa-llm build` 가이드 (옵션, 실패 패턴, 모델별 결과) |
+| [info/README_runcode.md](../info/README_runcode.md) | `furiosa-llm serve` 와 OpenAI 호환 API 호출 |
+| [info/README_preset.md](../info/README_preset.md) | `presets.py` 의 버킷 매칭 규칙과 새 모델 추가법 |
+| [info/README_config.md](../info/README_config.md) | HF `config.json` 의 필드를 furiosa-llm 빌드 관점에서 풀어 설명 |
+| [info/README_FCLM.md](../info/README_FCLM.md) | PP 미지원 `ForCausalLM` 을 SDK 에 직접 등록하는 절차 |
+| [info/BUILD_COMPIL.md](../info/BUILD_COMPIL.md) | `furiosa-llm build` 의 두 단계 (pipeline build · compile) |
+| [info/BUILD_FLOW.md](../info/BUILD_FLOW.md) | 빌드 내부 호출 흐름 (builder/validator/resolver/presets) |
 
 ## 측정 항목
 
@@ -69,21 +84,36 @@ rngd-npu/
 
 ## 모델 설정 (configs/models.yaml)
 
-모델 id의 `furiosa-ai/*`는 RNGD용으로 미리 컴파일된 prebuilt 모델입니다. 기본으로 켜져 있는 모델은
-다음과 같습니다.
+모델 id의 `furiosa-ai/*`는 RNGD용으로 미리 컴파일된 prebuilt 모델입니다. `enabled: true`인
+항목만 측정합니다. 이번에 실제로 측정한 모델은 다음 9개입니다. tp8 모델은 RNGD 1장(8 PE),
+tp32 모델은 4장(32 PE)을 씁니다. 결과 수치는 [REPORT.md](REPORT.md) 1절(TL;DR 표)에 있습니다.
 
-| 모델 | 역할 | 비고 |
+단일 카드(tp8, npu:0 1장):
+
+| 모델 | 역할 | serve 상태 |
 |---|---|---|
-| furiosa-ai/Qwen2.5-0.5B-Instruct | 동작 확인용 | 파이프라인 점검용, PE 4 |
-| furiosa-ai/Llama-3.1-8B-Instruct | 코드 생성 후보 | v2026.2 검증, PE 8, 1카드 |
-| furiosa-ai/Qwen3-Embedding-8B | 임베딩 | PE 8 |
-| furiosa-ai/Qwen3-Reranker-8B | 리랭커 | PE 8 |
+| Qwen2.5-Coder-1.5B-tp8 | 코드 생성 | serve·속도는 정상이나 **출력이 깨짐(gibberish)** — greedy에서도 깨지는 furiosa-llm 2026.2.0 컴파일 버그입니다. tied embedding을 의심해 untie 후 재빌드까지 했으나 똑같이 깨져 원인이 아니었습니다(같은 증상 0.5B도, swebench 0점). 로컬로는 못 살려 chat 목록에서 제거(2026-06-08). 코딩용은 coder7/14를 쓰세요. 상세: info/README_build.md 8.2 |
+| Qwen2.5-Coder-7B-tp8 | 코드 생성 | 정상 |
+| Qwen2.5-Coder-14B-tp8 | 코드 생성 | 정상 |
+| Qwen3-32B-FP8-tp8 | reasoning | serve는 되나 극저속. 서버 로그에 NPU `Unknown error -5`(엔진 종료) |
+| Qwen3-32B-FP8-tp8-16k | reasoning | serve는 되나 극저속. 위 모델의 max_model_len 16K 축소판 |
+| Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k | 코드 생성(MoE) | serve 실패. 런타임에 FP8 MoE 커널이 없어 패닉 |
 
-기본으로 꺼져 있는 모델은 RNGD 4장 이상 환경에서 켭니다.
+멀티 카드(tp32, npu:0~3 4장):
 
-`furiosa-ai/Qwen3-32B-FP8`, `furiosa-ai/EXAONE-4.0-32B-FP8`, `furiosa-ai/Llama-3.3-70B-Instruct`는
-prebuilt 모델이 `tensor_parallel=32`로 컴파일돼 있어서 RNGD 4장(32 PE)이 있어야 서빙됩니다.
-4장 환경이라면 yaml에서 `enabled: true`로 바꾸기만 하면 됩니다.
+| 모델 | 역할 | serve 상태 |
+|---|---|---|
+| EXAONE-4.0-32B-FP8-tp32 | 코드 생성 | 정상 |
+| Llama-3.3-70B-Instruct-tp32 | 코드 생성 | 정상 |
+| Qwen3-32B-FP8-tp32 | reasoning | serve는 되나 극저속 |
+
+극저속·serve 실패의 원인과 조치는 아래 '문제 해결' 표에 정리해 두었습니다.
+
+`*-tp32` 모델은 prebuilt 아티팩트가 `tensor_parallel=32`로 컴파일돼 있어서 RNGD 4장(32 PE)이
+있어야 서빙됩니다. 1장 환경에서는 yaml에서 해당 항목을 `enabled: false`로 두면 됩니다.
+임베딩·리랭커(`furiosa-ai/Qwen3-Embedding-8B`, `furiosa-ai/Qwen3-Reranker-8B`)와 동작 확인용
+`furiosa-ai/Qwen2.5-0.5B-Instruct`, 코드 생성 후보 `furiosa-ai/Llama-3.1-8B-Instruct`는 현재
+`enabled: false`라 이번 9개 측정에는 빠져 있습니다(과거 측정치는 REPORT.md에 남아 있습니다).
 
 새 모델은 `models:` 목록에 항목을 추가하면 되고, 측정 코드는 건드릴 필요가 없습니다.
 NPU를 여러 개 쓰려면 yaml 위쪽 `devices`를 `"npu:0,npu:1"`로 바꾸거나 모델 serve_args에
@@ -152,4 +182,7 @@ NPU와 GPU 결과를 같은 조건으로 비교한 내용은
 | memsweep에서 메모리 부족 | `max_model_len`이나 `max_batch_size`를 줄여 다시 측정 |
 | prefix caching이 자동으로 꺼짐 | 모델에 extend bucket이 없으면 정상 동작. 작은 모델에서 흔함 |
 | SWE-bench 첫 실행이 매우 느림 | 항목별 기본 Docker 이미지를 빌드함 (수 시간). 이후로는 캐시됨 |
+| SWE-bench resolved가 전부 `(미채점)` | 추론은 됐으나 채점이 Docker 소켓 권한거부(`PermissionError(13)`)로 실패한 것. `eval_result.json`이 `returncode=1, report=None`이면 이 경우. 사용자를 `docker` 그룹에 추가(`sudo usermod -aG docker $USER` 후 재로그인)하거나 rootless Docker 사용 |
+| Qwen3-Coder 등 MoE(qwen3_moe) FP8 serve 실패 | 빌드는 되지만 serve에서 `Unsupported model metadata`로 패닉. 2026.2.0 런타임에 FP8 MoE 커널이 없음(BF16 MoE 커널만 존재). `info/README_build.md`의 qwen3_moe 항목 참고. 차기 SDK 대기 |
+| Qwen3-32B-FP8가 tps 0건·극저속 | tp8은 서버 로그에 NPU `Unknown error -5`(엔진 종료)가 찍힘. 세 변종 모두 TTFT 5~25초로 느려 동시성 tps가 타임아웃·실패. 단일 카드 FP8 reasoning 모델의 알려진 저성능 — `results/_server_logs/`의 해당 로그 확인 |
 | 접근 제한 모델 다운로드 실패 | `hf auth login` 후 HuggingFace 웹에서 라이선스 동의 |

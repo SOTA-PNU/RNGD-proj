@@ -1,0 +1,52 @@
+<patch>
+--- a/seaborn/_oldcore.py
++++ b/seaborn/_oldcore.py
+@@ -146,7 +146,7 @@
+     def _lookup_single(self, key):
+         """Get the attribute(s) values for the data key."""
+         if isinstance(key, (list, np.ndarray, pd.Series)):
+-            return [self._lookup_single(k, *args, **kwargs) for k in key]
++            return [self._lookup_single(k) for k in key]
+         else:
+             return self._lookup_single(key, *args, **kwargs)
+ 
+@@ -149,7 +149,7 @@
+     def _lookup_single(self, key):
+         """Get the color for a single value, using colormap to interpolate."""
+         try:
+-            # Use a value that's in the original data vector
++            # Use a value that's in the original data vector or the lookup table
+             value = self.lookup_table[key]
+         except KeyError:
+             # Use the colormap to interpolate between existing datapoints
+@@ -158,7 +158,7 @@
+                 try:
+                     normed = self.norm(key)
+                 except TypeError as err:
+-                    if np.isnan(key):
++                    if np.isnan(key) or np.isinf(key):
+                         value = (0, 0, 0, 0)
+                     else:
+                         raise err
+@@ -167,7 +167,7 @@
+                 if np.ma.is_masked(normed):
+                     normed = np.nan
+                 value = self.cmap(normed)
+-        return value
++        return value if value is not None else (0, 0, 0, 0)
+ 
+     def infer_map_type(self, palette, norm, input_format, var_type):
+         """Determine how to implement the mapping."""
+@@ -176,7 +176,7 @@
+             map_type = "categorical"
+         elif norm is not None:
+             map_type = "numeric"
+-        elif isinstance(palette, (dict, list)):
++        elif isinstance(palette, (dict, list, tuple)):
+             map_type = "categorical"
+         elif input_format == "wide":
+             map_type = "categorical"
+@@ -185,7 +185,7 @@
+ 
+     def categorical_mapping(self, data, palette, order):
+         """Determine colors when the

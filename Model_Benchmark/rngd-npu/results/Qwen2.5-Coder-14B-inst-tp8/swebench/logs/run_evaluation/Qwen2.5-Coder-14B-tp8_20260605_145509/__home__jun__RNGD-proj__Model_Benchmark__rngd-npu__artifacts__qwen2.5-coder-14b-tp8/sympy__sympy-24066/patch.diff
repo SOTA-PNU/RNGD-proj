@@ -1,0 +1,70 @@
+diff --git src/main/java/com/example/demo/DemoApplication.java src/main/java/com/example/demo/DemoApplication.java
+
+index abcdef..ghijkl..mnopqr
+
+--- src/main/java/com/example/demo/DemoApplication.java
+
++++ src/main/java/com/example/demo/DemoApplication.java
+
+@@\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+
+@@\+\+\+\+\+\+\+\+\+\+
+
+@@\@\@ \-
+
+\+
+
+@@\@\@ \-
+
+\+
+
+@@\@\@ \-
+
+\+
+
+@@\@\@ \-
+
+\+
+
+@@\@\@ \-
+
+public static void main(String[] args)
+
+{
+
+SpringApplication.run(DemoApplication.class,
+
+args);
+
+}
+
+}
+
+diff --git src/main/resources/application.properties src/main/resources/application.properties
+
+index stuvwx..yzabcd..efghij
+
+--- src/main/resources/application.properties
+
++++ src/main/resources/application.properties
+
+@@\=\=\=\=\=\=\=
+
+server.port=
+
+diff --git pom.xml pom.xml
+
+index klmnop..qrstuv..wxyzab
+
+--- pom.xml +++ pom.xml @@\-\\\-\\\-\\\-\\\-\\\-\\\-\\\-\\\-\\\-
+
+\\\+
+
+\\\+
+
+\\\+
+
+\\\+
+
+\\\+
+```

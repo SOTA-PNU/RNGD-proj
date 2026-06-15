@@ -1,0 +1,48 @@
+
+--- a/sklearn/preprocessing/label.py
++++ b/sklearn/preprocessing/label.py
+@@ -133,7 +133,7 @@
+     def transform(self, y):
+         """Transform labels to normalized encoding.
+ 
+-        Parameters
++        Parameters:
+         ----------
+         y : array-like of shape [n_samples]
+             Target values.
+@@ -141,7 +141,7 @@
+         Returns
+         -------
+         y : array-like of shape [n_samples]
+-        """
++        """
+         check_is_fitted(self, 'classes_')
+         y = column_or_1d(y, warn=True)
+ 
+@@ -150,7 +150,7 @@
+             diff = np.setdiff1d(classes, self.classes_)
+             raise ValueError(
+                     "y contains previously unseen labels: %s" % str(diff))
+-        return np.searchsorted(self.classes_, y)
++        return np.searchsorted(self.classes_, y, side='left')
+ 
+     def inverse_transform(self, y):
+         """Transform labels back to original encoding.
+@@ -159,7 +159,7 @@
+         Parameters
+         ----------
+         y : numpy array of shape [n_samples]
+-            Target values.
++            Target values.
+ 
+         Returns
+         -------
+@@ -168,7 +168,7 @@
+         check_is_fitted(self, 'classes_')
+ 
+         diff = np.setdiff1d(y, np.arange(len(self.classes_)))
+-        if len(diff):
++        if len(diff) > 0:
+             raise ValueError(
+                     "y contains previously unseen labels: %s" % str(diff))
+         y = np.asarray(y)

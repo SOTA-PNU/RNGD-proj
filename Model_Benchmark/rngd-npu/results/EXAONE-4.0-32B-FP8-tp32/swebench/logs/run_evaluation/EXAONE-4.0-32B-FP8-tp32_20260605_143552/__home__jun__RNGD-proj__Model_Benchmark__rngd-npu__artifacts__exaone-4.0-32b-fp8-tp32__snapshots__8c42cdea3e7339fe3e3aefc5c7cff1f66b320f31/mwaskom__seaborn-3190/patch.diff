@@ -1,0 +1,18 @@
+```diff --git a/seaborn/_core/scales.py b/seaborn/_core/scales.py
+@@ -351,7 +351,11 @@ class ContinuousBase(Scale):
+         if prop.normed:
+             if new.norm is None:
+                 vmin, vmax = data.min(), data.max()
+-             else:
+-                 vmin, vmax = new.norm
++             else:
++                 vmin, vmax = new.norm
++             vmin, vmax = axis.convert_units((vmin, vmax))
++             a = forward(vmin)
++             b = forward(vmax) - forward(vmin)
+             def normalize(x):
+                 return (x - a) / b
+         else:
+             normalize = vmin = vmax = None
+         new._pipeline = [
+```

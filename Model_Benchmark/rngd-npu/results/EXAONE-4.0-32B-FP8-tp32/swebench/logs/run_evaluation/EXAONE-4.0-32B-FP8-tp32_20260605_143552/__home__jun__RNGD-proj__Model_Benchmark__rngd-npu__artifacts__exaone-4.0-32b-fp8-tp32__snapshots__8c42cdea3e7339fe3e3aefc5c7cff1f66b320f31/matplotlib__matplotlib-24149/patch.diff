@@ -1,0 +1,33 @@
+<patch>
+--- lib/matplotlib/axes/_axes.py
++++ lib/matplotlib/axes/_axes.py
+@@ -1421,7 +1421,7 @@
+         if xscale == 'log':
+             if np.any(x <= 0.0):
+                 raise ValueError("x contains non-positive values, so can not "
+-                    "be log-scaled")
++                    "be log-scaled")
+         if yscale == 'log':
+             if np.any(y <= 0.0):
+                 raise ValueError("y contains non-positive values, so can not "
+@@ -1429,7 +1429,7 @@
+         if xscale == 'log':
+             tx = np.log10(tx)
+         if yscale == 'log':
+-            ty = np.log10(ty)
++            ty = np.log10(ty)
+ 
+         nx1 = nx + 1
+         ny1 = ny + 1
+         nx2 = nx
+         ny2 = ny
+         n = nx1 * ny1 + nx2 * ny2
+@@ -1437,7 +1437,7 @@
+         ix = (tx - xmin) / sx
+         iy = (ty - ymin) / sy
+         ix1 = np.round(ix).astype(int)
+-        iy1 = np.round(iy).astype(int)
++        iy1 = np.round(iy).astype(int)
+         ix2 = np.floor(ix).astype(int)
+         iy2 = np.floor(iy).astype(int)
+         i1 = np.where((0 <= ix1) & (ix1 < nx1) & (0 <= iy1) & (iy1 < ny1),

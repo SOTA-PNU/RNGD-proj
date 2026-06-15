@@ -1,0 +1,48 @@
+2026-06-09 21:37:37,840 - INFO - Creating container for django__django-11049...
+2026-06-09 21:37:38,573 - INFO - Container for django__django-11049 created: 02c2a5de7a2d715a5cf0f48b2cfefb0beabbb3f88c258dbd24d1253e4b75e04d
+2026-06-09 21:37:38,783 - INFO - Container for django__django-11049 started: 02c2a5de7a2d715a5cf0f48b2cfefb0beabbb3f88c258dbd24d1253e4b75e04d
+2026-06-09 21:37:38,783 - INFO - Intermediate patch for django__django-11049 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/django__django-11049/patch.diff, now applying to container...
+2026-06-09 21:37:38,992 - INFO - >>>>> Applied Patch:
+Checking patch django/db/models/fields/__init__.py...
+Hunk #1 succeeded at 1597 (offset 1396 lines).
+Applied patch django/db/models/fields/__init__.py cleanly.
+
+2026-06-09 21:37:39,661 - INFO - Git diff before:
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index f32ce64629..b85367a672 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -1597,7 +1597,7 @@ class DurationField(Field):
+     def to_python(self, value):
+         if value is None:
+             return value
+-        if isinstance(value, datetime.timedelta):
++        if isinstance(value, (datetime.timedelta, str)):
+             return value
+         try:
+             parsed = parse_duration(value)
+2026-06-09 21:37:39,661 - INFO - Eval script for django__django-11049 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/django__django-11049/eval.sh; copying to container...
+2026-06-09 21:37:45,498 - INFO - Test runtime: 5.75 seconds
+2026-06-09 21:37:45,499 - INFO - Test output for django__django-11049 written to logs/run_evaluation/base_completion_fairver/qwen2.5-coder-14b-tp8__completion/django__django-11049/test_output.txt
+2026-06-09 21:37:45,593 - INFO - Git diff after:
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index f32ce64629..b85367a672 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -1597,7 +1597,7 @@ class DurationField(Field):
+     def to_python(self, value):
+         if value is None:
+             return value
+-        if isinstance(value, datetime.timedelta):
++        if isinstance(value, (datetime.timedelta, str)):
+             return value
+         try:
+             parsed = parse_duration(value)
+2026-06-09 21:37:45,594 - INFO - Grading answer for django__django-11049...
+2026-06-09 21:37:45,595 - INFO - report: {'django__django-11049': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_invalid_string (model_fields.test_durationfield.TestValidation)']}, 'PASS_TO_PASS': {'success': ['test_dumping (model_fields.test_durationfield.TestSerialization)', 'test_formfield (model_fields.test_durationfield.TestFormField)', 'test_exact (model_fields.test_durationfield.TestQuerying)', 'test_gt (model_fields.test_durationfield.TestQuerying)', 'test_create_empty (model_fields.test_durationfield.TestSaveLoad)', 'test_fractional_seconds (model_fields.test_durationfield.TestSaveLoad)', 'test_simple_roundtrip (model_fields.test_durationfield.TestSaveLoad)'], 'failure': ['test_loading (model_fields.test_durationfield.TestSerialization)']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-11049: resolved: False
+2026-06-09 21:37:45,596 - INFO - Attempting to stop container sweb.eval.django__django-11049.base_completion_fairver...
+2026-06-09 21:38:00,928 - INFO - Attempting to remove container sweb.eval.django__django-11049.base_completion_fairver...
+2026-06-09 21:38:01,131 - INFO - Container sweb.eval.django__django-11049.base_completion_fairver removed.
+2026-06-09 21:38:01,131 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.django_1776_django-11049:latest...
+2026-06-09 21:38:02,789 - INFO - Image swebench/sweb.eval.x86_64.django_1776_django-11049:latest removed.

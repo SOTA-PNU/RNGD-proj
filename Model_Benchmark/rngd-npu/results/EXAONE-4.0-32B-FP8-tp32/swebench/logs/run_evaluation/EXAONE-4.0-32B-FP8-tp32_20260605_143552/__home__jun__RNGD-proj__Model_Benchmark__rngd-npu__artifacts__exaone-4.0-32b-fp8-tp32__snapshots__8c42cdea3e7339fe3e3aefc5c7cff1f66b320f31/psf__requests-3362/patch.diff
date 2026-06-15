@@ -1,0 +1,26 @@
+The issue appears to be about understanding the behavior of `iter_content()` versus `text` in the requests library. Based on the provided code, I'll create a patch that clarifies the behavior in the documentation.
+
+Here's the patch:
+
+```diff --git a/README.rst b/README.rst
+@@ -25,6 +25,15 @@
+     >>> r.headers['content-type']
+     'application/json; charset=utf8'
+     >>> r.encoding
+-    'utf-8'
++    'utf-8'
++
++    When requesting an application/json document:
++    - r.text always returns a unicode string
++    - r.iter_content(decode_unicode=True) returns unicode strings when decode_unicode=True
++    - r.iter_content(decode_unicode=False) returns bytes
++    - r.iter_content() (no args) is equivalent to r.iter_content(decode_unicode=True)
++
++    Note: The behavior of iter_content() depends on the decode_unicode parameter:
++    - True: returns decoded unicode strings
++    - False: returns raw bytes
++    - Not specified: defaults to True (unicode strings)
+     >>> r.text
+     u'{"type":"User"...'
+     >>> r.json()
+```

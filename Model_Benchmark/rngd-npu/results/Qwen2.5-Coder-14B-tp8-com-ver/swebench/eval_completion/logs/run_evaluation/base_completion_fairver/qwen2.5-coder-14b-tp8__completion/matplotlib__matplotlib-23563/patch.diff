@@ -1,0 +1,11 @@
+
+--- a/lib/mpl_toolkits/mplot3d/art3d.py
++++ b/lib/mpl_toolkits/mplot3d/art3d.py
+@@ -169,7 +169,7 @@
+     def set_3d_properties(self, zs=0, zdir='z'):
+         xs = self.get_xdata()
+         ys = self.get_ydata()
+-        zs = np.broadcast_to(zs, len(xs))
++        zs = np.broadcast_to(zs, len(xs)).astype(float)
+         self._verts3d = juggle_axes(xs, ys, zs, zdir)
+         self.stale = True

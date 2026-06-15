@@ -1,0 +1,757 @@
+{
+  "input": 3,
+  "filter": 4,
+  "vrfs": [],
+  "output": 5,
+  "inner": {
+    "dpe_element_type": "Bfloat16",
+    "trf_element_type": "Bfloat16",
+    "split": {
+      "axes": []
+    },
+    "chip": {
+      "axes": []
+    },
+    "cluster": {
+      "axes": []
+    },
+    "slice_dummy": {
+      "axes": []
+    },
+    "pe": {
+      "axes": []
+    },
+    "slice": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "1"
+              },
+              "stride": 1024
+            }
+          },
+          "size": 4,
+          "is_input_tile": false,
+          "is_filter_tile": true,
+          "is_contraction": false
+        },
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "0"
+              },
+              "stride": 32
+            }
+          },
+          "size": 8,
+          "is_input_tile": true,
+          "is_filter_tile": false,
+          "is_contraction": false
+        }
+      ]
+    },
+    "ve_gat": {
+      "axes": []
+    },
+    "gat": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "2"
+              },
+              "stride": 256
+            }
+          },
+          "size": 2,
+          "is_input_tile": false,
+          "is_filter_tile": false,
+          "is_contraction": true
+        }
+      ]
+    },
+    "segment": {
+      "axes": []
+    },
+    "outer_acc": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "1"
+              },
+              "stride": 32
+            }
+          },
+          "size": 32,
+          "is_input_tile": false,
+          "is_filter_tile": true,
+          "is_contraction": false
+        }
+      ]
+    },
+    "ve_acc": {
+      "axes": []
+    },
+    "acc": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "2"
+              },
+              "stride": 1
+            }
+          },
+          "size": 32,
+          "is_input_tile": false,
+          "is_filter_tile": false,
+          "is_contraction": true
+        },
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "2"
+              },
+              "stride": 64
+            }
+          },
+          "size": 4,
+          "is_input_tile": false,
+          "is_filter_tile": false,
+          "is_contraction": true
+        },
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "2"
+              },
+              "stride": 32
+            }
+          },
+          "size": 2,
+          "is_input_tile": false,
+          "is_filter_tile": false,
+          "is_contraction": true
+        }
+      ]
+    },
+    "shift_reuse_acc": {
+      "axes": []
+    },
+    "feed_reuse": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "0"
+              },
+              "stride": 1
+            }
+          },
+          "size": 4,
+          "is_input_tile": true,
+          "is_filter_tile": false,
+          "is_contraction": false
+        }
+      ]
+    },
+    "feed_reuse_acc": {
+      "axes": []
+    },
+    "mac_rows": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "0"
+              },
+              "stride": 16
+            }
+          },
+          "size": 2,
+          "is_input_tile": true,
+          "is_filter_tile": false,
+          "is_contraction": false
+        },
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "0"
+              },
+              "stride": 4
+            }
+          },
+          "size": 4,
+          "is_input_tile": true,
+          "is_filter_tile": false,
+          "is_contraction": false
+        }
+      ]
+    },
+    "dpe_reg_tile": {
+      "axes": [
+        {
+          "tag": {
+            "LabelStride": {
+              "label": {
+                "inner": "1"
+              },
+              "stride": 1
+            }
+          },
+          "size": 32,
+          "is_input_tile": false,
+          "is_filter_tile": true,
+          "is_contraction": false
+        }
+      ]
+    },
+    "dpe_elementwise": {
+      "axes": []
+    },
+    "lat": {
+      "axes": []
+    },
+    "ve_reduce_labels": []
+  },
+  "tail_padding": [
+    0,
+    0
+  ],
+  "reduce_mode": "Add",
+  "slidings": [],
+  "ve_pass": {
+    "inputs": [
+      "Sram"
+    ],
+    "pass_contexts": [
+      {
+        "ve_pass": {
+          "input_shape": {
+            "shape": [
+              [
+                "Partitioning",
+                [
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 1024
+                          }
+                        },
+                        "size": 4
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 32
+                          }
+                        },
+                        "size": 8
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "2"
+                            },
+                            "stride": 256
+                          }
+                        },
+                        "size": 2
+                      },
+                      "aliases": []
+                    }
+                  }
+                ]
+              ],
+              [
+                "InSlice",
+                [
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 32
+                          }
+                        },
+                        "size": 32
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 1
+                          }
+                        },
+                        "size": 4
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 4
+                          }
+                        },
+                        "size": 8
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 8
+                          }
+                        },
+                        "size": 4
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 1
+                          }
+                        },
+                        "size": 8
+                      },
+                      "aliases": [
+                        {
+                          "Outer": {
+                            "inner": "ve_way"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              ]
+            ],
+            "packing": {
+              "map": {}
+            },
+            "offset_shape": {
+              "map": {
+                "inner": []
+              }
+            },
+            "indirect_vecs": {
+              "id_to_ind_access": {}
+            },
+            "tail_alignment": 8,
+            "calculation_buffer_config": "NoConfig"
+          },
+          "input_element_type": "Float32",
+          "rhs_shapes": [],
+          "branch_log_shape": null,
+          "cache_shape": null,
+          "cache_element_type": null,
+          "cache_size_in_8way": null,
+          "original_shape": null,
+          "output_shape": {
+            "shape": [
+              [
+                "Partitioning",
+                [
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 1024
+                          }
+                        },
+                        "size": 4
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 16
+                          }
+                        },
+                        "size": 16
+                      },
+                      "aliases": []
+                    }
+                  }
+                ]
+              ],
+              [
+                "InSlice",
+                [
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 32
+                          }
+                        },
+                        "size": 32
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 1
+                          }
+                        },
+                        "size": 4
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 4
+                          }
+                        },
+                        "size": 4
+                      },
+                      "aliases": []
+                    }
+                  },
+                  {
+                    "Axis": {
+                      "kind": "Orig",
+                      "axis": {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 1
+                          }
+                        },
+                        "size": 32
+                      },
+                      "aliases": []
+                    }
+                  }
+                ]
+              ]
+            ],
+            "packing": {
+              "map": {}
+            },
+            "offset_shape": {
+              "map": {
+                "inner": []
+              }
+            },
+            "indirect_vecs": {
+              "id_to_ind_access": {}
+            },
+            "tail_alignment": 8,
+            "calculation_buffer_config": "NoConfig"
+          },
+          "output_element_type": "Float32",
+          "nodes": [
+            {
+              "alu_id": 21,
+              "pass_op": {
+                "GlobalReduce": {
+                  "op": "GlobalReduceAddF",
+                  "reduction_ratio": 2,
+                  "promoted_partitioning_shape": {
+                    "inner": [
+                      {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "1"
+                            },
+                            "stride": 1024
+                          }
+                        },
+                        "size": 4
+                      },
+                      {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 32
+                          }
+                        },
+                        "size": 8
+                      },
+                      {
+                        "tag": {
+                          "LabelStride": {
+                            "label": {
+                              "inner": "0"
+                            },
+                            "stride": 16
+                          }
+                        },
+                        "size": 2
+                      }
+                    ]
+                  }
+                }
+              },
+              "branches": [
+                {
+                  "operand": null,
+                  "operand2": null,
+                  "valid_branch_ids": "ValidAlways"
+                }
+              ]
+            }
+          ],
+          "gen_branch": "WithNone",
+          "aug_branch": "WithNone",
+          "write_log": false,
+          "is_split_concat_noop": true,
+          "num_branch_ids": 1,
+          "is_valid_count_simulated_by_branch": false,
+          "cache_write_back_option": "WriteBack"
+        },
+        "lhs": {
+          "External": 0
+        },
+        "rhs_map": {
+          "vrfs": [],
+          "scalar_reg_srams": []
+        },
+        "branch_log": null,
+        "interleaving_group_0_operand": null,
+        "input_shape": null,
+        "output_shape": {
+          "shape": [
+            [
+              "Partitioning",
+              [
+                {
+                  "Axis": {
+                    "kind": "Orig",
+                    "axis": {
+                      "tag": {
+                        "LabelStride": {
+                          "label": {
+                            "inner": "1"
+                          },
+                          "stride": 1024
+                        }
+                      },
+                      "size": 4
+                    },
+                    "aliases": []
+                  }
+                },
+                {
+                  "Axis": {
+                    "kind": "Orig",
+                    "axis": {
+                      "tag": {
+                        "LabelStride": {
+                          "label": {
+                            "inner": "0"
+                          },
+                          "stride": 16
+                        }
+                      },
+                      "size": 16
+                    },
+                    "aliases": []
+                  }
+                }
+              ]
+            ],
+            [
+              "InSlice",
+              [
+                {
+                  "Axis": {
+                    "kind": "Orig",
+                    "axis": {
+                      "tag": {
+                        "LabelStride": {
+                          "label": {
+                            "inner": "1"
+                          },
+                          "stride": 32
+                        }
+                      },
+                      "size": 32
+                    },
+                    "aliases": []
+                  }
+                },
+                {
+                  "Axis": {
+                    "kind": "Orig",
+                    "axis": {
+                      "tag": {
+                        "LabelStride": {
+                          "label": {
+                            "inner": "0"
+                          },
+                          "stride": 1
+                        }
+                      },
+                      "size": 4
+                    },
+                    "aliases": []
+                  }
+                },
+                {
+                  "Axis": {
+                    "kind": "Orig",
+                    "axis": {
+                      "tag": {
+                        "LabelStride": {
+                          "label": {
+                            "inner": "0"
+                          },
+                          "stride": 4
+                        }
+                      },
+                      "size": 4
+                    },
+                    "aliases": []
+                  }
+                },
+                {
+                  "Axis": {
+                    "kind": "Orig",
+                    "axis": {
+                      "tag": {
+                        "LabelStride": {
+                          "label": {
+                            "inner": "1"
+                          },
+                          "stride": 1
+                        }
+                      },
+                      "size": 32
+                    },
+                    "aliases": []
+                  }
+                }
+              ]
+            ]
+          ],
+          "packing": {
+            "map": {}
+          },
+          "offset_shape": {
+            "map": {
+              "inner": []
+            }
+          },
+          "indirect_vecs": {
+            "id_to_ind_access": {}
+          },
+          "tail_alignment": 8,
+          "calculation_buffer_config": "NoConfig"
+        }
+      }
+    ],
+    "mask_operands": []
+  },
+  "acc_major_mode": "RowMajor",
+  "input_zero_point": "None",
+  "filter_zero_point": "None"
+}

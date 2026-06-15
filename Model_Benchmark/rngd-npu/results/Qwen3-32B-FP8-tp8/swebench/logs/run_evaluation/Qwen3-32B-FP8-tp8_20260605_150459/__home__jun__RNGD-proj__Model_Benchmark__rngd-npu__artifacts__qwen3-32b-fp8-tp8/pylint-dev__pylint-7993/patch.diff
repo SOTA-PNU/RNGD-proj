@@ -1,0 +1,34 @@
+<think>
+Okay, let's see. The user is having an issue where using custom braces in the message template for Pylint isn't working as expected. Specifically, when they try to use a template like '{{ "Category": "{category}" }}', it's not recognized in Pylint 2.12.2 but worked in an older version. The problem seems to be in the text.py file of the reporters.
+
+Looking at the code, in the TextReporter class, there's a method called on_set_current_module. In there, they process the message template. They use a regular expression to find all the arguments in the template. The regex is r"\{(.+?)(:.*)?\}", which captures the argument name and any format specifiers. Then, for each argument, they check if the first part (before the colon) is in MESSAGE_FIELDS. If not, they issue a warning and remove that part from the template.
+
+The user's template is '{{ "Category": "{category}" }}'. The outer braces are for the entire structure, and the inner {category} is a placeholder. The problem is that the regex is matching the entire { "Category": ... } as an argument. Let's break it down.
+
+The regex looks for { followed by some text. In the user's case, the first occurrence is { "Category": ... }, which the regex would capture " "Category": ... as the argument name. But since the actual field is "category" (lowercase), it's not in MESSAGE_FIELDS, leading to the warning and removal.
+
+Wait, but in the code, MESSAGE_FIELDS is a set of the Message class's field names. The user's template has {category} (lowercase), which should be valid. But the outer braces are causing the regex to think that the entire { "Category": ... } is an argument. However, the code is processing each match and checking if the argument (the part inside the braces) is valid. The outer braces are part of the template's structure, not a placeholder. But the code is treating them as a placeholder argument.
+
+Ah, the issue is that the code is using a regex that matches any curly-braced content as an argument, including the outer braces in the user's template. For example, the user's template starts with {, which the regex sees as an argument. The regex is too broad and doesn't distinguish between the outer braces of a data structure and the actual placeholders.
+
+In the older version (1.7.4), maybe the code didn't perform this check, allowing any template. But in the newer version (2.12.2), they added this check, which is now causing the problem. The code is incorrectly identifying the outer braces as an argument to be checked against MESSAGE_FIELDS.
+
+So, how to fix this? The regex should only match the placeholders that are part of the Message's fields. The outer braces in the user's template are just part of the JSON structure and not placeholders. The current regex is too greedy and captures them as arguments.
+
+The solution is to adjust the regex to correctly identify only the placeholders that are intended to be replaced by Message fields. The current regex is r"\{(.+?)(:.*)?\}". It matches any { followed by some text, which includes the entire { "Category": ... } as an argument. But the actual placeholders are the {category} inside. The outer braces are not placeholders but part of the JSON syntax.
+
+So, the regex needs to be modified to only match placeholders that are valid Message fields. Perhaps the regex should look for { followed by a valid identifier (like the Message fields) and then optional format specifiers. For example, using a pattern that matches {category}, {msg}, etc., but not { "Category": ... }.
+
+The current code uses re.findall(r"\{(.+?)(:.*)?\}", template) to find all arguments. The first group is the argument name. The problem is that the regex is capturing everything between { and }, including the entire JSON structure. We need to adjust the regex to only capture the placeholders that are valid Message fields.
+
+Maybe the regex should be adjusted to look for { followed by a word (like \w+) and optional format specifiers. For example, r"\{(\w+)(:.*)?\}". This way, it would only capture arguments like {category}, {msg}, etc., and ignore the outer braces of the JSON structure, which contain spaces and other characters.
+
+In the current code, the regex is using .+? which matches any character (except newline) non-greedily. Changing that to \w+ would make it match only word characters, which are the valid field names. This would prevent the outer braces from being considered as arguments.
+
+So, modifying line 178 in text.py from:
+
+arguments = re.findall(r"\{(.+?)(:.*)?\}", template)
+
+to:
+
+arguments = re.findall(r"\{(\w+)(:.*)?\}", template

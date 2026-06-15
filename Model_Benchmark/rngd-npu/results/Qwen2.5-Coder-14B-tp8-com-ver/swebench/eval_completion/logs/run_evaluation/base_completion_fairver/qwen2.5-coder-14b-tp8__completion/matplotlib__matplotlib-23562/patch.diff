@@ -1,0 +1,12 @@
+
+--- a/lib/mpl_toolkits/mplot3d/art3d.py
++++ b/lib/mpl_toolkits/mplot3d/art3d.py
+@@ -627,6 +627,7 @@
+     def get_facecolor(self):
+         return self._maybe_depth_shade_and_sort_colors(super().get_facecolor())
+ 
++    def get_facecolors(self):
++        return self.get_facecolor()
+ 
+     def get_edgecolor(self):
+         # We need this check here to make sure we do not double-apply the depth

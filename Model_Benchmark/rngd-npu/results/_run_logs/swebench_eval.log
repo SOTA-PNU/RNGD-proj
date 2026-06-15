@@ -1,177 +1,1210 @@
 /home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
   warnings.warn(
 <frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
-2026-05-21 16:34:06,588 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
-2026-05-21 16:34:06,606 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
-2026-05-21 16:34:06,825 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:07,533 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:07,814 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
-2026-05-21 16:34:08,047 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:08,775 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
-2026-05-21 16:34:09,040 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
-2026-05-21 16:34:09,259 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
-2026-05-21 16:34:09,480 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:09,745 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
-2026-05-21 16:34:09,760 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
-2026-05-21 16:34:09,979 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:10,204 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:10,421 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
-2026-05-21 16:34:10,645 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
-2026-05-21 16:34:10,857 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
-Running 50 instances...
-Evaluation:   0%|          | 0/50 [00:00<?, ?it/s, error=0, ✓=0, ✖=0]Evaluation:   0%|          | 0/50 [01:16<?, ?it/s, ✓=0, ✖=0, error=1]Evaluation:   2%|▏         | 1/50 [01:16<1:02:07, 76.08s/it, ✓=0, ✖=0, error=1]Evaluation:   2%|▏         | 1/50 [01:16<1:02:07, 76.08s/it, ✓=0, ✖=0, error=2]Evaluation:   4%|▍         | 2/50 [01:18<1:00:51, 76.08s/it, ✓=0, ✖=0, error=3]Evaluation:   6%|▌         | 3/50 [01:18<16:15, 20.75s/it, ✓=0, ✖=0, error=3]  Evaluation:   6%|▌         | 3/50 [01:21<16:15, 20.75s/it, ✓=0, ✖=0, error=4]Evaluation:   8%|▊         | 4/50 [01:21<11:02, 14.41s/it, ✓=0, ✖=0, error=4]Evaluation:   8%|▊         | 4/50 [01:27<11:02, 14.41s/it, ✓=0, ✖=1, error=4]Evaluation:  10%|█         | 5/50 [01:27<08:51, 11.81s/it, ✓=0, ✖=1, error=4]Evaluation:  10%|█         | 5/50 [01:51<08:51, 11.81s/it, ✓=0, ✖=2, error=4]Evaluation:  12%|█▏        | 6/50 [01:51<11:24, 15.56s/it, ✓=0, ✖=2, error=4]Evaluation:  12%|█▏        | 6/50 [01:51<11:24, 15.56s/it, ✓=0, ✖=3, error=4]Evaluation:  14%|█▍        | 7/50 [01:51<07:46, 10.84s/it, ✓=0, ✖=3, error=4]Evaluation:  14%|█▍        | 7/50 [02:10<07:46, 10.84s/it, ✓=0, ✖=4, error=4]Evaluation:  16%|█▌        | 8/50 [02:10<09:16, 13.26s/it, ✓=0, ✖=4, error=4]Evaluation:  16%|█▌        | 8/50 [02:12<09:16, 13.26s/it, ✓=0, ✖=5, error=4]Evaluation:  18%|█▊        | 9/50 [02:12<06:38,  9.72s/it, ✓=0, ✖=5, error=4]Evaluation:  18%|█▊        | 9/50 [02:13<06:38,  9.72s/it, ✓=0, ✖=5, error=5]Evaluation:  20%|██        | 10/50 [02:13<04:43,  7.08s/it, ✓=0, ✖=5, error=5]Evaluation:  20%|██        | 10/50 [03:19<04:43,  7.08s/it, ✓=0, ✖=5, error=6]Evaluation:  22%|██▏       | 11/50 [03:19<16:16, 25.04s/it, ✓=0, ✖=5, error=6]Evaluation:  22%|██▏       | 11/50 [03:19<16:16, 25.04s/it, ✓=0, ✖=5, error=7]Evaluation:  24%|██▍       | 12/50 [03:19<11:05, 17.50s/it, ✓=0, ✖=5, error=7]Evaluation:  24%|██▍       | 12/50 [03:34<11:05, 17.50s/it, ✓=0, ✖=6, error=7]Evaluation:  26%|██▌       | 13/50 [03:34<10:16, 16.67s/it, ✓=0, ✖=6, error=7]Evaluation:  26%|██▌       | 13/50 [03:46<10:16, 16.67s/it, ✓=0, ✖=6, error=8]Evaluation:  28%|██▊       | 14/50 [03:46<09:10, 15.28s/it, ✓=0, ✖=6, error=8]Evaluation:  28%|██▊       | 14/50 [03:53<09:10, 15.28s/it, ✓=0, ✖=6, error=9]Evaluation:  30%|███       | 15/50 [03:53<07:22, 12.64s/it, ✓=0, ✖=6, error=9]Evaluation:  30%|███       | 15/50 [03:53<07:22, 12.64s/it, ✓=0, ✖=6, error=10]Evaluation:  32%|███▏      | 16/50 [04:05<07:09, 12.64s/it, ✓=0, ✖=7, error=10]Evaluation:  34%|███▍      | 17/50 [04:05<05:21,  9.73s/it, ✓=0, ✖=7, error=10]Evaluation:  34%|███▍      | 17/50 [04:07<05:21,  9.73s/it, ✓=0, ✖=7, error=11]Evaluation:  36%|███▌      | 18/50 [04:07<04:05,  7.67s/it, ✓=0, ✖=7, error=11]Evaluation:  36%|███▌      | 18/50 [04:15<04:05,  7.67s/it, ✓=0, ✖=7, error=12]Evaluation:  38%|███▊      | 19/50 [04:15<04:04,  7.89s/it, ✓=0, ✖=7, error=12]Evaluation:  38%|███▊      | 19/50 [04:25<04:04,  7.89s/it, ✓=0, ✖=7, error=13]Evaluation:  40%|████      | 20/50 [04:25<04:12,  8.41s/it, ✓=0, ✖=7, error=13]django__django-13551: >>>>> Patch Apply Failed:
-patch: **** malformed patch at line 13:             a password reset.
+2026-06-05 01:49:43,635 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:43,651 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:43,867 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:44,573 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:44,794 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:49:45,010 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:45,335 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:49:45,550 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:49:45,769 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:49:45,993 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:46,248 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:46,265 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:46,473 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:46,689 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:46,908 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:47,136 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:49:47,352 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
 
-patching file django/contrib/auth/tokens.py
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/django__django-13551/run_instance.log) for more information.
-astropy__astropy-12907: >>>>> Patch Apply Failed:
-patch: **** malformed patch at line 51: -        if isinstance(input, Model):
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
-patching file astropy/modeling/separable.py
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/astropy__astropy-12907/run_instance.log) for more information.
-astropy__astropy-7746: >>>>> Patch Apply Failed:
-patching file astropy/wcs/wcs.py
-Hunk #1 succeeded at 1352 with fuzz 3.
-Hunk #2 succeeded at 1369 with fuzz 3 (offset 3 lines).
-Hunk #3 succeeded at 1405 (offset 24 lines).
-Hunk #4 succeeded at 2190 with fuzz 3 (offset 794 lines).
-Hunk #5 succeeded at 2208 with fuzz 3 (offset 797 lines).
-Hunk #6 FAILED at 1426.
-patch: **** malformed patch at line 66: @@ -1456,7 +1456,7 @@
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
+The above exception was the direct cause of the following exception:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/astropy__astropy-7746/run_instance.log) for more information.
-django__django-14016: >>>>> Patch Apply Failed:
-patching file django/db/models/query_utils.py
-Hunk #1 succeeded at 43 with fuzz 3.
-Hunk #2 succeeded at 64 with fuzz 2.
-patch: **** malformed patch at line 31:          path = '%s.%s' % (self.__class__.__module__, self.__class__.__name__)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:49:48,748 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:48,766 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:48,982 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:49,695 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:49,919 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:49:50,145 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:50,491 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:49:50,775 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:49:50,995 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:49:51,220 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:51,484 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:51,503 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:51,720 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:51,936 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:52,164 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:52,392 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:49:52,613 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
 
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/django__django-14016/run_instance.log) for more information.
-django__django-16527: >>>>> Patch Apply Failed:
-patching file django/contrib/admin/templatetags/admin_modify.py
-patch: **** malformed patch at line 14:      show_save = context.get("show_save", True)
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/django__django-16527/run_instance.log) for more information.
-mwaskom__seaborn-3010: >>>>> Patch Apply Failed:
-patching file seaborn/_stats/regression.py
-Hunk #1 FAILED at 30.
-Hunk #2 succeeded at 8 with fuzz 1 (offset -31 lines).
-1 out of 2 hunks FAILED -- saving rejects to file seaborn/_stats/regression.py.rej
-patch unexpectedly ends in middle of line
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/mwaskom__seaborn-3010/run_instance.log) for more information.
-mwaskom__seaborn-3190: >>>>> Patch Apply Failed:
-patching file seaborn/_core/scales.py
-Hunk #1 succeeded at 352 with fuzz 3 (offset 1 line).
-Hunk #2 FAILED at 359.
-1 out of 2 hunks FAILED -- saving rejects to file seaborn/_core/scales.py.rej
-patch unexpectedly ends in middle of line
+The above exception was the direct cause of the following exception:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/mwaskom__seaborn-3190/run_instance.log) for more information.
-matplotlib__matplotlib-24970: >>>>> Patch Apply Failed:
-patching file lib/matplotlib/colors.py
-Hunk #1 FAILED at 731.
-Hunk #2 FAILED at 732.
-Hunk #3 FAILED at 733.
-Hunk #4 FAILED at 734.
-4 out of 4 hunks FAILED -- saving rejects to file lib/matplotlib/colors.py.rej
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:49:54,015 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:54,032 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:54,242 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:54,959 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:55,180 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:49:55,394 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:55,698 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:49:55,915 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:49:56,135 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:49:56,354 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:56,612 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:56,630 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:56,840 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:57,059 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:57,282 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:49:57,511 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:49:57,740 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/matplotlib__matplotlib-24970/run_instance.log) for more information.
-mwaskom__seaborn-3407: >>>>> Patch Apply Failed:
-patch: **** malformed patch at line 15:  
+During handling of the above exception, another exception occurred:
 
-patching file seaborn/axisgrid.py
-patch unexpectedly ends in middle of line
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/mwaskom__seaborn-3407/run_instance.log) for more information.
-matplotlib__matplotlib-24149: >>>>> Patch Apply Failed:
-patching file lib/matplotlib/axes/_axes.py
-patch: **** malformed patch at line 57:  
+During handling of the above exception, another exception occurred:
 
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/matplotlib__matplotlib-24149/run_instance.log) for more information.
-pallets__flask-4045: >>>>> Patch Apply Failed:
-patching file src/flask/blueprints.py
-Hunk #2 FAILED at 371.
-Hunk #3 FAILED at 380.
-2 out of 3 hunks FAILED -- saving rejects to file src/flask/blueprints.py.rej
-patch unexpectedly ends in middle of line
+The above exception was the direct cause of the following exception:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/pallets__flask-4045/run_instance.log) for more information.
-pallets__flask-4992: >>>>> Patch Apply Failed:
-patching file src/flask/config.py
-Hunk #1 FAILED at 234.
-1 out of 1 hunk FAILED -- saving rejects to file src/flask/config.py.rej
-patch unexpectedly ends in middle of line
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:49:59,157 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:49:59,173 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:49:59,400 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:00,080 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:00,349 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:00,566 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:00,861 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:01,080 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:01,302 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:01,519 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:01,776 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:01,792 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:02,009 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:02,221 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:02,439 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:02,661 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:02,890 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/pallets__flask-4992/run_instance.log) for more information.
-matplotlib__matplotlib-25079: >>>>> Patch Apply Failed:
-patch: **** malformed patch at line 48: @@ -1463,6 +1469,7 @@
+During handling of the above exception, another exception occurred:
 
-patching file lib/matplotlib/colors.py
-Hunk #1 succeeded at 1968 with fuzz 1 (offset 623 lines).
-Hunk #2 succeeded at 1988 (offset 626 lines).
-Hunk #3 succeeded at 1996 with fuzz 1 (offset 583 lines).
-Hunk #4 succeeded at 2010 (offset 584 lines).
-Hunk #5 succeeded at 2020 (offset 573 lines).
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/matplotlib__matplotlib-25079/run_instance.log) for more information.
-matplotlib__matplotlib-25498: >>>>> Patch Apply Failed:
-patching file lib/matplotlib/colorbar.py
-Hunk #1 succeeded at 494 with fuzz 3.
-Hunk #2 succeeded at 515 with fuzz 3.
-Hunk #3 succeeded at 535 with fuzz 3.
-Hunk #4 succeeded at 558 with fuzz 3.
-Hunk #5 succeeded at 580 with fuzz 3.
-Hunk #6 succeeded at 602 with fuzz 3.
-Hunk #7 succeeded at 624 with fuzz 3.
-Hunk #8 succeeded at 646 with fuzz 3.
-Hunk #9 succeeded at 668 with fuzz 3.
-Hunk #10 succeeded at 690 with fuzz 3.
-Hunk #11 succeeded at 712 with fuzz 3.
-Hunk #12 succeeded at 734 with fuzz 3.
-Hunk #13 succeeded at 756 with fuzz 3.
-Hunk #14 succeeded at 778 with fuzz 3.
-patch unexpectedly ends in middle of line
-patch: **** unexpected end of file in patch
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/matplotlib__matplotlib-25498/run_instance.log) for more information.
-pallets__flask-5063: >>>>> Patch Apply Failed:
-patching file src/flask/cli.py
-patch: **** malformed patch at line 31:  
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
+The above exception was the direct cause of the following exception:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/pallets__flask-5063/run_instance.log) for more information.
-psf__requests-2674: >>>>> Patch Apply Failed:
-patching file requests/adapters.py
-Hunk #1 succeeded at 22 with fuzz 3.
-patch: **** malformed patch at line 22:              raise ProxyError(e)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:50:04,294 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:04,312 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:04,527 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:05,246 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:05,471 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:05,689 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:05,988 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:06,209 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:06,422 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:06,642 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:06,898 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:06,915 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:07,129 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:07,351 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:07,575 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:07,798 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:08,014 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
 
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/psf__requests-2674/run_instance.log) for more information.
-psf__requests-3362: >>>>> Patch Apply Failed:
-patching file requests/utils.py
-patch: **** malformed patch at line 47: -            tried_encodings.append(encoding)
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
+During handling of the above exception, another exception occurred:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/psf__requests-3362/run_instance.log) for more information.
-psf__requests-863: >>>>> Patch Apply Failed:
-patching file requests/models.py
-Hunk #1 FAILED at 150.
-Hunk #2 succeeded at 507 with fuzz 1 (offset -516 lines).
-patch: **** malformed patch at line 29: @@ -1061,7 +1061,7 @@
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
 
+The above exception was the direct cause of the following exception:
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/psf__requests-863/run_instance.log) for more information.
-psf__requests-1963: >>>>> Patch Apply Failed:
-patching file requests/sessions.py
-Hunk #1 FAILED at 87.
-1 out of 1 hunk FAILED -- saving rejects to file requests/sessions.py.rej
-patch unexpectedly ends in middle of line
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:50:09,429 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:09,446 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:09,659 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:10,366 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:10,586 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:10,803 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:11,269 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:11,515 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:11,730 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:11,950 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:12,208 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:12,226 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:12,444 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:12,660 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:12,879 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:13,111 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:13,334 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
 
-Check (logs/run_evaluation/furiosa-ai__Llama-3.1-8B-Instruct_20260521_163405/furiosa-ai__Llama-3.1-8B-Instruct/psf__requests-1963/run_instance.log) for more information.Evaluation:  40%|████      | 20/50 [04:32<04:12,  8.41s/it, ✓=0, ✖=7, error=14]Evaluation:  42%|████▏     | 21/50 [04:32<03:55,  8.12s/it, ✓=0, ✖=7, error=14]Evaluation:  42%|████▏     | 21/50 [04:32<03:55,  8.12s/it, ✓=0, ✖=7, error=15]Evaluation:  44%|████▍     | 22/50 [04:33<03:47,  8.12s/it, ✓=0, ✖=7, error=16]Evaluation:  46%|████▌     | 23/50 [04:33<02:06,  4.67s/it, ✓=0, ✖=7, error=16]Evaluation:  46%|████▌     | 23/50 [04:38<02:06,  4.67s/it, ✓=0, ✖=7, error=17]Evaluation:  48%|████▊     | 24/50 [04:38<02:00,  4.65s/it, ✓=0, ✖=7, error=17]Evaluation:  48%|████▊     | 24/50 [04:39<02:00,  4.65s/it, ✓=0, ✖=7, error=18]Evaluation:  50%|█████     | 25/50 [04:39<01:33,  3.75s/it, ✓=0, ✖=7, error=18]Evaluation:  50%|█████     | 25/50 [04:49<01:33,  3.75s/it, ✓=0, ✖=7, error=19]Evaluation:  52%|█████▏    | 26/50 [04:49<02:11,  5.47s/it, ✓=0, ✖=7, error=19]Evaluation:  52%|█████▏    | 26/50 [05:15<02:11,  5.47s/it, ✓=0, ✖=7, error=20]Evaluation:  54%|█████▍    | 27/50 [05:15<04:15, 11.11s/it, ✓=0, ✖=7, error=20]
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:50:14,772 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:14,790 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:15,008 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:15,706 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:15,979 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:16,197 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:16,592 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:16,809 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:17,023 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:17,243 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:17,497 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:17,515 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:17,725 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:17,940 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:18,161 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:18,391 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:18,615 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:50:20,027 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:20,043 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:20,258 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:20,946 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:21,161 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:21,378 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:21,695 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:21,913 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:22,129 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:22,353 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:22,604 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:22,620 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:22,833 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:23,047 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:23,272 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:23,491 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:23,713 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:50:25,126 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:25,143 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:25,358 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:26,023 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:26,244 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:26,464 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:26,764 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:26,980 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:27,200 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:27,418 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:27,674 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:27,692 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:27,911 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:28,117 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:28,333 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:28,560 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:28,777 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-06-05 01:50:30,238 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:30,254 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:30,464 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:31,198 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:31,441 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/revision/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2 "HTTP/1.1 200 OK"
+2026-06-05 01:50:31,659 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:31,956 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:32,178 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:32,396 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/princeton-nlp/SWE-bench_Lite/tree/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-06-05 01:50:32,616 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:32,869 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-06-05 01:50:32,887 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/princeton-nlp/SWE-bench_Lite/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/README.md "HTTP/1.1 200 OK"
+2026-06-05 01:50:33,107 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:33,323 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/princeton-nlp/SWE-bench_Lite/princeton-nlp/SWE-bench_Lite.py "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:33,547 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-06-05 01:50:33,782 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=princeton-nlp/SWE-bench_Lite "HTTP/1.1 200 OK"
+2026-06-05 01:50:34,000 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/princeton-nlp/SWE-bench_Lite/resolve/6ec7bb89b9342f664a54a6e0a6ea6501d3437cc2/dataset_infos.json "HTTP/1.1 404 Not Found"
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+PermissionError: [Errno 13] Permission denied
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 589, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/util/util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/transport/unixconn.py", line 26, in connect
+    sock.connect(self.unix_socket)
+urllib3.exceptions.ProtocolError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/utils/decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/requests/adapters.py", line 604, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 677, in <module>
+    main(**vars(args))
+  File "/home/jun/SWE-bench/swebench/harness/run_evaluation.py", line 535, in main
+    client = docker.from_env()
+             ^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 94, in from_env
+    return cls(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/docker/api/client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+=== eval EXAONE-4.0-32B-FP8-tp32  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/EXAONE-4.0-32B-FP8-tp32/swebench/eval_result.json
+=== eval Llama-3.3-70B-Instruct-tp32  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Llama-3.3-70B-Instruct-tp32/swebench/eval_result.json
+=== eval Qwen2.5-Coder-1.5B-tp8  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Qwen2.5-Coder-1.5B-tp8/swebench/eval_result.json
+=== eval Qwen2.5-Coder-14B-tp8  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Qwen2.5-Coder-14B-tp8/swebench/eval_result.json
+=== eval Qwen2.5-Coder-7B-tp8  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Qwen2.5-Coder-7B-tp8/swebench/eval_result.json
+=== eval Qwen3-32B-FP8-tp32  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Qwen3-32B-FP8-tp32/swebench/eval_result.json
+=== eval Qwen3-32B-FP8-tp8  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Qwen3-32B-FP8-tp8/swebench/eval_result.json
+=== eval Qwen3-32B-FP8-tp8-16k  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/Qwen3-32B-FP8-tp8-16k/swebench/eval_result.json
+=== eval furiosa-ai__Llama-3.1-8B-Instruct  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/furiosa-ai__Llama-3.1-8B-Instruct/swebench/eval_result.json
+=== eval furiosa-ai__Qwen2.5-0.5B-Instruct  (50 instances) ===
+  resolved ?/?  -> /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/results/furiosa-ai__Qwen2.5-0.5B-Instruct/swebench/eval_result.json

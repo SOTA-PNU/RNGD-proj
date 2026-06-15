@@ -1,0 +1,5 @@
+diff --git ./django/conf/settings/base.pyc ./django/conf/settings/base.pyc index fbeaebc..dfeceabf HEAD --- ./django/conf/settings/base.pyc +++ ./django/conf/settings/base.pyc @@ @@ @@@@ @@ @@@@ @@
+@@@ @@ @@@@ @@
+obj['STATICFILES_DIRS'] =
+obj['STATICFILES_DIRS'].append('/path/to/media')
+```

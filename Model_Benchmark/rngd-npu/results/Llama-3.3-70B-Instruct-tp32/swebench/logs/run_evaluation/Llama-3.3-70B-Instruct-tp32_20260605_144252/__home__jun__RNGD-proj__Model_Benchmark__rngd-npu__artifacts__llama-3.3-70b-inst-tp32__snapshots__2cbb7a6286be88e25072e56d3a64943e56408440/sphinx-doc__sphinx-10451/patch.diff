@@ -1,0 +1,27 @@
+diff --git a/sphinx/ext/autodoc/typehints.py b/sphinx/ext/autodoc/typehints.py
+@@ -118,7 +118,7 @@
+         arg = arguments.get(name, {})
+         if not arg.get('type'):
+             field = nodes.field()
+-            field += nodes.field_name('', 'type'+ name)
++            field += nodes.field_name('', 'param'+ name)
+             field += nodes.field_body('', nodes.paragraph('', annotation))
+             node += field
+         if not arg.get('param'):
+@@ -130,7 +130,7 @@
+         if'return' in annotations and'return' not in arguments:
+             annotation = annotations['return']
+             if annotation == 'None' and suppress_rtype:
+-                return
++                pass
+             field = nodes.field()
+             field += nodes.field_name('', 'rtype')
+             field += nodes.field_body('', nodes.paragraph('', annotation))
+@@ -173,7 +173,7 @@
+         if name in has_description and name not in has_type:
+             field = nodes.field()
+-            field += nodes.field_name('', 'type'+ name)
++            field += nodes.field_name('', 'param'+ name)
+             field += nodes.field_body('', nodes.paragraph('', annotations[name]))
+             node += field
+         # Add 'rtype' if'return' is present and 'rtype' isn't.

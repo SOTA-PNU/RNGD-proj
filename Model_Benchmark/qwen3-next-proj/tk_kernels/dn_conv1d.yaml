@@ -1,0 +1,1124 @@
+#naive_yaml
+# CAUSAL DEPTHWISE CONV1D (K=4) + SiLU, layout [c,t].
+# Caller pre-shifts causal window: x_pad=cat([zeros(C,3),x],-1); xs_j[c,t]=x_pad[c,t+j].
+# acc = sum_{j=0..3} xs_j * w_j ; w_j[c,t]=weight[c,j] materialized to [C,T].
+# SiLU(acc)=acc*sigmoid(acc).  All fp32 Elementwise (MulF/AddF/Sigmoid).
+# Split into <=2-inst ops; one 9-inst fused op fails 'preferred_ve_lhs'.
+---
+tensors:
+  inner:
+    0:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    1:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    2:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    3:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    4:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    5:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    6:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    7:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    8:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    9:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    10:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    11:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    12:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    13:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    14:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+    15:
+      shape:
+        DynamicUnlabeledShape:
+          inner:
+            sizes:
+              - Var: C
+              - Var: T
+      element_type: Float32
+      buffer: []
+      name: ""
+      source: Unknown
+      buffer_type: Sram
+inputs:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+outputs:
+  - 15
+operators:
+  operators:
+    0:
+      name: conv_p0
+      option:
+        SymTacticKernel:
+          inputs:
+            - 0
+            - 4
+          output: 8
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    1:
+      name: conv_p1
+      option:
+        SymTacticKernel:
+          inputs:
+            - 1
+            - 5
+          output: 9
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    2:
+      name: conv_a1
+      option:
+        SymTacticKernel:
+          inputs:
+            - 8
+            - 9
+          output: 10
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: AddF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    3:
+      name: conv_p2
+      option:
+        SymTacticKernel:
+          inputs:
+            - 2
+            - 6
+          output: 11
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    4:
+      name: conv_a2
+      option:
+        SymTacticKernel:
+          inputs:
+            - 10
+            - 11
+          output: 12
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: AddF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    5:
+      name: conv_p3
+      option:
+        SymTacticKernel:
+          inputs:
+            - 3
+            - 7
+          output: 13
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    6:
+      name: conv_acc
+      option:
+        SymTacticKernel:
+          inputs:
+            - 12
+            - 13
+          output: 14
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                  - 1
+                insts:
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: AddF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+    7:
+      name: conv_silu
+      option:
+        SymTacticKernel:
+          inputs:
+            - 14
+          output: 15
+          inner:
+            inner:
+              reads:
+                - input:
+                    shape:
+                      inner:
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "c"
+                              stride: 1
+                          size:
+                            Var: C
+                        - tag:
+                            LabelStride:
+                              label:
+                                inner: "t"
+                              stride: 1
+                          size:
+                            Var: T
+                    element_type: Float32
+                  table_lookup: None
+                  has_transmutation: false
+                  subtraction: None
+                  paddings: []
+                  slides: []
+                  strides: []
+                  tiles: []
+              ein_ops: ~
+              vector_ops:
+                inputs:
+                  - 0
+                insts:
+                  - def: 1
+                    expr:
+                      Unary:
+                        operator: Sigmoid
+                        operand:
+                          Tensor: 0
+                    source: ""
+                  - def: 2
+                    expr:
+                      Binary:
+                        operator: MulF
+                        lhs:
+                          Tensor: 0
+                        rhs:
+                          Tensor: 1
+                    source: ""
+              write:
+                input:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                output:
+                  shape:
+                    inner:
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "c"
+                            stride: 1
+                        size:
+                          Var: C
+                      - tag:
+                          LabelStride:
+                            label:
+                              inner: "t"
+                            stride: 1
+                        size:
+                          Var: T
+                  element_type: Float32
+                has_transmutation: false
+            kind: Elementwise
+            sparsity: None
+  next_operator_index: 8
+hidden_outputs: []

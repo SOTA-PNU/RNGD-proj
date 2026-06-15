@@ -1,0 +1,41 @@
+diff –git src(flak/cli\.py)
+
+--- 
+
+a/src(flak/cli\.py)
+
++++ 
+
+b/src(flak/cli\.py)
+
+@@ – 
+
+def
+
+find\_best\_route(blueprint):
+
++++
+
+def
+
+find\_best\_route(blueprint):
+
++++
+
+for endpoint,
+
+view_func,
+
+methods,
+
+url_rule
+
+in blueprint.recorded:
+
++++++
+
+if url_rule.subdomains:
+
++++++
+
+yield url\_rule.subdomains\[ \], endpoint,\ view_func,\ methods,\ url_rule
