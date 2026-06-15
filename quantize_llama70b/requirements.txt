@@ -1,0 +1,9 @@
+# Llama-3.3-70B FineGrainedFP8 양자화에 필요한 최소 의존성.
+# torch 는 CUDA 버전이 맞아야 하므로 setup.sh 가 자동 감지해서 설치.
+
+transformers>=4.46
+huggingface_hub[cli]>=0.26
+accelerate>=1.0
+safetensors>=0.4
+sentencepiece
+protobuf

@@ -46,6 +46,7 @@ REPO = "/home/jun/RNGD-proj/Model_Benchmark/qwen3-next-proj"
 TK_DIR = os.path.join(REPO, "tk_kernels")
 # EDF blob compiler + packager (used by --emit-edf to (re)build binary_bundle.zip)
 EDF_COMPILE = os.path.join(TK_DIR, "compile_edf_blobs.py")
+EDF_SPLIT = os.path.join(TK_DIR, "emit_dn_split_blobs.py")  # DeltaNet recurrent/conv/gate 분해 블롭
 EDF_PACK = os.path.join(TK_DIR, "pack_edf_bundle.py")
 DEFAULT_OUT = ("/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/"
                "qwen3-coder-next-fp8-rngd")
@@ -119,22 +120,25 @@ def _binary_bundle_from_existing(out_dir):
     pieces_with = [v["piece"] for v in bm.get("blobs", {}).values() if v.get("piece")]
     n_ok = sum(1 for v in bm.get("blobs", {}).values() if v.get("deserialize_ok"))
     n = bm.get("n_blobs", len(bm.get("blobs", {})))
+    # DeltaNet 분해 블롭(dn_recur_*)이 들어 있으면 compute-complete; 아니면 옛 partial.
+    compute_complete = any(p.startswith("dn_recur_") for p in pieces_with)
     return {
-        "kind": "partial-edf",
+        "kind": "edf-split (compute-complete)" if compute_complete else "partial-edf",
         "zip": "binary_bundle.zip",
         "manifest": "binary_bundle_manifest.json",
         "compression": bm.get("compression", "ZIP_STORED"),
         "format": bm.get("format"),
-        "producer": ("tk_kernels/compile_edf_blobs.py (compile to a6 EDF) -> "
-                     "tk_kernels/pack_edf_bundle.py (zip + validate). Regenerate "
-                     "with: qcn/build_artifact.py --emit-edf"),
+        "producer": ("tk_kernels/compile_edf_blobs.py (base compute) + "
+                     "tk_kernels/emit_dn_split_blobs.py (DeltaNet recurrent/conv/gate split) "
+                     "-> tk_kernels/pack_edf_bundle.py (zip + validate). "
+                     "Regenerate with: qcn/build_artifact.py --emit-edf"),
         "n_blobs": n,
         "zip_bytes": os.path.getsize(bundle),
         "zip_sha256": _sha256(bundle),
         "validated": (f"{n_ok}/{n} deserialize via CompiledGraph.deserialize as "
                       "valid a6 CompiledGraph (is_edf=True)"),
         "pieces_with_edf": pieces_with,
-        "pieces_without_edf": [
+        "pieces_without_edf": [] if compute_complete else [
             {"piece": "dn_conv1d_silu",
              "reason": "O136 is not an operator the 2026.2.0 compiler supports"},
             {"piece": "dn_gate",
@@ -145,9 +149,13 @@ def _binary_bundle_from_existing(out_dir):
                         "a6 EDF + no runtime recurrent-state slot -> stays host-loop")},
         ],
         "scope_note": bm.get("scope",
-            "PARTIAL EDF: real on-device EDF blobs for all compilable compute "
-            "(matmuls/attention/MoE/norms); DeltaNet recurrence + orchestration "
-            "stay host-loop."),
+            ("COMPUTE-COMPLETE EDF: every compute piece incl. DeltaNet recurrence "
+             "(split form) is a real a6 EDF blob; remaining limit is deploy-only "
+             "(serve runtime has no cross-step recurrent-state pool) -> host-loop."
+             if compute_complete else
+             "PARTIAL EDF: real on-device EDF blobs for all compilable compute "
+             "(matmuls/attention/MoE/norms); DeltaNet recurrence + orchestration "
+             "stay host-loop.")),
     }
 
 
@@ -182,6 +190,13 @@ def emit_edf(out_dir, recompile=False):
         if rc != 0:
             print(f"  [emit-edf] WARNING: compile_edf_blobs.py exited {rc} "
                   "(some pieces are EXPECTED to fail a6 -- see _MASTER_summary.json)")
+        # DeltaNet recurrent/conv/gate 를 단일-op 분해 a6 블롭으로 추가(2026-06-15):
+        # 통째 그래프는 a6 거부('concrete labels')지만 op별로 쪼개면 통과 → 25블롭
+        # compute-complete. 이게 없으면 binary_bundle 이 17블롭 partial 로 되돌아간다.
+        print("  [emit-edf] adding DeltaNet split blobs via emit_dn_split_blobs.py ...")
+        rc2 = subprocess.call([sys.executable, EDF_SPLIT], env=env, cwd=REPO)
+        if rc2 != 0:
+            print(f"  [emit-edf] WARNING: emit_dn_split_blobs.py exited {rc2}")
         existing = glob.glob(os.path.join(blob_dir, "*.edf"))
 
     if not existing:
