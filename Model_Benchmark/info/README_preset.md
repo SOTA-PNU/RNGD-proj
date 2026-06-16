@@ -278,10 +278,33 @@ def find_preset(model_type, hidden_size, intermediate_size):
    가 가장 가까운** 항목을 best match로 선택
 3. → fine-tune 모델 등 사이즈가 미세하게 다른 경우도 가까운 preset 자동 매칭 가능
 
+> 📌 **그 모델 전용 preset을 안 넣어도 빌드됨 (2026-06-16 실측).** `find_preset`은 모델
+> **이름**을 찾는 게 아니라 `model_type`만 맞으면 됩니다. 그 model_type 후보가 **1개 이상**이면
+> 항상 best가 나오고(`min`), **0개일 때만** `None`. 즉 새 크기 모델을 빌드할 때 PRESET_REFS에
+> 그 크기를 추가할 필요가 없습니다 — 같은 계열 중 제일 가까운 걸 빌려 씁니다.
+> - **실증:** `Qwen2.5-72B-Instruct`(`qwen2`, hidden 8192 / inter 29568) 빌드 — 처음엔 72B 전용
+>   PresetRef가 **없었는데도** `find_preset`이 qwen2 후보 5개(0.5B/1.5B/7B/14B/32B) 중 제일 가까운
+>   **32B preset(hidden 5120 / inter 27648)** 을 반환해 빌드가 진행됐습니다. 빌드 로그: `Found bucket
+>   preset for model_type=qwen2, hidden_size=8192, intermediate_size=29568` → `computed bucket limits
+>   are 32768`. preset 해석은 `builder.__init__`(Resolve, 1.3)이라 **가중치 다운로드(1.4)보다 먼저**
+>   끝남 → 다운로드가 시작됐다는 건 preset에서 안 막혔다는 증거.
+> - **왜 크기가 달라도 괜찮나:** preset이 주는 건 버킷 = `(batch, attention_size)` 같은
+>   **시퀀스 길이 치수**라서 모델 파라미터 수와 무관. 32B 치수표를 72B가 그대로 써도 됨. log-distance
+>   매칭은 "어느 후보의 버킷 셋을 빌릴지"만 고르는 것이지 정확성 요건이 아님.
+> - **그래도 전용 엔트리를 추가함 (2026-06-16):** 빌려쓰기로도 되지만 매칭을 명시적으로 만들려고
+>   `PresetRef(qwen2, 8192, 29568, preset=QWEN_2_5_CODER_PRESET)` 를 PRESET_REFS의 32B 항목 뒤에
+>   추가했습니다. **새 BucketConfig를 만들지 않고 다른 qwen2(7B/14B/32B)와 동일하게 `QWEN_2_5_CODER_PRESET`
+>   재사용** — 이 preset의 decode 버킷이 이미 32768(=72B native context)까지 잘 테이퍼링돼 있어 그대로 적합.
+>   (72B는 1장 적재 불가지만 `-tp 8` 빌드 후 serve 때 `-pp 4` 로 80층을 4장 분할하면 됨 — 보수적으로 버킷을
+>   줄일 필요 없음.) 추가 후 `find_preset(qwen2, 8192, 29568)` 이 log-distance 0 으로 이 엔트리에 정확
+>   매칭되고 0.5B/7B/14B/32B 매칭은 불변임을 검증.
+> - ⚠️ 단 **model_type 자체가 PRESET_REFS에 없으면**(예: `qwen3_next`) `None` → 사용자가 `-pb/-db`로
+>   버킷을 직접 줘야 함. "전용 항목 불필요"는 **같은 model_type이 이미 있을 때**만.
+
 ### 등록된 preset (`artifact/presets.py:277` `PRESET_REFS`)
 
-> 갱신(2026-06-15): 아래 표는 초기 7종 기준입니다. 이후 `presets.py` 가 확장되어 현재
-> `PRESET_REFS` 는 **15개 등록 항목 / 11종 BucketConfig preset**(추가분: `QWEN_2_5_CODER_PRESET`,
+> 갱신(2026-06-16): 아래 표는 초기 7종 기준입니다. 이후 `presets.py` 가 확장되어 현재
+> `PRESET_REFS` 는 **16개 등록 항목 / 11종 BucketConfig preset**(72B는 Coder preset 재사용이라 종수 불변; 추가분: `QWEN_2_5_CODER_PRESET`,
 > `QWEN_3_8B_POOLING_PRESET`, `QWEN_3_30B_A3B_PRESET`, `QWEN_3_CODER_30B_A3B_PRESET`,
 > `QWEN_3_CODER_480B_A35B_PRESET`, `MINI_SMOKE_PRESET`). 최신 목록은 SDK
 > `artifact/presets.py:70-265`(preset 정의) / `:277-384`(PRESET_REFS) 를 직접 참고하세요.
