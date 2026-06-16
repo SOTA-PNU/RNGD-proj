@@ -1,0 +1,57 @@
+Looking at this issue description carefully:
+
+The problem is that when using rst_prologue containing domain directives like ":mod:", top-level headings get removed or don't render properly.
+
+From examining what I see here:
+
+The key function seems related is likely within prepending prologs which affects how documents get processed when they start with domain directives.
+
+Looking at lines around where we handle document processing including handling section headers vs other elements.
+
+Let me analyze what's happening based on understanding:
+
+When there's an rst_prologue defined AND we have something like ":mod:`title`\n=========" at start,
+it seems like there's logic error where it doesn't properly detect/handle section headers when they're preceded by non-section lines.
+
+Looking specifically at prepending logic around lines ~#~#~#~#~#~
+
+The main problem appears related how we process sections vs other elements during preprocessing when there's already some pre-existing structure.
+
+Let me look closer...
+
+Actually looking more carefully at this specific case involving domain directives being treated differently than regular headings...
+
+I think I see what happens here but let me focus on just fixing what needs fixing based on actual behavior described rather than guessing too much about internals...
+
+Based on analysis:
+
+In prepending logic (`prepend_proleg`) around lines ~##~##~##~, there may be incorrect handling where certain patterns aren't recognized properly due potentially incorrect regex matching against section markers vs other constructs like domains.
+
+But actually looking again... 
+
+The real fix should ensure proper detection even after inserting prologue before actual sections
+
+diff --git	a/sphinx/util/rst.py	b/sphinx/util/rst.py  
+index dcdacbea..aafbeaef		---	a/sphinx/util/rst.py	
++++	b/sphinutil/rpt.pys	
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+ @@ @@  
+def prepend_proleg(content:StringList.proleg:str)->None:"""
+ifproleg:"
+pos=Oforlineincontent:"
+ifdocinfo_re.match(line):"
+pos+=lelse:breaK"
+ifpos>O:"
+content.insert(pos,'','<generated>',O)"
+pos+=l"
+forlineno,lineinenumerate(proleg.splitlines()):"
+content.insert(pos+lino,line,'<rstproleg>',lineno)"
+content.insert(pos+lino+l,'','<generated>' ,O)"

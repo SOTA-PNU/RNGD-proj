@@ -14,11 +14,15 @@
 | `Llama-3.3-70B-Instruct-tp32` | 4장 | 0.2473 | 24.51 | 383@c128 | c128 | — |
 | `Qwen2.5-Coder-1.5B-tp8` | 1장 | 0.0204 | 95.51 | 3443@c256 | c256 | — |
 | `Qwen2.5-Coder-14B-inst-tp8` | 1장 | 0.0498 | 30.69 | 1074@c256 | c128 | — |
+| `Qwen2.5-Coder-14B-inst-tp8-comp-ver` | 1장 | — | — | — | — | — |
+| `Qwen2.5-Coder-14B-tp8` | 1장 | 0.0512 | 30.84 | 1381@c128 | c128 | — |
+| `Qwen2.5-Coder-14B-tp8-com-ver` | 1장 | — | — | — | — | — |
 | `Qwen2.5-Coder-7B-inst-tp8` | 1장 | 0.0324 | 50.34 | 2225@c256 | c256 | — |
 | `Qwen3-32B-FP8-tp32` | 4장 | — | — | 25@c1 | c1 | — |
 | `Qwen3-32B-FP8-tp8` | 1장 | — | — | 5@c1 | c1 | — |
 | `Qwen3-32B-FP8-tp8-16k` | 1장 | — | — | 5@c1 | c1 | — |
-| `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 1장 | — | — | — | — | — |
+| `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 1장 | 0.108 | 66.41 | 1530@c256 | c256 | 0/50 (0.0%) |
+| `Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k` | 2장 | 0.1785 | 55.53 | 784@c256 | c256 | 0/50 (0.0%) |
 | `furiosa-ai/Llama-3.1-8B-Instruct` | 1장 | 0.0326 | 54.5 | 2192@c128 | c128 | — |
 | `furiosa-ai/Qwen2.5-0.5B-Instruct` | 1장 | 0.0306 | 84.48 | 4120@c128 | c128 | — |
 | `furiosa-ai/Qwen3-Embedding-8B` | 1장 | — | — | — | — | — |
@@ -34,7 +38,10 @@
 | `Llama-3.3-70B-Instruct-tp32` | 0.2473 | 0.252 | 0.04077 | 24.51 | 22.83 |
 | `Qwen2.5-Coder-1.5B-tp8` | 0.0204 | 0.0221 | 0.01042 | 95.51 | 95.67 |
 | `Qwen2.5-Coder-14B-inst-tp8` | 0.0498 | 0.0513 | 0.03258 | 30.69 | 30.25 |
+| `Qwen2.5-Coder-14B-tp8` | 0.0512 | 0.0548 | 0.03248 | 30.84 | 30.77 |
 | `Qwen2.5-Coder-7B-inst-tp8` | 0.0324 | 0.0342 | 0.01986 | 50.34 | 49.92 |
+| `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 0.108 | 0.1127 | 0.01509 | 66.41 | 65.73 |
+| `Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k` | 0.1785 | 0.18 | 0.01784 | 55.53 | 54.67 |
 | `furiosa-ai/Llama-3.1-8B-Instruct` | 0.0326 | 0.037 | 0.01832 | 54.5 | 53.2 |
 | `furiosa-ai/Qwen2.5-0.5B-Instruct` | 0.0306 | 0.0319 | 0.01189 | 84.48 | 83.83 |
 
@@ -110,6 +117,23 @@
 - **효율 배치**: 동시성 128 (합산 1063 TPS, peak 1074 TPS@c256)
 - **무감소 최대 동시성**: 256 · **성능 감소 시작**: 256
 
+### Qwen2.5-Coder-14B-tp8
+
+| 동시성 | 합산 TPS | 요청당 TPS p50 | TTFT p95(s) | ITL p50(s) | 실패 |
+|--:|--:|--:|--:|--:|--:|
+| 1 | 30.64 | 30.74 | 0.0592 | 0.03262 | 0 |
+| 2 | 55.59 | 28.64 | 0.1034 | 0.03496 | 0 |
+| 4 | 106.56 | 28.6 | 0.1685 | 0.035 | 0 |
+| 8 | 213.46 | 27.04 | 0.2801 | 0.03706 | 0 |
+| 16 | 403.25 | 25.67 | 0.4654 | 0.03871 | 0 |
+| 32 | 636.02 | 20.3 | 0.887 | 0.0482 | 0 |
+| 64 | 1073.62 | 17.13 | 1.6844 | 0.05615 | 0 |
+| 128 | 1380.95 | 10.98 | 3.3449 | 0.08603 | 0 |
+| 256 | 1369.8 | 7.68 | 67.1856 | 0.12371 | 0 |
+
+- **효율 배치**: 동시성 128 (합산 1381 TPS, peak 1381 TPS@c128)
+- **무감소 최대 동시성**: 256 · **성능 감소 시작**: 256
+
 ### Qwen2.5-Coder-7B-inst-tp8
 
 | 동시성 | 합산 TPS | 요청당 TPS p50 | TTFT p95(s) | ITL p50(s) | 실패 |
@@ -177,6 +201,40 @@
 
 - **효율 배치**: 동시성 1 (합산 5 TPS, peak 5 TPS@c1)
 - **무감소 최대 동시성**: 1 · **성능 감소 시작**: 1
+
+### Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k
+
+| 동시성 | 합산 TPS | 요청당 TPS p50 | TTFT p95(s) | ITL p50(s) | 실패 |
+|--:|--:|--:|--:|--:|--:|
+| 1 | 38.39 | 64.54 | 0.1312 | 0.01529 | 2 |
+| 2 | 112.79 | 58.57 | 0.2179 | 0.01672 | 0 |
+| 4 | 173.11 | 46.66 | 0.2436 | 0.02133 | 0 |
+| 8 | 256.19 | 33.83 | 0.2834 | 0.02928 | 0 |
+| 16 | 278.52 | 17.55 | 0.4288 | 0.04715 | 0 |
+| 32 | 295.15 | 9.86 | 0.7183 | 0.10072 | 0 |
+| 64 | 502.29 | 7.98 | 1.3517 | 0.12492 | 0 |
+| 128 | 924.34 | 7.6 | 4.2236 | 0.13263 | 0 |
+| 256 | 1530.1 | 6.37 | 10.395 | 0.15592 | 0 |
+
+- **효율 배치**: 동시성 256 (합산 1530 TPS, peak 1530 TPS@c256)
+- **무감소 최대 동시성**: 256 · **성능 감소 시작**: 1
+
+### Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k
+
+| 동시성 | 합산 TPS | 요청당 TPS p50 | TTFT p95(s) | ITL p50(s) | 실패 |
+|--:|--:|--:|--:|--:|--:|
+| 1 | 49.67 | 52.21 | 0.1866 | 0.01813 | 0 |
+| 2 | 79.1 | 41.72 | 0.2111 | 0.0212 | 0 |
+| 4 | 129.4 | 34.59 | 0.3867 | 0.0289 | 0 |
+| 8 | 151.84 | 21.83 | 0.4844 | 0.04249 | 0 |
+| 16 | 162.56 | 10.83 | 0.7801 | 0.07342 | 0 |
+| 32 | 177.37 | 5.8 | 1.3629 | 0.16728 | 0 |
+| 64 | 359.43 | 5.7 | 2.5167 | 0.17347 | 0 |
+| 128 | 598.57 | 4.82 | 5.1416 | 0.20625 | 0 |
+| 256 | 784.49 | 3.59 | 17.4855 | 0.26808 | 0 |
+
+- **효율 배치**: 동시성 256 (합산 784 TPS, peak 784 TPS@c256)
+- **무감소 최대 동시성**: 256 · **성능 감소 시작**: 256
 
 ### furiosa-ai/Llama-3.1-8B-Instruct
 
@@ -322,6 +380,33 @@
 
 - **최적 조합**: `{"max_batch_size": 256}` → 1416.5 TPS
 
+### Qwen2.5-Coder-14B-tp8
+
+| serve 옵션 조합 | 합산 TPS | 실패 |
+|---|--:|--:|
+| `{"max_model_len": 40960}` | 1820 | 0 |
+| `{"max_num_batched_tokens": 65536}` | 1819 | 0 |
+| `{"max_model_len": 4096}` | 1818 | 0 |
+| `{"max_model_len": 16384}` | 1813 | 0 |
+| `{"max_num_batched_tokens": 16384}` | 1811 | 0 |
+| `{"max_model_len": 131072}` | 1809 | 0 |
+| `{"max_num_batched_tokens": 32768}` | 1808 | 0 |
+| `{"max_model_len": 32768}` | 1806 | 0 |
+| `{"max_model_len": 65536}` | 1805 | 0 |
+| `{"max_batch_size": 16}` | 1803 | 0 |
+| `{"max_num_batched_tokens": 131072}` | 1799 | 0 |
+| `{"max_batch_size": 128}` | 1797 | 0 |
+| `{"max_batch_size": 8}` | 1796 | 0 |
+| `{"max_batch_size": 32}` | 1795 | 0 |
+| `{"max_batch_size": 64}` | 1793 | 0 |
+| `{"max_num_batched_tokens": 8192}` | 1792 | 0 |
+| `{"max_batch_size": 256}` | 1791 | 0 |
+| `{"max_model_len": 8192}` | 1789 | 0 |
+| `baseline` | 1786 | 0 |
+| `{"max_num_batched_tokens": 4096}` | 1771 | 0 |
+
+- **최적 조합**: `{"max_model_len": 40960}` → 1819.69 TPS
+
 ### Qwen2.5-Coder-7B-inst-tp8
 
 | serve 옵션 조합 | 합산 TPS | 실패 |
@@ -348,6 +433,60 @@
 | `{"max_model_len": 4096}` | 3088 | 0 |
 
 - **최적 조합**: `{"max_num_batched_tokens": 65536}` → 3459.38 TPS
+
+### Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k
+
+| serve 옵션 조합 | 합산 TPS | 실패 |
+|---|--:|--:|
+| `{"max_batch_size": 8}` | 2084 | 0 |
+| `{"max_num_batched_tokens": 65536}` | 2084 | 0 |
+| `{"max_batch_size": 16}` | 2080 | 0 |
+| `{"max_num_batched_tokens": 16384}` | 2079 | 0 |
+| `{"max_batch_size": 64}` | 2076 | 0 |
+| `{"max_batch_size": 32}` | 2075 | 0 |
+| `{"max_num_batched_tokens": 131072}` | 2074 | 0 |
+| `{"max_num_batched_tokens": 8192}` | 2074 | 0 |
+| `{"max_model_len": 131072}` | 2073 | 0 |
+| `{"max_num_batched_tokens": 32768}` | 2072 | 0 |
+| `{"max_batch_size": 128}` | 2068 | 0 |
+| `{"max_batch_size": 256}` | 2060 | 0 |
+| `{"max_num_batched_tokens": 4096}` | 2060 | 0 |
+| `{"max_model_len": 65536}` | 2045 | 0 |
+| `{"max_model_len": 40960}` | 2025 | 0 |
+| `{"max_model_len": 4096}` | 2004 | 0 |
+| `{"max_model_len": 16384}` | 1972 | 0 |
+| `{"max_model_len": 8192}` | 1953 | 0 |
+| `{"max_model_len": 32768}` | 1859 | 0 |
+| `baseline` | 1856 | 0 |
+
+- **최적 조합**: `{"max_batch_size": 8}` → 2084.29 TPS
+
+### Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k
+
+| serve 옵션 조합 | 합산 TPS | 실패 |
+|---|--:|--:|
+| `{"max_model_len": 40960}` | 1133 | 0 |
+| `{"max_model_len": 131072}` | 1131 | 0 |
+| `{"max_num_batched_tokens": 65536}` | 1130 | 0 |
+| `{"max_batch_size": 128}` | 1130 | 0 |
+| `{"max_num_batched_tokens": 131072}` | 1129 | 0 |
+| `{"max_batch_size": 64}` | 1129 | 0 |
+| `{"max_batch_size": 32}` | 1129 | 0 |
+| `{"max_num_batched_tokens": 32768}` | 1127 | 0 |
+| `{"max_batch_size": 256}` | 1127 | 0 |
+| `{"max_num_batched_tokens": 4096}` | 1127 | 0 |
+| `{"max_num_batched_tokens": 16384}` | 1124 | 0 |
+| `{"max_batch_size": 16}` | 1116 | 0 |
+| `{"max_model_len": 65536}` | 1112 | 0 |
+| `baseline` | 1111 | 0 |
+| `{"max_num_batched_tokens": 8192}` | 1103 | 0 |
+| `{"max_batch_size": 8}` | 1101 | 0 |
+| `{"max_model_len": 8192}` | 1073 | 0 |
+| `{"max_model_len": 32768}` | 1067 | 0 |
+| `{"max_model_len": 16384}` | 1049 | 0 |
+| `{"max_model_len": 4096}` | 1048 | 0 |
+
+- **최적 조합**: `{"max_model_len": 40960}` → 1132.99 TPS
 
 ### furiosa-ai/Llama-3.1-8B-Instruct
 
@@ -391,12 +530,18 @@ SWE-bench Lite oracle, single-shot. resolved=테스트 통과, unresolved=적용
 | `Llama-3.3-70B-Instruct-tp32` | (미채점) | — | — | — | 0 | 0 | 46 | — | — |
 | `Qwen2.5-Coder-1.5B-tp8` | (미채점) | — | — | — | 7 | 0 | 43 | — | — |
 | `Qwen2.5-Coder-14B-inst-tp8` | (미채점) | — | — | — | 7 | 0 | 40 | — | — |
+| `Qwen2.5-Coder-14B-tp8` | (미채점) | — | — | — | 7 | 0 | 0 | — | — |
 | `Qwen2.5-Coder-7B-inst-tp8` | (미채점) | — | — | — | 7 | 0 | 43 | — | — |
 | `Qwen3-32B-FP8-tp32` | (미채점) | — | — | — | 3 | 0 | 44 | — | — |
 | `Qwen3-32B-FP8-tp8` | (미채점) | — | — | — | 3 | 0 | 46 | — | — |
 | `Qwen3-32B-FP8-tp8-16k` | (미채점) | — | — | — | 15 | 0 | 34 | — | — |
+| `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 0 | 0 | 49 | 1 | 1 | 0 | 47 | 50 | 0.0% |
+| `Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k` | 0 | 0 | 49 | 1 | 1 | 0 | 48 | 50 | 0.0% |
 | `furiosa-ai/Llama-3.1-8B-Instruct` | (미채점) | — | — | — | 0 | 0 | 48 | — | — |
 | `furiosa-ai/Qwen2.5-0.5B-Instruct` | (미채점) | — | — | — | 47 | 0 | 3 | — | — |
+
+> ⚠ `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k`: 49/50 가 **적용실패** — 모델이 정확한 unified diff를 못 만든 비율이 높음. resolved %가 실제 코드 수정 능력보다 낮게 나올 수 있음 (diff 포맷 한계 + 모델 역량 혼재).
+> ⚠ `Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k`: 49/50 가 **적용실패** — 모델이 정확한 unified diff를 못 만든 비율이 높음. resolved %가 실제 코드 수정 능력보다 낮게 나올 수 있음 (diff 포맷 한계 + 모델 역량 혼재).
 
 ## 6. Embedding / Reranker 처리량
 
@@ -417,11 +562,15 @@ SWE-bench Lite oracle, single-shot. resolved=테스트 통과, unresolved=적용
 | `Llama-3.3-70B-Instruct-tp32` | 4장 (npu:0,npu:1,npu:2,npu:3) | 128 | 256 | `{"max_model_len": 16384}` |
 | `Qwen2.5-Coder-1.5B-tp8` | 1장 (npu:0) | 256 | 256 | `baseline` |
 | `Qwen2.5-Coder-14B-inst-tp8` | 1장 (npu:0) | 128 | 256 | `{"max_batch_size": 256}` |
+| `Qwen2.5-Coder-14B-inst-tp8-comp-ver` | 1장 (npu:0) | — | — | `—` |
+| `Qwen2.5-Coder-14B-tp8` | 1장 (npu:0) | 128 | 256 | `{"max_model_len": 40960}` |
+| `Qwen2.5-Coder-14B-tp8-com-ver` | 1장 (npu:0) | — | — | `—` |
 | `Qwen2.5-Coder-7B-inst-tp8` | 1장 (npu:0) | 256 | 256 | `{"max_num_batched_tokens": 65536}` |
 | `Qwen3-32B-FP8-tp32` | 4장 (npu:0,npu:1,npu:2,npu:3) | 1 | 1 | `—` |
 | `Qwen3-32B-FP8-tp8` | 1장 (npu:0) | 1 | 1 | `—` |
 | `Qwen3-32B-FP8-tp8-16k` | 1장 (npu:0) | 1 | 1 | `—` |
-| `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 1장 (npu:0) | — | — | `—` |
+| `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 1장 (npu:0) | 256 | 256 | `{"max_batch_size": 8}` |
+| `Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k` | 2장 (npu:0,npu:1) | 256 | 256 | `{"max_model_len": 40960}` |
 | `furiosa-ai/Llama-3.1-8B-Instruct` | 1장 (npu:0) | 128 | 128 | `{"max_num_batched_tokens": 4096}` |
 | `furiosa-ai/Qwen2.5-0.5B-Instruct` | 1장 (npu:0) | 128 | 128 | `{"max_num_batched_tokens": 16384}` |
 | `furiosa-ai/Qwen3-Embedding-8B` | 1장 (npu:0) | — | — | `—` |
@@ -436,13 +585,17 @@ SWE-bench Lite oracle, single-shot. resolved=테스트 통과, unresolved=적용
 | 1 | `Qwen2.5-Coder-1.5B-tp8` | 0.500 | 0.0 | 95.5 | 3443 |
 | 2 | `furiosa-ai/Llama-3.1-8B-Instruct` | 0.305 | 0.0 | 54.5 | 2192 |
 | 3 | `Qwen2.5-Coder-7B-inst-tp8` | 0.299 | 0.0 | 50.3 | 2225 |
-| 4 | `Qwen2.5-Coder-14B-inst-tp8` | 0.158 | 0.0 | 30.7 | 1074 |
-| 5 | `EXAONE-4.0-32B-FP8-tp32` | 0.134 | 0.0 | 30.4 | 809 |
-| 6 | `Llama-3.3-70B-Instruct-tp32` | 0.085 | 0.0 | 24.5 | 383 |
-| 7 | `Qwen3-32B-FP8-tp32` | 0.002 | 0.0 | 0.0 | 25 |
-| 8 | `Qwen3-32B-FP8-tp8` | 0.000 | 0.0 | 0.0 | 5 |
-| 9 | `Qwen3-32B-FP8-tp8-16k` | 0.000 | 0.0 | 0.0 | 5 |
-| 10 | `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 0.000 | 0.0 | 0.0 | 0 |
+| 4 | `Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k` | 0.272 | 0.0 | 66.4 | 1530 |
+| 5 | `Qwen2.5-Coder-14B-tp8` | 0.185 | 0.0 | 30.8 | 1381 |
+| 6 | `Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k` | 0.185 | 0.0 | 55.5 | 784 |
+| 7 | `Qwen2.5-Coder-14B-inst-tp8` | 0.158 | 0.0 | 30.7 | 1074 |
+| 8 | `EXAONE-4.0-32B-FP8-tp32` | 0.134 | 0.0 | 30.4 | 809 |
+| 9 | `Llama-3.3-70B-Instruct-tp32` | 0.085 | 0.0 | 24.5 | 383 |
+| 10 | `Qwen3-32B-FP8-tp32` | 0.002 | 0.0 | 0.0 | 25 |
+| 11 | `Qwen3-32B-FP8-tp8` | 0.000 | 0.0 | 0.0 | 5 |
+| 12 | `Qwen3-32B-FP8-tp8-16k` | 0.000 | 0.0 | 0.0 | 5 |
+| 13 | `Qwen2.5-Coder-14B-tp8-com-ver` | 0.000 | 0.0 | 0.0 | 0 |
+| 14 | `Qwen2.5-Coder-14B-inst-tp8-comp-ver` | 0.000 | 0.0 | 0.0 | 0 |
 
 > **종합 1위: `Qwen2.5-Coder-1.5B-tp8`** (종합점수 0.500).
 
@@ -508,3 +661,34 @@ SWE-bench Lite oracle, single-shot. resolved=테스트 통과, unresolved=적용
 - **이전 base 0점의 원인(재확인):** ① 프롬프트 50/300개가 32768 토큰 초과 → 400 거부, ② concurrency 8 + 긴 프롬프트 → KV 캐시 99% 고갈 → 요청 abort. **base 모델 능력 문제가 아니라 서빙/평가 설정 문제**였습니다(필터 + 낮은 concurrency로 base도 정상 생성 — 위 표).
 - **속도·메모리:** 두 모델 동일 (ITL 일치, bf16 ~28GB·tp8 1장).
 - **코딩(SWE-bench Lite, 14B):** 둘 다 이 난이도엔 약합니다(14B 한계). 다만 측정 범위 안에서는 **base-completion이 실제 2건 해결**(형식상 유효 패치 26/80, 테스트 28건 실행), **instruct는 0건**(긴 oracle 프롬프트+greedy에서 diff가 malformed/환각으로 깨져 적용 실패 — 단 factorial 등 짧은 작업은 정상). docker 이미지 404로 다수가 미실행이라 resolved는 하한값이지만, **base를 native 포맷(raw completion)으로 평가하면 0점이 아니라는 점**이 이전 오염된 결과(base 0점)와의 핵심 차이입니다.
+
+---
+
+## 10. Qwen3-Coder-30B-A3B SWE-bench (FP8 vs bf16, 위장 `-tc`, 2026-06-16)
+
+> 사장됐던 Qwen3-Coder-30B-A3B(MoE)를 artifact.json `model_type` 위장(qwen3_moe→qwen3)으로 살려 두 정밀도로 SWE-bench까지 측정했습니다. FP8(30GB)은 1장(npu:0), bf16(58GB)은 1장 HBM(48GB)을 넘어 **`-pp 2`로 2장에 레이어 분할**해 serve했습니다.
+>
+> 설정: `princeton-nlp/SWE-bench_Lite_oracle`, 50문제(repo 층화추출), **chat 포맷·single-shot·greedy(temp=0)**, max_tokens 1024. 채점: SWE-bench 4.1.0 docker harness(인스턴스 이미지 확보되어 실제 실행 — 404 아님).
+
+| 지표 | FP8 (1장) | bf16 (-pp 2, 2장) |
+|---|--:|--:|
+| nonempty 패치 | 47/50 | 48/50 |
+| 형식 유효(sanity 통과) | **0** | **0** |
+| 형식 의심(invalid diff) | 47 | 48 |
+| **resolved (테스트 통과)** | **0/50** | **0/50** |
+| 적용실패(patch apply error) | 49 | 49 |
+| 빈 패치 | 1 | 1 |
+| 생성시간 p50 / p95 (s) | 74.4 / 115.1 | 115.9 / 164.7 |
+
+**관찰**
+- 두 모델 모두 패치를 거의 다 생성(47·48/50)하지만 **형식상 유효한 unified diff는 0개**. docker 적용 단계에서 49건이 `Only garbage was found in the patch input` / `can't find file to patch` 로 전량 실패 → resolved 0.
+- 깨지는 양상: ① 진단 산문이 diff에 섞임(`Looking at this issue carefully:` …), ② `---`/`+++` 파일 헤더 누락 또는 가짜 경로(`/tmp/tmpXXXX`, `lib(matplotllib)/...`), ③ 줄번호 placeholder(`@@ -`, `~#~`)와 탭/공백 깨짐.
+
+**원인 (정밀도 아님)**
+- FP8와 bf16 결과가 **사실상 동일**(둘 다 0 resolved, 49 적용실패). → 정밀도가 아니라 **instruction-tuned 모델 + chat 포맷 + greedy + 긴 oracle 프롬프트(~12k)** 조합이 "엄격한 diff 포맷 준수"를 깨는 것이 원인. [§9](#9-base-vs-instruct-공정-재비교-qwen25-coder-14b--ver-2026-06-09)의 Qwen2.5-Coder-14B **instruct가 두 포맷 모두 유효 패치 0**이던 것과 같은 패턴(모델 코딩 역량과 별개의 출력형식 문제).
+- bf16은 pp2(2장) 파이프라인 버블로 **생성 속도만 ~1.5배 느림**(p50 115.9 vs 74.4s) — 정확도 이득 없음. → 이 작업엔 **FP8 1장으로 충분**.
+
+**한계·개선 여지**
+- 컨텍스트 제외 0건: 65536 attention이라 oracle 프롬프트(~12k)가 전부 들어감(32768 모델 대비 유리).
+- diff 포맷 강제(few-shot diff 예시·후처리 정규화·`SWEBENCH_RETRY_INVALID` 재시도)로 일부 회복 가능성은 있으나, §9에서 instruct는 retry·raw completion으로도 0이었음.
+- 데이터: `results/Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k/swebench/`, `results/Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k/swebench/` (preds·eval_result.json).

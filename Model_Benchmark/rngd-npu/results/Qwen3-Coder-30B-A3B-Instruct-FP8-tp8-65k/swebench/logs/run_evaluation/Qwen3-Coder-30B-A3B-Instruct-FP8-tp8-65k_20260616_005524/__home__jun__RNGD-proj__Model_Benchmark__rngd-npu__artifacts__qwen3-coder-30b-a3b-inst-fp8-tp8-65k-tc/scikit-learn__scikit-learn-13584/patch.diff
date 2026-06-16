@@ -1,0 +1,5 @@
+
+When dealing arrays like np.array([a,b,c]), doing comparisons returns boolean arrays rather than scalar booleans.
+
+Looking closer at lines around [~], I see there's already handling via:
+

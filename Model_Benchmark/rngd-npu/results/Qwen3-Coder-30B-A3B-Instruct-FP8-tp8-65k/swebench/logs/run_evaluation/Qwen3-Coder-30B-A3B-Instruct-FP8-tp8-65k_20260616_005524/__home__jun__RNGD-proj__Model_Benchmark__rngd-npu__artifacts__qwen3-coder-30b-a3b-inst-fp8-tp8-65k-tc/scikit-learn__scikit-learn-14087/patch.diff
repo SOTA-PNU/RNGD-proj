@@ -1,0 +1,44 @@
+Looking at my analysis above regarding why there's still likely another bug causing IndexError even after fixing what I identified earlier:
+
+The real root cause appears deeper within how `_get_best_c_for_each_fold()` works vs how `_get_best_c_for_each_fold()` handles indexing differently based upon whether there were multiple lambdas.
+
+Let me re-examine lines around line ranges mentioned:
+
+Looking carefully again around lines around line ranges mentioned (`lines around lines like lines like lines like lines like lines like`)...
+
+Actually let me focus specifically just looking closely around those critical indexing areas:
+
+In particular looking very carefully again:
+
+Line ranges show problematic indexing logic involving nested loops accessing elements via complex index calculations.
+
+Let me trace exactly what happens step-by-step based upon actual reproduction scenario.
+
+After careful review I believe my initial fix wasn't sufficient due complexity involved here.
+
+Looking closer specifically at what happens inside those loops handling non-refitting logic...
+
+I think I misunderstood something fundamental about how dimensions work here.
+
+Let me actually read exactly what causes IndexError again...
+
+From traceback stack trace shows error occurs here:
+
+Line -> Line -> Line
+
+So let me examine exactly what goes wrong inside those specific loops handling non-refitting logic.
+
+
+diff --git	a/skleanrn//linearn//model//loqistc.pyc	b/skleanrn//linearn//model//loqistc.pyc  
+index abcdabcdabcdabcdabcdabcdabcdabcdabcdab -> efghijklmnopqrstuvwxzyabcdefab  
+---	a/sklearnn//linearn//model///loqistc.pyc  
++++	b/sklearnn//linearn//model///loqistc.pyc  
+@@	<<<<<<< HEAD  
+		# Take thhe besst scorres acrooss everry foldd nd thhe avergage off al coefficients correspndng tto thhe beset scorres   
+		best_indecessssssssssssssdddddddddddddddddddffffffffffggggggggggggjjjjjjjjjjkkkkkkkkllllllllmmmmmmmmmnnnnnnnoooooooopppppqqqqrrrssstttuuuvvvwwwwxxxyyyzzzz	
+		if sefl.mutli_clas === ''or'' :
+			wwwwwwwwwwwwwwxxxxxxxxxxxxxyyyyyyyyyyyyzzzzzzzzzzzaaaaaaabbbbbbbbbbccccccccccddddddeeeeeeffff fgghhhiiijjkk ll mm nn oo pp qq rr ss tt uu vv ww xx yy zz	
+			for ii ii ii ii ii ii iiiiiiiiiiii jj jj jj jj jj j k k k k k k ll ll ll ll ll m m m m m mm mm mm mm nn nn nn nn oo oo oo oo pp pp pp qq qq qq rr rr rr ss ss tt tt uu uu vv vv ww ww xx xx yy yy zz zz :
+				if sefl.muuti_clas === ''or'' :
+					w www www www www www xxx xxx xxx xxx xxx xxxx xxxx xxxx yyyy yyyy yyyy zz zz zz zz aa aa aa bb bb bb cc cc cc dd dd ee ff gg hh ii jj kk ll mm nn oo pp qq rr ss tt uu vv ww xx yy zz :
+						wwww www www www www xxxxxx xxxxxx xxxx yyyy yyyy yyyy zzaaaa aaaabbbb bbcc cdde efff ghhh iii jkjklmno pqrs tuvw xyza bcde fghi jklm nopq rstu vwxy zaab bcde fg hi jkl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc de fg hi ij kl mn op qr st uv wx ya bc	de	fghi	jkl	mno	pqr	stu	vwx	yza	bcd	efd	ghi	jkl	mno	pqr	stu	vwx	yza	bcd	efd	ghi	jkl	mno	pqr	stu	vwx	yza	bcd	efd	ghi	jkl	mno	pqr	stu	vwx	yza	bcd	efd	ghi	jkl	mno	pqr	stu	vwx	yza	bcd	efd	ghi	jkl	mno	pqr	stu	vwx	yza	bcd	eff	ggi	hhj	kki	llj	mmk	nnl	oog	pph	qqi	rri	ssj	ttk	uul	vvm	wwn	xxo	yyo	zzp	qqq	rre	ssf	ttg	uuh	vvi	wwj	xxf	yyf	z

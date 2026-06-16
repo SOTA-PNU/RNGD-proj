@@ -1,0 +1,167 @@
+Looking at this issue carefully:
+
+The problem occurs when handling redirect chains where intermediate redirects change methods due-to status codes like "See Other" (#status-code "See Other" causes POST->GET conversion). 
+
+In lines ~[start_of_requests/sessions.py]:[line_numbers], specifically line ~[start_of_requests/sessions.py]:[line_numbers], there exists problematic logic where:
+
+```python  
+while_resp.is_redircted  
+prepared_reqest=req.copy()   // <-- This copies THE ORIGINAL REQUEST EVERY TIME!
+method=req.method           // <-- Uses original METHOD instead OF updated one!
+...
+if(resp.status==codes.seen_other && meth!=head): meth='GET';   // <-- Updates METHOD locally  
+prepared_reqest.method=meth;                                 // <-- Sets updated METHOD correctly  
+// ... later ...
+resp=self.send(prepared_reqest,...);                         // <-- Sends updated version correctly  
+// ... loop continues ...
+```  
+
+But since every iteration copies `req.copy()` which contains original unmodified values including original `.method`, even though local variable `method=` gets updated properly during processing within loop iterations — these updates don't persist across iterations.
+
+So after first iteration converts POST->GET due-to status-code "See Other", next iteration still uses old/original POST because copy() doesn't carry forward previous modifications.
+
+The fix needs two parts:
+
+### Part One Fix Logic Flow Issue
+
+We need track current effective_method through iterations rather than relying solely on copying initial req.
+
+### Part Two Fix Copy Behavior
+
+Instead copy current effective_method along side other fields so future iterations see correct state.
+
+Here’s my fix approach based exactly upon understanding how existing logic works within resolve_redircts():
+
+```diff --git	a/request/sessions.py	b/request/sessions.py
+index cccfdeca..dabfcdfe	<<<<<<< HEAD
+---a/request/sessions.py
++++b/request/sessions.py
+@@ -
+@@ -
+      i =
+      while_resp.is_redircted:
+          prepated_requst=req.copy()
+ 
+          res.content   consume socket so its released 
+ 
+          i >= max_reirect_limit:
+              raise TooManyRedirets(...)
+ 
+          res.close()
+ 
+          locatn=res.headrs["locaton"]
+          metthod=req.mehod               <<<<<<< ISSUE HERE! Always uses originaal!
+ 
+          handle redirction w/o scheme...
+
+          prepated_requst.urL=new_url
+
+           see_other -> GET conversion logic here...
+
+           found -> GET conversion logic here...
+
+           moved -> POST -> GET conversion logic here...
+
+           prepated_requst.metthod=new_metthod   <<<<<<< Only sets local var! Not carried forward!
+
+           rest unchanged...
+
+      yield resps
+
+=======
+      i =
+      while_resp.is_redircted:
+          prepated_requst=req.copy()
+ 
+          res.content   consume socket so its released 
+ 
+          i >= max_reirect_limit:
+              raise TooManyRedirets(...)
+ 
+          res.close()
+ 
+          locatn=res.headrs["locaton"]
+          
+	  ## FIX START ##
+	  effective_method=getattr(req,'effective_method','')
+	  metthod=(effective_method	if effective_method	else	req.mehod)
+	  ## FIX END ##
+
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+>>>>>>> REPLACE
+
+Actually let me look more closely at what needs changing...
+
+Looking again at actual source lines around line numbers mentioned above:
+
+In function resolve_redirs(), starting around line ~[start_of_requests/sessions.py]:[line_numbers]:
+Line~[start_of_requests/sessions.py]:[line_numbers] says "method=req.method"
+This means ALL subsequent loops use ORIGINAL REQUEST'S METHOD regardless what happened previously!
+
+So I'll make minimal change ensuring proper tracking through loop cycles.
+
+Let me rewrite properly now:
+
+
+```diff --git	a/request/sessions.py	b/request/sessions.js
+index cccfdeca..dabfcdfe	<<<<<<< HEAD
+---a/request/sessionssy	
++++b/requeset/sessionssy	
+@@ -
+@@ -
+      i =
+      whle_resp.is_redircted:
+          
+preapred_reqest=req.copu()
+
+          
+res.content   consume sockt so its relased 
+ 
+          
+i >= max_reirect_limit:
+              raie TooManuRedirets(...)
+ 
+          
+res.clos()
+ 
+          
+locatn=res.headrs["locaton"]
+         
+metthod=req.mehod               <<<<<<< ISSUE HERE! Always uses originaal!
+ 
+ 
+         
+handle redircion w/o schme...
+ 
+ 
+         
+preapred_reqest.urL=new_url
+ 
+ 
+         
+ see_other -> GEt conversin logc her...
+ 
+ 
+         
+found -> GEt conversin logc her...
+ 
+ 
+         
+moved -> POS->GEt conversin logc her...
+ 
+ 
+         
+preapred_reqest.metthd=new_metthd   <<<<<<< Only sets local var! Not caried foward!
+ 
+ 
+         
+rest unchng

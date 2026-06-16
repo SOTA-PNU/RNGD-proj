@@ -1,0 +1,26 @@
+
+But what happens here?
+When we compute something like 'exp(second/(farad*ohm))', 
+
+The argument passed into `_check_exponent()` would already contain dimensional information.
+
+However looking closer...
+
+Actually let me re-read what happens step-by-step:
+
+In line ~$line_number$, there's logic where we call `_check_exponent()` which checks whether exponent arguments evaluate_to being dimensional.
+
+But wait... Looking again closely...
+
+Looking specifically around lines ~$line_number$, I notice there's special handling needed around how exponents interact within functions like exponential functions.
+
+Let me trace through what actually needs fixing based upon error message & reproduction case:
+
+The key insight seems missing validation after calling `_check_exponent()`. When checking exponents inside function calls like exponential functions (`exp(...)`), they're supposed always evaluate_to being "dimensionless", yet somehow they're still carrying dimensional information incorrectly.
+
+Looking carefully now... 
+
+In lines ~$line_number$, specifically within function handling logic (`Function`) section where arguments' factors/dims collected via recursive calls...
+
+I think I found exactly what needs changing!
+

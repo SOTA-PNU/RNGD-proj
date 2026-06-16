@@ -1,0 +1,139 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:furiosa_llm.server.models:Loading LLM from artifact: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc
+[2m2026-06-16T00:33:33.969976941+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc
+[2m2026-06-16T00:33:45.701535029+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::commons[0m[2m:[0m Loading artifact with schema version: 3.0
+[2m2026-06-16T00:33:45.996417446+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Loaded target artifact: SchemaVersion { major: 3, minor: 0 }
+[2m2026-06-16T00:33:45.996537628+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Parallelism Config: tp=8, pp=1, dp=1
+[2m2026-06-16T00:33:46.417881656+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Loading the target model ...
+[2m2026-06-16T00:33:46.419393121+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:0:0-3, npu:0:4-7]) started
+[2m2026-06-16T00:33:46.735682432+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#0 allocation plan: Binary=83.2 MiB, Model weights=29.2 GiB, Reserved IO memory=4.0 GiB
+[2m2026-06-16T00:33:47.907733979+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m Resolve 1 pipeline for 1 DP groups (DP=1, PP=1) in 1.49s
+[2m2026-06-16T00:33:47.907869896+09:00[0m [32m INFO[0m [2mfuriosa_generator::backing_file[0m[2m:[0m Total size of parameters loaded: 29.2 GiB in 1.1720849 s
+[2m2026-06-16T00:33:48.340682001+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Loading the target model took 1.922710336s
+[2m2026-06-16T00:33:48.354789672+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#0 KV cache=14.3 GiB
+[2m2026-06-16T00:33:48.382867002+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Computed bucket limits: max_executable_len=65536
+[2m2026-06-16T00:33:48.383918464+09:00[0m [32m INFO[0m [2mfuriosa_generator::structured_output::manager[0m[2m:[0m Initializing structured output manager for backend: Auto
+[2m2026-06-16T00:33:48.698822264+09:00[0m [33m WARN[0m [2mxgrammar[0m[2m:[0m Provided vocab_size 151936 does not match tokenizer vocab size 151669. Using provided vocab_size.
+[2m2026-06-16T00:33:48.926262821+09:00[0m [32m INFO[0m [2mfuriosa_generator::structured_output::manager[0m[2m:[0m XGrammar backend is initialized.
+[2m2026-06-16T00:33:49.886914404+09:00[0m [32m INFO[0m [2mfuriosa_generator::structured_output::manager[0m[2m:[0m LLGuidance backend is initialized.
+[2m2026-06-16T00:33:49.886984088+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m DP entry DpId(0) → device [npu0pe0-3, npu0pe4-7]
+[2m2026-06-16T00:33:49.931441288+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::scheduler::request_management::task_selector[0m[2m:[0m Initializing TaskSelector([[npu:0:0-3, npu:0:4-7]]) with config: TaskSelectorConfig { enable_jit_compilation: false }, 0 AOT wired pipelines
+[2m2026-06-16T00:33:50.224471982+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::scheduler::memory_manager[0m[2m:[0m Initialize KVCacheManager with config: KVCacheConfig(kv_cache_memory: {[npu:0:0-3, npu:0:4-7]: Buffer { addr: 0x100000000, size: 0x390de9400, device: Npu([npu:0:0-3, npu:0:4-7], Dram) }}, KVCachePlan(global_attention_config: LayerConfig(attention_type: Global, unit_block_size: 1024, block_size: 1024, num_chips: 1), global_kv_cache_tensors: 96, aux_attention_config: None, aux_kv_cache_tensors: 0)), is_prefix_cache_enabled: true
+[2m2026-06-16T00:33:50.224671806+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::scheduler::memory_manager[0m[2m:[0m Configured KV cache blocks, global_num_blocks: 155796, aux_num_blocks: None
+[2m2026-06-16T00:33:50.235828865+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m Eager scheduler has started with: SchedulerConfig { scheduler_kind: None, npu_queue_limit: 1, max_processing_samples: 65536, spare_blocks_ratio: 0.0, estimation_time_limit_ms: None, prefix_cache_config: PrefixCacheConfig { enabled: true, lookahead_requests: 2 }, experimental_scheduling_loop_type: Eager, experimental_aggressive_batching: false, max_concurrency: None, max_num_batched_tokens: None, data_parallel_routing_policy: PrefixAware }
+[2m2026-06-16T00:33:50.236002148+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m max_kv_len=155795 (from KV cache blocks across 1 DP device(s))
+INFO:furiosa_llm.server.chat_utils:Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+INFO:     Started server process [2183090]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:41080 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41086 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35788 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.chat_utils:Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1328.7 tokens/s, Avg generation throughput: 0.2 tokens/s, Running: 2 reqs, Waiting: 6 reqs, RNGD KV cache usage: 8.4%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 3506.7 tokens/s, Avg generation throughput: 6.6 tokens/s, Running: 3 reqs, Waiting: 5 reqs, RNGD KV cache usage: 31.5%, Prefix cache hit rate: 0.8%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 3055.0 tokens/s, Avg generation throughput: 10.1 tokens/s, Running: 5 reqs, Waiting: 3 reqs, RNGD KV cache usage: 51.0%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 3318.9 tokens/s, Avg generation throughput: 18.4 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 72.3%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1523.1 tokens/s, Avg generation throughput: 8.5 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 82.2%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 602.6 tokens/s, Avg generation throughput: 92.5 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 84.4%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 110.4 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 85.1%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2289.1 tokens/s, Avg generation throughput: 55.7 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 94.9%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 110.4 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 95.6%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 109.8 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 96.3%, Prefix cache hit rate: 0.6%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1727.2 tokens/s, Avg generation throughput: 79.2 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 91.5%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2680.9 tokens/s, Avg generation throughput: 68.0 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 45.6%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2405.9 tokens/s, Avg generation throughput: 13.4 tokens/s, Running: 6 reqs, Waiting: 2 reqs, RNGD KV cache usage: 61.3%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1534.0 tokens/s, Avg generation throughput: 9.0 tokens/s, Running: 7 reqs, Waiting: 1 reqs, RNGD KV cache usage: 71.1%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 3054.4 tokens/s, Avg generation throughput: 23.6 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 90.8%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2694.4 tokens/s, Avg generation throughput: 36.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 88.3%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1955.9 tokens/s, Avg generation throughput: 64.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.0%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 951.6 tokens/s, Avg generation throughput: 104.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.1%, Prefix cache hit rate: 0.7%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2267.9 tokens/s, Avg generation throughput: 104.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 93.7%, Prefix cache hit rate: 0.8%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1277.0 tokens/s, Avg generation throughput: 129.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.7%, Prefix cache hit rate: 0.8%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 134.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.6%, Prefix cache hit rate: 0.8%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2118.6 tokens/s, Avg generation throughput: 94.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 93.5%, Prefix cache hit rate: 0.8%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2989.1 tokens/s, Avg generation throughput: 68.6 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 95.7%, Prefix cache hit rate: 0.8%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1679.2 tokens/s, Avg generation throughput: 117.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 95.6%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 67.7 tokens/s, Avg generation throughput: 136.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.9%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2433.0 tokens/s, Avg generation throughput: 86.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.6%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 893.9 tokens/s, Avg generation throughput: 118.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.8%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 132.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.7%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 385.3 tokens/s, Avg generation throughput: 129.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.4%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2353.6 tokens/s, Avg generation throughput: 94.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.3%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1949.1 tokens/s, Avg generation throughput: 84.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.8%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 323.0 tokens/s, Avg generation throughput: 163.6 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.0%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 567.8 tokens/s, Avg generation throughput: 133.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 92.4%, Prefix cache hit rate: 1.0%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 626.2 tokens/s, Avg generation throughput: 124.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.6%, Prefix cache hit rate: 1.0%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 729.9 tokens/s, Avg generation throughput: 122.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 79.3%, Prefix cache hit rate: 1.0%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2687.9 tokens/s, Avg generation throughput: 21.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.7%, Prefix cache hit rate: 1.0%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1771.4 tokens/s, Avg generation throughput: 102.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 95.1%, Prefix cache hit rate: 1.0%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2335.7 tokens/s, Avg generation throughput: 74.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 88.2%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1687.6 tokens/s, Avg generation throughput: 58.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.4%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 2521.8 tokens/s, Avg generation throughput: 57.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 95.1%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 283.7 tokens/s, Avg generation throughput: 102.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.0%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1000.4 tokens/s, Avg generation throughput: 94.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 96.4%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 484.7 tokens/s, Avg generation throughput: 123.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.0%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 105.6 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.7%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 1357.0 tokens/s, Avg generation throughput: 100.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, RNGD KV cache usage: 92.3%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35858 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 865.9 tokens/s, Avg generation throughput: 81.5 tokens/s, Running: 7 reqs, Waiting: 0 reqs, RNGD KV cache usage: 97.8%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35866 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35802 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 113.7 tokens/s, Running: 3 reqs, Waiting: 0 reqs, RNGD KV cache usage: 98.5%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35818 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35842 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:furiosa_llm.server.metrics:[Engine 0] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 78.5 tokens/s, Running: 1 reqs, Waiting: 0 reqs, RNGD KV cache usage: 99.0%, Prefix cache hit rate: 0.9%, Wire pipeline hit rate: 0.0%
+INFO:     127.0.0.1:35828 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+[2m2026-06-16T00:41:55.928637418+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::generator[0m[2m:[0m Scheduler exits normally
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2183090]

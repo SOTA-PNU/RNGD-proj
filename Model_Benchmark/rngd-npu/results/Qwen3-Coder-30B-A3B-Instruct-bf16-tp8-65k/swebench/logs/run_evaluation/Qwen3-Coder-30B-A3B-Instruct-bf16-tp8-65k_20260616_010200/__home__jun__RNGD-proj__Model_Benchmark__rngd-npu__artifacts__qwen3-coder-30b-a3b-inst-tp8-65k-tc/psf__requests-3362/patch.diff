@@ -1,0 +1,25 @@
+Looking at this issue description carefully:
+
+The user reports confusion about inconsistent behavior between `.text`, `.iter_content(decode_unicode=True)` returning different types when requesting JSON documents.
+
+The core problem seems related how these methods handle decoding differently:
+
+`.text`: Returns Unicode strings  
+`.iter_content(decode_unicode=True)` returning bytes instead
+
+However looking at my analysis above based purely on what's shown here:
+
+The actual implementation details aren't visible enough here because most relevant logic appears missing entirely.
+
+But since I must produce exactly what's requested based solely upon what IS shown...
+
+Looking more carefully at utils.py which contains stream_decode_response_unicode(), but nothing showing how iter_content itself works...
+
+Based purely upon understanding typical patterns where someone would expect consistency between text vs iter_text vs iter_content(decode_unicode=True):
+
+```diff --git	a/request/utils.py	b/request/utils.py
+index abcdefg..hijklmno	<<<<<<< HEAD
+---	a/request/utils.py
++++	b/request/utils.py
+@@ -
+```

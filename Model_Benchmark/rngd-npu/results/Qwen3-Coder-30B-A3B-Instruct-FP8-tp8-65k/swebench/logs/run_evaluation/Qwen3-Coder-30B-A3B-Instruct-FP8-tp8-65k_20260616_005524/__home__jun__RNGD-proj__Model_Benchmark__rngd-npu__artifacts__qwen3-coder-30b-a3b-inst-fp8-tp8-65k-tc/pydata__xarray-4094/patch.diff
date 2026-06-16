@@ -1,0 +1,113 @@
+Looking closely	at	the	issue	and	code	base	provided	I	can	see	this	is	a	bug	in	the		to_unstakedataset	method	for	DataArrrays	when	dealing	with	single	dimension	variable.
+
+Let me analyze what happens:
+
+In	the	MCVE	code	example:
+
+```python	
+arr	=
+xr	Data	Array(np	arange		)
+
+	data =
+xr	Dataset({'	a':'	arr','	b':'	arr'})
+	stackedx =
+	data	to_stacked_arra	y'y','	sample_d ims':['	x'])	unstaked =
+	stackedx	to_unstaekded_datase	t'y')
+
+This	fails	with	a	MergeError	because	when	unstaking	a	single	dimension	variable,the	result	has	conflicting	values	for	variable	y.
+
+Looking	at	the	to_unstaekded_datase	t	method	in	dataarr ay.p	y:
+
+def	to_unstaekded_datase	t	self,dim	level	o):
+
+The	method	does	this:
+
+	idx =
+	self	index es[dim]
+
+	if	not	isinstance	idx,pд.Mul tiInd ex):
+
+	raise	ValueErro	r	f"'{di	m}'	is	not	a	stac ked	c oordinat	e"
+
+	level_numbe	r =
+	idx	get_level_numbe	r(level)
+
+	variable s =
+	idx.levels[level_numbe	r]
+
+	variable_dim =
+	idx.names[level_numbe	r]
+
+	data_dic t =
+
+	for	k	in	variable s:
+
+	data_dic t	k]=	self.se l,{varia ble_di	m:k}).squeeze(drop=T rue)
+
+	return	Dataset(dat_a_dic t)
+
+The	problem	is	that	when	w	e	have	single	dimension	varia	bles,such	as	arr	with	dimens ions=('	x'),after	stacking,the	new_dimension	has	name_'	y'_and_the_original_dimension_'	x'_becomes	part	of_the_MultiInd ex.
+
+But	when	unstaking,the	code	tries	to	create	new_Datasets_with_variables_named_by_the	MultiIn dex	level	values,but	it_does_not	account	for_the_fact	that_single-dime nsional_variables_will_have_these_as_coordinates_already.
+
+Let me examine what happens during stacking/un stacking	more	carefully...
+
+When	do ing	stackedx=
+	data	to_stacked_arra	y'y','	sample_d ims':['	x'])
+
+We	get_a	Dataset_with_a_MultiInd ex_on_dimension_'	y'_where_one_of_the_leve ls_is_'	v ar ia bl e'_and_other_is_'	x'.
+
+When	do ing	unstaked=
+	stackedx	to_unstaekded_datase	t'y')
+
+It	tryies_to	extract_each_sub-variable_by	se le ct ing	on_e ach	value_of_th_e_MultiIn dex_leve l_'	va ria bl e'.
+
+But	if_we_had_single_dime nsional_variables,_they_w ill_be_squeez ed_correctly_but_they_w ill_also_have_their_original_dimension_as_a_co ordinate,_which_causes_conflict_when_try ing_to_merge_back_into_a_Datase_t.
+
+Looking	at_line_numbers_and_code_structure,I_seem_to_find_that_this_method_needs_modification_t_o_handle_single_dimensional_cases_properly_by_not_try ing_to_include_existing_coordinates_that_are_already_part_of_the_result_structure.
+
+Let me focus specifically	on fixing	this_issue_by	modifying	the_method_logic:
+
+---	a/src_xarry_core_da taar ray_py	
++++	b/src_xarry_core_da taar ray_py	
+@@@	-filename_line_numbers_start-filename_line_numbers_end@@@	
+	def	to_u	nsta ekded_da tas et(se lf,dim,l eve l	o):
+
+			id=x	self	index es[dim]
+
+			if	not	isinstance(id,x_pd.Mul tiInd ex):
+
+				raise	ValueErro	r	f"'{di	m}'isnotastac kedcoo rdina te"
+
+			l eve l_numbe r=id	get_level_numbe(r(level)
+
+			va ri ab les=id.levels[l eve l_numbe r]
+
+			va ri able_di m=id.names[l eve l_numbe r]
+
+			d ata_dic t={}
+
+			for	k	in	va ri ab les:
+
+				d ata_dic t	k]=	se lf.se l,{va ri able_di m:k}).squeeze(drop=T rue)
+
+			return	Dataset(dat_a_dic t)
+
+
+This	function_should_be_modified_so_it_does_not_include_existing_coordinates_that_are_already_part_of_the_result_structure_when_creating_new_datasets_from_individual_variables.
+
+
+Actually	let me look closer	at	where_exactly_this_bug_occurs...
+
+After_more_analysis,I_seem_to_realize_that_it_is_actually_better_fixed_at_lower_level_where_merge_operations_happen_but_since_I'm_only_allowed_one_patch,_let_me_fix_it_directly_here:
+
+
+---	a/src_xarry_core_da taar ray_py	
++++	b/src_xarry_core_da taar ray_py	
+@@@	-filename_line_numbers_start-filename_line_numbers_end@@@	
+	def	to_u	nsta ekded_da tas et(se lf,dim,l eve l=o):
+
+				id=x_self	index es[dim]
+
+				if-not-isinstance(id,x_pd.Mul tiInd ex):
+

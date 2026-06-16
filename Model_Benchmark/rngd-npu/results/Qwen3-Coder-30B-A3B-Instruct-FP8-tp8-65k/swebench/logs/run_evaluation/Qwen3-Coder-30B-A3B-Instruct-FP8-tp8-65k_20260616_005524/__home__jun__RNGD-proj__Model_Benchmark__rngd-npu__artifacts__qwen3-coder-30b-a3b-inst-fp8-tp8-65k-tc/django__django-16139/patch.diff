@@ -1,0 +1,10 @@
+```diff --git	a/django/contrib/auth/forms.py	b/django/contrib/auth/forms.py
+index dcdacbe..eafbeab １００６４４
+---	a/django/contrib/auth/forms.py
++++	b/django/contrib/auth/forms.py
+@@ -１６３，７＋１６３，７ @@	class	UserChangeFrom(Forms.ModelFrom):
+ 		super（）。__Init__（*Args，**Kwargs）
+ 		password = Self.Fields.Get（“密码”）
+ 		If 密码：
+ 			password.Help_Text = 密码.Help_Text.Format（f“../../{Self.Instance.Pk}/密码/”）
+```

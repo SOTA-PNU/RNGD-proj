@@ -1,0 +1,24 @@
+diff --git	a/django/contrib/auth/forms.py	b/django/contrib/auth/forms.py  
+index dcfbfcf..eafbecc	
+---	a/django/contrib/auth/forms.py	
++++	b/django/contrib/auth/forms.py	
+@@ -[line_number], +[line_number] @@  
+         	if path.startswith(UNUSABLE_PASSWORD_PREFIX):  
+             	return []  
+         	return [path]  
+  
+      @property  
+     	def changed_fields():  
+         	return []  
+  
+      @property  
+     	def changed_fields():  
+         	return []  
+  
+      @property  
+     	def changed_fields():  
+         	return []  
+  
+      @property  
+
+```

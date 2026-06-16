@@ -8,7 +8,7 @@
 > - 예시 모델(빌드 결과물): `Qwen3-Coder-30B-A3B-Instruct-FP8`
 >   - 아티팩트 위치: `Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc/`
 >   - (이 아티팩트는 serve 게이트 통과를 위해 `model_type` 을 `qwen3` 로 위장한 사본입니다.
->     위장 배경은 [README_qwen3_next_TECH.md](README_qwen3_next_TECH.md) 참고)
+>     위장 배경은 [README_qwen3_coder_next.md](README_qwen3_coder_next.md) 참고)
 > - 빌드 과정 실측 로그: `qwen3-next-proj/logs/build_trace_full.log`
 >   (미니 qwen3_moe 모델 — **qwen3-coder-30b 과 동일한 코드 경로**를 분 단위로 재현한 것)
 > - serve 부팅 실측 로그: `qwen3-next-proj/logs/serve_30b_tc_newpath.log` (실물 30B 부팅)
@@ -499,7 +499,7 @@ furiosa-llm serve (한 줄)
      먼저 거부합니다(`furiosa-llm-common/src/artifact/types/next_gen.rs:238`,
      `unknown variant 'qwen3_next', expected one of llama/exaone4/qwen2/qwen3/qwen3_moe/gpt_oss`).
      이 게이트의 **바이너리 레벨 해부**(radare2 디스어셈블: 첫 바이트 점프 테이블 매처,
-     변형별 단말 블록 주소, 통과 방법)는 [README_qwen3_next_TECH.md](README_qwen3_next_TECH.md)
+     변형별 단말 블록 주소, 통과 방법)는 [README_qwen3_coder_next.md](README_qwen3_coder_next.md)
      에 별도 정리.
 
 ### 2.2.x 네이티브 엔진이 부팅하며 하는 일 (실측 로그)

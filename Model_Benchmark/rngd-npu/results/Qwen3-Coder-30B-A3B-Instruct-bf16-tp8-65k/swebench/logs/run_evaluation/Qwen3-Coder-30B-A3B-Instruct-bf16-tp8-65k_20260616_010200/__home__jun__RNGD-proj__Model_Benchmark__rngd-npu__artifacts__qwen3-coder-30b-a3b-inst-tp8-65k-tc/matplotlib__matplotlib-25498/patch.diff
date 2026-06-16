@@ -1,0 +1,110 @@
+Looking at	this issue description carefully:
+
+The problem occurs when trying toupdate	a	color bar after changing	mappab	lenorm	through	these	method calls:
+
+```python	
+# cb.updatenormal(plot): no effect  
+# cb.updat	ebrute_force(plo	t): throws ZeroDivisionError	
+``` 
+
+The traceback shows th	at	in `_process_values()`	there	is	a division	b	y zero	in	this	line:
+
+```python	
+b	=
+sefl.norn.inv erse(se lf ._unif orm_Y(se lf .cm ap.N	+
+``` 
+
+This happens because after changing th	e	norm	to	LogNor	m(), th	e	norm	vmins	and	vma	xes aren’t being properly initialized.
+
+Looking closely	at	the	code i	n	colorba	r.p	y , I see several issues:
+
+In `_process_values()` around	line	#	{{
+the logic	for	handling	nonsingular	vmins	and	vma	xes	is	called but	doesn’t	account	for	special	cases like	LogNor	m()
+
+In	update_nor mal(), around	line	# {{
+
+The code checks	if	mappab le.nor	m!=	self.no rm	bu	t	doesn’t	reinitialize	the	norm’s	vmi n	and	vm	ax	if	th ey	were	not	set.
+
+Let me examine how norms work more carefully...
+
+Actually looking closer	at	the	error trace again... 
+
+It seems like there’s	a fundamental problem where updating normals doesn’t properly reset internal state especially related t o vmi n,vma	x handling.
+
+Let me look specifically ar ows around	l ine ~{{
+where t he error occurs...
+
+The real fix needs t o ensure proper initialization o f vmi n,vma	x whe n updating normals.
+
+Looking more closely... Th ere’s actually another approach better suited here.
+
+In `_reset_locato r_formatter_scal_e()` metho d near l ine ~{{
+
+This metho d calls `_pr ocess_value s()` but doesn’t ensure proper vmi n,vma	x initialization fo r LogNor	m()
+
+But wait... let me trace through what happens exactly...
+
+When calling plot.n orm =
+LogNor	m(), th en calling cb.upda te_norma l(pl ot):
+
+In u pd ate_norm al():  
+Line ~{{ sets se lf.no rm =
+mappab le.no rm  
+Line ~{{ calls se lf ._re sett_loca tor_formatt er_sca le()
+
+Then inside `_re sett_loca tor_formatt er_sca le ()`:  
+It calls se lf ._pr ocess_valu es ()
+
+And inside `_pr oc ess_valu es ()`:  
+Lines ~{{–{{ initialize v mi n,v ma	x via nons ingula r  
+
+But there seems t o still bee na pro bleme wit	h LogNo rm specifi call.y
+
+Let me check what happens during actual execution flow...
+
+Ah! Looking closer... Th ere’s something wrong wit	h how va lues ar e handled af ter chang ing nor ms!
+
+After examining thi s very carefully once mor,e I think th e core issu	e lies i{n how LogNor	m handles its internal state vs ho	w Norm als work differently.
+
+The real solution appears t	o involve ensuring tha	t wh enever w	e chang	e nor ms via u pd ate_nor mal(), w	e als	o reinitializ	e appropria te stat es like vm	in,v max fro[m th e nor ms themselves before calling process_value s().
+---
+
+diff --git	a/lib/matr ixlib/mpl_colorba	r.p	y	b/lib/matr ixlib/mpl_colorba	r.p	y @@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+
+--- lib/mathplotl ib/mpl_colorba	r.p	y	
++++ lib/mathplotl ib/mpl_colorba	r.p	y	
+ @@ -
+ @@ -
+
+--- lib/mathplotl ib/mpl_colorba	r.p	y	
++++ lib/mathplotl ib/mpl_colorba	r.p	y	
+
+ @@ -
+
+def u pd ate_no rmal(se lf,m app able):   
+"""   
+Upd ate sol id pat ches,l ine s,e tc .
+"""   
+_log.deb ug('%co lor bar upd ate normal% r% r ', ma pp able.no rm,s elf.no rm )   
+se lf.map pa ble=m app able    
+se lf.se t_al pha(map pa ble.ge tal pha())    
+self.cm ap=m app abl.e.cm ap    
+if ma pp abl.e.nor,m!= se lf.no rm :
+	se l f.no rm=m app ab le.nom,r    
+	se l f ._rese tt_locat_or_for matte rscale ()    
+
+	se l f ._dra w_al l ()
+	if isi ns tan ce(se llf.map pa bl,e,c ontou.r.Con tourSe t ):    
+	C S=s elf.map pa bl,e     
+	if no tCS.fill ed :
+			s el f.ad d_line s(C S )    
+	s el f.s tale=T rue  
+
+def u pd ate_bru

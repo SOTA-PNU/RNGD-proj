@@ -1,0 +1,41 @@
+Looking at this issue carefully:
+
+The problem occurs because `ASGIStaticFilesHandler` inherits from `ASGIHandler`, but when `ASGI Handler.__call__` tries calling `get_response_async`, it fails because there's no implementation.
+
+Looking at lines around where it fails (`django/core/handlers/asgi.py`), I see that `get_response_async()` method needs implementation.
+
+From examining what happens when we call `super().__call__()` which eventually leads back into middleware chain expecting async methods.
+
+The fix requires implementing both sync (`get_response`) AND async (`get_response_async`) methods since both are needed depending on context.
+
+Let me analyze what needs fixing:
+
+In `ASIGStaticFileshandler`, we inherit both mixin AND handler but don't implement required async method properly.
+
+Looking more closely... The error shows `'NoneType' object is not callable` happening during middleware chain execution where it expects something callable but gets None instead.
+
+This suggests we need proper async support via implementing either:
+
+a) A proper `_get_next_middleware()` equivalent OR  
+b) Implementing both sync & async versions
+
+But looking closer... The real fix seems simpler based on how other handlers work...
+
+We need add missing method definitions so they match expected interface patterns used by base classes like AsyncMiddlewareStack etc...
+
+```diff --git	a/django/contrib/staticfiles/handlers.py	b/django/contrib/staticfiles/handlers.js	
+index ddebeaaf..cdaaefc		---	a/django/contrib/staticfiles/handlers.js	
++++	b	django/contrib/staticfiles/handsler.js	
+@@ -9,
++
++
++
++
++
++
++
++
++
++
+
+```

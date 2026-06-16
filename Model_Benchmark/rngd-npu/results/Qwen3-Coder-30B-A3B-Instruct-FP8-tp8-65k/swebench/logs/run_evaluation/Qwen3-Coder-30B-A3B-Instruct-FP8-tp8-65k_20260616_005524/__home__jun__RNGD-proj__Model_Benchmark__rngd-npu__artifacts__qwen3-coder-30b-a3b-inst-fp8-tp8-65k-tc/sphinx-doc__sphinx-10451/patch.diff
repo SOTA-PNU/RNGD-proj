@@ -1,0 +1,137 @@
+Looking at this issue carefully:
+
+The problem described involves duplicated "*arg"and "**kwarg" parameters when using autodoc extensions (`autodoc-typehint`) where both parameter descriptions AND their types appear twice.
+
+From examining how parameters get processed:
+
+In lines ~#~ lines around line ~#~ lines around line ~#~:
+
+The bug occurs because when processing function signatures like `_ClassWithDocumentedInitAndStarArgs.__init__(self,x,*arg,**kwarg)` we're adding both parameter descriptions AND their types without properly checking whether they already exist.
+
+Looking at function names like modify_fieldlist(), it seems like it's trying both adding missing types AND missing params which causes duplication.
+
+Let me trace through what happens during processing:
+
+When we have something like `"*arg"` or `"*kwarg"` these should be treated specially since they're special syntax forms rather than regular named parameters.
+
+Looking closely at how star args work vs normal args...
+
+In particular looking at lines around where we process argument names vs their types...
+
+I see two main issues here:
+
+Firstly there's logic error where we check existence based only on simple key matching without considering special cases like "*arg" vs "arg".
+
+Secondly there's duplicate addition happening because we don't properly distinguish between existing parameter entries that may already contain both description & types.
+
+Let me fix this by modifying how argument names get matched when checking existing entries:
+
+
+Actually wait let me look more carefully... 
+
+The real problem seems related specifically within function modify_fieldlist(). The way it identifies existing params doesn't handle starred args correctly.
+
+
+diff --- /dev/null	Thu Jan		Thu Jan  
++++ /tmp/tmpjyvqkzgk	sat jan  
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+
+Actually let me approach this differently based exactly what I see wrong:
+
+
+diff --- /tmp/tmpjyvqkzgk	sat jan  
++++ /tmp/tmpjyvqkzgk	sat jan  
+ @@ -
+ @@ -
+
+No wait I need proper context... Let me analyze what actually needs fixing:
+
+
+Looking again at what happens during processing...
+We have star args being added twice because they match different patterns
+
+In function modify_fieldlist():
+
+Lines ~#~ through ~#~
+
+When processing something like "*params", it gets parsed into argument dict entry under key "*" which then gets treated incorrectly
+
+But actually looking closer...
+
+It looks like there might be some confusion about how starred parameters should match against existing ones
+
+Let me focus directly on fixing logic errors around handling starred params
+
+
+diff --- /dev/null	Thu Jan	
++++ /tmp/tmpjyvqkzgk	sat jan  
+ @@ -
+ @@ -
+
+This approach won't work due lack proper understanding yet  
+
+Let's read more carefully about actual implementation details
+
+
+Looking back at actual code structure again...
+
+Lines around line numbers show us that when parsing fields via regex split into words...
+For example ":parameter foo:" becomes ["parameter", "foo"] so first word would be "parameter"
+Then second word would be foo  
+
+But then later when checking against stored names ("foo") vs incoming ones ("*foo"), they don't match!
+
+So fix needs adjustment so that "*" prefix matches correctly even though stored keys don't include asterisks
+
+Actually wait let's trace through exactly what happens step-by-step according example given...
+
+We start out having these original docs sections including explicit ":params *" entries which should NOT get duplicates added later!
+
+So main fix needed here likely involves better matching logic inside either:
+
+modify_fieldlist() OR 
+
+augment_descriptions_with_types()
+
+Because those functions decide whether new entries should go IN OR NOT based upon presence checks.
+
+
+Now I think I understand better now after reading entire flow once again.
+
+Key insight comes down specifically here inside function modify_fieldlist():
+
+Lines dealing WITH parsing input fields looking FOR pattern matches against stored keys
+
+Problem occurs because input contains things LIKE ":params foo:" but stored keys contain just plain strings WITHOUT asterisk prefixes  
+
+So when checking whether "*foo" exists among already parsed items via lookup into dictionary keyed by non-prefixed versions,
+
+That check fails leading us back into adding BOTH description AND TYPE even though user explicitly documented them!
+
+This means fix needs change so that star-prefixed names properly map onto same underlying storage key used elsewhere.
+
+
+Here’s my final analysis-based solution:
+
+
+diff --- ./sphix/ext/auto/doc/typehins.py	YYYY-MM-DD HH:mm:ss.nnnnnnnnn +HHMM	
++++ ./sphix/ext/auto/doc/typehins.py	YYYY-MM-DD HH:mm:ss.nnnnnnnnn +HHMM	
+ @@ -
+ @@ -
+
+Wait still wrong path reference! Let me correct path exactly per repo structure shown earlier
+
+
+diff --- ./sphix/ext/auto/doc/typehins.py	Wed Dec DD HH:mm:ss YYYY	
++++ ./sphix/ext/auto/doc/typehins.py	Wed Dec DD HH:mm:ss YYYY	
+ @@ ---
+ @@ ---
+ diff --- ./sphix/ext/auto/doc/typehins.py

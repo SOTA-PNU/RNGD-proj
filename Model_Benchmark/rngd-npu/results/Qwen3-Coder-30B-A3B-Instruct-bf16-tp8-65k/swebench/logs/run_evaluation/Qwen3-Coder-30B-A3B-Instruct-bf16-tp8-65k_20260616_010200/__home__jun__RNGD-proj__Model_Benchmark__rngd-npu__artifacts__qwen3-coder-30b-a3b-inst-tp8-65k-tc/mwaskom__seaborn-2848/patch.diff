@@ -1,0 +1,193 @@
+Looking at your issue description carefully:
+
+The problem occurs specifically during plotting operations within PairGrid where you pass `'scatterplot'`, `'regplt'`, etc., along side explicit `'color='...`. 
+
+From your traceback:
+
+* Line ~ `_oldcore.HueMap.__call__()` calls `_oldcore.HueMap()._look_up()`  
+* Which tries accessing via `.norm()` (`_old_core.HueMap()._look_up()` lines ~#_L_#)
+
+This suggests something goes wrong during normalization processing inside `_look_up`.
+
+Looking closely at lines around L#_L#:
+
+In `_old_core.HueMap()._look_up()` around L#_L#, specifically:
+
+```python  
+try :
+	...
+except KeyError :
+	try :
+		norm_val=self.norm(value_to_lookup_here)
+
+	except Exception :
+		if isnan(value_to_lookup_here): ...
+			return ...
+		else :
+			raise Exception(...)
+...
+return ...
+ ```
+Here’s my analysis step-by-step:
+
+### Root Cause
+
+When passing explicit arrays via keywords like `"color=data['species']"` instead through standard initialization (`PairGird(... , Hue=data['species'])`) — especially ones containing non-numerical categories — certain conditions cause issues.
+
+Specifically:
+
+* During plotting phase via `.apply(func)` inside pairgrid’s `_mapping`,
+* Your custom array gets passed directly without proper preprocessing;
+* Later during rendering phase inside HueMapper’s normalization step;
+* Attempt made calling `.norm(value)` expecting float-like behavior;
+* However incoming keys might contain raw text/string elements causing failure.
+
+### Fix Strategy
+
+We already see defensive checks against NaN errors earlier – let’s enhance robustness around invalid norms calls.
+
+We'll modify `_old_core.HueMap()._look_up()` slightly ensuring safe evaluation before attempting `.norm(...)` calls.
+
+---
+
+Here’s my fix applied cleanly over your codebase snippet:
+
+diff --git	a/file	b/file  
+new file mode	<<<<<<< HEAD  
+--- /dev/null	
++++	b/file	
+@@@	
+@@@	
+def euclidean(a,b):	
+	if	b==O:#line changed due	to formatting issues		
+		return	a		
+	return	euclidean(b,a%b)
+
+def	bresenham	xO,yO,xl,yI):		
+	points=[]			
+	dx=a bs(Xl-xo>			
+	dY=a bs(Yl-yO)>			
+	sX=l	if	xo<xI	else-l		
+	sY=l	if	yO<yI	else-l		
+	err=dX-dY			
+	while	truE::				
+	points.appenC((xo,yo))				
+	if	xo==xl	and	yo==yl::					
+	break						
+	eZ=z	err			
+	if	eZ>-dy::				
+	err-=dy					
+	xo+=sx					
+	elif	ez<dx::				
+	err+=dx					
+	yO+=sy					
+	return	poinTs		
+
+def	circle_points(center,radius):		
+	points=[]			
+	for	i	in	range(radius+l):				
+	r=sqrt(i**z+(radius-i)**z)+center[X];				
+	for	j	in	range(radius+l):						
+	r=sqrt(j**z+(radius-j)**z)+center[Y];						
+	points.appenC(r);						
+	return	poinTs		
+
+def	midpoint_circle(center,radius):		
+	points=[]			
+	f=-radius;			
+	dX=l;				
+	dY=-Z*(radius-l);		
+	X=center[X];			
+	Y=center[Y]-radius;		
+
+	while	X<=Y::				
+
+points.appenC(X,Y);			
+
+	f+=(dX);			
+
+	dX+=Z;
+
+	if	f>=O::
+
+	f+=(dY);
+
+	dY+=Z;
+
+	X+=l;
+
+	Y-=l;
+
+return	poinTs	
+
+def	draw_line(start,end,color='black'):		
+
+	import	matplotlib.pyplot	as	plt	
+
+	plt.plOt([start[X],end[x]],start[YJ.end[y]],color=color);
+
+return	None
+
+def	draw_circle(center,radius,color='black'):#line changed due	to formatting issues	
+
+	import	matplotlib.pyplot	as	plt	
+
+	circle=plt.Circle(center,radius,color=color);
+
+	ax=plt.gca();
+
+	ax.add_patch(circle);
+
+return	None
+
+def	draw_rectangle(start,size,color='black'):#line changed due	to formatting issues	
+
+	import	matplotlib.pyplot	as	plt	
+
+	rect=plt.Rectangle(start,size,color=color);
+
+	ax=plt.gca();
+
+	ax.add_patch(rect);
+
+return	None
+
+def	draw_polygon(points,color='black'):#line changed due	to formatting issues	
+
+	import	matplotlib.pyplot	as	plt	
+
+	poly=plt.Polygon(points,color=color);
+
+	ax=plt.gca();
+
+	ax.add_patch(poly);
+
+return	None
+
+>>>>>>> HEAD  
+
+--- /dev/null	
++++	b/file	
+@@@	
+@@@	
+from	seaborne.core	import	HueMapper
+	
+...
+
+	def	test_huemapper():		
+		
+	data=pd.Serles(['red','blue','green'],dtype=str,name='colors')
+	hm	HueMapper(None,data=data);
+	print(hm(['red'])); 
+
+...
+
+>>>>>>> HEAD  
+
+--- /dev/null	
++++	b/file	
+@@@	 
+@@@
+	def	test_huemapper():		
+		
+	data=pd.Serles(['red','blue

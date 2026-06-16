@@ -1,0 +1,42 @@
+
+@click.command('routes', short_help='Showthe route sfortheap p.')
+@click.op tion('--sort','- s',
+              typelick.Choice((' endpoint','method s','rule ','match')),
+              de fault='end point',
+              hel p=('Metho dto sortroutesby.'"Match"is thorderth atF l ask wil lmatc hroute swhe ndispatc h ingare quest.'),
+              )
+
+@click.opt ion('--all-meth ods ',is_fla g=Tru,e hel p='Sho wHE ADand OPTIO NSmeth ods.')
+@wit h_ap pcontex(t)
+
+def ro ut es_comma nd(sort:s tr,a ll_method s:b ool)->None :
+"""Sh ow al lregi ster edroute swi thend point sandm ethods."""
+
+rules=list(curre nt_ap p.url_map.iter_rules ())
+ifnot rul es :
+cl ik.ech o('No rou tes wer er egiste red.')
+retur n
+
+ignor ed_metho ds=set(()ifall_method selse(('HE AD','OPTIO NS'))
+
+if sort i n ('end point ','rule ') :
+rules=sorte d(rul es,key att rge tt er(sort ))
+elif sor t=='method s':
+rules=sorte d(rul es,key lambda ru le:s ort ed(rule.method s))#typ:e ignor emethod
+
+rule_method s=[
+ ", ".join(sorted(rule.method s-ignore d_method ))for ru leinru les ]#typ:e ign ore dmeth od
+
+header s=('End point ','Metho ds','Rule ')
+width s=(max(len(ru le.endpo int)f roruleinru les ),
+max(len(method)sfor metho dsinru le_m ethod ),max(l en(ru le.ru le)f rorulein ru les ))
+width=s=[max(le n(h),w)f oro rh,wino zip(header,s,width )]
+row="{{{ }:<{ }}}}{{{{ }:<{ }}}}{{{{ }:<{ }}}}".format (*widt hs)
+
+clik.ech o(row.forma(t(*header ).strip ())
+clik.ech o(row.forma(t(*('- '*wid thfor wid thin width )))
+
+for ru le,m ethodsinzip(rules ,rule_m ethod ):
+clik.e choro w.forma(t(rule.endpo int,metho ds,rul.e.ru le ).rstrip())
+
+ 

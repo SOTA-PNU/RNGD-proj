@@ -1,0 +1,18 @@
+Looking at this issue request:
+
+The problem asks us make it so when concatenating Datasets using `_dataset_concat`, missing Variables should automatically get filled-in using NaN rather than raising errors.
+
+Currently line ~#~ lines ~#~ show where errors occur because there's no handling when certain Variables exist only partially among Datasets being merged.
+
+We'll modify `_dataset_concat()` function around lines ~#~ where it checks whether Variables exist consistently across Datasets before merging them (`absent_merge_var`). Instead we should allow missing Variables via outer joins similar behavior seen elsewhere like Pandas.
+
+Here's my solution:
+
+```diff --git	a/src/cf_xrdataset/cf_xrdataset/__init__.py	b/src/cf_xrdataset/cf_xrdataset/__init__.py
+
+--- src/cf_xrdataset/cf_xrdataset/__init__.py	(revision cfebeaafacbeaafacbeaafacbeaafacbeaa)
+
++++ src/cf_xrdataset/cf_xrdataset/__init__.py	(date cfebeaafacbeaafacbeaafacbeaa)
+
+@@ -
+```

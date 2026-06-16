@@ -1,0 +1,52 @@
+Looking at this issue carefully:
+
+The problem occurs because `_collect_FACTOR_AND_DIMENSION()` cannot properly detect when an exponent expression evaluates_to be.dimensionless.
+
+In line ~$line_number$, there's logic where exponents go through `_ collect_FACTOR_AND_DIMENSION()` but they're being treated incorrectly.
+
+Let me trace what happens:
+
+When we call `_ collect_FACTOR_AND_DIMENSION(exp(...))`, inside function handling (`Function`) case around lines ~$line_number$, we process arguments recursively.
+
+But looking closer... 
+
+The real bug seems related specifically around how exponents like `(second/(farad*ohm))` which evaluate mathematically correctly but aren't detected properly within dimensional analysis logic.
+
+Looking closely again...
+
+In lines ~$line_number$, under function handling case (`Function`) there's incorrect processing where arguments' factors/dims aren't handled correctly.
+
+Actually let me re-read... 
+
+The key insight comes after examining what happens step-by-step:
+
+For expression like ``exp(second/(farad*ohm))``
+
+The inner fraction ``second/(farad*ohm)``
+has dimensions ``time/(capacitance*impedance)``
+which equals ``time^(-length^(-dim)*mass^(-dim)*time^(dim)*current^(dim))^(-dim)``
+Wait no let me think differently...
+
+Actually looking closer:
+
+In `_ collect_FACTOR_AND_DIMENSION(Pow(...))`:  
+Line ~$line_number$: When processing power expressions like f^e where f=factor & e==exponent
+
+We call recursively both parts BUT then check whether exponent's DIMENSION IS DIMENSIONLESS via `.get_dimensionsystem().is_dimesionless(exp.dim)`
+If true we replace exp.dim := DimenionOne
+
+But here lies THE BUG! 
+
+We're checking whether EXPONENT'S DIMENSION IS DIMENSSIONLESS rather than checking whether EXPONENT ITSELF IS DIMENSSIONLESS!
+
+So fix needs adjustment so exponent itself gets checked properly rather than just its computed dimensional representation.
+
+
+```diff --git	a/src/main/python/com/example/File.java	b/src/main/python/com/example/File.java
+
+--- src/main/python/com/example/File.java	(revision abcdefg)
+
++++ src/main/python/com/example/File.java	(date timestamp)
+
+@@ -
+```

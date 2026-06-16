@@ -1,7 +1,20 @@
-# RNGD NPU Chat — NPU 모델과 ChatGPT처럼 대화하기
+# Furiosa RNGD Chat — NPU 모델과 대화 + 실시간 성능 대시보드 + RAG
 
 `furiosa-llm serve`(OpenAI 호환 API) 위에 채팅을 얹어, curl 단발 호출 대신
-**대화 누적 + 모델 선택 + 스트리밍**으로 NPU 모델과 대화합니다. 채팅 클라이언트는 두 가지를 지원합니다.
+**대화 누적 + 모델 선택 + 스트리밍**으로 NPU 모델과 대화합니다.
+
+> **furiosa-apps 통합(2026-06-15):** [furiosa-ai/furiosa-apps](https://github.com/furiosa-ai/furiosa-apps) 의
+> **chat-playground 실시간 성능 대시보드**와 **rag(kotaemon) 의 RAG** 두 기능을 우리 gradio 채팅에 이식하고,
+> furiosa 가 만든 인터페이스(순수 검정 + 로고/`Furiosa RNGD Chat`/`DEMO` 헤더, 빨강·시안·보라 강조)로
+> 디자인을 바꿨습니다. 기존 디테일(모델 상태 LED, dp/pp 제어, 대화 이력)은 그대로 둔 채 더했습니다.
+> - **실시간 대시보드(우측 컬럼)**: TPS·TTFT·TPOT·E2E·Power/card·Temp·NPU util 을 1.8초마다 갱신.
+>   토큰 타이밍은 스트리밍 생성에서, 전력/온도/사용률은 `furiosa-smi` 파싱(`npu_metrics.py`).
+> - **RAG(사이드바 "📎 문서 검색" 에서 켜면 사용)**: 업로드/URL/붙여넣기 문서에서 근거를 찾아 컨텍스트로
+>   주입하고 출처를 각주로 답니다. 기본은 의존성·NPU 0 인 TF-IDF 검색, furiosa 임베딩/리랭커 서버가 있으면
+>   그걸 사용(`rag_store.py`, 아래 RAG 절). furiosa 원본은 React+FastAPI 였지만, 우리 기존 기능을 보존하려고
+>   **Gradio 앱은 그대로 두고 디자인·기능만 이식**했습니다.
+
+채팅 클라이언트는 두 가지를 지원합니다.
 
 ```
 [ furiosa-llm serve  (NPU, OpenAI 호환 API) ]   ← 모델마다 포트 1개·카드 1장
@@ -114,7 +127,9 @@ alpacon tunnel furiosa-npu-e6ec40 -l 7860 -r 7860
 | `serve_models.sh` 의 `CAT` 카탈로그 | 모델 키 ↔ 포트·tp(카드 수)·아티팩트·serve 옵션, 모델 추가/제거 | 모델을 추가·교체하거나 카드 배치를 바꿀 때 |
 | `~/.continue/config.yaml` 의 `models:` | **Continue** 드롭다운에 뜨는 모델 목록 | Continue 에 모델 추가·제거할 때 |
 | `chat_app.py` 의 `CATALOG` 딕셔너리 | **gradio UI** 모델 목록 (키 ↔ 표시이름·포트·카드수·아티팩트·serve옵션) | gradio UI 에 모델을 추가·교체할 때 |
-| `chat_app.py` 실행 시 환경변수 | 포트·접속 방식·비번 (아래 표) | 접속 방식을 바꿀 때 |
+| `chat_app.py` 실행 시 환경변수 | 포트·접속 방식·비번·RAG 임베딩 서버 (아래 표) | 접속 방식·RAG 백엔드를 바꿀 때 |
+| `npu_metrics.py` | 실시간 대시보드(메트릭 카드·`furiosa-smi` 파싱·furiosa 색상) | 대시보드 지표/디자인을 바꿀 때 |
+| `rag_store.py` | RAG 검색(청킹·TF-IDF·임베딩/리랭커 백엔드) | RAG 동작을 바꿀 때 |
 
 **gradio 환경변수(`CHAT_*`)**
 
@@ -126,6 +141,9 @@ alpacon tunnel furiosa-npu-e6ec40 -l 7860 -r 7860
 | `CHAT_SHARE` | `0` | `1` 이면 gradio 공개 링크(`*.gradio.live`) — 외부 공개·7000 포트 필요 |
 | `CHAT_AUTH` | (없음) | `"아이디:비번"` 형식의 접속 비밀번호 |
 | `CHAT_SERVE_TIMEOUT` | `900` | on-demand serve 준비를 기다리는 최대 시간(초). 큰 모델 로딩이 더 길면 늘립니다 |
+| `CHAT_EMBED_URL` | (없음) | RAG 의미 임베딩 서버(OpenAI 호환 `/v1`). 예: `http://127.0.0.1:8021/v1`. 없으면 TF-IDF 로컬 검색 |
+| `CHAT_EMBED_MODEL` | (자동) | 임베딩 모델 id. 비우면 그 서버의 첫 모델 사용 |
+| `CHAT_RERANK_URL` | (없음) | RAG 리랭커 엔드포인트(furiosa TeiFastReranking `/v1/rerank`). 예: `http://127.0.0.1:8022/v1/rerank` |
 
 ### UI 설정 — 모델 / dp·pp / temperature / max_tokens
 
@@ -159,6 +177,37 @@ UI 에서 고른 값이 실제 serve 에 반영됐는지는 다음 네 곳에서
 - **max_tokens**: 한 응답에서 **생성할 출력 토큰 수의 상한**입니다. 모델을 고르면 **값·상한이 그 모델의 최대치(컨텍스트 한도)로 자동 설정**됩니다(모델 바꾸면 따라 바뀜). 외울 필요 없이, 응답을 짧게 받고 싶으면 줄이면 됩니다.
 
 > **max_tokens 와 컨텍스트(버킷)의 관계**: 진짜 하드웨어 한도는 **프롬프트 토큰 + 생성 토큰의 합 ≤ 그 모델 아티팩트의 최대 컨텍스트**(가장 큰 attention/decode 버킷 = `max_model_len`)입니다. `max_tokens` 는 그 예산의 생성 몫일 뿐입니다. 모델별 한도: `Qwen2.5-Coder` 32768, `Qwen3-32B-FP8-tp8` 40960, `-16k` 16384, `EXAONE-4.0-32B`·`Llama-3.3-70B`(tp32) 131072. 예컨대 16k 모델은 프롬프트+출력이 16384를 넘으면 생성 도중 KV가 버킷을 넘어 실패합니다.
+
+### 실시간 성능 대시보드 (우측 컬럼)
+
+화면 오른쪽에 추론하는 동안 갱신되는 성능 카드가 뜹니다(furiosa-apps chat-playground 이식, `npu_metrics.py`).
+
+| 카드 | 뜻 | 출처 |
+|---|---|---|
+| **TPS** | 초당 생성 토큰(라인+숫자, 점선은 최고치) | 스트리밍 토큰을 1.8초 윈도로 환산 |
+| **TPOT** | 토큰당 생성 지연(ms) | (E2E − TTFT) / 생성토큰 |
+| **E2E** | 한 응답 전체 시간(s) | 요청 시작~끝 |
+| **TTFT** | 첫 토큰까지 지연(ms) | 요청 시작~첫 토큰 |
+| **Power / card** | 작업 카드 전력(W, 라인) | `furiosa-smi info` |
+| **Temp / NPU util** | 작업 카드 온도(°C)·코어 사용률(%) | `furiosa-smi info`·`status` |
+
+- 토큰 수는 furiosa-llm serve 가 주는 정확한 `usage`(stream_options include_usage)로 확정합니다. 전력은 유휴 ~38W → 추론 ~120W 로 실제 변합니다.
+- 1.8초마다 갱신하되 **값이 그대로면 다시 안 그려** 유휴 시 깜빡임이 없습니다. `furiosa_smi_py` 의존성 없이 CLI 파싱이라 chat venv 그대로 동작합니다.
+
+### RAG — 올린 문서에서 근거 찾아 답하기 (선택)
+
+사이드바 **"📎 문서 검색 (RAG)"** 아코디언에서 켭니다(furiosa-apps rag/kotaemon 패턴, `rag_store.py`).
+
+1. **RAG 사용** 체크 → 2. 문서 추가(파일 업로드 `.txt`·`.md`·코드·`.pdf`, 또는 URL, 또는 텍스트 붙여넣기) → 3. 그냥 대화.
+- 질문할 때마다 관련 청크 top-k(슬라이더)를 찾아 **질문 직전에 컨텍스트로 주입**하고, 모델이 `[번호]`로 인용하게 합니다. 답변 끝에 **🔎 RAG 참조: 문서명** 각주가 붙습니다.
+- **검색 백엔드 2가지(자동 선택)**:
+  - 기본 **TF-IDF(로컬)** — numpy 만으로, NPU·다운로드·추가 카드 없이 업로드 문서에서 검색. 항상 동작.
+  - **임베딩 서버** — `CHAT_EMBED_URL` 을 furiosa 임베딩 serve(예: `Qwen3-Embedding-8B`, OpenAI 호환 `/v1`)로 지정하면 의미 임베딩으로 검색. `CHAT_RERANK_URL`(furiosa 리랭커 `/v1/rerank`)이 있으면 상위 후보를 리랭킹. (임베딩/리랭커 모델을 카드에 serve 해 두어야 함 — 위 환경변수 표.)
+- RAG 를 꺼 두거나 문서가 없으면 일반 채팅과 똑같이 동작합니다(무해). 사이드바 정보 줄에 `N개 문서·M개 청크·검색 백엔드`가 표시됩니다.
+
+> **권장: 기본 TF-IDF 를 그대로 쓰세요.** 임베딩(1장)+리랭커(1장)를 띄우면 **카드 4장 중 2장이 RAG 전용으로 묶여 tp32 모델(EXAONE·Llama-70B·Qwen3-32B-tp32, 4장 필요)이 아예 안 뜨고** tp8 dp/pp 여유도 반토막 납니다. 게다가 여기 문서는 기술 용어·코드·로그가 많아 **키워드 일치(TF-IDF)가 의미 임베딩만큼 잘 찾는** 경우가 많습니다. 의미 임베딩은 ① RAG 가 주력 용도가 되고 ② 질의가 자연어 산문·패러프레이즈 위주이며 ③ 그동안 tp32 를 안 쓰기로 했을 때만 이득입니다. 그때도 **리랭커는 빼고 임베딩만(1장)** 먼저, 또는 RAG 세션에만 띄웠다 내리는 on-demand 가 낫습니다.
+
+> furiosa 원본 RAG([kotaemon](https://github.com/furiosa-ai/kotaemon))은 하이브리드 검색·문서 하이라이트·마인드맵까지 갖춘 별도 대형 플랫폼입니다. 여기서는 그 핵심(임베딩·리랭커·검색→컨텍스트 주입)을 우리 채팅에 가볍게 이식해, 카드·의존성 없이도 바로 쓸 수 있게 했습니다.
 
 ### 대화 저장 위치
 
@@ -208,14 +257,16 @@ nohup furiosa-llm serve artifacts/<새-아티팩트-폴더> \
 | 키 | 포트 | tp(카드) | 모델 | serve 상태 |
 |---|--:|---|---|---|
 | ~~`coder1.5`~~ | — | — | Qwen2.5-Coder-1.5B | ❌ **제거됨(2026-06-08).** serve·속도는 정상이나 출력이 깨짐(gibberish) — greedy(temperature 0)에서도 깨져 샘플링·스트리밍 문제가 아닌 furiosa-llm 2026.2.0 컴파일 버그. tied embedding을 의심해 **untie 후 재빌드까지 했으나 동일하게 깨져** 원인이 아님(같은 증상 0.5B도). 로컬 빌드로는 못 살려 카탈로그에서 뺐습니다 — 코딩용은 coder7/14. 상세: `info/README_build.md` 8.2 |
-| `coder7` | 8002 | tp8(1장) | Qwen2.5-Coder-7B | 정상 |
-| `coder14` | 8003 | tp8(1장) | Qwen2.5-Coder-14B | 정상 (코딩 추천) |
+| `coder7` | 8002 | tp8(1장) | Qwen2.5-Coder-7B-Inst | 정상 |
+| `coder14` | 8003 | tp8(1장) | Qwen2.5-Coder-14B-Inst | 정상 (코딩 추천) |
+| `coder14-base` | 8007 | tp8(1장) | Qwen2.5-Coder-14B tp8 | base(non-inst) 14B |
+| `a3b-fp8` | 8000 | tp8(1장) | Qwen3-Coder-30B-A3B-Inst-FP8 tp8 | MoE FP8, max-model-len 65536. masquerade 로 serve 부활(30G·1장 OK) |
+| `a3b` | 8006 | tp8(1장) | Qwen3-Coder-30B-A3B-Inst tp8 | MoE bf16, 65536. **58G > 1장 47.5G → dp1·pp1 이면 OOM, pp≥2(2장 분할)로 띄워야 함** |
 | `qwen3-32b` | 8004 | tp8(1장) | Qwen3-32B-FP8 | 추론(사고과정). NPU에서 응답 느린 편 |
 | `qwen3-32b-16k` | 8005 | tp8(1장) | Qwen3-32B-FP8-16k | 추론. 위 모델의 컨텍스트 16K 축소판 |
 | `exaone-32b` | 8011 | tp32(4장) | EXAONE-4.0-32B-FP8 | 정상 (단독 serve) |
 | `llama-70b` | 8012 | tp32(4장) | Llama-3.3-70B-Instruct | 정상 (단독 serve) |
 | `qwen3-32b-tp32` | 8013 | tp32(4장) | Qwen3-32B-FP8-tp32 | 추론. 응답 느림 (단독 serve) |
-| (제외) | — | tp8 | Qwen3-Coder-30B-A3B-FP8 | **serve 불가** — 2026.2.0 런타임에 FP8 MoE 커널이 없어 패닉. `chat_app.py` 드롭다운에서 제외(`info/README_build.md` 참고) |
 
 - tp8 모델은 `serve_models.sh` 가 빈 카드(npu:0부터)에 하나씩 자동 배정합니다.
 - tp32 모델은 4장을 모두 써서 단독으로만 serve 됩니다(다른 모델과 같이 못 띄움).

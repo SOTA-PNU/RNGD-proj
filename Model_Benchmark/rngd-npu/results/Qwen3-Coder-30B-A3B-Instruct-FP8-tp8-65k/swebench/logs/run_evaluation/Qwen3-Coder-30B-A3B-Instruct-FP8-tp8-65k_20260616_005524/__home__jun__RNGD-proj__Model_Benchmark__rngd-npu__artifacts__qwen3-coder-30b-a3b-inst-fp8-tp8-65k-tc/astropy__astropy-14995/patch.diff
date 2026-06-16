@@ -1,0 +1,16 @@
+The bug happens because even though checking whether either side lacks masks via conditionals above — those conditions don’t account properly what happens inside them — particularly line `[line]`.
+
+Let me trace through what happens during multiplication involving missing masks...
+
+Actually looking closer... 
+
+In `_arithmetics()`: Lines around line `[line]`
+
+There’s special handling logic here where after checking conditions involving null masks...
+
+But looking more carefully... 
+
+Ah wait! Looking again very carefully...
+
+Lines near end (~lines `[lines]`) show problematic flow:
+

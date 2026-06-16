@@ -27,13 +27,16 @@ source ~/furiosa/bin/activate 2>/dev/null
 declare -A CAT=(
   [coder7]="8002|8|$A/qwen2.5-coder-7b-inst-tp8|"
   [coder14]="8003|8|$A/qwen2.5-coder-14b-inst-tp8|"
+  [coder14-base]="8007|8|$A/qwen2.5-coder-14b-tp8|"
   [qwen3-32b]="8004|8|$A/qwen3-32b-fp8-tp8|--reasoning-parser qwen3"
   [qwen3-32b-16k]="8005|8|$A/qwen3-32b-fp8-tp8-16k|--reasoning-parser qwen3"
+  # Qwen3-Coder-30B-A3B (MoE, max-model-len 65536). a3b-fp8 은 masquerade 로 FP8 MoE serve 부활(30G, 1장 OK).
+  # a3b(bf16)은 58G > 1장 47.5G → 1장이면 OOM. 2장 레이어분할로 띄우려면 serve 때 -pp 2 를 직접 추가.
+  [a3b-fp8]="8000|8|$A/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc|"
+  [a3b]="8006|8|$A/qwen3-coder-30b-a3b-inst-tp8-65k-tc|"
   [exaone-32b]="8011|32|$A/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31|--reasoning-parser exaone4"
   [llama-70b]="8012|32|$A/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440|--tool-call-parser llama3_json"
   [qwen3-32b-tp32]="8013|32|$A/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2|--reasoning-parser qwen3"
-  # 9번째 모델 Qwen3-Coder-30B-A3B-FP8 (qwen3-coder-30b-a3b-inst-fp8-tp8-65k) 은
-  # 2026.2.0 런타임이 FP8 MoE serve 를 지원 안 해(엔진 init 시 패닉) 등록하지 않습니다.
 )
 
 DEFAULT_SET=(coder7 coder14 qwen3-32b)   # 기본 3종(tp8, 가벼운 것부터)
