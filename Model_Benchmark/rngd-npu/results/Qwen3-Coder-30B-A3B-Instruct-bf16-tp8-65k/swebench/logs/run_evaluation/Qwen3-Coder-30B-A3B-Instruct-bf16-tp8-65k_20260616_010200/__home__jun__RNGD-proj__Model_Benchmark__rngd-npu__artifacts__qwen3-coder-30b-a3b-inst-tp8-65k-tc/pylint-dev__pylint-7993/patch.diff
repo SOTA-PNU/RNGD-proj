@@ -1,0 +1,74 @@
+Looking at this issue carefully:
+
+The problem occurs when users try custom braces like `'{{ \" Category\": \"{category}\" }}'`. In older versions they worked fine but newer versions incorrectly parse these templates.
+
+Looking at lines around lines ~#~#~#~##~##~##~~##~~####~~####~~~~####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~#####
+
+The root cause appears around lines ~#~#~#~##~##~##~~##~~#### ~~####~~~~####~~~~ ~~#### ~~
+
+In particular:
+
+Line ~#~#~#~## ~ ## ~~ ## ~~ #### ~~ #### ~~
+
+This regex pattern `\{\s*(\w+)\s*(:.*?)?\}` doesn't properly handle nested braces like `{ \" Category\": \"{category}\" }`
+
+Let me analyze what happens more carefully:
+
+When parsing `'{{ \" Category\": \"{category}\" }}'`, we get matches like `{ \" Category\"`, which fails validation since `" Category"` isn't recognized.
+
+We need better handling so nested braces within templates don’t interfere.
+
+Looking more closely at how templates should work vs what’s happening...
+
+Actually looking again at lines around where regex matching happens:
+
+Lines around line ~@LINE@ show problematic regex logic where simple brace detection fails when there's nesting.
+
+Let me fix just enough so custom braces work correctly without breaking existing functionality.
+
+
+diff --git	a//lib//python//lib//python//lib//python//lib//python//lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/src/site-packages/_internal_/reporters/text.py	b//lib//python/site-packages/_internal_/reporters/text.py  
+index cccfcdde..ddefeefb	<<<<<<< HEAD  
+---	a/_internal_/reporters/text.py	
++++	b/_internal_/reporters/text.py	
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+ @@ @@ @@ @@ @@ @@
+  	arguments := regexp.MustCompile(`\{\s*(\w+)\s*(:.*?)?\}`).FindAllStringSubmatch(template,-one);  
+  	for _, arg := range arguments {
+  		if !strings.ContainsAny(arg\[one], `"`) && !strings.ContainsAny(arg\[one], `'`) && !strings.ContainsAny(arg\[one], `{`) && !strings.ContainsAny(arg\[one], '}') {
+  			if _, ok := MESSAGE_FIELDS[arg\[one]]; !ok {
+  				warnings.Warn(fmt.Sprintf(`Don\'t recognize arg "%v". Are u sure its supported ?`, arg\[one]))
+  				template := regexp.MustCompile(`\{"[^"]*"}|'{[^']*'}|\{\s*\w+\s*(:\S*)?\}`).ReplaceAllString(template,"")
+  			}
+  		}
+  	}
+  	self.\_\_\_\_\_\_\_\_\_\_(template);
+ }
+
+ // HandleMessage handles each individual error/warning/etc...
+ func (\*ParseableTextReporterrrrrrrrrrrr ...) HandleMessage(m \*Message){
+  	if m.Module != ""{
+  		fmt.Println("\*\*\*\*\*\*\*\* Module ", m.Module);
+  	}else{
+  		fmt.Println("\*\*\*\*\*" );
+  	}
+ }
+
+ // WriteMessage writes formatted error/warning/etc...
+ func (\*ParseableTextReporterrrrr...) WriteMessage(m \*Message){
+  	self.\_.WriteString(fmt.Sprintf("%v:%v:%v:%v\n\n\n\n\n\n\n\n\n\n\n\v\v\v\v\v\v\v\v\v\v\v\v\r\r\r\r\r\r\r\r\r\r\t\t\t\t\t\t\t\t\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfe\xff\xfd\xdflnlnlnlnlndndndndnnddddddddddddddddddddddcccccccccccccccccccccbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaffffffffffffffffffffgggggggggggggghhhhhhhhhhhhiiiiiiiiiiiijjjjjjjjjjkkkkkkkkllllllllmmmmmmmmmnnnnnnnoooooooopppppppqqqqqqqrrssssssstttttuuuuuvvvvvwwwwwwwxxxxxyyyyyyzzzzz"));//this should never happen anyway since we already validated args before calling here!
+ }
+
+ // OnSetCurrentModule sets up formatting options based upon user inputted flags etc...
+ func (\*ParseableTextReporterrrr...) OnSetCurrentModule(module string , filepath string ){
+ 		template := fmt.Sprintf("%v%v%v%v%v%v% v%",module," ",filepath," "," "," ");
+		 // Return early unless something changed between runs...?
+		 // But wait! We're doing something wrong here too!

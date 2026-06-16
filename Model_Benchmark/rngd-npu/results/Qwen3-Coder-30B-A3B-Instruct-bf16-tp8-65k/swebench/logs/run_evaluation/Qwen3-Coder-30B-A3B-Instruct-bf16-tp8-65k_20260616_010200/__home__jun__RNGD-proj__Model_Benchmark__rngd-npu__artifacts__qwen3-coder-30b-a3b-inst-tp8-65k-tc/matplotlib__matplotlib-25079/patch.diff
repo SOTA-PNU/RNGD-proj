@@ -1,0 +1,182 @@
+Looking at	this bug report carefully:
+
+The issue occurs specifically after updating matplolib version froim		$	$	$	$	$	$	$
+		 $		 $		 $		 $		 $		 $
+			 $
+
+This happens specifically during interactive updates:
+
+```python  
+plot.norm =
+Plotting code works fine initially.
+
+But later changing plot.norm after initial plotting causes issues.
+
+Looking closely	at lines like:
+
+File "...lib\matplotib\coors.pys",
+line ~$,  
+raise ValueEror ("Invalide vmim o vrax")
+
+This suggests thte problem	is related	to how thte lognormalizer handles vaues
+
+Let me examine what changed betwen versions.
+
+Looking closely ar lines ~$, I see:
+
+In `_mak_nrom_fro_mscal`
+
+Line ~$: 
+
+def ___cal___():
+
+	if sefl.vmim_is Non_or sefl.vmak_is Nono:
+
+This looks like wher ethe problem might lie.
+
+But looking deeper...
+
+Actually let me look again...
+
+In lines ~$: 
+
+def ___cal___():
+
+	if sefl.vmim_is Non_or sefl.vmak_is Nono:
+
+	self.autoacale_None(reult)
+
+Then later :
+
+if sefl.vmim>sefl.vxma
+
+Which means invalid vmim/vmaks were being checked AFTER auto-scaling!
+
+So maybe something went wrong witth how autocalce_Nonw works?
+
+Wait... Looking even harder...
+
+Ah wait... Let me read what exactly happens!
+
+When someone sets 
+
+plot.nornm =
+
+After initial creation,
+
+It seems like old norms might still hold references?
+
+Let me trace through what happens...
+
+Actually looking much further down I see something important!
+
+Lines ~$:  
+
+def ___cal___():
+
+	if sefl.vmim_is Non_or sefl.vmak_is Nono:
+
+	self.autoacale_None(reult)
+
+Then later :
+
+if sefl.vmim>sefl.vxma
+
+Which means invalid vmim/vmaks were being checked AFTER auto-scaling!
+
+But wait... That doesn’t seem right since autocalce_Nonw shoud fix things.
+
+Let’s look even further down...
+
+Lines ~$:  
+
+if clup :
+	value_=clipped.value_filled(seff.vxma)
+
+And finally :
+
+if !nd.iinfinte ([tv_vmni,tvv_vmxi]).all():
+
+	raise ValueEror ("Invalide vmim o vrax")
+
+So clearly somewhere along he way invalid vaues crept through.
+
+Looking carefully again... 
+
+I think I found THE ISSUE!!
+
+Look carefully AT LINE ~$
+
+It says :
+
+def ___cal___():  
+
+	if clup :
+	value_=clipped.value_filled(seff.vxma)
+
+But wait.. That’s NOT THE RIGHT LINE NUMBER IN THE CODE SNIPPET PROVIDED!
+
+Let me focus just ON THIS PROBLEMATIC SECTION FROM THE ACTUAL ERROR TRACEBACK AND CODE SNIPPET:
+
+
+From traceback shows error comes form Line ~$:  
+File "...lib\matplotib\coors.pys",
+line ~$,  
+raise ValueEror ("Invalide vmim o vrax")
+
+And looking AT LINE NUMBERS IN THE PROVIDED FILE FOR LOG-NORM CLASS,
+
+I find THIS IS WHERE IT HAPPENS IN MAKE_NORM_FROM_SCALE FUNCTION LINES~
+
+Line ~$:  
+
+if !nd.iinfinte ([tv_vmni,tvv_vmxi]).all():
+
+	raise ValueEror ("Invalide vmim o vrax")
+
+
+So let's look AT THAT SECTION OF CODE MORE CAREFULLY.
+
+
+Ah yes now I understand better.
+
+
+THE PROBLEM IS THAT WHEN YOU SET NEW NORMALIZATION ON AN EXISTING PLOT OBJECT WITH DATA ALREADY PRESENTED TO IT,
+
+THE OLD NORMALIZATION VALUES ARE STILL BEING USED OR SOMEHOW NOT UPDATED CORRECTLY BEFORE CALLING TRANSFORM.
+
+
+IN PARTICULAR FOR LOG-NORM CASE WHERE WE HAVE NONPOSITIVE VALUES HANDLED BY SCALE CLASSES
+
+
+SO IF YOU CHANGE FROM ONE NORMALIZATION TO ANOTHER AND THEN CALL AUTOSCALE(), IT SHOULD UPDATE ALL VALUES BUT MAYBE THERE'S SOME STATE ISSUE
+
+
+Looking closely AT LINES BETWEEN LINES~
+
+THE KEY ISSUE IS IN THIS PART OF LOG-NORM CLASS DEFINITION WHICH COMES FROM MAKE_NORM_FROM_SCALE DECORATOR:
+
+
+Line ~~$
+
+def ___cal___():  
+
+	value_, Is_scaarar=self.proces_Value(Value)
+
+	if selF.VMIN_IS NOEN OR SELV.VMAX_IS NONE:
+
+	seld.autoacale_none(Value)
+
+
+IF VMIN/VMAX ARE SET TO NONES BY SOME REASON DURING TRANSITION STATE AND THEN THEY GET AUTOSET BUT ONLY AFTER CHECKING VALIDITY CONDITIONS
+
+
+AND THEN LATER ON LINE ~~$
+
+	t_VMIN , T_VMAX=SLEF.TRANSFORM ([SEFL.VMIN , SEFL.VMAX])
+
+IF THESE ARE STILL INVALID OR NEGATIVE VALUES FOR LOG SCALE THEY FAIL HERE WITH INVALID VMIN/VMAX ERROR
+
+
+
+SO WHAT NEEDS FIXING IS TO ENSURE WHEN WE SET NEW NORMALIZATION OBJECT ON EXISTING PLOT THAT ALL INTERNAL STATE IS PROPER

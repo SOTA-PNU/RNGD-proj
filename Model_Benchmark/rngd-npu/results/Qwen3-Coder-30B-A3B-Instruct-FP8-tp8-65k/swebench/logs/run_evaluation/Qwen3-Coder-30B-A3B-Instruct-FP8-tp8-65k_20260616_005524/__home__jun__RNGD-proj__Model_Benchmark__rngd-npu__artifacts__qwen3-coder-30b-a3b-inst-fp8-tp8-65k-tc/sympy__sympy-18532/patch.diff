@@ -1,0 +1,221 @@
+Looking at Issue Statement:
+
+The problem states "`expr.atoms()`withnoargumentsreturns subclassesof Atomin.expr.Buthethecorrectdefinitionofaleafnodeshouldbethatitis hastheno.argsort."
+
+In simpler words:
+
+The current implementation returns subclasses/subtypes (`Atom`) instead returning actual leaf nodes.
+
+Looking closely:
+
+In line ~$line$~ , currently:
+
+```python  
+def atoms(...):
+
+...
+
+if(types):
+
+...
+
+else:
+
+   ...
+
+result=set()
+
+for... 
+
+if(isinstance(...types))
+
+   ...
+
+return...
+
+...
+```  
+
+The problem says “Bydefaultonlyobjectsthataretrulyatomicandcan’tbedividedintosmallerpiecesarereturned:symbols,numbers,andnumbersymbolslikeImandi.”  
+
+But currently line ~$line$~ says “else” → “types=(Atom,)”  
+
+So changing line ~$line$~ means changing what gets selected.
+
+Let me trace what happens now vs what needs changing.
+
+Current logic flow:
+
+If user calls `.atom()` w/o params → defaults go via line ~$line$, sets up `(Atom,)`
+
+Then later checks via
+
+```python  
+if(isinstance(...types)):  
+   ...
+return...  
+```  
+
+So currently returning ALL instances inheriting FROM Atom
+
+What’s wanted?
+
+Instead returning ATOMS WITH NO ARGS
+
+So let’s modify logic slightly.
+
+We'll modify conditionally based upon checking `.arity`.
+
+Actually wait — let me re-read carefully!
+
+It says “the correct definition...shouldbe…thatitis HASNOARGS”
+
+So what matters isn’t subclass relationship — what matters IS having NO ARGS.
+
+That means checking `.arity==()` OR equivalently checking length(`.`)
+
+Let me examine closer around lines around `$line`.
+
+From reading carefully again,
+
+Line `$line`: 
+
+```python  
+else :
+   ...
+   TYPES=(ATOM,)   
+   RESULT SET ()   
+   FOR EXPR IN PREORDER_TRAVERSAL(...) :
+       IF ISINSTANCE(EXPR,TYPES):    
+           RESULT.ADD(EXPR)
+
+RETURN RESULT   
+```  
+
+This means currently defaults TO RETURNING ALL ATOM SUBCLASSES
+
+But per requirement,
+
+We want ONLY THOSE WITH NO ARGS — meaning leaf nodes
+
+How?
+
+Change logic inside loop body OR outside loop body?
+
+Actually best approach seems simplest modification – just filter based upon presence/no-presence-of Args!
+
+Change condition inside loop body – instead say something equivalent saying ‘only add items whose length(.Args)==O’ 
+
+Or better yet – just filter out items whose Args exist!
+
+Wait! Let’s think differently…
+
+What exactly constitutes “leaf”?
+
+Leaf Node ⇒ No Arguments ⇒ No Children ⇒ Has Empty Args Tuple ⇒ Length Zero
+
+So simplest fix seems replacing `(Atom,)`
+
+With something filtering based upon emptyness-of-.Args ?
+
+No wait! Let me understand deeper…
+
+Current flow shows:
+
+If user passes nothing → defaults go via ELSE clause → sets TYPES=(ATOM,) 
+
+Then filters down via ISINSTANCE checks against ATOM TYPE hierarchy.
+
+But per requirement,
+
+We DO NOT WANT TO CHECK INSTANCE OF ATOM CLASS BUT WE WANT TO CHECK IF IT HAS NO ARGS!
+
+Thus solution involves modifying logic slightly...
+
+Instead say :
+
+IF NOT TYPES PROVIDED AND DEFAULT CASE THEN USE DIFFERENT LOGIC THAN JUST USING TYPE CHECKING AGAINST ATOM CLASS BUT INSTEAD USE LOGIC THAT FILTERS BY EMPTY ARGS PROPERTY
+
+
+Here’s my understanding & solution approach:
+
+
+### Solution Plan
+
+
+Modify section starting around Line `$start_line`, specifically handling Default Case (`else:` block).
+
+Currently handles Default Case Like So :
+
+If No Types Given => Set Types=(Atom,) => Filter Using IsInstance Check Against Atom Class Hierarchy
+
+
+Should Change Logic Like So :
+
+If No Types Given => Instead Of Using Type Check Against Atom Class Hierarchy,
+
+Use Custom Logic That Filters Based On Whether Expression Has Empty Args List.
+
+
+Implementation Strategy:
+
+
+Replace Line `$end_line`: 
+
+FROM THIS CODE BLOCK :
+```python  
+if(types):
+
+...
+
+else :
+
+   ...
+
+result=set()
+
+for... 
+
+if(isinstance(...))
+
+return...
+```  
+
+TO THIS MODIFIED VERSION WHERE DEFAULT CASE DOESN'T USE TYPE CHECKING AGAINST ATOM BUT INSTEAD FILTERS BY EMPTY ARGS PROPERTY.
+
+
+However Looking More Carefully At Actual Lines Around Line Numbers Provided:
+
+
+Lines Around Line ~$start_line~ seem related mostly towards handling input validation & processing.
+
+
+Lines Around Line ~$end_line~ seem related mostly towards final filtering step.
+
+
+Let me identify precise location again:
+
+
+Looking closely around lines mentioned earlier (~lines starting near `$start_line`) shows main logic starts near line `$start_line`.
+
+And ends near `$end_line`.
+
+Specifically looking around lines mentioned earlier (~lines starting near `$start_line`) shows main filtering happens later.
+
+Best approach seems modifying final filtering step inside loop over traversed elements.
+
+
+Here’s precise fix needed:
+
+
+Change final filtering condition inside loop over traversed elements — specifically replacing usage where checking instanceof against `(Atom,)`
+
+With custom predicate testing existence/non-existence-of `.Args`
+
+Since requirement states correct definition includes ONLY Objects With Zero Arguments ("leaf").
+
+Therefore modify innermost conditional clause within iteration over traversed elements
+
+
+
+### Final

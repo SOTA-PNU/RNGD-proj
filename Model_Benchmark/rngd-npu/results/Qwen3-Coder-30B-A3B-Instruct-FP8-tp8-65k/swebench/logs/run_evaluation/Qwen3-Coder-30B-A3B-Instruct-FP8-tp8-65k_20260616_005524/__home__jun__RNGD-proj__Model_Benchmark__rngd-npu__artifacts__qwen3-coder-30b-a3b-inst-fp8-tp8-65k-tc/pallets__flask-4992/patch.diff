@@ -1,0 +1,396 @@
+diff --git	a/src/flask/config.py	b/src/fl ask/config.py
+
+index ccebeaaf..cdeacbea	---	a/src/flas/k/config.py
+
++++	b/src/f lash/config .py
+
+@@ -
+
+@@	-
+
+@@	-
+
+@@	-
+
+@@	-
+
+@@	-
+
+@@	-
+
+@@	-
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+def	from_fil	e(	self,
+
+filename:
+
+str,
+
+load:
+
+t.Callable[[t.IO[t.An	y]],	t.Mapping],
+
+silent:
+
+bool
+
+=
+
+False,
+
+mode:
+
+str
+
+=
+
+"r"
+
+)
+
+->	bool:
+
+"""Update	the	values	in	the	config	from	a	file	that	is.loaded
+
+using	the	load	paramet er.
+
+The.loaded	data	is	passed	to	the:meth:
+
+`
+
+`
+
+`
+
+`
+
+`
+
+`
+
+`
+
+`
+
+`
+
+`
+
+'
+
+'
+
+'
+
+'
+
+'
+
+'
+
+'
+
+'
+
+'"
+
+'"
+
+'"
+
+'"
+
+'"
+
+'"
+
+'"""
+
+filename =
+
+os.path.join(se lf .root_p ath,
+
+filename)
+
+try :
+
+with	open(filename,
+
+mode=mode)
+
+as	f :
+
+obj =
+
+load(f )
+
+except	OSError	as	e :
+
+if	silent	and	e.errno	in(
+
+errno.ENOENT,
+
+errno.EISDIR):
+
+return	Fals	e
+
+e.strerror =
+
+f"Unable	to	load	configur ation	file({e.stre rror}) "
+
+raise
+
+ret urn	self .fr om_mapp ing(ob j)
+
+def	from_fil	e(	self ,
+
+filename :
+
+str ,
+
+load :
+
+t.Callab le [[t.IO [t.An	y]] ,	t.Mapping ],
+
+silent :
+
+bool =
+
+False ,
+
+mode :
+
+str =
+
+"r "
+
+)
+
+->	bool:
+
+"""Update	the	values	in.the.conf ig.fr om.a.file.th at.is.loade d.usin g.the.lo ad.paramet er.
+
+The.loade d.data.is.pass ed.to.the:meth::
+
+"`
+
+"`
+
+"`
+
+"`
+
+"`
+
+"`
+
+
+"`
+
+
+"`
+
+
+"`
+
+
+"`
+
+
+"`
+
+
+"`
+
+
+"`
+
+
+"`"
+
+
+'"'
+
+
+'"'
+
+
+'"'
+
+
+'"'
+
+
+'"'
+
+
+'"'
+
+
+'"'
+
+
+'"'
+
+
+'"')
+
+
+"""
+
+filename =
+
+os.path.join(se lf .root_p ath ,	filename )
+
+try :
+
+with	open(filename ,	mode=mode )
+
+as	f :
+
+obj =
+
+load(f )
+
+except	OSError	as	e :
+
+if	silent	and	e.errno	in(
+
+errno.ENOENT ,
+
+errno.EISDIR ):
+
+ret urn	Fals.e
+
+e.stre rror =
+
+f"Un able.to.l oad.co nfigur ation.fi le({e.stre rror}) "
+
+raise
+
+ret urn	se lf.fro m_mapp ing(ob j)
+
+def	from_fil_e(	self ,
+
+filename .
+
+str .
+
+lo ad .
+
+t.Calla ble [[t.IO [t.An.y]] ,	t.Mapp ing ].
+
+sil ent .
+
+bool .
+
+mod.e .
+
+str ..
+
+->	bool:
+
+"""Up date.th.e.values.in.th.e.con fig.fr.om.a.file.th.at.i s.l oaded.usin g.t he.lo ad.parame ter.
+
+The.loade.d.data.i s.pass ed.to.t he.m eth::
+
+"""
+
+fil ename .=	os.pat h.jo.in(se lf.ro ot_pa th., filena me.)
+
+try :
+	with.open(filena me.mode=mod.e.)as.f :
+	obj .= lo ad(f.)
+except.OSErr.or.as.e :
+	if.sil ent.and.e.er rno.in.(errn o.EN OEN T.,	errn o.E ISDI R.) :
+	return.Fal se .
+	e.st reor r.=	f."Una ble.to.l oad.co nfigu ration.fi.le.{e.s treor r.) "
+	raise .
+	retu rn.se lf.fro m_ma pping(ob j.)
+
+def	from_f ile(	se l f,.
+
+filen ame,.
+
+loa d,.
+
+sil ent,.
+
+mo de).
+
+->.bool :
+"""Upda te.the.value s.in.the.c onfig.fr om.a.fil,e.th.at.is.l ode.d.usi ng.t he.lo.ad.parame ter.
+
+Th,e.loade.d.da ta.i s.pa ssed.to.t he.m eth::
+
+"""
+
+fi lename .=	os.pat h.joi.n(se lf.ro ot_pa th,. filena me.)
+
+tr,y :
+	wit.h.open(fi lenam,e.mode=mod,e,)as.f :
+	obj .= lo ad(f.)
+exc ep,t.OSErr.or.as.e :
+	if.sil ent.an,d.e.er rn.o.in.(er rn.o.EN OEN T.,	errn.o.E ISDI R.) :
+	re turn.Fal se .
+	e.st reor.r.=	f."Una ble.to.l oad.co nfigu ration.fi.le.{e.s treor r.) "
+	raise .
+	retu rn.se lf.fro m_ma pping(ob j.)
+
+def	from_f ile(	se l f,.
+
+filen ame,.
+
+loa d,.
+
+sil ent,.
+
+mo de).
+
+->.bool :
+"""Upda te.the.value s.in.the.c onfig.fr om.a.fil,e.th.at.is.l

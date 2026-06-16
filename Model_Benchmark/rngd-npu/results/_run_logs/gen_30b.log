@@ -1,0 +1,109 @@
+==== START 2026-06-15 14:19:37 ====
+
+== /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc ==  devices=npu:0  tasks=['memsweep', 'sweep', 'tps']
+
+[memsweep 1/20] combo={}
+
+[memsweep 2/20] combo={'max_model_len': 4096}
+
+[memsweep 3/20] combo={'max_model_len': 8192}
+
+[memsweep 4/20] combo={'max_model_len': 16384}
+
+[memsweep 5/20] combo={'max_model_len': 32768}
+
+[memsweep 6/20] combo={'max_model_len': 40960}
+
+[memsweep 7/20] combo={'max_model_len': 65536}
+
+[memsweep 8/20] combo={'max_model_len': 131072}
+
+[memsweep 9/20] combo={'max_batch_size': 8}
+
+[memsweep 10/20] combo={'max_batch_size': 16}
+
+[memsweep 11/20] combo={'max_batch_size': 32}
+
+[memsweep 12/20] combo={'max_batch_size': 64}
+
+[memsweep 13/20] combo={'max_batch_size': 128}
+
+[memsweep 14/20] combo={'max_batch_size': 256}
+
+[memsweep 15/20] combo={'max_num_batched_tokens': 4096}
+
+[memsweep 16/20] combo={'max_num_batched_tokens': 8192}
+
+[memsweep 17/20] combo={'max_num_batched_tokens': 16384}
+
+[memsweep 18/20] combo={'max_num_batched_tokens': 32768}
+
+[memsweep 19/20] combo={'max_num_batched_tokens': 65536}
+
+[memsweep 20/20] combo={'max_num_batched_tokens': 131072}
+  [memsweep] 20 combos done
+  [tps] {"model": "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc", "concurrency": 1, "prompt_tokens_target": 256, "max_tokens": 512, "successes": 30, "failures": 0, "wall_clock_s": 233.659, "ttft_s_p50": 0.108, "ttft_s_p95": 0.1127, "itl_s_p50": 0.01509, "itl_s_p95": 0.0153, "output_tps_per_request_p50": 66.41, "aggregate_output_tps": 65.73, "total_output_tokens": 15359}
+  [sweep] concurrency=1, prompt_len=256
+  [sweep] concurrency=2, prompt_len=256
+  [sweep] concurrency=4, prompt_len=256
+  [sweep] concurrency=8, prompt_len=256
+  [sweep] concurrency=16, prompt_len=256
+  [sweep] concurrency=32, prompt_len=256
+  [sweep] concurrency=64, prompt_len=256
+  [sweep] concurrency=128, prompt_len=256
+  [sweep] concurrency=256, prompt_len=256
+  [sweep] concurrency=1, prompt_len=1024
+  [sweep] concurrency=2, prompt_len=1024
+  [sweep] concurrency=4, prompt_len=1024
+  [sweep] concurrency=8, prompt_len=1024
+  [sweep] concurrency=16, prompt_len=1024
+  [sweep] concurrency=32, prompt_len=1024
+  [sweep] concurrency=64, prompt_len=1024
+  [sweep] concurrency=128, prompt_len=1024
+  [sweep] concurrency=256, prompt_len=1024
+  [sweep] concurrency=1, prompt_len=4096
+  [sweep] concurrency=2, prompt_len=4096
+  [sweep] concurrency=4, prompt_len=4096
+  [sweep] concurrency=8, prompt_len=4096
+  [sweep] concurrency=16, prompt_len=4096
+  [sweep] concurrency=32, prompt_len=4096
+  [sweep] concurrency=64, prompt_len=4096
+  [sweep] concurrency=128, prompt_len=4096
+  [sweep] concurrency=256, prompt_len=4096
+  [sweep] concurrency=1, prompt_len=8192
+  [sweep] concurrency=2, prompt_len=8192
+  [sweep] concurrency=4, prompt_len=8192
+  [sweep] concurrency=8, prompt_len=8192
+  [sweep] concurrency=16, prompt_len=8192
+  [sweep] concurrency=32, prompt_len=8192
+  [sweep] concurrency=64, prompt_len=8192
+  [sweep] concurrency=128, prompt_len=8192
+  [sweep] concurrency=256, prompt_len=8192
+  [sweep] concurrency=1, prompt_len=16384
+  [sweep] concurrency=2, prompt_len=16384
+  [sweep] concurrency=4, prompt_len=16384
+  [sweep] concurrency=8, prompt_len=16384
+  [sweep] concurrency=16, prompt_len=16384
+  [sweep] concurrency=32, prompt_len=16384
+  [sweep] concurrency=64, prompt_len=16384
+  [sweep] concurrency=128, prompt_len=16384
+  [sweep] concurrency=256, prompt_len=16384
+  [sweep] concurrency=1, prompt_len=32768
+  [sweep] concurrency=2, prompt_len=32768
+  [sweep] concurrency=4, prompt_len=32768
+  [sweep] concurrency=8, prompt_len=32768
+  [sweep] concurrency=16, prompt_len=32768
+  [sweep] concurrency=32, prompt_len=32768
+  [sweep] concurrency=64, prompt_len=32768
+  [sweep] concurrency=128, prompt_len=32768
+  [sweep] concurrency=256, prompt_len=32768
+  [sweep] concurrency=1, prompt_len=65536
+  [sweep] concurrency=2, prompt_len=65536
+  [sweep] concurrency=4, prompt_len=65536
+  [sweep] concurrency=8, prompt_len=65536
+  [sweep] concurrency=16, prompt_len=65536
+  [sweep] concurrency=32, prompt_len=65536
+  [sweep] concurrency=64, prompt_len=65536
+  [sweep] concurrency=128, prompt_len=65536
+  [sweep] concurrency=256, prompt_len=65536
+==== EXIT 0 2026-06-15 17:28:28 ====

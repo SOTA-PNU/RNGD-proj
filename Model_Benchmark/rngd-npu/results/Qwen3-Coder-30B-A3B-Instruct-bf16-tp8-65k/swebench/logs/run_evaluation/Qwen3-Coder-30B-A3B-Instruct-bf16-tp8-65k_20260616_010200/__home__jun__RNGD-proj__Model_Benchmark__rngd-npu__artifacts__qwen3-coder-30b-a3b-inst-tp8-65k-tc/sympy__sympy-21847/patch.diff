@@ -1,0 +1,23 @@
+
+This should produce ALL possible combinations where sum_of_exponent==degree.
+
+But currently only produces terms like 
+
+[x^z,x^z,x^z]
+
+Instead Of producing 
+
+[x^Z,x^Z,x^Z,x*xZ,x*xx,...]
+
+Looking closer...
+
+In lines between lines between lines between lines between lines between lines between lines...
+
+I think I found THE ISSUE!
+
+In section handling integer degrees (`total_degre=True`) there's logic error.
+
+Specifically here:
+
+Lines ~line 'line': 
+

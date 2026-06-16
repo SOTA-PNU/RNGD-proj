@@ -1,0 +1,87 @@
+Looking closely	at	the	issue	and	code	base:
+
+The problem occurs	in	`t	to_un	stack_ed_datase	t()`	method	for	single-dimension	variable	such	as	in	this	example:
+
+```python	
+arr	=
+xr.Dat	aArr ay(np.arang	e		(),	cords=[
+"x"[	[]]])	
+dat	a =
+xr.Datase	t{"	a""	b"}	
+stac ked =
+dat	a.t_o_stack ed_arr ay'y'[	sampl	e_d ims=['	x'])	unsta ck ed =
+sta ck ed.t_o_unsta ck_ed_datase	t'y')
+``` 
+
+This	results	in	a	MergeErro	r	because	when	unstac king	single	dimensio	n	variable,some	variable	does	not	have	the	correct	dimensionality.
+
+Looking	at	the	code	for	`t_o_u	nsta_ck_ed_da_taset()`	in	dataarr ay.p	y:
+
+In	line	~			it	iterates	o_ver	all	variablesin	idx.levels[level_num]
+
+But	for	single-dime	nsional	varia	bles,the	level	is	just	an	array	of	labels	rather_than	an	actual	dataset	with	multiple	varia	bles.
+
+Let me examine what happens during stacking/unstaking process.
+
+When	stacking	with	to_stac ked_ar ray(),	it creates	a	MultiInd	ex_with	level	name	as	v	ariable	and	then	when	unstac king	with	to_u	nsta_ck_ed_da_taset(),	it tries	to	retrie ve	each	v	ariable	from	this	stacked	array.
+
+For	single	dimensio	nal	varia	bles,the	level	is	just	an	array	of	labels	rather_than	an	actual	dataset.with	multiple.varia	bles.
+
+Looking	at	line			i	n	t_he	method:
+
+It	seems	that	for	single-dime	nsional	case,wene ed	to	handl	e	it	differe ntly
+
+Let me trace through what happens step-by-step:
+
+In line			whe	n	check ing	if	idx	is	MultiInd	ex,
+
+Then line			getting	level_numbe	r,
+
+Line				getting	va riabl es	fro m	idx.levels[level_num],
+
+Line				iteratin	g	o_ver	all	va riabl es,
+
+Line				select ing	va riabl es	fro m	th e	stac ked	arr ay,
+
+But	if	the	stack ed_arr ay.w_as_created_with_single_dimensional_variables,some_of_them_would_not_have_the_correct_structure_for_selection
+
+Actually	let me read thi s	more carefully...
+
+Looking	at	lines					I_see	that_it_get_s_the_variables_from_idx.levels[level_number]
+
+And	then_line					iterates_over_them
+
+But_if_we_have_a_single_dimensional_case,_the_problem_is_that_when_we_do_.sel({var_i able_dim:k})	on_a_single_dimensional_var iab le,_we_get_a_scalar_instead_of_a_proper_DataAr ray_with_dimensions
+
+So let me fix th e implementation o	f t_o_u_ns tack_ed_d_atase_t()
+
+The fix shoul	d ensure tha t even fo r sing le dime nsion al va ria bl es,w e get proper Da taAr rays_back fr om sel ect ion
+
+---  
+diff --git	a/src	xarry/c ore/dataar ray.p	y	b/src	xarry/c ore/dataar ray.p	y  
+inde	x	cceccce..eeccceccfeccceccfecccceccccecccfeccccccccccccccccccccccccccc  
+---	a/src	xarry/c ore/dataar ray.p	y  
++++	b/src	xarry/c ore/dataar ray.p	y  
+@@@	-- src	xarry/c ore/dataar ray.p	y --- src	xarry/c ore/dataar ray.p	y @@  
+@@@		
+	def t_o_u_ns tack_ed_d_atase_t(se lf,dim,l eve l=
+@@@		
+	def t_o_u_ns tack_ed_d_atase_t(se lf,dim,l eve l=
+@@@		
+	def t_o_u_ns tack_ed_d_atase_t(se lf,dim,l eve l=
+@@@		
+	def t_o_u_ns tack_ed_d_atase_t(se lf,dim,l eve l=
+@@@		
+	def t_o_u_ns tack_ed_d_atase_t(se lf,dim,l eve l=
+@@@		
+	def t_o_u_ns tack-ed_da-taset(se lf,dim,l eve l=
+@@@		
+	def	t o_un sta ck_e_d_dat asset(t se lf,d im,l ev el=
+@@@		
+	def	t o_un sta ck_e_d_dat asset(t se lf,d im,l ev el=
+
+I'll rewrite thi s correctly now looking directly ат thе metho д implementation:
+
+---  
+diff --git	a/src	xarry/c ore/dat аrray	p.y	b/src	xarry/co	re/dat аrray	p.y  
+inde	x	cceccce..eecc ce cc fe cc ce cc fe c cc ce c cc ce c cc fe cccccccccccc	ccccc	ccccc.cc	cc.cc.cc.cc.cc.cc.cc.cc.c	c.c.c.c.c.c

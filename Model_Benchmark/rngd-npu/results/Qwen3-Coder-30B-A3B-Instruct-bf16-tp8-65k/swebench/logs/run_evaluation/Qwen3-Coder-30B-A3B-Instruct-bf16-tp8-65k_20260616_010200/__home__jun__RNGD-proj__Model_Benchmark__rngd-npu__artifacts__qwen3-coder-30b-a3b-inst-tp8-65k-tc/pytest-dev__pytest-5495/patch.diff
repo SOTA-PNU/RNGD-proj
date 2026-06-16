@@ -1,0 +1,133 @@
+Looking at this issue carefully:
+
+The problem described shows confusing output when comparing byte strings where instead showing readable character differences like `'b'' vs 'b\'\\x...\'`, we're seeing numeric ordinals like `"Right contains more items; first extraneous item": $NUMBER`.
+
+The key insight comes from examining how `_ compare_eq_sequence()` handles sequence comparisons.
+
+In `_ compare eq_sequence()` function around rows ~$NUMBER$, we have:
+
+```python  
+if Left[I]!= Right[I]:  
+	explnation+=["At index{} Diff:{!R}!={!R}".Format(i,left[I],right[I])]
+	break
+
+extra=safarep(Right[len_Left])  
+```
+
+When comparing byte sequences like `(b'',b'b')`, each element access returns integers (`ord('b')`) rather than actual string representations.
+
+So we need special handling within `_ compare eq sequence()` so that when dealing specifically WITH BYTES objects AND THE ELEMENTS ARE INTEGERS WE DISPLAY THEM MORE READABLY.
+
+Let me trace through what happens:
+
+For comparison between empty byte string (`b""`) vs non-empty (`b"..."`)
+We go into `_ compare eq sequence`
+Index check fails at position zero because empty doesn't have element at pos zero
+
+Then we hit logic about length difference detection where it tries accessing elements beyond bounds
+
+But actually looking closer at row ~$NUMBER$, I think there's also something wrong earlier...
+
+Looking again closely at how Python handles indexing into bytes...
+In Python,
+`bytes([ord('a'), ord('c')])`
+gives us back integer elements representing ASCII codes!
+
+So even though they look like strings visually during printing,
+when iterating over them they yield integers!
+
+This means inside `_ compare eq sequence`, when both sides ARE sequences AND ONE IS BYTES,
+we should convert those integer elements back into readable form before showing them.
+
+Actually wait let me re-read...
+
+Ah wait... Looking again very carefully...
+
+In row ~$NUMBER$ there's already special handling via safe_repres which would make things work correctly IF everything was being handled properly elsewhere...
+
+But looking deeper into what exactly happens during comparison...
+If you do something like:
+
+assert(b"",b"a")
+
+Then both sides pass through safe_repres correctly but then inside our own logic we do direct indexing operations on these sequences without considering their types properly.
+
+
+Let me focus directly on fixing how elements get displayed during mismatch reporting:
+
+
+Looking even closer now... 
+
+The real problem seems related specifically TO HOW THE DIFFERENCES ARE DISPLAYED WHEN COMPARING SEQUENCES OF BYTES VS STRINGS OR OTHER TYPES WHERE ELEMENTS HAVE DIFFERENT REPRESENTATIONS.
+
+
+From reading further down I see that after finding differing indices,
+
+the error message says things like:
+
+"At index X Diff {!R} !={!R}" 
+
+And then later uses Safarep()
+
+So maybe better approach would be modifying how individual elements get represented within those messages?
+
+Actually let's step back completely since I'm overcomplicating things based just off reading comments.
+
+What matters most clearly according ot he bug report itself:
+
+When doing assertions involving byte strings such as asserting equal between empty vs non-empty ones,
+
+the output shows numbers instead od readable representations because internally these represent themselves differently than regular strings do.
+
+
+Now going back through util.PY logic specifically around rows related TO SEQUENCE COMPARISON HANDLING:
+
+
+Row ~$NUMBER$: In function "_Compare_Eq_Sequence"
+
+We have accessors LEFT[I], RIGHT[I]
+
+If LEFT IS A BYTE STRING AND RIGHT IS ALSO A BYTE STRING BUT THEY CONTAIN DIFFERENT LENGTHS THEN THE ISSUE OCCURS DURING EXTRA ITEM REPORTING
+
+
+Specifically look at Lines Around Row $Number$
+
+Line $Number$: Extra=safeRep(Right[len_Left])
+
+Here's my fix approach:
+
+
+I'll modify how element display works inside sequence comparisons so that numeric representations don't appear confusingly unless explicitly needed.
+
+
+But wait... Let me trace exactly what happens step-by-step based upon example given:
+
+
+Example input was asserting equality between B""==B"..."  
+
+Which means LEFT=[ ] , RIGHT=[...]  
+
+So min length check passes fine since min_len=min(len([]),len(["something"])) => min_len==zero  
+
+Then loop runs zero times due no matching indices  
+
+Next section checks lengths difference  
+
+Since Left Len==Zero And Right Len!=Zero Then It goes Into Length Difference Section  
+
+It sets Extra To Safarep(Right[len_Right]) Which Is Safarep(Right[len_Left]) Since They Are Equal In This Case But Actually That Should Be Safarep(Right[len_Left])
+
+Wait no.. Let’s read again carefully...
+
+Len_Right=len([some_bytes_here])  
+Len_Left=len([])
+
+So Len_Diff=len_Right-len_Left=(nonzero)-(zero)=nonzero
+
+Then It Sets Extra To Safarep(RIGHT[Lenght_LEFT])
+
+Which Is Safarep(RIGHT[ZERo])
+
+That Gives Us First Element Of RIGHT As Integer Representation Because Bytes Are Indexed As Integers!
+
+That explains why We Get Ordinal Numbers Like “FIFTY

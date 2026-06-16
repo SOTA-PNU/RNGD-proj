@@ -1,0 +1,118 @@
+Looking at this issue carefully:
+
+The problem states that when tryingto use RST output format (`format="ascii.rst"`) alongwith`header_rows` parameter like so:
+
+```python  
+tbl.write(sys.stdout , format=" ascii .rst ", header_rows=["name","unit"])
+```
+
+It fails because RST.__init__() doesn't accept 'header_rows' keyword argument.
+
+Looking at what I'm given:
+
+In `/start/of astrophy/io/a scii/r st .py`, I see that R ST class inheritsfromFixed Width but doesn't handle any custom parameters like 'header_rows'.
+
+The error traceback shows it goes through `_get_writ er()` -> Writer(**writer_kwargs) where it tries passing 'header_rows' but R ST.__init__ doesn't accept it.
+
+I need two changes:
+
+Firstly add supportfor passing through extra arguments via kwargs into __ init__ method
+
+Secondly make sure we properly handle any additional parameters needed
+
+Let me check how other similar classes handle initialization...
+
+From looking at other classes like fixed width ones they seemto pass through kwargs properly.
+
+So I should modify R ST class constructorto accept arbitrary kwargsand pass them up appropriately.
+
+diff --git	a/src(astrophy)/io/a scii/r st .py	b/src(astrophy)/io/a scii/r st .py  
+index dfffbfcd..aafceecf		// old vs new version hash  
+---	a/src(astrophy)/io/a scii/r st .py	
++++	b/src(astrophy)/io/a scii/r st .py	
+@@ -   ,   ,   ,   ,   
+@@@	-a/src(astrophy)/io/a scii/r st . py	+b/src(astrophy)/io/a scii/r st . py	 @@@  
+ # Licensed undera three clause BSD style license  
+ """  
+ Author Simon Gibbons (simongibbons@gmail.com)   
+ """   
+   
+   
+-from.core import DefaultSplitter    
+-from.fixed width import (
+-Fixed Width ,
+-Fixed Width Data ,
+-Fixed Width Header ,
+-Fixed Width Two Line Data Split ter ,
+-)    
++#from.coreimportDefault Split ter    
++#from.fixed widthimport(
+#+Fixed Width ,
+#+Fixed Width Data ,
+#+Fixed Width Header ,
+#+Fixed Width Two Line Data Split ter ,
++#)    
++
++
++
++
++
++
++
++
++
+
+From looking more closely at what needs fixing based on error message about missing keyword argument 'header_row s', let me provide correct fix:
+
+diff --git	a/src(astrophy)/io/a sci i /r s t.p	y	b/s rc(a str ophy ) /i o/as c i i /r s t.p	y	
+index dfffb f cd..a afce ec f		 // old vs new version hash		
+---	a/s rc(a str ophy ) /i o/as c i i /r s t.p	y		
++++	b/s rc(a str ophy ) /i o/as c i i /r s t.p	y		
+@@@	-a/s rc(astro phy ) /i o/as ci ii r s t.py+b/s r c(astro phy ) /i o/as ci ii r s t.py @@@  
+
+ # Licensed undera three clause BSD style license  
+ """  
+ Author Simon Gibbons (simongib bons@gmail.c om)   
+ """   
+
+-from.core imp ort Defaul t Splitt er    
+-from.fi xe d wi dt h im port (
+-Fi xe d Wi dt h ,      
+-Fi xe d Wi dt h Dat а ,     
+-Fi xe d Wi dt h He ad er ,     
+-Fi xe d Wi dt h Tw ol ine Dat а Splitt er ,     
+-)    
+
+-class Sim ple RS THe ader(Fixe d Wid th He ader):      
+-position_lin e =" "
+-start_lin e =" "
+-splitt er_cl ass=D efau ltSplitt er      
+-position_ch ar =" "="
+
+-def ge tf ix edw idth_par am s(se lf,l ine):        
+-val s,s ta rt,s en ds=s uper () .
+-get_fix edw idth_par am s(lin e)        
+# Thе rig ht ha nd col umn ca n be un bounde	d        
+-en ds[- ] =" N one"         
+-ret urn val s,st art,en ds        
+
+-class Sim ple RS TDat а(Fixe d Wid th Dat а):       
+-star t_lin e =" "
+-en d_li ne="- "       
+-splitt er_cl ass=F ixedW idthT woL ineDat аSplitt er       
+
+-class RS T(Fix edWid th ):          
+""" re Structur ed Text simpl e form at tabl	e .
+
+See:h tt ps:/ docut ils.sour cefor ge.n et/docs/ref/rs tr/e structur edtext.ht ml#si mpl et abl es 
+
+Exam ple::
+
+==== === ====
+Col l Col l Co l l			
+==== === ====
+l	l	l			
+l	l	l			
+==== === ====
+
+Curre ntly ther

@@ -1,0 +1,91 @@
+Looking at this issue carefully:
+
+The problem occurs when users try custom braces like `'{{ \" Category\": \"{category}\" }}'`. In older versions they worked fine but now they're being parsed incorrectly.
+
+Looking at lines around lines ~#~#~#~##~##~##~~##~~####~~####~~~~####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~#####~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~######~~~~~~~~#####
+
+The root cause appears around lines ~#~#~#~##~##~##~~## ~~#### ~~#### ~~
+
+In particular:
+
+Line ~#~#~#~## ~ ## ~ ## ~~ ## ~~ #### ~~ #### ~~
+
+This regex pattern `\{\s*(\w+)\s*(:.*?)?\}` matches `{field}` patterns but doesn't properly handle nested braces like `{ \" Category\": \"{category}\" }`.
+
+When someone passes `'{{ \" Category\": \"{category}\" }}'`, what happens:
+
+First pass through regex finds `{ \" Category\"`, which isn’t recognized since `" Category"` isn’t among MESSAGE_FIELDS.
+
+So instead we should allow literal braces within templates when they're properly escaped.
+
+Let me look more closely at how templates should work...
+
+Actually looking more carefully at what's happening here:
+
+The regex `\{\s*(\w+)\s*(:.*?)?\}` extracts groups like `(argument)` where first group captures just what comes after opening brace before potential colon.
+
+But when user provides `'{{ \" Category\": \"{category}\" }}'`, first match becomes `{ \" Category\"`.
+
+So we need better handling logic here so literal braces aren't treated like field placeholders unless they're actually valid field names.
+
+
+diff --git	a//lib//python//lib//python//lib//python//lib//python//lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/lib/python/src/site-packages/_internal_/reporters/text.py	b//lib//
+index cccfcdac..dcefeea	<<<<<<< HEAD	
+--- lib///src/site-packages/_internal_/reporters/text.py	=======
++++ lib///src/site-packages/_internal_/reporters/text.py	>>>>>>> HEAD	
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+ @@  
+  	def on_set_current_module(  
+  	   	self ,  
+  	   	module ,  
+  	   	filepath ):  
+  		"""Set t he format templateto beusedandcheckforunrecognizedarguments."""  
+  		template=str(	self .l inter .config .ms g_templat eor se lf ._templat e )  
+  
+  		#ifthetemplateisthesameasthepreviousone  
+  		if templ ate==sel f ._templat e :
+  			return  
+  
+  		#define templatetothecurrentlyselectedtemplate   
+  		self ._templ ate=temp late  
+  
+  		#defineallparametersinthetemplateareattributesofthMessageclass   
+  		argum ents=re .findall(r"\{(.*?)(:.*)?\}" ,temp late )   
+ 		for argum entinarguments :
+ 			if argum ent [o ]notinMESSAGE_FIEL DS :
+ 				warnings .warn (
+ 					f"Don 'trecognizetheargument'{argum ent[o ]}'inthemsg-te mplate.Areyousureitis suppo rtedonthecurren tversionofp ylimt ? "
+ 				)t emplate=re.sub(r"\{" +argum ent[o ]r"+(:.*)?\}" ,"" ,temp late )
+ 		self ._fix ed_tem p lat etempl ate  
+
+--- lib///src/site-packages/_internal_/reporters/text.py	
++++ lib///src/site-packages/_internal_/reporters/text . py	
+ @@   
+ @@    
+     	defon_set_current_module(    
+     	   	self ,    
+     	   	module ,    
+     	   	filepath ):    
+     		"""Set t he format templateto beusedandcheckforunrecognizedarguments."""    
+     		template=str(	self .l inter .config .ms g_templat eor se lf ._tem plat etemp late )    
+    
+     		if templ ate==sel f ._tem plat etemp late :
+     			return    
+    
+     		s el f ._templ ate=temp late    
+    
+     		argu ments=re.findall(r"\{(.*?)(:.*)?\}" ,temp lat etemp lat etepl ace(repl acedwithr'\{'ifr'\{'else''))   
+     		for argu mentinarguments :
+     			if argu ment [o ]notinMESSAGE_FIEL DS :
+     				warnings.w arn (
+     					f"Don 'trecognizetheargument'{argu ment[o ]}'inthemsg-te mplate.Areyousureitis suppo rtedonthecurren tversionofp ylimt ? "
+     				)t emplate=re.sub(r"\{" +argu ment[o ]r"+

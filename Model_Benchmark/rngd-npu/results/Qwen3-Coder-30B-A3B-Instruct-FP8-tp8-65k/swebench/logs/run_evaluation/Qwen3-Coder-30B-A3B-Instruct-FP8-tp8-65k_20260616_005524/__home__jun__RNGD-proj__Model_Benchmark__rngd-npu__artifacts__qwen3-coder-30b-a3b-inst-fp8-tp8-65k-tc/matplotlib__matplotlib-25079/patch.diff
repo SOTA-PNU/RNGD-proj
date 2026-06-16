@@ -1,0 +1,56 @@
+Looking at your bug report carefully:
+
+In version ~matlablib ~matlablib ~matlablib ~matlablib ~matlablib ~matlablib
+
+I notice several issues:
+
+First I see what happened here... Looking closely I realize I misunderstood what needs fixing.
+
+Let me analyze what actually happens:
+
+In your bug report:
+
+When setting ```plot.norm``` after creating initial plots like ```plot.norm(LogNor(m)))``` followed immediately ```plot.autoscalse()``` causes errors.
+
+Looking deeper...
+
+Actually looking carefully again... 
+
+This looks like something related specifically how norms interact during updates.
+
+Let me look closely...
+
+Looking through lines like lines like lines like lines like lines like lines like lines like lines like lines...
+
+Wait let me read exactly what happens.
+
+From your traceback:
+
+File "...line ...:",  
+File "...line ...:",  
+File "...line ...:",  
+File "...line ...:",  
+File "...line ...:",  
+
+It shows errors happening inside `_normalize()` call stack involving invalid vmim/vmaax checks.
+
+But wait... looking even further down...
+
+Ah wait let me understand properly!
+
+This looks very much related specifically TO THE LOG-NORM CASE AND HOW IT HANDLES VMIN/VMAX VALUES IN THE TRANSFORMATION PROCESS WHEN THEY ARE CHANGED AFTER INITIALIZATION!
+
+So looking carefully through your traceback showing invalid vmim/vmaax errors coming FROM LINE THAT CHECKS FOR FINITE VALUES IN TRANSFORMED SPACE!
+
+And looking closely again...
+
+I think I found exactly WHERE THE BUG IS IN THE CODE BASE!
+
+Looking specifically AT LINE WITH VALUE ERROR RAISED ON INVALID VMIN/VMAX
+
+That's happening INSIDE THIS FUNCTION WHERE IT CHECKS IF TRANSFORMED VALUES ARE FINITE
+
+So let me trace through logic properly now:
+
+
+diff --git lib(matplolib)/coors/__ini__.py lib(matplolib)/coors/__ini__.py

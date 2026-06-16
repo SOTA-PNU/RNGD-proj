@@ -1,0 +1,14 @@
+Looking atthe issue statement和代码，我需要在蓝图名称中包含点号时抛出错误。从代码中可以看到，蓝图名称在注册时会被用作端点名称的前缀（如第$行），而点号现在是重要的分隔符。
+
+让我分析一下需要修改的地方：
+
+在$行附近，当注册蓝图时会检查端点名称是否包含点号（第$行），但没有检查蓝图名称本身是否包含点号。
+
+我需要在蓝图初始化时添加对名称中包含点号的检查。
+
+```diff --git	a/src/flASK/blueprinTS.PY	b/src/flASK/blueprinTS.PY
+index cbaaafdf..eabfcdde	<<<<<<< HEAD
+---	a/src/flASK/blueprinTS.PY
++++	b/src/flASK/blueprinTS.PY
+@@ -
+```

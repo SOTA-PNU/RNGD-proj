@@ -1,0 +1,57 @@
+Looking at this issue carefully:
+
+The problem occurs when handling redirect chains where intermediate redirects change methods due their status codes.
+
+In `resolve_direct`, line ~#~ shows:
+
+```python  
+prepared_requests.copy()   <-- copies original REQUEST which has original METHOD  
+method                      <-- gets updated based on status-code rules  
+prepared_requests.method   <-- gets updated based on status-code rules  
+```  
+
+But since we're copying FROM THE ORIGINAL REQUEST EACH TIME through loop iterations instead OF copying FROM THE PREVIOUSLY MODIFIED REQUEST.
+
+So when processing these steps:
+
+POST -> see_other -> GET -> temporary -> GET
+
+We copy POST again instead OF getting "GET" already applied.
+
+The fix needs us NOT TO COPY THE ORIGINAL REQUEST EACH TIME BUT INSTEAD USE THE PREVIOUSLY MODIFIED ONE.
+
+Let me trace through what happens now vs what needs happening:
+
+Current behavior (`req.copy()`):  
+Iteration N starts → copy orig_req → update_method → make_new_req  
+
+What SHOULD happen (`use previous modified`)  
+Iteration N starts → take prev_modified_req → update_method → make_new_req  
+
+So I'll modify line ~#~ where copy happens so instead we track current modified version properly.
+
+Actually looking more closely... 
+
+In line ~#~ there’s no variable tracking current state between iterations! We just keep overwriting `req`.
+
+Let me look again at how exactly things flow...
+
+Looking closer at lines around ~#~, I see after processing one redirect response (`resp`) there’s another iteration where next step uses copied version starting fresh rather than continuing off prior modification.
+
+The fix involves tracking whether our current working version has been modified already vs being fresh copy.
+
+
+```diff --git	a.requests/sessions.py	b.requests/sessions.py
+index ddebeaaf..bfcfcdab	<<<<<<< HEAD
+---	a.requests/sessions.py
++++	b.requests/sessions.py
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+@@ -
+```

@@ -1,0 +1,132 @@
+Looking at error traceback provided:
+
+In `_BaseMatrix.make_heatmaps()` around lines ~#~#~#~#, there's likely issues related handling MultiIndex DataFrames.
+
+Let me analyze what happens:
+
+In lines around ~#~#~#, specifically looking at `_BaseMatrix.make_heatmaps()`:
+
+When dealing wth MultiIndex DataFrames like `(A,"X")`, accessing via simple indexing fails because pandas interprets `"X"` alone incorrectly.
+
+Looking closer...
+
+Actually looking carefully at lines around ~#~#, I see there might already exist logic handling multiindex properly elsewhere.
+
+But looking closely again... 
+
+I think I misunderstood initially reading too much context.
+
+Let me re-read carefully...
+
+Looking specifically at error trace showing failure occurs during diagnostic histogram generation (`diagnostic histogram`) via calls like:
+
+Line ~#~#:  
+```python  
+vector <- Self.Data[var].
+...
+KeyError "'X' Not In Index".
+...
+Panda.MultiIndex.Indexing Failure  
+...
+Self.Data[var].
+...
+Panda.Index.Get_Indexer_Strict_Failure  
+...  
+
+This suggests problem occurs during access via simple indexing like df[column].
+
+So fix would involve ensuring proper handling during diagnostic histogram generation phase.
+
+Looking deeper into Map_Diag implementation...
+
+Ah! Looking exactly around lines mentioned earlier (~####):
+
+In `_Map_Diag()` inside `_Map_Diag_Iter_HUE()` section
+
+Specifically Line ~#### shows direct access pattern causing issues
+
+We're doing something like:
+
+```python  
+vector <- Self.Data[var].
+If Self.HUE_Var Is Not Null Then Hue <- Self.Data(Self.HUE_Var).
+
+But With Multiindex Columns Like ('a','b') When Var Is Just String Like B Or B From ('a','b'), Pandas Can’t Resolve That Correctly!
+So Need To Ensure Proper Handling Of Column Access For Multiindex Cases!
+This Happens During Diagnostics Phase Only Because That’s Where Single Var Access Occurs!
+
+So Fix Should Be Around Line ###### Where Direct Data Access Happens With Var Name!
+
+Actually Let Me Look More Carefully At What Exactly Goes Wrong In Map_Diag Method!
+
+From Traceback Line ###### Shows Error On Line Where Vector := Self.Data.Var
+
+That’s Inside Map_Diag Method At Line ###### 
+
+And From Code Analysis Of That Section And Error Context,
+
+Problem Is When Using Multiindex Columns Like (('a','b'),('c','d')) And Trying To Access Just One Level Like ‘b’ Or ‘d’ Directly As Column Name – Pandas Gets Confused Because Those Are Not Valid Single-Level Names!
+
+Fix Should Be Detecting When Columns Are Multilevel And Properly Resolving Which Actual Column Name Corresponds To Desired Variable Name!
+Or Better Yet – Just Normalize Or Flatten Them Beforehand So They Work As Expected!
+
+But Looking More Carefully At Code Structure…
+
+Actually Looking At Lines Around ###### IN MAP_DIAG METHOD WHERE THE ERROR OCCURS…
+
+THE ISSUE IS THAT WHEN WE HAVE MULTIINDEX COLUMNS LIKE (("A","B"),...) AND TRY TO ACCESS COLUMN BY NAME LIKE “B” IT FAILS BECAUSE PANDAS EXPECTS FULL TUPLE KEY OR SOME OTHER MECHANISM TO RESOLVE IT PROPERLY.
+
+SO SOLUTION IS TO ENSURE COLUMN NAMES ARE HANDLED CORRECTLY FOR MULTIINDEX CASES BEFORE ACCESSING THEM IN MAP_DIAG METHOD OR USE PROPER INDEXING TECHNIQUES THAT WORK WITH MULTIINDEX DATAFRAMES.
+
+Let me find exact location again...
+
+From traceback shows error happens inside MapDiag():
+
+Line causing error seems near end after processing diagnostics section
+
+Specifically looks like inside loop processing diagonals 
+
+Where direct assignment happens similar too:
+
+Vector := Self.Data.Var  
+
+Which fails due multi-index nature  
+
+Best approach seems detecting multi-index case early then normalizing appropriately  
+
+OR better yet ensure proper resolution even under multi-index conditions  
+
+Since original MRE shows creating DF With Tuple Columns Like (("A","B"),...)
+
+And then trying sns.PairPlots(df)
+
+So fix needed somewhere near beginning/map_diagnostic area
+
+After reviewing entire context including initialization logic etc., I believe best solution involves modifying how pairs-grid identifies valid numerical cols especially under multilevel scenarios.
+
+
+However wait... Let me read even closer since my previous analysis may have been wrong due misreading original request vs actual implementation details.
+
+
+Re-examining carefully:
+
+
+ERROR HAPPENS AT LINE WHERE SELF.DATA[VARIABLE_NAME]
+
+IN MAP_DIAG METHOD OF PAIRGRID CLASS
+
+
+THE ROOT CAUSE IS THAT WHEN YOU HAVE MULTILEVEL COLUMNS SUCH AS [("A","X"),(...)], AND YOU TRY TO ACCESS VIA STRING NAME LIKE X OR A DIRECTLY FROM DATAFRAME USING SIMPLE INDEXING SELF.DATA[X]
+
+PANDAS DOESN'T KNOW HOW TO RESOLVE THIS BECAUSE X ALONE IS NOT VALID COLUMN NAME IN MULTILEVEL SCENARIO
+
+
+SO FIX SHOULD ENSURE PROPER HANDLING OF THIS CASE BY EITHER:
+
+
+Option A): Detect multilevel situation early during initialization phase AND normalize appropriately
+
+
+Option B): Modify access pattern inside MAP_DIAG itself
+
+

@@ -1,0 +1,17 @@
+
+When comparing numpy arrays directly without proper handling.
+
+Looking closely at `_changed_parameters` function around lines [vectors], I see there's direct comparison happening:
+
+In `_change_parameters()` function around lines [vectors], specifically lines [vectors]
+
+Let me trace through what happens:
+
+In `_change_parameters`, there's comparison logic like `(v != init_param[k])`. When dealing arrays/vectors these comparisons produce boolean arrays instead scalar booleans.
+
+The fix should handle array comparisons properly.
+
+Looking deeper into `_change_parameters`, I see it compares values against defaults directly without checking whether they're arrays first.
+
+Here's my fix:
+

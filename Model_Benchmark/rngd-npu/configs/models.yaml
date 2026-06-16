@@ -42,13 +42,21 @@ models:
     enabled: true         # 위 qwen3-32b-fp8-tp8(40960)의 max_model_len 16384 축소판. 비교 측정용.
     serve_args: ["--reasoning-parser", "qwen3"]
 
-  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc
     name: Qwen3-Coder-30B-A3B-Instruct-FP8-tp8-65k
     revision: null
-    role: coder           # FP8 MoE, artifact max attention size 65536.
-    gen: true
+    role: coder           # FP8 MoE 30GB, artifact max attention size 65536. 완성본(-tc, binary_bundle 보유).
+    gen: true             # artifact.json model_type 위장(qwen3_moe→qwen3)으로 serve 게이트 통과 → 벤치 가능.
     enabled: true
     serve_args: []
+
+  - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-tp8-65k-tc
+    name: Qwen3-Coder-30B-A3B-Instruct-bf16-tp8-65k
+    revision: null
+    role: coder           # bf16 MoE 58GB > 1장 48GB HBM → serve 시 -pp 2(2장 레이어분할, 실측 가능). 위장 model_type=qwen3.
+    gen: true
+    enabled: true
+    serve_args: ["-pp", "2", "--devices", "npu:0,npu:1"]
 
   - id: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-coder-14b-tp8
     name: Qwen2.5-Coder-14B-tp8

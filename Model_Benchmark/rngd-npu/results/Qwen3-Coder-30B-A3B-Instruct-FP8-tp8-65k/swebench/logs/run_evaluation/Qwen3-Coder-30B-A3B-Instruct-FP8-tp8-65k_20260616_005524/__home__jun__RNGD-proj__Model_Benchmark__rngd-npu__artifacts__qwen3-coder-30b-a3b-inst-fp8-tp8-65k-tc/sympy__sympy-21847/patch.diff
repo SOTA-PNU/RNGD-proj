@@ -1,0 +1,313 @@
+Looking at this issue carefully:
+
+The problem occurs specifically within lines ~'~'~'~'~'~'~'~'
+In function 'itermnomial':
+When 'total_degre=True': lines ~'~'~'~'
+Lines ~'~'
+Line ~':'
+Line ~':'
+
+The bug happens because:
+
+In lines ~'-':
+```python  
+if hasattr(item,'__len__') :
+   ...
+   ...
+   ...
+else :
+   ...
+   ...  
+if hasattr(item,'__len__') :  
+   ...  
+else :   
+   ...   
+if hasattr(item,'__len__') :    
+   ...    
+else :   
+   ...   
+if hasattr(item,'__len__') :
+      ...
+      ...
+      ...
+
+return
+
+def foo():
+ pass
+
+def bar():
+ pass
+
+def baz():
+ pass
+
+return 
+
+def quux():
+ pass
+
+return 
+
+def quuz():
+ pass
+
+return 
+
+def corge():
+ pass
+
+return 
+
+def grault():  
+ pass  
+
+return  
+
+def garply():  
+ pass  
+
+return  
+
+def waldo():  
+ pass  
+
+return  
+
+def fred():  
+ pass  
+
+return  
+
+for var , mi , ma , va lue s :
+
+for var , mi , ma , va lue s :
+
+for var , mi , ma , va lue s :
+
+for var , mi , ma ,
+
+for var ,
+
+for v,
+
+for v,
+
+for v,
+
+while True :
+
+while True :
+
+while True :
+
+while True :
+
+while True :
+ break
+
+
+break
+
+
+break
+
+
+break
+
+
+break
+
+
+break
+
+
+break
+
+
+break
+
+
+break
+
+
+break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+ break
+
+
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+ continue 
+
+
+
+
+continue 
+
+
+
+
+continue 
+
+
+
+
+continue 
+
+
+
+
+continue 
+
+
+
+
+continue 
+
+
+
+
+continue 
+
+
+
+
+continue 
+
+
+
+continue 
+
+
+
+continue 
+
+
+
+continue 
+
+
+
+Continue 
+
+Continue 
+
+Continue 
+
+Continue 
+
+Continue 
+
+Continue 
+
+Continue 
+
+Continue 
+
+Continue 
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue   
+
+ Continue    
+
+ Continue    
+
+ Continue    
+
+ Continue    
+
+ Continue    
+
+_continue_
+
+_continue_
+
+_continue_
+
+_continue_
+
+_continue_
+
+_continue_
+
+_continue_
+
+_continue_
+
+_continue_
+</patch>

@@ -252,7 +252,7 @@ hf['model_type'] = 'qwen3'; hf['architectures'] = ['Qwen3ForCausalLM']
 
 기존 dense Qwen2.5-Coder-14B(단일 30.7 tok/s) 대비 단일 2배·합산 30배+.
 **본래 목표("RNGD 4장으로 더 강력한 코더") 달성.** 운영 권장: 처리량은 4장 dp,
-저지연은 1장 단독. 종합 결론·근거는 [README_qwen3_next_TECH.md] 참조.
+저지연은 1장 단독. 종합 결론·근거는 [README_qwen3_coder_next.md] 참조.
 
 ### 2026-06-10 — qwen3_next probe 정리 + 위장 도구화
 
@@ -260,7 +260,7 @@ hf['model_type'] = 'qwen3'; hf['architectures'] = ['Qwen3ForCausalLM']
   주석으로 대체. 아키텍처 파일은 차기 SDK 대비 + ③ 트레이싱 성공 증거로 보존.
 - `masquerade_artifact.py` 신규 — 위장 절차 재사용 도구화(하드링크 사본 + model_type
   교체 + MoE 키 제거, KV 차원 보존 가드).
-- 종합 보고서 `README_qwen3_next_TECH.md` 신규.
+- 종합 보고서 `README_qwen3_coder_next.md` 신규.
 
 ### 2026-06-10 (2차 세션) — ⭐ TP 분할기 벽, 우리 손으로 통과 (사용자 질문 "vendor 몫 말고는 해결 가능하지 않나?"의 실증 답변)
 
@@ -349,7 +349,7 @@ prefix cache 기본 ON 은 하이브리드에서 조용한 오답 위험 → fea
 - **바이너리 패치 경로 규명(미실행)**: 리터럴 qwen3_next 통과는 (단말+라우팅 패치)×2바이너리
   +재배치+구조로더 때문에 고위험·저효용 → 분석으로 경로만 문서화, **안전한 마스커레이드를
   실 통과법으로 확정**. .so 2개 분석 후 `cmp` 로 PRISTINE 확인(읽기전용, 원본 무변경).
-- **신규 문서**: `info/README_qwen3_next_TECH.md` (게이트 2겹·매처 디스어셈블·통과법·
+- **신규 문서**: `info/README_qwen3_coder_next.md` (게이트 2겹·매처 디스어셈블·통과법·
   재현 r2 명령). ALL_about_build_serve.md Part2 에 1번째 게이트 + 교차링크 추가.
 - 안전조치: `native_{runtime,llm_common}.so.orig` 백업 생성(가역). NPU 4장 해제.
 
@@ -366,7 +366,7 @@ prefix cache 기본 ON 은 하이브리드에서 조용한 오답 위험 → fea
   import 경로 교체 후 load 테스트 → **여전히 거부**. **매처가 길이-우선 디스패치라
   len-10 입력이 단말 도달 전 에러로 빠짐을 실증.** 단말 패치만으론 불가. 테스트 후 .orig
   복원 → 두 .so PRISTINE 확인. 결론: 길이 디스패치+라우팅+gate2까지 정밀 RE 필요해
-  고위험 → 마스커레이드 권장. README_qwen3_next_TECH.md 5-1절에 상세.
+  고위험 → 마스커레이드 권장. README_qwen3_coder_next.md 5-1절에 상세.
 
 ### 2026-06-10 (5차 세션) — ⭐⭐ transform.py 통과 + 빌드가 NPU 컴파일러 백엔드까지 도달
 
@@ -469,7 +469,7 @@ matmul 에 융합되기 때문. DeltaNet(선형 어텐션 순환)은 gating·순
   까지 되나 데이터의존 exp() decay 게이트·l2norm rsqrt가 상수로 안 접혀 standalone 잔존.
 - **유일 정공법:** 벤더 npu-tools 소스로 gated linear-attention 스캔 tactic 커널 + 런타임
   순환상태 버퍼 추가(2026.3+). qwen3.5/3.6도 같은 구조라 동일 커널로 커버.
-- 신규 문서: `info/README_qwen3_next_TECH.md` (구조 공부 + 커널 위치 + 정직한 결론).
+- 신규 문서: `info/README_qwen3_coder_next.md` (구조 공부 + 커널 위치 + 정직한 결론).
 
 ### 2026-06-10~11 (8차 세션) — 🚀🚀 한계 돌파: Gated DeltaNet 레이어를 RNGD NPU에서 실제 계산
 
@@ -516,7 +516,7 @@ matmul 에 융합되기 때문. DeltaNet(선형 어텐션 순환)은 gating·순
 실제 d=128·32헤드·36레이어) ②긴 seq 청크화(언롤은 그래프가 T에 선형) ③furiosa-llm serve 통합
 (prefill 단일forward 가능, decode cross-step 상태는 paged-KV 한계→커스텀 host루프 or 벤더 상태풀).
 - 산출물: `qwen3-next-proj/tk_kernels/` (커널 YAML 8종 + 드라이버 .py). 문서:
-  `README_qwen3_next_TECH.md` 7·8차 절.
+  `README_qwen3_coder_next.md` 7·8차 절.
 
 ### 2026-06-11 (9차 세션) — 🚀 실차원·멀티헤드·청크 형태 스케일 (남은 일 ①②③ 해결)
 
@@ -553,7 +553,7 @@ matmul 에 융합되기 때문. DeltaNet(선형 어텐션 순환)은 gating·순
 ### 2026-06-11 (13차 세션) — 🏆🏆 실제 Qwen3-Coder-Next-FP8(80B)가 RNGD NPU에서 코드 생성
 
 사용자 목표(청사진→253GB 가능성→실가중치→serve)로 실제 80B 모델을 NPU에서 돌림.
-- **청사진**: `info/README_qwen3_next_RUN.md`. **용량 검토**: FP8 80.4GB(253GB 디스크 OK, 125GB RAM은 mmap/레이어 스트리밍).
+- **청사진**: `info/README_qwen3_coder_next.md`. **용량 검토**: FP8 80.4GB(253GB 디스크 OK, 125GB RAM은 mmap/레이어 스트리밍).
 - **다운로드**: Qwen/Qwen3-Coder-Next-FP8 75GB(40 shard). **로더** `qcn/loader.py`(safetensors mmap + FP8 blockwise dequant).
 - **컴포넌트(실가중치 HF 대조, 전부 NPU `_dfg_inner=0`)**: DeltaNet `qcn/deltanet_layer.py`(16/32헤드 d128) 8.9e-8 · full-attn `qcn/attn_layer.py`(GQA16/2 hd256 partial-RoPE 게이트, matmul 100% NPU) 5.96e-7 · MoE `qcn/moe.py`(512expert top10+shared) 1.79e-7.
 - **전체 모델** `qcn/model.py`(48레이어 스트리밍): 첫 4레이어 실HF 대조 ~1e-6, 전 mixer NPU.
@@ -572,7 +572,7 @@ matmul 에 융합되기 때문. DeltaNet(선형 어텐션 순환)은 gating·순
 
 ### 2026-06-11 (15차 세션) — 📚 문서 통합 + 셸/자원 정리
 
-- **qwen3_next md 4개 → 2개 통합**(사용자 요청, 내용 손실 0): `README_qwen3_next_feasibility.md`·`README_deltanet_kernel_study.md`·`README_radare2_gate_analysis.md`·`README_full_model_blueprint.md` → **`README_qwen3_next_TECH.md`**(기술 전말: 빌드벽·radare2 게이트·TacticKernelModule·DPE 등 6절+부록) + **`README_qwen3_next_RUN.md`**(실행·사용 가이드: 용량·아키텍처·로더·generate/serve 커맨드·성능). 적대적 검증으로 ~230개 구체사실(maxerr·perf·file:line·radare2 주소·레시피·제약) 전수 점검, 2개 누락 복원. 원본 4개 삭제, 참조(메모리·ALL_about·본 로그) 갱신.
+- **qwen3_next md 4개 → 2개 통합**(사용자 요청, 내용 손실 0): `README_qwen3_next_feasibility.md`·`README_deltanet_kernel_study.md`·`README_radare2_gate_analysis.md`·`README_full_model_blueprint.md` → **`README_qwen3_coder_next.md`**(기술 전말: 빌드벽·radare2 게이트·TacticKernelModule·DPE 등 6절+부록) + **`README_qwen3_coder_next.md`**(실행·사용 가이드: 용량·아키텍처·로더·generate/serve 커맨드·성능). 적대적 검증으로 ~230개 구체사실(maxerr·perf·file:line·radare2 주소·레시피·제약) 전수 점검, 2개 누락 복원. 원본 4개 삭제, 참조(메모리·ALL_about·본 로그) 갱신.
 - **#2 답(furiosa-llm 빌드 아티팩트 가능?)**: ❌ 불가. 정식 빌드는 DeltaNet 커널화 벽으로 막히고, 위장(-tc)은 DeltaNet 가중치를 qwen3_moe 어텐션으로 계산→garbage. `qcn/` host루프+손수커널이 유일 경로.
 - 셸 정리: 고아 모니터 sleep 정리, NPU 4장·포트 해제. code-server 인터랙티브 터미널은 보존.
 
@@ -582,7 +582,15 @@ matmul 에 융합되기 때문. DeltaNet(선형 어텐션 순환)은 gating·순
 - **#3 DeltaNet 분해 돌파**: a6 불가였던 3조각의 진짜 원인은 연산이 아니라 **그래프 구성** — 한 그래프 내 복수 contraction('conflict between concrete labels')·복수 독립출력('multiple internal subgraphs')·미지원op(Conv1d→O136, softplus→log1p)를 거부. "연산 1개=그래프 1개"로 쪼개니 전부 통과(통과한 SDPA/Linear와 동일 구조). recurrent step→`dn_recur_decay/contract/delta/outer/add`(fp64 정확·fp32 rel 2.9e-7), conv1d→`dn_conv1d_shift`(host-pad+shift-mul-add+SiLU), gate→`dn_gate_beta`+`dn_gate_g`(log(1+exp)). 실측: `tmp/dn_decompose_probe.py`·`probe2`.
 - **번들 통합**: 8개 분해 블롭을 실 config로 컴파일해 추가(`tk_kernels/emit_dn_split_blobs.py` 신규 → `pack_edf_bundle.py` 재패킹). binary_bundle **17→25블롭**, kind `partial-edf`→**`edf-split (compute-complete)`**, `pieces_without_edf` 3→0, **25/25 a6 역직렬화 검증**(515.3MB, sha256 `d740ea47…`). artifact.json·manifest 갱신. **남은 한계는 컴파일이 아니라 deploy**(serve 런타임 순환상태 풀 없음, 벤더 2026.3+).
 - **#2 SDK 문서 감사**: build/serve 실행 파일·모델→NPU 변환·아티팩트 서빙 기록이 충분히 상세한지 SDK 소스 대조 재확인 → **3영역 모두 THOROUGH**(`ALL_about_build_serve.md`가 전 체인을 file:line으로 실측 기록, ~40개 인용 대부분 정확). `presets.py`/`api.py` 편집 이후 stale였던 인용 6건 수정: `ALL_about`(LLM.__init__ `api.py:115`/호출 `:216`, load_llm_from_args `models.py:12`, `api.py:354 override_with` 추가), `BUILD_FLOW`/`BUILD_COMPIL`/`README_config`(presets.py `:425`), `README_preset`/`README_build`(PRESET_REFS `:277`, 7종→15항목/11 preset).
-- **이론 공부(gated DeltaNet/attention)**: 신규 `README_gated_deltanet_STUDY.md` — delta rule/SGD·청크 WY/UT·게이트 delta(식10)·gated attention·Qwen3-Next 구조·paged-KV 불가 이유를 식 유도+논문/코드 file:line으로 정리.
+- **이론 공부(gated DeltaNet/attention)**: 신규 `README_attention_and_gated_deltanet.md` — delta rule/SGD·청크 WY/UT·게이트 delta(식10)·gated attention·Qwen3-Next 구조·paged-KV 불가 이유를 식 유도+논문/코드 file:line으로 정리.
+
+### 2026-06-15 (19차 세션) — 📚 qwen3_next 문서 3개로 통합 재구성 (개념 분리)
+
+- **문서 통합(사용자 요청)**: 흩어진 5개 qwen3_next 문서(README_gated_deltanet_STUDY·README_qwen3_next_TECH·README_qwen3_next_ARTIFACT·README_qwen3_next_RUN·README_qwen3_next_BUILD_SERVE_GUIDE)를 **3개로 통합**, 개념과 실전을 분리. 중학생 눈높이로 쉽게, 그리고 엠대시("—")로 뒷말 붙이는 문체 금지.
+  - `README_attention_and_gated_deltanet.md` (개념 A): 어텐션 기초→RNN→트랜스포머→어텐션 종류→softmax 비용→선형 어텐션→delta rule→DeltaNet→Gated DeltaNet→Gated Attention 까지 거슬러 쌓아 설명.
+  - `README_furiosa_llm_cli_explained.md` (개념 B): furiosa-llm build/serve가 하는 일을 예시 모델 Qwen2.5-Coder-7B-Instruct(표준 트랜스포머)로 단계별 쉽게.
+  - `README_qwen3_coder_next.md` (실전 C): A·B를 이어 Qwen3-Coder-Next의 특성·막히는 이유·우리 해법(host-loop/분해/어댑터)·실제 명령(build/compile/serve 4경로)·벤더 경계를 통합. RUN/ARTIFACT/TECH/GUIDE의 명령·결과 흡수.
+- 깊은 레퍼런스(SDK file:line, radare2, DPE 레시피, 차수 이력)는 ALL_about_build_serve.md·이 변경이력·tk_kernels/dpe_*.md·메모리에 보존. 삭제 5개 문서를 참조하던 생존 파일(ALL_about·메모리)의 링크는 새 문서로 재연결(dangling 0 확인).
 
 ## 파일 변경 목록 (누적)
 
@@ -596,23 +604,23 @@ matmul 에 융합되기 때문. DeltaNet(선형 어텐션 순환)은 gating·순
 | 6 | 2026-06-10 | `~/furiosa/.../furiosa/models/language/__init__.py` | **수정** (import+`__all__` 2줄) | qwen3_next 클래스 등록 |
 | 7 | 2026-06-10 | `~/furiosa/.../furiosa_llm/metadata/hf_utils.py` | **수정** (`_EXPERIMENTAL_MODEL_TYPES` 게이트 우회) | qwen3_next 빌드 진입 허용. 목록 외 model_type 은 종전대로 |
 | 8 | 2026-06-10 | `qwen3-next-proj/masquerade_artifact.py` | **신규** | serve 게이트 위장 도구 |
-| 9 | 2026-06-10 | `info/README_qwen3_next_TECH.md` | **신규** | 종합 결론 보고서 |
+| 9 | 2026-06-10 | `info/README_qwen3_coder_next.md` | **신규** | 종합 결론 보고서 |
 | 10 | 2026-06-10 | `qwen3-next-proj/artifacts/{mini-qwen3-tp8, mini-qwen3-moe-tp8}` | **신규 빌드** | dense·MoE 미니 아티팩트 |
 | 11 | 2026-06-10 | `qwen3-next-proj/artifacts/{mini-qwen3-moe-masq, qwen3-coder-30b-masq}` | **신규** (위장 사본) | 게이트 우회 실증. 원본 무변경(하드링크) |
 | 12 | 2026-06-10 | `~/furiosa/.../furiosa_llm/parallelize/pipeline/builder/transform.py` | **수정** (`replicate_nodes_with_multiple_colors` 단색부모 fallback) | 5차: ⑤노드복제 통과. 다색노드의 단색부모는 복제본 없어 원본참조. 가역 |
 | 13 | 2026-06-10 | `~/furiosa/.../furiosa/models/language/architecture/qwen3_next.py` | **수정**(누적, 6차 충실복원) | DeltaNet NPU-안전 재작성(별도투영6·별도conv3·cat패딩·softplus=log(exp+1)·stack-repeat·게이트 transpose). 컴파일 추적 흔적, 커널주입 한계 주석 |
 | 14 | 2026-06-10 | `info/ALL_about_build_serve.md` | **신규** | 3차: build/serve 전과정 file:line 실측 정리 |
-| 15 | 2026-06-10 | `info/README_qwen3_next_TECH.md` | **신규** | 4차: serve 게이트 2겹 radare2 해부 |
+| 15 | 2026-06-10 | `info/README_qwen3_coder_next.md` | **신규** | 4차: serve 게이트 2겹 radare2 해부 |
 | 16 | 2026-06-10 | `qwen3-next-proj/radare2/` | **신규**(소스빌드) | radare2 6.1.7 게이트 분석용 |
 | 17 | 2026-06-11 | `qwen3-next-proj/artifacts/qwen3-coder-30b-a3b-inst-tp8-65k-tc/` | **신규**(위장+파일이동) | 7차: BF16 30B `model_type qwen3` 위장. SRC엔 artifact.json만 남김. 2장 pp2 serve 검증 |
 | 18 | 2026-06-11 | `qwen3-next-proj/build_with_override.py` | **신규** | 7차: compiler_config_overrides 주입 빌드 테스트(allow_unlowered → hang 실증) |
-| 19 | 2026-06-11 | `info/README_qwen3_next_TECH.md` | **신규**(7·8차 갱신) | DeltaNet 구조+커널위치+TacticKernelModule 돌파 기록 |
+| 19 | 2026-06-11 | `info/README_qwen3_coder_next.md` | **신규**(7·8차 갱신) | DeltaNet 구조+커널위치+TacticKernelModule 돌파 기록 |
 | 20 | 2026-06-11 | `qwen3-next-proj/tk_kernels/*.yaml` (8종) + 드라이버 `.py` | **신규** | 8차: 손작성 TK-graph 커널. `dn_step`(스텝 7-op)·`dn_prefill_unroll4`(언롤 단일EDF)·`dn_einsum_f32`·`dn_rank1`·`dn_decay`·`dn_delta`·`dn_gate`·`dn_loop2` + `gen_unroll.py` 등. 전부 NPU 검증 |
 | 21 | 2026-06-11 | `qwen3-next-proj/tk_kernels/dn_step_mh.yaml`·`dn_chunk.yaml`·`dn_prefill_unroll{8..128}.yaml`·`scale_test_d128.py`·`gen_chunk.py`·`mh_test.py`·`unroll_limit_test.py` | **신규** | 9차: 실차원 d=128·멀티헤드 H=4·청크형태 NPU 검증 |
 | 22 | 2026-06-11 | `qwen3-next-proj/tk_kernels/dn_chunk_full.yaml`·`dn_conv1d.yaml`·`dn_l2norm.yaml`·`dn_gnorm.yaml` + `gen_chunk_full.py`·`run_dn_chunk_full.py`·`gen_dn_layer.py`·`test_dn_layer.py`·`probe_unary.py`·`probe_binary.py` | **신규** | 10차: 멀티청크 스캔(inter-chunk carry)+conv1d/l2norm/gated RMSNorm, 전부 NPU·HF 대조 |
 | 23 | 2026-06-11 | `qwen3-next-proj/tk_kernels/full_layer.py` | **신규** | 11차 캡스톤: 완전한 DeltaNet 레이어 조립, HF 전체 대조 maxerr 3.9e-7, DeltaNet 고유 op 전부 NPU. 적대적 검증 통과 |
 | 24 | 2026-06-11 | `qwen3-next-proj/tk_kernels/dn_linear.yaml`·`full_layer_npu.py`·`test_dn_linear.py` | **신규** | 12차: nn.Linear NPU matmul 커널 → in_proj/out_proj까지 NPU. 레이어 96.74% FLOP NPU, HF maxerr 1.6e-6 |
-| 25 | 2026-06-11 | `info/README_qwen3_next_RUN.md` | **신규** | 13차: 전체 모델 host 추론 청사진 + 실행 진행 |
+| 25 | 2026-06-11 | `info/README_qwen3_coder_next.md` | **신규** | 13차: 전체 모델 host 추론 청사진 + 실행 진행 |
 | 26 | 2026-06-11 | `qwen3-next-proj/qcn/` (`loader.py`·`deltanet_layer.py`·`attn_layer.py`·`moe.py`·`model.py`·`generate.py` + validate/sample) | **신규** | 13차: 실제 Qwen3-Coder-Next-FP8 전체 모델 NPU 추론. quicksort 코드 생성 성공 |
 | — | 2026-06-11 | HF 캐시 `Qwen3-Coder-Next-FP8` (75GB) | **다운로드** | 실가중치(SDK 무관, ~/.cache/huggingface) |
 | 27 | 2026-06-11 | `qwen3-next-proj/qcn/serve.py` | **신규** | 13차 #4: OpenAI 호환 서빙(A안). /v1/completions·/v1/chat/completions NPU 작동 |
