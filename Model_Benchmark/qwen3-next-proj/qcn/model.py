@@ -185,6 +185,70 @@ class QCNModel:
         out, _n = moe_forward_npu(h, self.W, top_idx, top_val, layer=i)
         return out.unsqueeze(0)
 
+    # ---------------- shared decoder-layer-range runner (pp4) ----------------
+    def _run_layer_range(self, h, lo, hi, state_cache, position_ids=None,
+                         decode=False, capture=None, verbose=False):
+        """Run decoder layers [lo, hi) on hidden h, in place on state_cache.
+
+        Shared by prefill/decode_step AND by the pp4 stage workers (qcn/pipeline.py)
+        so a stage owns a contiguous layer slice. decode=False builds state (prefill);
+        decode=True reads+updates the carried recurrent/KV state (one token).
+        h: [1,T,H] (prefill) or [1,1,H] (decode). Returns h after layer hi-1."""
+        for i in range(lo, hi):
+            ltype = self.layer_types[i]
+            residual = h
+            h = rms_norm(h, self._norm_w(i, "input_layernorm"), self.eps)
+            if ltype == "linear_attention":
+                if not decode:
+                    mix, st, cst = self._run_deltanet(h, i, state=None)
+                    state_cache[i] = {"type": "deltanet", "state": st, "conv": cst}
+                else:
+                    st = state_cache[i]["state"]
+                    cst = state_cache[i]["conv"]
+                    mix, new_st, new_cst = self._run_deltanet(h, i, state=st, conv_state=cst)
+                    state_cache[i]["state"] = new_st
+                    state_cache[i]["conv"] = new_cst
+            else:
+                if not decode:
+                    mix, kv = self._run_attention(h, i, position_ids)
+                    state_cache[i] = {"type": "attention", "kv": kv}
+                else:
+                    layer = QCNFullAttentionNPU(self.W, self.cfg, layer_idx=i)
+                    mix, new_kv = layer.forward_decode(h, position_ids, state_cache[i]["kv"])
+                    state_cache[i]["kv"] = new_kv
+                    del layer
+            h = residual + mix
+
+            residual = h
+            h = rms_norm(h, self._norm_w(i, "post_attention_layernorm"), self.eps)
+            h = self._run_moe(h, i)
+            h = residual + h
+
+            if capture is not None:
+                capture[f"layer{i}"] = h.detach().clone()
+            if verbose:
+                print(f"[layer {i:2d}/{hi}] {ltype:17s} done  "
+                      f"hidden[0,0,:3]={h[0,0,:3].tolist()}", flush=True)
+        return h
+
+    def final_logits(self, h):
+        """final RMSNorm + lm_head (host). h:[1,*,H] -> logits [1,*,V]. Stage-3 tail."""
+        h = rms_norm(h, self.W.get("model.norm.weight", torch.float32), self.eps)
+        lm_head = self.W.get("lm_head.weight", torch.float32)
+        logits = (h[0] @ lm_head.t()).unsqueeze(0)
+        del lm_head
+        return logits
+
+    def embed_tokens(self, ids):
+        """embed lookup (host). ids:[1,T] or int -> h [1,*,H]. Stage-0 head."""
+        embed = self.W.get("model.embed_tokens.weight", torch.float32)
+        if isinstance(ids, int):
+            h = embed[ids].view(1, 1, self.hidden).float()
+        else:
+            h = embed[ids[0]].unsqueeze(0).float()
+        del embed
+        return h
+
     # ---------------- full forward ----------------
     def prefill(self, input_ids, max_layers=None, capture=None):
         """input_ids: [1,T] long. Returns (logits [1,T,vocab], state_cache dict).
@@ -202,43 +266,18 @@ class QCNModel:
         position_ids = torch.arange(T).unsqueeze(0)              # [1,T]
 
         # ---- embed_tokens (bf16, no quant) ----
-        embed = self.W.get("model.embed_tokens.weight", torch.float32)   # [V,H]
-        h = embed[input_ids[0]].unsqueeze(0).float()            # [1,T,H]
-        del embed
+        h = self.embed_tokens(input_ids)                        # [1,T,H]
 
         n_run = self.n_layers if max_layers is None else max_layers
         state_cache = {}
-        for i in range(n_run):
-            ltype = self.layer_types[i]
-            residual = h
-            h = rms_norm(h, self._norm_w(i, "input_layernorm"), self.eps)
-            if ltype == "linear_attention":
-                mix, st, cst = self._run_deltanet(h, i, state=None)
-                state_cache[i] = {"type": "deltanet", "state": st, "conv": cst}
-            else:
-                mix, kv = self._run_attention(h, i, position_ids)
-                state_cache[i] = {"type": "attention", "kv": kv}
-            h = residual + mix
-
-            residual = h
-            h = rms_norm(h, self._norm_w(i, "post_attention_layernorm"), self.eps)
-            h = self._run_moe(h, i)
-            h = residual + h
-
-            if capture is not None:
-                capture[f"layer{i}"] = h.detach().clone()
-            print(f"[layer {i:2d}/{n_run}] {ltype:17s} done  "
-                  f"hidden[0,0,:3]={h[0,0,:3].tolist()}", flush=True)
+        h = self._run_layer_range(h, 0, n_run, state_cache, position_ids=position_ids,
+                                  decode=False, capture=capture, verbose=True)
 
         if max_layers is not None:
             # validation mode: return the raw hidden after the truncated stack
             return h, state_cache
 
-        # ---- final norm + lm_head ----
-        h = rms_norm(h, self.W.get("model.norm.weight", torch.float32), self.eps)
-        lm_head = self.W.get("lm_head.weight", torch.float32)   # [V,H] bf16-src
-        logits = (h[0] @ lm_head.t()).unsqueeze(0)              # [1,T,V] (host)
-        del lm_head
+        logits = self.final_logits(h)                           # [1,T,V] (host)
         return logits, state_cache
 
     # ---------------- single-token decode ----------------
@@ -251,38 +290,11 @@ class QCNModel:
         and conv tail (so the chunk scan continues the recurrence; conv sees the
         last kernel-1 inputs).  Full-attn layers: compute new K/V at position pos,
         append to the cached K/V, attend over the whole history."""
-        embed = self.W.get("model.embed_tokens.weight", torch.float32)
-        h = embed[token_id].view(1, 1, self.hidden).float()     # [1,1,H]
-        del embed
+        h = self.embed_tokens(int(token_id))                    # [1,1,H]
         position_ids = torch.tensor([[pos]])
-
-        for i in range(self.n_layers):
-            ltype = self.layer_types[i]
-            residual = h
-            h = rms_norm(h, self._norm_w(i, "input_layernorm"), self.eps)
-            if ltype == "linear_attention":
-                st = state_cache[i]["state"]
-                cst = state_cache[i]["conv"]
-                mix, new_st, new_cst = self._run_deltanet(h, i, state=st, conv_state=cst)
-                state_cache[i]["state"] = new_st
-                state_cache[i]["conv"] = new_cst
-            else:
-                layer = QCNFullAttentionNPU(self.W, self.cfg, layer_idx=i)
-                mix, new_kv = layer.forward_decode(h, position_ids, state_cache[i]["kv"])
-                state_cache[i]["kv"] = new_kv
-                del layer
-            h = residual + mix
-
-            residual = h
-            h = rms_norm(h, self._norm_w(i, "post_attention_layernorm"), self.eps)
-            h = self._run_moe(h, i)
-            h = residual + h
-
-        h = rms_norm(h, self.W.get("model.norm.weight", torch.float32), self.eps)
-        lm_head = self.W.get("lm_head.weight", torch.float32)
-        logits = (h[0] @ lm_head.t()).unsqueeze(0)              # [1,1,V]
-        del lm_head
-        return logits
+        h = self._run_layer_range(h, 0, self.n_layers, state_cache,
+                                  position_ids=position_ids, decode=True)
+        return self.final_logits(h)                             # [1,1,V]
 
     # ---------------- autoregressive generation ----------------
     def get_tokenizer(self):

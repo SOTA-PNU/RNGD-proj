@@ -1,0 +1,125 @@
+digraph build {
+    rankdir=LR;
+    labelloc="t";
+    label="furiosa-llm build: scenario C — AOT compile path (produces serve artifact; NOT executed at serve time)";
+    node [shape=ellipse, fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=8];
+
+    // ---- CLI / builder layer ----
+    subgraph cluster_cli {
+        label="CLI + ArtifactBuilder";
+        style=filled;
+        fillcolor=gray95;
+        convert         [label="cli.convert.convert\ncli/convert.py:214"];
+        ab_init         [label="ArtifactBuilder.__init__\nartifact/builder.py:146"];
+        ab_build        [label="ArtifactBuilder.build\nartifact/builder.py:357"];
+        ab_model_art    [label="ArtifactBuilder._build_model_artifact\nartifact/builder.py:363"];
+        ab_save         [label="ArtifactBuilder.__save_artifacts\nartifact/builder.py:393"];
+        ab_preproc_save [label="ArtifactBuilder.__preprocess_for_pipeline_save\nartifact/builder.py:498"];
+        resolve_meta    [label="resolver.resolve_model_metadata\nartifact/builder.py:161"];
+        resolve_buckets [label="ResolvedBuckets.resolve\nartifact/builder.py:168"];
+        find_preset     [label="presets.find_preset\nartifact/presets.py:404"];
+    }
+
+    // ---- Pipeline build layer ----
+    subgraph cluster_pipeline {
+        label="Pipeline build (parallelize/new_pipeline_builder.py)";
+        style=filled;
+        fillcolor=gray95;
+        build_pipeline  [label="build_pipeline\nartifact/builder.py:268"];
+        build_for_bkt   [label="LocalPipelineGenerationActor.build_for_bucket\n(Ray) new_pipeline_builder.py:1576"];
+        build_local     [label="build_local_pipeline\nnew_pipeline_builder.py:1451"];
+        build_part_gm   [label="build_partitioned_graphmodule\nnew_pipeline_builder.py:580"];
+        par_part_gm     [label="parallelize_and_partition_graphmodule\nnew_pipeline_builder.py:486"];
+        par_gm          [label="parallelize_graphmodule\nnew_pipeline_builder.py:367"];
+        model_rewrite   [label="ModelRewriter.rewrite\nnew_pipeline_builder.py:147"];
+        l2g_convert     [label="LocalToGlobalPipelineConverter.convert\nnew_pipeline_builder.py:1613"];
+        get_compiled    [label="get_compiled_pipeline\nnew_pipeline_builder.py:1623"];
+        task_compile    [label="TaskCompileActor.compile_task\n(Ray) new_pipeline_builder.py:1312"];
+    }
+
+    // ---- Tracing / partitioning layer ----
+    subgraph cluster_trace {
+        label="Tracing + partitioning (trace.py / graph_partitioner.py)";
+        style=filled;
+        fillcolor=gray95;
+        get_aten        [label="trace.get_aten_graph_with_metadata\nnew_pipeline_builder.py:455"];
+        trace_into      [label="trace._trace_into_aten_graph_with_metadata\ntrace.py:1166"];
+        trace_model     [label="trace.trace_model\ntrace.py:891"];
+        dynamo_export   [label="torch._dynamo.export\ntrace.py:855"];
+        make_fx         [label="torch.fx make_fx\ntrace.py:828"];
+        enable_marker   [label="block_slicer.enable_marker_op\ntrace.py:943"];
+        get_partitioner [label="graph_partitioner.get_graph_partitioner\nnew_pipeline_builder.py:436"];
+        kw_partition    [label="KernelwisePartitioner.partition_gm\ngraph_partitioner.py:97"];
+        color_bitmap    [label="block_slicer.get_kernelwise_sliced_color_bitmap_with_marker\ngraph_partitioner.py:65"];
+        gm_converter    [label="GraphModuleConverter.compile_gm_and_get_preprocessed_gm_hash\nnew_pipeline_builder.py:1165"];
+        torch_preproc   [label="furiosa_torch_ext.torch_ext.preprocess\npipeline/builder/converter.py:886"];
+        cfg_ctx         [label="CompilerConfigContext.load_config_with_layer_range\nnew_pipeline_builder.py:1127"];
+        gen_metadata    [label="generate_graph_metadata\nnew_pipeline_builder.py:1153"];
+    }
+
+    // ---- Native compiler boundary ----
+    subgraph cluster_native {
+        label="Native compiler boundary (furiosa.native_common.compiler — PyO3 in native_llm_common.so)";
+        style=filled;
+        fillcolor=gray90;
+        n_compile       [label="compiler.compile (AOT COMPILE)\npipeline/builder/converter.py:913", shape=box, style=filled, fillcolor=lightyellow];
+        n_cfg_layer     [label="compiler.create_llm_compiler_config_with_layer_range\ncompiler_config.py:122", shape=box, style=filled, fillcolor=lightyellow];
+        n_cfg_default   [label="compiler.create_default_compiler_config\ncompiler_config.py:142", shape=box, style=filled, fillcolor=lightyellow];
+        n_meta_builder  [label="compiler.GraphMetadataBuilder\npipeline/builder/converter.py:1461", shape=box, style=filled, fillcolor=lightyellow];
+        n_cg_serialize  [label="compiler.CompiledGraph.serialize\nnew_pipeline_builder.py:1192", shape=box, style=filled, fillcolor=lightyellow];
+        n_cg_deserial   [label="compiler.CompiledGraph.deserialize\nnew_pipeline_builder.py:1343", shape=box, style=filled, fillcolor=lightyellow];
+        n_approx        [label="compiler.approx_per_layer_params_b\nartifact/presets.py:416", shape=box, style=filled, fillcolor=lightyellow];
+        n_git_hash      [label="compiler.compiler_git_short_hash\nartifact/builder.py:357", shape=box, style=filled, fillcolor=lightyellow];
+        n_save_serial   [label="compiler.CompiledGraph.serialize\nartifact/builder.py:455", shape=box, style=filled, fillcolor=lightyellow];
+    }
+
+    // ---- CLI / builder edges ----
+    convert -> ab_init          [label="cli/convert.py:197"];
+    convert -> ab_build         [label="cli/convert.py:214"];
+    ab_init -> resolve_meta     [label="artifact/builder.py:161"];
+    ab_init -> resolve_buckets  [label="artifact/builder.py:168"];
+    resolve_buckets -> find_preset [label="artifact/presets.py:404"];
+    find_preset -> n_approx     [label="artifact/presets.py:416"];
+    ab_build -> n_git_hash      [label="artifact/builder.py:357"];
+    ab_build -> ab_model_art    [label="artifact/builder.py:363"];
+    ab_build -> ab_save         [label="artifact/builder.py:393"];
+    ab_model_art -> build_pipeline [label="artifact/builder.py:268"];
+    ab_save -> ab_preproc_save  [label="artifact/builder.py:498"];
+    ab_preproc_save -> n_save_serial [label="artifact/builder.py:455"];
+
+    // ---- pipeline build edges ----
+    build_pipeline -> build_for_bkt [label="Ray fan-out\nnew_pipeline_builder.py:1576"];
+    build_pipeline -> l2g_convert   [label="new_pipeline_builder.py:1613"];
+    build_pipeline -> get_compiled  [label="new_pipeline_builder.py:1623"];
+    build_for_bkt -> build_local    [label="new_pipeline_builder.py:1451"];
+    build_local -> build_part_gm    [label="new_pipeline_builder.py:580"];
+    build_part_gm -> get_partitioner [label="new_pipeline_builder.py:436"];
+    build_part_gm -> get_aten        [label="new_pipeline_builder.py:455"];
+    build_part_gm -> par_part_gm     [label="new_pipeline_builder.py:486"];
+    par_part_gm -> kw_partition       [label="partition_gm\nnew_pipeline_builder.py:343"];
+    par_part_gm -> par_gm             [label="new_pipeline_builder.py:367"];
+    par_gm -> model_rewrite           [label="new_pipeline_builder.py:147"];
+
+    // ---- tracing edges ----
+    get_aten -> trace_into       [label="trace.py:1166"];
+    trace_into -> enable_marker  [label="trace.py:943"];
+    trace_into -> trace_model    [label="trace.py:891"];
+    trace_model -> dynamo_export [label="trace.py:855"];
+    trace_model -> make_fx       [label="trace.py:828"];
+    get_partitioner -> kw_partition [label="returns KernelwisePartitioner"];
+    kw_partition -> color_bitmap [label="graph_partitioner.py:65"];
+
+    // ---- compile edges ----
+    get_compiled -> task_compile    [label="Ray fan-out\nnew_pipeline_builder.py:1312"];
+    get_compiled -> n_cg_deserial   [label="new_pipeline_builder.py:1343"];
+    task_compile -> cfg_ctx         [label="new_pipeline_builder.py:1127"];
+    task_compile -> gen_metadata    [label="new_pipeline_builder.py:1153"];
+    task_compile -> gm_converter    [label="new_pipeline_builder.py:1165"];
+    task_compile -> n_cg_serialize  [label="new_pipeline_builder.py:1192"];
+    gm_converter -> torch_preproc   [label="pipeline/builder/converter.py:886"];
+    gm_converter -> n_compile       [label="pipeline/builder/converter.py:913"];
+    cfg_ctx -> n_cfg_layer          [label="compiler_config.py:122"];
+    cfg_ctx -> n_cfg_default        [label="fallback\ncompiler_config.py:142"];
+    gen_metadata -> n_meta_builder  [label="pipeline/builder/converter.py:1461"];
+}

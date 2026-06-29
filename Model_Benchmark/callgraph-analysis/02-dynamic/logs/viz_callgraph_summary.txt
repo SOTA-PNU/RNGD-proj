@@ -1,0 +1,53 @@
+events=11267010 nodes=17670 edges=41331 max_depth=318
+ROOTS: {'builtins.exec': 1}
+NATIVE-BOUNDARY LEAVES:
+    JSONEncoder.encode (/usr/lib/python3.12/json/encoder.py:183)
+    _createenviron.<locals>.encode (<frozen os>:762)
+    _json.encode_basestring_ascii
+    builtins.NativeLLMEngine.generate
+    builtins.NativeLLMEngine.shutdown
+    builtins.NextGenArtifact.override_with
+    furiosa.native_torch.enable_logging
+    str.encode
+    tokenizers.Tokenizer.encode_batch
+DEEPEST CHAIN (one sample):
+-> builtins.exec
+  -> <module> (/home/jun/chacha/callgraph-analysis/02-dynamic/scripts/load_and_infer.py:1)
+    -> main (/home/jun/chacha/callgraph-analysis/02-dynamic/scripts/load_and_infer.py:16)
+      -> _find_and_load (<frozen importlib._bootstrap>:1349)
+        -> _find_and_load_unlocked (<frozen importlib._bootstrap>:1304)
+          -> _load_unlocked (<frozen importlib._bootstrap>:911)
+            -> _LoaderBasics.exec_module (<frozen importlib._bootstrap_external>:989)
+              -> _call_with_frames_removed (<frozen importlib._bootstrap>:480)
+                -> builtins.exec
+                  -> <module> (/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/__init__.py:1)
+                    -> _find_and_load (<frozen importlib._bootstrap>:1349)
+                      -> _find_and_load_unlocked (<frozen importlib._bootstrap>:1304)
+                        -> _load_unlocked (<frozen importlib._bootstrap>:911)
+                          -> _LoaderBasics.exec_module (<frozen importlib._bootstrap_external>:989)
+                            -> _call_with_frames_removed (<frozen importlib._bootstrap>:480)
+                              -> builtins.exec
+                                -> <module> (/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py:1)
+                                  -> _find_and_load (<frozen importlib._bootstrap>:1349)
+                                    -> _find_and_load_unlocked (<frozen importlib._bootstrap>:1304)
+                                      -> _load_unlocked (<frozen importlib._bootstrap>:911)
+                                        -> _LoaderBasics.exec_module (<frozen importlib._bootstrap_external>:989)
+                                          -> _call_with_frames_removed (<frozen importlib._bootstrap>:480)
+                                            -> builtins.exec
+                                              -> <module> (/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/generation_config.py:1)
+                                                -> _find_and_load (<frozen importlib._bootstrap>:1349)
+                                                  -> _find_and_load_unlocked (<frozen importlib._bootstrap>:1304)
+                                                    -> _load_unlocked (<frozen importlib._bootstrap>:911)
+                                                      -> _LoaderBasics.exec_module (<frozen importlib._bootstrap_external>:989)
+                                                        -> _call_with_frames_removed (<frozen importlib._bootstrap>:480)
+                                                          -> builtins.exec
+                                                            -> <module> (/home/jun/furiosa/lib/python3.12/site-packages/transformers/__init__.py:1)
+                                                              -> _handle_fromlist (<frozen importlib._bootstrap>:1390)
+                                                                -> _call_with_frames_removed (<frozen importlib._bootstrap>:480)
+                                                                  -> builtins.__import__
+                                                                    -> _find_and_load (<frozen importlib._bootstrap>:1349)
+                                                                      -> _find_and_load_unlocked (<frozen importlib._bootstrap>:1304)
+                                                                        -> _load_unlocked (<frozen importlib._bootstrap>:911)
+                                                                          -> _LoaderBasics.exec_module (<frozen importlib._bootstrap_external>:989)
+                                                                            -> _call_with_frames_removed (<frozen importlib._bootstrap>:480)
+                                                                              -> builtins.exec

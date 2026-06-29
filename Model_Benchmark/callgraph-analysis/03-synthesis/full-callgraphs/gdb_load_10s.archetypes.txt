@@ -1,0 +1,100 @@
+# 03-synthesis/full-callgraphs/gdb_load_10s.txt
+# 261 threads, 5 distinct full stack archetypes (outermost -> innermost; native_runtime.so frames shown as so!0xADDR)
+
+==== 127 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970078,2970079,2970080,2970082,2970083,2970084 ====
+   clone3
+    -> start_thread
+        -> <std::sys::thread::unix::Thread>::new::thread_start
+            -> <std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                -> std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                    -> <tokio::runtime::task::harness::Harness<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                        -> <tokio::runtime::task::core::Core<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                            -> <tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}> as core::future::future::Future>::poll
+                                -> tokio::runtime::scheduler::multi_thread::worker::run
+                                    -> tokio::runtime::context::runtime::enter_runtime::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0},
+                                        -> <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0}::{closure#0},
+                                            -> <tokio::runtime::scheduler::multi_thread::worker::Context>::park_timeout
+                                                -> <tokio::runtime::scheduler::multi_thread::park::Parker>::park
+                                                    -> <parking_lot::condvar::Condvar>::wait_until_internal
+                                                        -> syscall
+
+==== 126 thread(s)  name='furiosa-llm'  LWP e.g. 2967227,2967228,2967229,2967230,2967231,2967232 ====
+   clone3
+    -> start_thread
+        -> blas_thread_server
+            -> ___pthread_cond_wait
+                -> __pthread_cond_wait_common
+                    -> __GI___futex_abstimed_wait_cancelable64
+                        -> __futex_abstimed_wait_common
+                            -> __futex_abstimed_wait_common64
+
+==== 6 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970206,2970207,2970208,2970209,2970210,2970211 ====
+   clone3
+    -> start_thread
+        -> <std::sys::thread::unix::Thread>::new::thread_start
+            -> <std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                -> std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                    -> <parking_lot::condvar::Condvar>::wait_until_internal
+                        -> syscall
+
+==== 1 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970081 ====
+   clone3
+    -> start_thread
+        -> <std::sys::thread::unix::Thread>::new::thread_start
+            -> <std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                -> std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                    -> <tokio::runtime::task::harness::Harness<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                        -> <tokio::runtime::task::core::Core<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                            -> <tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}> as core::future::future::Future>::poll
+                                -> tokio::runtime::scheduler::multi_thread::worker::run
+                                    -> tokio::runtime::context::runtime::enter_runtime::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0},
+                                        -> <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0}::{closure#0},
+                                            -> <tokio::runtime::scheduler::multi_thread::worker::Context>::park_timeout
+                                                -> <tokio::runtime::scheduler::multi_thread::park::Parker>::park
+                                                    -> <tokio::runtime::time::Driver>::park_internal
+                                                        -> <tokio::runtime::io::driver::Driver>::turn
+                                                            -> <mio::poll::Poll>::poll
+                                                                -> epoll_wait
+
+==== 1 thread(s)  name='furiosa-llm'  LWP e.g. 2967220 ====
+   _start
+    -> __libc_start_main_impl
+        -> __libc_start_call_main
+            -> Py_BytesMain
+                -> Py_RunMain
+                    -> _PyRun_AnyFileObject
+                        -> _PyRun_SimpleFileObject
+                            -> unknown!0x00000000006b5263
+                                -> unknown!0x0000000000608b52
+                                    -> PyEval_EvalCode
+                                        -> _PyEval_EvalFrameDefault
+                                            -> _PyObject_MakeTpCall
+                                                -> unknown!0x0000000000599c53
+                                                    -> unknown!0x000000000059e16f
+                                                        -> _PyObject_Call_Prepend
+                                                            -> _PyEval_EvalFrameDefault
+                                                                -> PyObject_GetAttr
+                                                                    -> _PyObject_GenericGetAttrWithDict
+                                                                        -> native_llm_common.so!0x000076e7620b34d2
+                                                                            -> native_llm_common.so!0x000076e75d6c861b
+                                                                                -> native_llm_common.so!0x000076e75d7b1ac3
+                                                                                    -> native_llm_common.so!0x000076e75d7baa8e
+                                                                                        -> unknown!0x000000000054ceb4
+                                                                                            -> _PyEval_EvalFrameDefault
+                                                                                                -> PyObject_Vectorcall
+                                                                                                    -> unknown!0x0000000000551cf6
+                                                                                                        -> _pydantic_core.so!0x000076e9eb04cb60
+                                                                                                            -> _pydantic_core.so!0x000076e9eb04cc5e
+                                                                                                                -> _pydantic_core.so!0x000076e9eb0492a4
+                                                                                                                    -> _pydantic_core.so!0x000076e9eb07b20b
+                                                                                                                        -> _pydantic_core.so!0x000076e9eb07afd8
+                                                                                                                            -> _pydantic_core.so!0x000076e9eafa1f6d
+                                                                                                                                -> _pydantic_core.so!0x000076e9eafa55d7
+                                                                                                                                    -> _pydantic_core.so!0x000076e9eafa91d3
+                                                                                                                                        -> _pydantic_core.so!0x000076e9eb0c6e3b
+                                                                                                                                            -> _pydantic_core.so!0x000076e9eb0dce7e
+                                                                                                                                                -> _pydantic_core.so!0x000076e9eafb25b1
+                                                                                                                                                    -> _pydantic_core.so!0x000076e9eafb523d
+                                                                                                                                                        -> _pydantic_core.so!0x000076e9eafb5564
+                                                                                                                                                            -> __memcpy_avx512_unaligned_erms
+

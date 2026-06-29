@@ -191,8 +191,44 @@ NPU 바이너리로 만들 수 있지만, 그걸 정식 serve로 자동 연결�
 카드별로 일꾼(워커)을 띄우고, 요청 큐 + 실시간 스트리밍 + 샘플링(temperature/top_p)을
 지원합니다. 다만 **동시 처리량은 크게 늘지 않습니다.** 병목이 NPU가 아니라 host(가중치
 역양자화 + glue 작업으로 요청당 약 40코어 점유)라서, 워커별 스레드 수를 제한해도 host가
-포화됩니다. 진짜 선형 확장은 파이프라인 병렬(층을 카드별로 나누기)이 필요하고 아직
-미구현입니다.
+포화됩니다. 진짜 선형 확장은 파이프라인 병렬(층을 카드별로 나누기)이 필요한데, 이건
+**아래 7-2.5(pp4)로 구현했습니다.**
+
+### 7-2.5. 파이프라인 병렬 pp4 (`qcn/pipeline.py`) — 48층을 4카드에 분할 (2026-06-25)
+
+7-2의 "아직 미구현"이던 파이프라인 병렬을 구현했습니다. 48개 디코더 층을 **12층씩 4스테이지**로
+나눠 **물리 4카드에 하나씩**(stage0→npu0, stage1→npu1, stage2→npu2, stage3→npu3) 올리고,
+스테이지 사이로 host 활성값 `h`([1,T,H])만 넘깁니다. 각 스테이지는 **자기 층 구간의 순환상태
+(DeltaNet S·conv)와 KV만** 들고 있어, "읽고 고쳐 쓰는" 디코드 재귀가 스테이지 안에 갇힙니다.
+stage0이 embed, stage3이 final-norm+lm_head를 맡습니다.
+
+- 핵심: `QCNModel._run_layer_range(h, lo, hi, state_cache, ...)`(model.py)로 층 구간 실행을
+  뽑아내, 단일카드 경로(`prefill`/`decode_step`)와 pp4 스테이지가 **같은 코드**를 씁니다 →
+  출력이 단일카드와 일치(실측: `def add(a, b):` → 토큰 `[198,262,470,264]` = `"\n    return a"`,
+  단일카드 `[198,262]`와 앞부분 정확히 일치, CPU 폴백 0).
+- `PipelineModel`은 `prefill`/`decode_step`을 **QCNModel과 같은 시그니처**로 노출해, 7-3 어댑터·
+  7-5 CLI shim·serve가 그대로 구동합니다(`HostLoopEngine`은 이 둘만 호출).
+- **카드 배치**: 글로벌 PE 인덱스 `0,8,16,24`(카드당 1 PE). 워커는 `qcn.model` import *전에*
+  `RNGD_DEV`를 박아야 해 **스테이지마다 독립 프로세스**(mp spawn). 부모가 죽으면 워커도 같이
+  죽도록 `PR_SET_PDEATHSIG`를 검(안 그러면 카드를 물고 고아가 돼 다음 실행이 allocator/EBUSY로 실패).
+- ⚠️ **tp8은 이 host-loop엔 안 맞습니다.** `set_fusion(8)`로 한 카드 8 PE를 묶으면 손수 짠
+  TacticKernel(1 PE 기준 SRAM 타일링)이 lowering 실패(`dn_l2norm` → `UnsupportedOpError:
+  unsupported EDF node Cpu(...)`). 게다가 이 모델은 **host-bound**(decode ~40s/토큰이 가중치
+  역양자화 때문)라 tp8을 살려도 속도 이득이 거의 없습니다. 그래서 **카드당 1 PE × pp4**(=4 PE)로
+  4카드를 씁니다. 단일 요청 지연은 단일카드와 비슷(스테이지가 순차)하고, pp의 값어치는 ①4카드
+  활용 ②동시요청 파이프라이닝 ③카드당 12층만 들어 메모리 여유입니다. (※표준 `furiosa-llm build
+  -tp 8`은 qwen3_next 자체가 2-1·2-2절 벤더 벽이라 별개로 불가.)
+
+실행:
+```bash
+# 단독 생성
+QCN_DPE=1 QCN_CARDS=4 PYTHONPATH=$PROJ $PY $PROJ/qcn/pipeline.py --prompt "def add(a, b):" --max-new 4
+# 정식 furiosa-llm serve CLI 를 pp4 로 (7-5 shim + QCN_PP=4)
+QCN_PP=4 QCN_DPE=1 PYTHONPATH=$PROJ $PY -c \
+  "import qcn.furiosa_serve_cli_shim; from furiosa_llm.cli.main import main; \
+   import sys; sys.argv=['furiosa-llm','serve','$ART']; main()"
+# -> Uvicorn 가동, GET /v1/models 200, /v1/completions 가 pp4(4카드)로 생성
+```
 
 ### 7-3. furiosa-llm의 serve 서버 코드를 우리 엔진으로 구동 (`qcn/furiosa_serve_adapter.py`)
 
@@ -398,7 +434,8 @@ qwen3-next-proj/
     moe.py                    MoE (라우팅 host, 전문가 계산 NPU)
     generate.py               생성 CLI
     serve.py                  단일카드 OpenAI 서버
-    serve_mc.py               멀티카드 스트리밍 서버
+    serve_mc.py               멀티카드 스트리밍 서버(복제)
+    pipeline.py               pp4 파이프라인 병렬(48층→4카드 분할, PipelineModel)
     furiosa_serve_adapter.py  furiosa-llm AsyncLLMEngine에 끼우는 HostLoopEngine
     furiosa_serve_cli_shim.py 정식 furiosa-llm serve CLI가 우리 엔진을 쓰게 하는 Python shim(.so 패치 없음)
     build_artifact.py         self-contained 아티팩트 빌드 (--emit-edf)

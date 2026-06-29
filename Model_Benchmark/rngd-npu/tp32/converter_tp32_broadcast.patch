@@ -1,0 +1,46 @@
+--- /home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/pipeline/builder/converter.py.tp32fix.bak	2026-06-20 23:10:20.316395111 +0900
++++ /home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/parallelize/pipeline/builder/converter.py	2026-06-20 23:11:06.701244493 +0900
+@@ -1464,7 +1464,42 @@
+ 
+     _add_valid_length_info_if_possible(gm, compiler_config_context, graph_metadata_builder)
+ 
+-    return graph_metadata_builder.build()
++    yaml_str = graph_metadata_builder.build()
++
++    # tp32 build fix (OPT-IN via env FURIOSA_TP32_BCAST). The closed compiler leaves every
++    # weight's inter-chip axis FREE for tp>8 (4-chip) builds, which the DRAM-guide gate
++    # rejects ("must have Broadcast or Fixed DramShapeGuide"). Forcing the named inter-chip
++    # placement to Broadcast (replicate across chips) via the live tp_config.inputs map lets
++    # the build complete. No-op unless the env var is set, so normal builds are untouched.
++    import os as _os
++    _bcast = _os.environ.get("FURIOSA_TP32_BCAST", "")
++    if _bcast and getattr(compiler_config_context, "num_chip", 1) > 1:
++        import yaml as _yaml
++        _meta = _yaml.safe_load(yaml_str)
++        if _bcast.upper() == "ALL":
++            _names = [
++                "embedding_table", "rope_table", "lm_head_weight", "norm_weight",
++                "attn_Q_proj_weight", "attn_Q_proj_weight_scale", "attn_Q_proj_bias",
++                "attn_K_proj_weight", "attn_K_proj_weight_scale", "attn_K_proj_bias",
++                "attn_V_proj_weight", "attn_V_proj_weight_scale", "attn_V_proj_bias",
++                "attn_O_proj_weight", "attn_O_proj_weight_scale",
++                "moe_router_weight",
++                "mlp_gate_proj_weight", "mlp_gate_proj_weight_scale", "mlp_gate_proj_bias",
++                "mlp_up_proj_weight", "mlp_up_proj_weight_scale", "mlp_up_proj_bias",
++                "mlp_down_proj_weight", "mlp_down_proj_weight_scale",
++                "fc_in_weight", "fc_in_bias", "fc_out_weight", "fc_out_bias",
++            ]
++        else:
++            _names = [n.strip() for n in _bcast.split(",") if n.strip()]
++        _inp = _meta.setdefault("tp_config", {}).setdefault("inputs", {})
++        for _n in _names:
++            _inp[_n] = "Broadcast"
++        import sys as _sys
++        print(f"[tp32-fix] forced Broadcast inter-chip guide for {len(_names)} tensors "
++              f"(num_chip={compiler_config_context.num_chip})", file=_sys.stderr, flush=True)
++        yaml_str = _yaml.dump(_meta, sort_keys=False)
++
++    return yaml_str
+ 
+ 
+ def is_valid_length_node(node: Node) -> bool:

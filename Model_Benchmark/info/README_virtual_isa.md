@@ -210,6 +210,44 @@ FURIOSA_OPT_NPUS=0,1 cargo furiosa-opt --backend npu test --test mnist_tests
 
 ---
 
+## 9.5. ⭐ qwen3-next를 vISA로 구현 가능한가? (2026-06-25, **v0.3.0 재검증**)
+
+질문: "furiosa-opt vISA로도 qwen3-next 구현 못하나?" → **컴퓨트는 됩니다(이론상). 하지만 vISA가 새로 풀어주는 건 없습니다.** 막힌 부분(정식 serve의 cross-step 상태)은 vISA로도 안 풀리고, v0.3.0도 관련 기능을 추가하지 않았습니다.
+
+**v0.3.0(2026-06-23) 변화(CHANGES.md 실측)**: `simulation`/`typecheck` 백엔드 정식 추가, vISA API 일부 개정, `Tensor::reshape`→`RawTensor` 프리미티브화, cargo-furiosa-opt 다운로드 경로 수정. **recurrent/loop/serve/linear-attention 추가 0.** 컴파일러 여전히 닫힘 — 새 `furiosa-opt-lower` 크레이트도 "thin safe wrappers over the **prebuilt** `furiosa-opt-lower-impl` static library"(릴리스에서 .a 받아 SHA256 검증 후 정적 링크, `furiosa-opt-lower/src/lib.rs:1-6`·`build.rs:25-40`). 모델 예제도 여전히 Qwen2.5-0.5B 표준 어텐션뿐(Mamba/DeltaNet/state-space 0).
+
+**1) DeltaNet 순환 루프 = vISA도 host-driven(실용상 on-device 루프 없음).** vISA 실행 모델은 "커널 + **host 프로그램(`src/*.rs`)이 `launch(kernel,...)`로 커널을 디스패치**"(`docs/src/introduction.md`) — 우리 `qcn/` host-loop과 **정확히 같은 아키텍처**, Rust로 더 저수준일 뿐. 공개 저장소(v0.3.0) 기준 **on-device 루프/제어흐름 프리미티브의 예제·문서가 없음**(loop/while/for/scan/iterate/carried-state grep 0건): `StreamSequencer`는 메모리 스트리밍(`sequencer.rs` "the outer loop levels"=DMA 타일링), `branch.rs`는 Vector Engine Tag-Unit **elementwise select**(반복 아님), 정적 shape 강제("TCP's static shape constraints"). 즉 순환은 host가 매 스텝 커널 launch → host-bound 병목 동일, autoregressive(가변길이)는 정적 shape라 못 펴고 펴려면 worst-case 패딩. **⚠️ 정정(2026-06-26 벤더 답변): "프리미티브가 아예 없다"는 단정은 부정확 — HW/vISA 레벨엔 if·loop 프리미티브가 실제로 존재(시퀀셜 루프 제어 가능)하나 공개 저장소에 노출·예제가 없었을 뿐. 단 우리가 실제로 필요한 "스텝 사이 순환상태를 칩에 고정 + host 왕복 제거"=Persistent Kernel은 아직 미구현(2026 목표). 따라서 host-bound 병목이 그대로라는 실전 결론은 유지. §9.6 참조.**
+
+**2) 정식 serve = vISA로도 불가(§7·§8 그대로).** vISA엔 디코드 루프·KV풀·cross-step 상태풀·샘플러·OpenAI 서버가 0개(autoregressive/decode/generate/kv-cache 개념 docs 0건). 게다가 vISA의 `.bin`(pert-ipc)은 furiosa-llm `.edf`(CBOR)와 포맷이 달라 serve 주입 불가(§7). 결국 **host 하네스 자작 필수** — 그건 우리가 이미 Python으로 했고(`qcn/`) 정식 serve CLI에 shim까지 연결함([[qwen3-next-blocker]] 20·21차).
+
+**3) 결론.** vISA는 qwen3-next의 **컴퓨트를 더 저수준으로 다시 짤 수 있는 길**일 뿐, **우리가 이미 가진 것(furiosa.torch TacticKernel로 compute-complete + host-loop serve + pp4) 이상을 주지 않음.** 정작 벤더벽(정식 런타임 연속배칭·스케줄러·cross-step 상태풀)은 vISA가 **들어가는 길이 아니라 완전 별개 경로**라 그대로 막힘(2026.3+ 벤더). 유일한 이론적 가치=저수준 제어로 순환상태를 온칩 고정주소에 두고 sub-op을 촘촘히 엮어 **decode host 왕복을 줄일 여지**(현 host-bound 40s/tok 완화). 단 ①루프는 여전히 host-driven ②저장소에 순환 예제 0(미검증) ③거대 재작성 대비 불확실 → **실용성 낮음.** **한 줄: "vISA로 qwen3-next 컴퓨트는 가능하나, 막힌 serve는 못 풀고 우리가 이미 한 host-loop의 더 힘든 재구현일 뿐."**
+
+---
+
+## 9.6. ⭐ 퓨리오사 고객센터 공식 답변 (2026-06-26)
+
+§9.5의 판단을 벤더에 직접 검증하려고 고객센터에 5개 질문을 넣었고, 퓨리오사(정영범 님)로부터 공식 답변을 받았습니다. **§9.5 결론은 대체로 확인됐고, 한 군데(루프 프리미티브)는 정정이 필요합니다.** 아래는 질문 경위와 답변, 그리고 그로부터의 결론입니다.
+
+> **출처:** 퓨리오사AI 고객센터 이메일 답변(정영범, 2026-06-26). Schedule Viewer 사양은 <https://developer.furiosa.ai/furiosa-opt/book/scheduling.html> 및 부록 <https://developer.furiosa.ai/furiosa-opt/book/appendix/schedule-viewer.html>(2026-06-26 WebFetch 실측).
+
+| # | 질문(경위) | 벤더 답변 | 우리 결론 |
+|---|---|---|---|
+| **1** | recurrent/SSM 모델 **정식 serve** 로드맵(cross-step 상태풀 포함)이 있나 — 우리가 막힌 게 컴파일이 아니라 serve였음 | **"지원 계획 아직 없음"** | ✅ **확인.** 정식 serve로 qwen3-next류를 올리는 공식 길은 가까운 미래에 없음 → 우리 host-loop + 정식 serve CLI shim(+pp4)이 **현재 유일 동작 경로**, 한동안 대체 안 됨. 우리가 뭘 놓쳐서가 아니라 정말 기능 부재였음. |
+| **2** | vISA에 **on-device carried-state loop** 프리미티브가 있나 — host 왕복(40s/tok) 제거 가능성 타진 | **"vISA 레벨에 if·loop 프리미티브는 HW로 지원, 시퀀셜 루프 제어 가능. 단 복잡 분기는 컴파일러 최적화 수준에 따라 컴파일 실패 가능. 온칩 상태 유지+호스트 왕복 제거용 Persistent Kernel은 Host-Device 추가 통신 메커니즘 보완하여 2026년 내 목표로 개발 중"** | ⚠️ **정정+확인.** (정정) "프리미티브 0"은 부정확 — HW엔 if/loop 있음(공개 저장소에 예제 미노출이었을 뿐). (확인) 우리에게 필요한 **Persistent Kernel(온칩 순환상태+왕복제거)은 아직 없음=2026 목표**. ∴ "지금은 host-bound 그대로"는 맞음. 그들이 만들겠다는 Persistent Kernel = **우리가 host에서 손으로 한 것(매 스텝 launch + host 상태보유 + activation marshalling)의 칩 내재화** → 우리 host-loop=벤더 interim 아키텍처. "복잡 분기 컴파일 실패"는 우리 `dn_l2norm` 실패와 동결. |
+| **3** | vISA(`.bin`) ↔ furiosa-llm serve(`.edf`) 공식 **연동 경로**가 있나 — masquerade 우회가 정당한지 | **"`.bin`과 `.edf`는 실행 경로·포맷 분리되어 직접 주입 불가. 추후 두 레이어 통합 공식 연동 경로 제공 예정"** | ✅ **확인(우리 판정 100% 정확).** §7·§9.5의 "포맷 달라(pert-ipc vs CBOR) 주입 불가"를 벤더가 공식 확인. ∴ `masquerade_artifact.py`/CLI shim은 **공식 다리 부재 시 정당한 유일 우회**. 공식 연동은 날짜 없는 "추후" → 당분간 우회 유지. |
+| **4** | 닫힌 EDF CodeGen **소스 공개** + 내부 **진단 도구**가 있나 — 우리가 gdb/radare2/callgraph로 역공학 중 | **"furiosa-opt-lower-impl 등 CodeGen 핵심은 비공개. 대신 Schedule Viewer 기능 최근 업데이트(스케줄링·텐서배치 가시화), 디버깅 참고. 추가 진단 기능 피드백 수렴"** | ✅ **확인 + 🆕 actionable.** (확인) 컴파일러 비공개 확정 → 우리 역공학이 유일 가시화였음. (신규) **Schedule Viewer** = 우리가 콜그래프·radare2로 추론하던 내부 스케줄/택틱/텐서배치를 **공식 GUI로** 보여줌(아래). 진단 요청 채널도 열림. |
+| **5** | **동적 shape** 지원 계획 — 우리가 버킷+패딩 빌드를 강제당한 이유 확인 | **"단기간 내 완전 임의 동적 shape 계획 없음. 단 가변 시퀀스 대응을 위한 1년 단위 중장기 로드맵에 동적 shape 플랜 포함"** | ✅ **확인.** 동적 shape 부재=우리 버킷(고정 max-model-len+worst-case 패딩) 강제의 공식 원인. "오긴 오지만"(1년 중장기) 가깝진 않음 → **버킷 전략 당분간 유지.** |
+
+**🆕 Schedule Viewer(질문 4 후속, 실측).** 컴파일러 내부 스케줄을 공식 GUI로 보는 신규 도구.
+- 보여주는 것: 컴파일된 TCP 스케줄의 **인터랙티브 실행 타임라인** — 병렬 연산(동시 실행 태스크)·리소스/컨텍스트 점유·파이프라인 의존성(블로킹)·텐서/연산자 단위 정보(vISA 텐서 이름·shape·수명·연결).
+- 생성: `cargo furiosa-opt compiler build --device-function <fn> --dump-schedule <path.json>` → 커널 아티팩트 + 스케줄 JSON 생성.
+- 실행: `cargo install furiosa-schedule-viewer` → `furiosa-schedule-viewer [--host 127.0.0.1] [--port 9254]`(기본 `127.0.0.1:9254`, 브라우저 자동 오픈). 노드 클릭=텐서/연산자 속성, 호버=의존성 하이라이트, 드래그=타임라인 줌, brush=메모리 영역 포커스.
+- **우리에게의 의미:** [[callgraph-analysis]]에서 build의 택틱탐색·EDF 스케줄을 콜그래프로 힘들게 추론했는데, 이걸 **공식 도구로 직접 가시화**. 단 이건 **vISA(`.bin`) 경로의 스케줄 뷰어**이지 furiosa-llm build(`.edf`) 스케줄을 직접 보여주는지는 별개 확인 필요(같은 컴파일러 백엔드라 유사할 가능성은 있음).
+
+**종합.** 우리가 막힌 두 핵심 축 — **온칩 순환상태(Persistent Kernel, Q2)** 와 **동적 shape(Q5)** — 둘 다 퓨리오사 로드맵상 **"올해~1년" 안에 들어와 있음.** ∴ 우리 host-loop·버킷 우회는 버릴 게 아니라 **공식 기능이 올 때까지의 "다리"**로 가치 명확, 기능 도착 시 우리 구조 위로 교체하면 됨. §9.5 결론("vISA가 새로 풀어주는 건 없다")은 유지하되, **단 한 군데 — "vISA에 루프 프리미티브 없음"은 "공개 저장소엔 예제 없지만 HW엔 있음 + 정작 필요한 Persistent Kernel은 2026 목표"로 정정.**
+
+---
+
 ## 10. 출처
 - 저장소: <https://github.com/furiosa-ai/furiosa-opt> (clone 후 직접 분석), 릴리스 <https://github.com/furiosa-ai/furiosa-opt/releases/tag/v0.2.0>
 - 공식 책: <https://developer.furiosa.ai/furiosa-opt/book/> · rustdoc: <https://developer.furiosa.ai/furiosa-opt/rustdoc/furiosa_opt_std/>

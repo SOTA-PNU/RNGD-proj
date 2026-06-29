@@ -1,0 +1,1488 @@
+[New LWP 3038078]
+[New LWP 3038075]
+[New LWP 3037179]
+[New LWP 3037161]
+[New LWP 3037160]
+[New LWP 3037159]
+[New LWP 3037158]
+[New LWP 3037156]
+[New LWP 3037155]
+[New LWP 3037154]
+[New LWP 3037153]
+[New LWP 3037152]
+[New LWP 3037151]
+[New LWP 3037150]
+[New LWP 3037149]
+[New LWP 3037148]
+[New LWP 3037147]
+[New LWP 3037146]
+[New LWP 3037145]
+[New LWP 3037144]
+[New LWP 3037143]
+[New LWP 3037142]
+[New LWP 3037141]
+[New LWP 3037140]
+[New LWP 3037139]
+[New LWP 3037138]
+[New LWP 3037137]
+[New LWP 3037136]
+[New LWP 3037135]
+[New LWP 3037134]
+[New LWP 3029946]
+[New LWP 3029941]
+[New LWP 3029939]
+[New LWP 3029937]
+[New LWP 3028859]
+[New LWP 3028858]
+[New LWP 3028857]
+[New LWP 3028856]
+[New LWP 3028855]
+[New LWP 3028854]
+[New LWP 3028853]
+[New LWP 3028852]
+[New LWP 3028851]
+[New LWP 3028850]
+[New LWP 3028849]
+[New LWP 3028848]
+[New LWP 3028847]
+[New LWP 3028846]
+[New LWP 3028845]
+[New LWP 3028844]
+[New LWP 3028843]
+[New LWP 3028842]
+[New LWP 3028841]
+[New LWP 3028840]
+[New LWP 3028839]
+[New LWP 3028838]
+[New LWP 3028666]
+[New LWP 3028665]
+[New LWP 3028664]
+[New LWP 3028663]
+[New LWP 3028662]
+[New LWP 3028661]
+[New LWP 3028660]
+[New LWP 3028659]
+[New LWP 3028658]
+[New LWP 3028657]
+[New LWP 3028656]
+[New LWP 3028655]
+[New LWP 3028654]
+[New LWP 3028653]
+[New LWP 3028652]
+[New LWP 3028651]
+[New LWP 3028650]
+[New LWP 3028649]
+[New LWP 3028648]
+[New LWP 3028647]
+[New LWP 3028646]
+[New LWP 3028645]
+[New LWP 3028644]
+[New LWP 3028643]
+[New LWP 3028642]
+[New LWP 3028641]
+[New LWP 3028640]
+[New LWP 3028639]
+[New LWP 3028638]
+[New LWP 3028637]
+[New LWP 3028636]
+[New LWP 3028635]
+[New LWP 3028634]
+[New LWP 3028633]
+[New LWP 3028632]
+[New LWP 3028631]
+[New LWP 3028630]
+[New LWP 3028629]
+[New LWP 3028628]
+[New LWP 3028627]
+[New LWP 3028626]
+[New LWP 3028625]
+[New LWP 3028624]
+[New LWP 3028623]
+[New LWP 3028622]
+[New LWP 3028621]
+[New LWP 3028620]
+[New LWP 3028619]
+[New LWP 3028618]
+[New LWP 3028617]
+[New LWP 3028616]
+[New LWP 3028615]
+[New LWP 3028614]
+[New LWP 3028613]
+[New LWP 3028612]
+[New LWP 3028611]
+[New LWP 3028610]
+[New LWP 3028609]
+[New LWP 3028608]
+[New LWP 3028607]
+[New LWP 3028606]
+[New LWP 3028605]
+[New LWP 3028604]
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7fffed0ddba0, op=393, expected=0, futex_word=0x7aecec01d3b0) at ./nptl/futex-internal.c:57
+
+warning: 57	./nptl/futex-internal.c: No such file or directory
+  Id   Target Id                                             Frame 
+* 1    Thread 0x7af2233c5080 (LWP 3028169) "furiosa-llm"     0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7fffed0ddba0, op=393, expected=0, futex_word=0x7aecec01d3b0) at ./nptl/futex-internal.c:57
+  2    Thread 0x7aee98b7d6c0 (LWP 3038078) "worker.io"       0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7aed1c14435c) at ./nptl/futex-internal.c:57
+  3    Thread 0x7aeea0b7d6c0 (LWP 3038075) "worker.io"       0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7aed1c144358) at ./nptl/futex-internal.c:57
+  4    Thread 0x7aeea8b7d6c0 (LWP 3037179) "grpc_global_tim" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  5    Thread 0x7aeeb0b7d6c0 (LWP 3037161) "furiosa-llm"     0x00007af223098d71 in __futex_abstimed_wait_common64 (private=<optimized out>, cancel=true, abstime=0x7aeeb0b7cb10, op=137, expected=0, futex_word=0x7ae468000ba0) at ./nptl/futex-internal.c:57
+  6    Thread 0x7aeed0b7d6c0 (LWP 3037160) "jemalloc_bg_thd" 0x00007af223098d71 in __futex_abstimed_wait_common64 (private=31460, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7aeeb8816630) at ./nptl/futex-internal.c:57
+  7    Thread 0x7aeec0b7d6c0 (LWP 3037159) "furiosa-llm"     syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  8    Thread 0x7aeec8b7d6c0 (LWP 3037158) "furiosa-llm"     syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  9    Thread 0x7aeed8b7d6c0 (LWP 3037156) "furiosa-llm"     0x00007af223098d71 in __futex_abstimed_wait_common64 (private=<optimized out>, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7ae474000ba0) at ./nptl/futex-internal.c:57
+  10   Thread 0x7aeee0b7d6c0 (LWP 3037155) "furiosa-llm"     0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7aeee0b7cd00, op=393, expected=0, futex_word=0x2c028940) at ./nptl/futex-internal.c:57
+  11   Thread 0x7aeee8b7d6c0 (LWP 3037154) "client.poll0"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  12   Thread 0x7aeef0b7d6c0 (LWP 3037153) "task_event_buff" 0x00007af22312a072 in epoll_wait (epfd=23, events=0x7aeef0b7c180, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  13   Thread 0x7aeef8b7d6c0 (LWP 3037152) "client.poll0"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  14   Thread 0x7aef00b7d6c0 (LWP 3037151) "server.poll0"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  15   Thread 0x7aef08b7d6c0 (LWP 3037150) "grpcpp_sync_ser" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  16   Thread 0x7aef10b7d6c0 (LWP 3037149) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  17   Thread 0x7aef18b7d6c0 (LWP 3037148) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  18   Thread 0x7aef20b7d6c0 (LWP 3037147) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  19   Thread 0x7aef28b7d6c0 (LWP 3037146) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  20   Thread 0x7aef30b7d6c0 (LWP 3037145) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  21   Thread 0x7aef38b7d6c0 (LWP 3037144) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  22   Thread 0x7aef40b7d6c0 (LWP 3037143) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  23   Thread 0x7aef48b7d6c0 (LWP 3037142) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  24   Thread 0x7aef5094a6c0 (LWP 3037141) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  25   Thread 0x7aefacff96c0 (LWP 3037140) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  26   Thread 0x7aefad7fa6c0 (LWP 3037139) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  27   Thread 0x7aefadffb6c0 (LWP 3037138) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  28   Thread 0x7aefae7fc6c0 (LWP 3037137) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  29   Thread 0x7aefaeffd6c0 (LWP 3037136) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  30   Thread 0x7aefaf7fe6c0 (LWP 3037135) "nexting_thread"  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  31   Thread 0x7aefaffff6c0 (LWP 3037134) "nexting_thread"  0x00007af22312a072 in epoll_wait (epfd=3, events=0x7aef9da1efa4 <g_epoll_set+4>, maxevents=100, timeout=626) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  32   Thread 0x7aefc8dfc6c0 (LWP 3029946) "worker.io"       0x00007af22312a072 in epoll_wait (epfd=18, events=0x7aefc8dfb160, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  33   Thread 0x7aefc9dfe6c0 (LWP 3029941) "client.poll0"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  34   Thread 0x7aefc95fd6c0 (LWP 3029939) "client.poll0"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  35   Thread 0x7aefca5ff6c0 (LWP 3029937) "global.accessor" 0x00007af22312a072 in epoll_wait (epfd=12, events=0x7aefca5fe620, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  36   Thread 0x7aefcbdff6c0 (LWP 3028859) "timer_manager"   syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  37   Thread 0x7af1817fa6c0 (LWP 3028858) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  38   Thread 0x7af181ffb6c0 (LWP 3028857) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  39   Thread 0x7af1827fc6c0 (LWP 3028856) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  40   Thread 0x7af182ffd6c0 (LWP 3028855) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  41   Thread 0x7af1837fe6c0 (LWP 3028854) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  42   Thread 0x7af183fff6c0 (LWP 3028853) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  43   Thread 0x7af18cff96c0 (LWP 3028852) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  44   Thread 0x7af18d7fa6c0 (LWP 3028851) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  45   Thread 0x7af18dffb6c0 (LWP 3028850) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  46   Thread 0x7af18e7fc6c0 (LWP 3028849) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  47   Thread 0x7af18effd6c0 (LWP 3028848) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  48   Thread 0x7af18f7fe6c0 (LWP 3028847) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  49   Thread 0x7af18ffff6c0 (LWP 3028846) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  50   Thread 0x7af19cbec6c0 (LWP 3028845) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  51   Thread 0x7af19d3ed6c0 (LWP 3028844) "event_engine"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  52   Thread 0x7af19dbee6c0 (LWP 3028843) "event_engine"    0x00007af22312a072 in epoll_wait (epfd=5, events=0x44b5ffa4, maxevents=100, timeout=86400000) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  53   Thread 0x7af19e3ff6c0 (LWP 3028842) "client.poll0"    syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  54   Thread 0x7af180bc46c0 (LWP 3028841) "grpc_global_tim" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  55   Thread 0x7af1803c36c0 (LWP 3028840) "resolver-execut" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  56   Thread 0x7af17fbc26c0 (LWP 3028839) "default-executo" syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+  57   Thread 0x7af17f3c16c0 (LWP 3028838) "gcs_client_io_s" 0x00007af22312a072 in epoll_wait (epfd=9, events=0x7af17f3c0680, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+  58   Thread 0x7aef53b8d6c0 (LWP 3028666) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  59   Thread 0x7aef5438e6c0 (LWP 3028665) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  60   Thread 0x7aef54b8f6c0 (LWP 3028664) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  61   Thread 0x7aef553906c0 (LWP 3028663) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  62   Thread 0x7aef55b916c0 (LWP 3028662) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  63   Thread 0x7aef563926c0 (LWP 3028661) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  64   Thread 0x7aef56b936c0 (LWP 3028660) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  65   Thread 0x7aef573946c0 (LWP 3028659) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  66   Thread 0x7aef57b956c0 (LWP 3028658) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  67   Thread 0x7aef583966c0 (LWP 3028657) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  68   Thread 0x7aef58b976c0 (LWP 3028656) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  69   Thread 0x7aef593986c0 (LWP 3028655) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  70   Thread 0x7aef59b996c0 (LWP 3028654) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  71   Thread 0x7aef5a39a6c0 (LWP 3028653) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  72   Thread 0x7aef5ab9b6c0 (LWP 3028652) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  73   Thread 0x7aef5b39c6c0 (LWP 3028651) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  74   Thread 0x7aef5bb9d6c0 (LWP 3028650) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  75   Thread 0x7aef5c39e6c0 (LWP 3028649) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  76   Thread 0x7aef5cb9f6c0 (LWP 3028648) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  77   Thread 0x7aef5d3a06c0 (LWP 3028647) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  78   Thread 0x7aef5dba16c0 (LWP 3028646) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  79   Thread 0x7aef5e3a26c0 (LWP 3028645) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  80   Thread 0x7aef5eba36c0 (LWP 3028644) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  81   Thread 0x7aef5f3a46c0 (LWP 3028643) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  82   Thread 0x7aef5fba56c0 (LWP 3028642) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  83   Thread 0x7aef603a66c0 (LWP 3028641) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  84   Thread 0x7aef60ba76c0 (LWP 3028640) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  85   Thread 0x7aef613a86c0 (LWP 3028639) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  86   Thread 0x7aef61ba96c0 (LWP 3028638) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  87   Thread 0x7aef623aa6c0 (LWP 3028637) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  88   Thread 0x7aef62bab6c0 (LWP 3028636) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  89   Thread 0x7aef633ac6c0 (LWP 3028635) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  90   Thread 0x7aef63bad6c0 (LWP 3028634) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  91   Thread 0x7aef643ae6c0 (LWP 3028633) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  92   Thread 0x7aef64baf6c0 (LWP 3028632) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  93   Thread 0x7aef653b06c0 (LWP 3028631) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  94   Thread 0x7aef65bb16c0 (LWP 3028630) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  95   Thread 0x7aef663b26c0 (LWP 3028629) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  96   Thread 0x7aef66bb36c0 (LWP 3028628) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  97   Thread 0x7aef673b46c0 (LWP 3028627) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  98   Thread 0x7aef67bb56c0 (LWP 3028626) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  99   Thread 0x7aef683b66c0 (LWP 3028625) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  100  Thread 0x7aef68bb76c0 (LWP 3028624) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  101  Thread 0x7aef693b86c0 (LWP 3028623) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  102  Thread 0x7aef69bb96c0 (LWP 3028622) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  103  Thread 0x7aef6a3ba6c0 (LWP 3028621) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  104  Thread 0x7aef6abbb6c0 (LWP 3028620) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  105  Thread 0x7aef6b3bc6c0 (LWP 3028619) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  106  Thread 0x7aef6bbbd6c0 (LWP 3028618) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  107  Thread 0x7aef6c3be6c0 (LWP 3028617) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  108  Thread 0x7aef6cbbf6c0 (LWP 3028616) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  109  Thread 0x7aef6d3c06c0 (LWP 3028615) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  110  Thread 0x7aef6dbc16c0 (LWP 3028614) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  111  Thread 0x7aef6e3c26c0 (LWP 3028613) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  112  Thread 0x7aef6ebc36c0 (LWP 3028612) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  113  Thread 0x7aef6f3c46c0 (LWP 3028611) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  114  Thread 0x7aef6fbc56c0 (LWP 3028610) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  115  Thread 0x7aef703c66c0 (LWP 3028609) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  116  Thread 0x7aef70bc76c0 (LWP 3028608) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  117  Thread 0x7aef713c86c0 (LWP 3028607) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  118  Thread 0x7aef71bc96c0 (LWP 3028606) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  119  Thread 0x7aef723ca6c0 (LWP 3028605) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+  120  Thread 0x7aef72bcb6c0 (LWP 3028604) "furiosa-llm"     0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+
+Thread 120 (Thread 0x7aef72bcb6c0 (LWP 3028604) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 119 (Thread 0x7aef723ca6c0 (LWP 3028605) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 118 (Thread 0x7aef71bc96c0 (LWP 3028606) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 117 (Thread 0x7aef713c86c0 (LWP 3028607) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 116 (Thread 0x7aef70bc76c0 (LWP 3028608) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 115 (Thread 0x7aef703c66c0 (LWP 3028609) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 114 (Thread 0x7aef6fbc56c0 (LWP 3028610) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 113 (Thread 0x7aef6f3c46c0 (LWP 3028611) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 112 (Thread 0x7aef6ebc36c0 (LWP 3028612) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 111 (Thread 0x7aef6e3c26c0 (LWP 3028613) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 110 (Thread 0x7aef6dbc16c0 (LWP 3028614) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 109 (Thread 0x7aef6d3c06c0 (LWP 3028615) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 108 (Thread 0x7aef6cbbf6c0 (LWP 3028616) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 107 (Thread 0x7aef6c3be6c0 (LWP 3028617) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 106 (Thread 0x7aef6bbbd6c0 (LWP 3028618) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 105 (Thread 0x7aef6b3bc6c0 (LWP 3028619) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 104 (Thread 0x7aef6abbb6c0 (LWP 3028620) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 103 (Thread 0x7aef6a3ba6c0 (LWP 3028621) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 102 (Thread 0x7aef69bb96c0 (LWP 3028622) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 101 (Thread 0x7aef693b86c0 (LWP 3028623) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 100 (Thread 0x7aef68bb76c0 (LWP 3028624) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 99 (Thread 0x7aef683b66c0 (LWP 3028625) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 98 (Thread 0x7aef67bb56c0 (LWP 3028626) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 97 (Thread 0x7aef673b46c0 (LWP 3028627) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 96 (Thread 0x7aef66bb36c0 (LWP 3028628) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 95 (Thread 0x7aef663b26c0 (LWP 3028629) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 94 (Thread 0x7aef65bb16c0 (LWP 3028630) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 93 (Thread 0x7aef653b06c0 (LWP 3028631) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 92 (Thread 0x7aef64baf6c0 (LWP 3028632) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 91 (Thread 0x7aef643ae6c0 (LWP 3028633) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 90 (Thread 0x7aef63bad6c0 (LWP 3028634) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 89 (Thread 0x7aef633ac6c0 (LWP 3028635) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 88 (Thread 0x7aef62bab6c0 (LWP 3028636) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 87 (Thread 0x7aef623aa6c0 (LWP 3028637) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 86 (Thread 0x7aef61ba96c0 (LWP 3028638) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 85 (Thread 0x7aef613a86c0 (LWP 3028639) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 84 (Thread 0x7aef60ba76c0 (LWP 3028640) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 83 (Thread 0x7aef603a66c0 (LWP 3028641) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 82 (Thread 0x7aef5fba56c0 (LWP 3028642) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 81 (Thread 0x7aef5f3a46c0 (LWP 3028643) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 80 (Thread 0x7aef5eba36c0 (LWP 3028644) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 79 (Thread 0x7aef5e3a26c0 (LWP 3028645) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 78 (Thread 0x7aef5dba16c0 (LWP 3028646) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 77 (Thread 0x7aef5d3a06c0 (LWP 3028647) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 76 (Thread 0x7aef5cb9f6c0 (LWP 3028648) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 75 (Thread 0x7aef5c39e6c0 (LWP 3028649) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 74 (Thread 0x7aef5bb9d6c0 (LWP 3028650) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 73 (Thread 0x7aef5b39c6c0 (LWP 3028651) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 72 (Thread 0x7aef5ab9b6c0 (LWP 3028652) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 71 (Thread 0x7aef5a39a6c0 (LWP 3028653) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 70 (Thread 0x7aef59b996c0 (LWP 3028654) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 69 (Thread 0x7aef593986c0 (LWP 3028655) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 68 (Thread 0x7aef58b976c0 (LWP 3028656) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 67 (Thread 0x7aef583966c0 (LWP 3028657) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 66 (Thread 0x7aef57b956c0 (LWP 3028658) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 65 (Thread 0x7aef573946c0 (LWP 3028659) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 64 (Thread 0x7aef56b936c0 (LWP 3028660) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 63 (Thread 0x7aef563926c0 (LWP 3028661) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 62 (Thread 0x7aef55b916c0 (LWP 3028662) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 61 (Thread 0x7aef553906c0 (LWP 3028663) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 60 (Thread 0x7aef54b8f6c0 (LWP 3028664) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 59 (Thread 0x7aef5438e6c0 (LWP 3028665) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 58 (Thread 0x7aef53b8d6c0 (LWP 3028666) "furiosa-llm"):
+#0  0x00007af17d81de8e in gomp_barrier_wait_end () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#1  0x00007af17d81b498 in gomp_thread_start () from /home/jun/furiosa/lib/python3.12/site-packages/torch/lib/libgomp.so.1
+#2  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#3  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 57 (Thread 0x7af17f3c16c0 (LWP 3028838) "gcs_client_io_s"):
+#0  0x00007af22312a072 in epoll_wait (epfd=9, events=0x7af17f3c0680, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x00007aef9d241119 in boost::asio::detail::epoll_reactor::run(long, boost::asio::detail::op_queue<boost::asio::detail::scheduler_operation>&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d2413cd in boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d243039 in boost::asio::detail::scheduler::run(boost::system::error_code&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9d243742 in boost::asio::io_context::run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#7  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 56 (Thread 0x7af17fbc26c0 (LWP 3028839) "default-executo"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d2228c6 in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d206f86 in grpc_core::Executor::ThreadMain(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#9  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 55 (Thread 0x7af1803c36c0 (LWP 3028840) "resolver-execut"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d2228c6 in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d206f86 in grpc_core::Executor::ThreadMain(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#9  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 54 (Thread 0x7af180bc46c0 (LWP 3028841) "grpc_global_tim"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d2228c6 in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1b4e15 in timer_thread(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#9  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 53 (Thread 0x7af19e3ff6c0 (LWP 3028842) "client.poll0"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9c6df8df in ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 52 (Thread 0x7af19dbee6c0 (LWP 3028843) "event_engine"):
+#0  0x00007af22312a072 in epoll_wait (epfd=5, events=0x44b5ffa4, maxevents=100, timeout=86400000) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x00007aef9d1e1667 in grpc_event_engine::experimental::Epoll1Poller::DoEpollWait(std::chrono::duration<long, std::ratio<1l, 1000000000l> >) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d1e18c5 in grpc_event_engine::experimental::Epoll1Poller::Work(std::chrono::duration<long, std::ratio<1l, 1000000000l> >, absl::lts_20230802::FunctionRef<void ()>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d1bc85f in grpc_event_engine::experimental::PosixEventEngine::PollerWorkInternal(std::shared_ptr<grpc_event_engine::experimental::PosixEnginePollerManager>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9d1bd61a in void absl::lts_20230802::internal_any_invocable::LocalInvoker<false, void, grpc_event_engine::experimental::PosixEventEngine::PosixEventEngine()::{lambda()#1}&>(absl::lts_20230802::internal_any_invocable::TypeErasedState*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f1209 in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 51 (Thread 0x7af19d3ed6c0 (LWP 3028844) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 50 (Thread 0x7af19cbec6c0 (LWP 3028845) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 49 (Thread 0x7af18ffff6c0 (LWP 3028846) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 48 (Thread 0x7af18f7fe6c0 (LWP 3028847) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 47 (Thread 0x7af18effd6c0 (LWP 3028848) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 46 (Thread 0x7af18e7fc6c0 (LWP 3028849) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 45 (Thread 0x7af18dffb6c0 (LWP 3028850) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 44 (Thread 0x7af18d7fa6c0 (LWP 3028851) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 43 (Thread 0x7af18cff96c0 (LWP 3028852) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 42 (Thread 0x7af183fff6c0 (LWP 3028853) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 41 (Thread 0x7af1837fe6c0 (LWP 3028854) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 40 (Thread 0x7af182ffd6c0 (LWP 3028855) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 39 (Thread 0x7af1827fc6c0 (LWP 3028856) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 38 (Thread 0x7af181ffb6c0 (LWP 3028857) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 37 (Thread 0x7af1817fa6c0 (LWP 3028858) "event_engine"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d1f117c in grpc_event_engine::experimental::OriginalThreadPool::Queue::Step() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1f1bb8 in grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1f23fd in grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 36 (Thread 0x7aefcbdff6c0 (LWP 3028859) "timer_manager"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d1eda26 in grpc_event_engine::experimental::TimerManager::WaitUntil(grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1ee0ec in grpc_event_engine::experimental::TimerManager::MainLoop() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d221123 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 35 (Thread 0x7aefca5ff6c0 (LWP 3029937) "global.accessor"):
+#0  0x00007af22312a072 in epoll_wait (epfd=12, events=0x7aefca5fe620, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x00007aef9d241119 in boost::asio::detail::epoll_reactor::run(long, boost::asio::detail::op_queue<boost::asio::detail::scheduler_operation>&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d2413cd in boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d243039 in boost::asio::detail::scheduler::run(boost::system::error_code&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9d243742 in boost::asio::io_context::run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9c98b9f2 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<ray::gcs::GlobalStateAccessor::GlobalStateAccessor(ray::gcs::GcsClientOptions const&)::{lambda()#1}> > >::_M_run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 34 (Thread 0x7aefc95fd6c0 (LWP 3029939) "client.poll0"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9c6df8df in ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 33 (Thread 0x7aefc9dfe6c0 (LWP 3029941) "client.poll0"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9c6df8df in ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 32 (Thread 0x7aefc8dfc6c0 (LWP 3029946) "worker.io"):
+#0  0x00007af22312a072 in epoll_wait (epfd=18, events=0x7aefc8dfb160, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x00007aef9d241119 in boost::asio::detail::epoll_reactor::run(long, boost::asio::detail::op_queue<boost::asio::detail::scheduler_operation>&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d2413cd in boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d243039 in boost::asio::detail::scheduler::run(boost::system::error_code&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9d243742 in boost::asio::io_context::run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9c6d9984 in ray::core::CoreWorkerProcessImpl::CreateCoreWorker(ray::core::CoreWorkerOptions, ray::WorkerID const&)::{lambda()#1}::operator()() const () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9c8169d0 in thread_proxy () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 31 (Thread 0x7aefaffff6c0 (LWP 3037134) "nexting_thread"):
+#0  0x00007af22312a072 in epoll_wait (epfd=3, events=0x7aef9da1efa4 <g_epoll_set+4>, maxevents=100, timeout=626) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x00007aef9d190ca2 in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 30 (Thread 0x7aefaf7fe6c0 (LWP 3037135) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 29 (Thread 0x7aefaeffd6c0 (LWP 3037136) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 28 (Thread 0x7aefae7fc6c0 (LWP 3037137) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 27 (Thread 0x7aefadffb6c0 (LWP 3037138) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 26 (Thread 0x7aefad7fa6c0 (LWP 3037139) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 25 (Thread 0x7aefacff96c0 (LWP 3037140) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 24 (Thread 0x7aef5094a6c0 (LWP 3037141) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 23 (Thread 0x7aef48b7d6c0 (LWP 3037142) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 22 (Thread 0x7aef40b7d6c0 (LWP 3037143) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 21 (Thread 0x7aef38b7d6c0 (LWP 3037144) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 20 (Thread 0x7aef30b7d6c0 (LWP 3037145) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 19 (Thread 0x7aef28b7d6c0 (LWP 3037146) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 18 (Thread 0x7aef20b7d6c0 (LWP 3037147) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 17 (Thread 0x7aef18b7d6c0 (LWP 3037148) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 16 (Thread 0x7aef10b7d6c0 (LWP 3037149) "nexting_thread"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77135 in grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 15 (Thread 0x7aef08b7d6c0 (LWP 3037150) "grpcpp_sync_ser"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d14a8cf in (anonymous namespace)::non_polling_poller_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9cd7aac2 in grpc::Server::SyncRequestThreadManager::PollForWork(void**, bool*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd95010 in grpc::ThreadManager::MainWorkLoop() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9cd95244 in grpc::ThreadManager::WorkerThread::Run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 14 (Thread 0x7aef00b7d6c0 (LWP 3037151) "server.poll0"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9c92a733 in ray::rpc::GrpcServer::PollEventsFromCompletionQueue(int) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 13 (Thread 0x7aeef8b7d6c0 (LWP 3037152) "client.poll0"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9c6df8df in ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 12 (Thread 0x7aeef0b7d6c0 (LWP 3037153) "task_event_buff"):
+#0  0x00007af22312a072 in epoll_wait (epfd=23, events=0x7aeef0b7c180, maxevents=128, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x00007aef9d241119 in boost::asio::detail::epoll_reactor::run(long, boost::asio::detail::op_queue<boost::asio::detail::scheduler_operation>&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d2413cd in boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d243039 in boost::asio::detail::scheduler::run(boost::system::error_code&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9d243742 in boost::asio::io_context::run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9c7e4f28 in ray::core::worker::TaskEventBufferImpl::Start(bool)::{lambda()#1}::operator()() const () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 11 (Thread 0x7aeee8b7d6c0 (LWP 3037154) "client.poll0"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9d14bbd0 in cq_next(grpc_completion_queue*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cd77271 in grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9c6df8df in ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#15 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 10 (Thread 0x7aeee0b7d6c0 (LWP 3037155) "furiosa-llm"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7aeee0b7cd00, op=393, expected=0, futex_word=0x2c028940) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x7aeee0b7cd00, clockid=0, expected=0, futex_word=0x2c028940) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x2c028940, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x7aeee0b7cd00, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007af22309bc8e in __pthread_cond_wait_common (abstime=0x7aeee0b7cd00, clockid=0, mutex=0x2c028978, cond=0x2c028918) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_timedwait64 (cond=0x2c028918, mutex=0x2c028978, abstime=0x7aeee0b7cd00) at ./nptl/pthread_cond_wait.c:652
+#5  0x00007aef9cd1b381 in opentelemetry::v1::sdk::metrics::PeriodicExportingMetricReader::DoBackgroundWork() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d3db5a0 in execute_native_thread_routine () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#8  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 9 (Thread 0x7aeed8b7d6c0 (LWP 3037156) "furiosa-llm"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=<optimized out>, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7ae474000ba0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=<optimized out>, abstime=0x0, clockid=0, expected=0, futex_word=0x7ae474000ba0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7ae474000ba0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#3  0x00007af2230a4f1f in do_futex_wait (sem=sem@entry=0x7ae474000ba0, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#4  0x00007af2230a4fb8 in __new_sem_wait_slow64 (sem=0x7ae474000ba0, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#5  0x00000000006105b5 in PyThread_acquire_lock_timed ()
+#6  0x000000000064dbfa in ?? ()
+#7  0x00000000005516b8 in ?? ()
+#8  0x0000000000549cb5 in PyObject_Vectorcall ()
+#9  0x00000000005d7389 in _PyEval_EvalFrameDefault ()
+#10 0x000000000054ce52 in ?? ()
+#11 0x00000000006f858c in ?? ()
+#12 0x00000000006b954c in ?? ()
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 8 (Thread 0x7aeec8b7d6c0 (LWP 3037158) "furiosa-llm"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d2228c6 in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d14b5c0 in cq_pluck(grpc_completion_queue*, void*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9c82a778 in grpc::internal::BlockingUnaryCallImpl<google::protobuf::MessageLite, google::protobuf::MessageLite>::BlockingUnaryCallImpl(grpc::ChannelInterface*, grpc::internal::RpcMethod const&, grpc::ClientContext*, google::protobuf::MessageLite const&, google::protobuf::MessageLite*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cb3315a in ray::rpc::InternalPubSubGcsService::Stub::GcsSubscriberPoll(grpc::ClientContext*, ray::rpc::GcsSubscriberPollRequest const&, ray::rpc::GcsSubscriberPollReply*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9cb0ea4d in ray::pubsub::PythonGcsSubscriber::DoPoll(long, ray::rpc::PubMessage*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9cb0f376 in ray::pubsub::PythonGcsSubscriber::PollError(std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, long, ray::rpc::ErrorTableData*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007aef9c663c8f in __pyx_pw_3ray_7_raylet_18GcsErrorSubscriber_3poll(_object*, _object* const*, long, _object*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#15 0x0000000000549cb5 in PyObject_Vectorcall ()
+#16 0x00000000005d7389 in _PyEval_EvalFrameDefault ()
+#17 0x000000000054ce52 in ?? ()
+#18 0x00000000006f858c in ?? ()
+#19 0x00000000006b954c in ?? ()
+#20 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#21 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 7 (Thread 0x7aeec0b7d6c0 (LWP 3037159) "furiosa-llm"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba97c in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d2228c6 in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d19088a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d189e4a in pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d189b4a in grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9d14b5c0 in cq_pluck(grpc_completion_queue*, void*, gpr_timespec, void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x00007aef9c82a778 in grpc::internal::BlockingUnaryCallImpl<google::protobuf::MessageLite, google::protobuf::MessageLite>::BlockingUnaryCallImpl(grpc::ChannelInterface*, grpc::internal::RpcMethod const&, grpc::ClientContext*, google::protobuf::MessageLite const&, google::protobuf::MessageLite*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#11 0x00007aef9cb3315a in ray::rpc::InternalPubSubGcsService::Stub::GcsSubscriberPoll(grpc::ClientContext*, ray::rpc::GcsSubscriberPollRequest const&, ray::rpc::GcsSubscriberPollReply*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#12 0x00007aef9cb0ea4d in ray::pubsub::PythonGcsSubscriber::DoPoll(long, ray::rpc::PubMessage*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#13 0x00007aef9cb0f516 in ray::pubsub::PythonGcsSubscriber::PollLogs(std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, long, ray::rpc::LogBatch*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#14 0x00007aef9c660bb2 in __pyx_pf_3ray_7_raylet_16GcsLogSubscriber_2poll(__pyx_obj_3ray_7_raylet_GcsLogSubscriber*, _object*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#15 0x00007aef9c6619c0 in __pyx_pw_3ray_7_raylet_16GcsLogSubscriber_3poll(_object*, _object* const*, long, _object*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#16 0x0000000000549cb5 in PyObject_Vectorcall ()
+#17 0x00000000005d7389 in _PyEval_EvalFrameDefault ()
+#18 0x000000000054ce52 in ?? ()
+#19 0x00000000005db532 in _PyEval_EvalFrameDefault ()
+#20 0x000000000054ce52 in ?? ()
+#21 0x00000000006f858c in ?? ()
+#22 0x00000000006b954c in ?? ()
+#23 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#24 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 6 (Thread 0x7aeed0b7d6c0 (LWP 3037160) "jemalloc_bg_thd"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=31460, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7aeeb8816630) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=31460, abstime=0x0, clockid=0, expected=0, futex_word=0x7aeeb8816630) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7aeeb8816630, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007af22309b7ed in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7aeeb8816678, cond=0x7aeeb8816608) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7aeeb8816608, mutex=0x7aeeb8816678) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007aeddaac7142 in background_thread_entry () from /home/jun/furiosa/lib/python3.12/site-packages/pyarrow/libarrow.so.2400
+#6  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#7  0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 5 (Thread 0x7aeeb0b7d6c0 (LWP 3037161) "furiosa-llm"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=<optimized out>, cancel=true, abstime=0x7aeeb0b7cb10, op=137, expected=0, futex_word=0x7ae468000ba0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=<optimized out>, abstime=0x7aeeb0b7cb10, clockid=0, expected=0, futex_word=0x7ae468000ba0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7ae468000ba0, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7aeeb0b7cb10, private=<optimized out>) at ./nptl/futex-internal.c:139
+#3  0x00007af2230a4210 in do_futex_wait (sem=sem@entry=0x7ae468000ba0, clockid=clockid@entry=1, abstime=abstime@entry=0x7aeeb0b7cb10) at ./nptl/sem_waitcommon.c:111
+#4  0x00007af2230a42be in __new_sem_wait_slow64 (sem=0x7ae468000ba0, clockid=1, abstime=0x7aeeb0b7cb10) at ./nptl/sem_waitcommon.c:183
+#5  0x000000000061064f in PyThread_acquire_lock_timed ()
+#6  0x000000000064dbfa in ?? ()
+#7  0x00000000005516b8 in ?? ()
+#8  0x0000000000549cb5 in PyObject_Vectorcall ()
+#9  0x00000000005d7389 in _PyEval_EvalFrameDefault ()
+#10 0x000000000054ce52 in ?? ()
+#11 0x00000000006f858c in ?? ()
+#12 0x00000000006b954c in ?? ()
+#13 0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#14 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 4 (Thread 0x7aeea8b7d6c0 (LWP 3037179) "grpc_global_tim"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/x86_64/syscall.S:38
+#1  0x00007aef9d3ba9c0 in absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#2  0x00007aef9d3baa42 in absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#3  0x00007aef9d3ba8e3 in AbslInternalPerThreadSemWait_lts_20230802 () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#4  0x00007aef9c4c5415 in absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold] () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#5  0x00007aef9d3ba5d0 in absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d22286e in gpr_cv_wait () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d1b4e15 in timer_thread(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d2210c6 in grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void (*)(void*), void*, bool*, grpc_core::Thread::Options const&)::{lambda(void*)#1}::_FUN(void*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 3 (Thread 0x7aeea0b7d6c0 (LWP 3038075) "worker.io"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7aed1c144358) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7aed1c144358) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7aed1c144358, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007af22309b7ed in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7aed1c1442f8, cond=0x7aed1c144330) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7aed1c144330, mutex=0x7aed1c1442f8) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007aef9d2414d3 in boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d243039 in boost::asio::detail::scheduler::run(boost::system::error_code&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d24324b in boost::asio::detail::posix_thread::func<boost::asio::thread_pool::thread_function>::run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d23b5b1 in boost_asio_detail_posix_thread_function () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 2 (Thread 0x7aee98b7d6c0 (LWP 3038078) "worker.io"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x0, op=393, expected=0, futex_word=0x7aed1c14435c) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x0, clockid=0, expected=0, futex_word=0x7aed1c14435c) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7aed1c14435c, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007af22309b7ed in __pthread_cond_wait_common (abstime=0x0, clockid=0, mutex=0x7aed1c1442f8, cond=0x7aed1c144330) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_wait (cond=0x7aed1c144330, mutex=0x7aed1c1442f8) at ./nptl/pthread_cond_wait.c:627
+#5  0x00007aef9d2414d3 in boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9d243039 in boost::asio::detail::scheduler::run(boost::system::error_code&) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9d24324b in boost::asio::detail::posix_thread::func<boost::asio::thread_pool::thread_function>::run() () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9d23b5b1 in boost_asio_detail_posix_thread_function () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007af22309caa4 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#10 0x00007af223129c6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7af2233c5080 (LWP 3028169) "furiosa-llm"):
+#0  0x00007af223098d71 in __futex_abstimed_wait_common64 (private=0, cancel=true, abstime=0x7fffed0ddba0, op=393, expected=0, futex_word=0x7aecec01d3b0) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=0, abstime=0x7fffed0ddba0, clockid=32767, expected=0, futex_word=0x7aecec01d3b0) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7aecec01d3b0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x7fffed0ddba0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#3  0x00007af22309bc8e in __pthread_cond_wait_common (abstime=0x7fffed0ddba0, clockid=0, mutex=0x7aecec01d360, cond=0x7aecec01d388) at ./nptl/pthread_cond_wait.c:503
+#4  ___pthread_cond_timedwait64 (cond=0x7aecec01d388, mutex=0x7aecec01d360, abstime=0x7fffed0ddba0) at ./nptl/pthread_cond_wait.c:652
+#5  0x00007aef9c80d82f in ray::core::GetRequest::Wait(long) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#6  0x00007aef9c80f987 in ray::core::CoreWorkerMemoryStore::GetImpl(std::vector<ray::ObjectID, std::allocator<ray::ObjectID> > const&, int, long, ray::core::WorkerContext const&, std::vector<std::shared_ptr<ray::RayObject>, std::allocator<std::shared_ptr<ray::RayObject> > >*, bool, bool) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#7  0x00007aef9c810bed in ray::core::CoreWorkerMemoryStore::Wait(absl::lts_20230802::flat_hash_set<ray::ObjectID, absl::lts_20230802::hash_internal::Hash<ray::ObjectID>, std::equal_to<ray::ObjectID>, std::allocator<ray::ObjectID> > const&, int, long, ray::core::WorkerContext const&, absl::lts_20230802::flat_hash_set<ray::ObjectID, absl::lts_20230802::hash_internal::Hash<ray::ObjectID>, std::equal_to<ray::ObjectID>, std::allocator<ray::ObjectID> >*, absl::lts_20230802::flat_hash_set<ray::ObjectID, absl::lts_20230802::hash_internal::Hash<ray::ObjectID>, std::equal_to<ray::ObjectID>, std::allocator<ray::ObjectID> >*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#8  0x00007aef9c6aeecb in ray::core::CoreWorker::Wait(std::vector<ray::ObjectID, std::allocator<ray::ObjectID> > const&, int, long, std::vector<bool, std::allocator<bool> >*, bool) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#9  0x00007aef9c5d6c6f in __pyx_pw_3ray_7_raylet_10CoreWorker_53wait(_object*, _object* const*, long, _object*) () from /home/jun/furiosa/lib/python3.12/site-packages/ray/_raylet.so
+#10 0x0000000000549cb5 in PyObject_Vectorcall ()
+#11 0x00000000005d7389 in _PyEval_EvalFrameDefault ()
+#12 0x000000000054ceb4 in ?? ()
+#13 0x000000000054b4d9 in PyObject_Call ()
+#14 0x00000000005db532 in _PyEval_EvalFrameDefault ()
+#15 0x00000000005d58bb in PyEval_EvalCode ()
+#16 0x0000000000608b52 in ?? ()
+#17 0x00000000006b5263 in ?? ()
+#18 0x00000000006b4fca in _PyRun_SimpleFileObject ()
+#19 0x00000000006b4dff in _PyRun_AnyFileObject ()
+#20 0x00000000006bce65 in Py_RunMain ()
+#21 0x00000000006bc94d in Py_BytesMain ()
+#22 0x00007af22302a1ca in __libc_start_call_main (main=main@entry=0x518c60, argc=argc@entry=11, argv=argv@entry=0x7fffed0dfb38) at ../sysdeps/nptl/libc_start_call_main.h:58
+#23 0x00007af22302a28b in __libc_start_main_impl (main=0x518c60, argc=11, argv=0x7fffed0dfb38, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7fffed0dfb28) at ../csu/libc-start.c:360
+#24 0x0000000000657b05 in _start ()
+[Inferior 1 (process 3028169) detached]

@@ -35,6 +35,11 @@ HF 모델 (id 또는 로컬 경로)
 
 4~5단계의 두 phase 가 시간/메모리 거의 전부를 차지하는데 성격이 완전히 다릅니다. **OOM 은 거의 100% 4단계 (tracing) 에서 발생**, `Compilation Progress` 로그가 한 번이라도 뜨면 위험 구간은 통과한 상태입니다 (32B 빌드 4회 시도 중 OOM 4회 모두 tracing). 두 단계의 워커 옵션·메모리 특성·코드 위치는 [`BUILD_COMPIL.md`](BUILD_COMPIL.md) 에 별도 정리.
 
+> 📞 **런타임 구조 — 실측 콜그래프(2026-06-25).** `furiosa-llm build` 를 실제로 돌리며 gdb·py-spy·bpftrace 로 잡은 전체 콜그래프는 [`../callgraph-analysis/03-synthesis/BUILD-CALLGRAPH-WALKTHROUGH.md`](../callgraph-analysis/03-synthesis/BUILD-CALLGRAPH-WALKTHROUGH.md)(정적 file:line 은 [`build-static-callgraph.md`](../callgraph-analysis/01-static/build-static-callgraph.md)). 핵심 실측 3가지:
+> - **빌드는 Ray 멀티프로세스.** `--num-*-workers 1`(기본)이라도 **로컬 Ray 클러스터**를 띄우고, 트레이싱은 `ray::LocalPipelineGenerationActor`(`@ray.remote num_cpus=24`), 컴파일은 `ray::TaskCompileActor`(`@ray.remote num_cpus=32`) **별도 프로세스**에서 돕니다. 드라이버(`furiosa-llm build`)는 `build_pipeline → ray.get`(`new_pipeline_builder.py:1586`)에서 **파킹**만 합니다 (gdb: 드라이버 ~120 스레드 대부분 Ray RPC 대기). 워커 수를 늘리면 in-process 병렬이 아니라 **액터(프로세스)가 늘어나는 것**.
+> - **빌드는 NPU 를 안 씁니다.** 드라이버·워커 모두 `/dev/rngd/*` 미오픈, 커널 트레이스에 빌드발 doorbell/DMA 0 (그 트래픽은 상주 furiosa-smi `tokio-runtime-w` 노이즈). 컴파일은 **순수 호스트 CPU**. 컴파일러 본체는 `furiosa.native_common.compiler` = `native_llm_common.cpython-312*.so`(143 MB, **스트립**)이고, `compile()`(`converter.py:913`)이 PyO3 경계.
+> - **`failed to lower the operator O…(no tactic)` 의 위치.** 이 에러는 `TaskCompileActor.compile_task → compile()` 안 native lowering 에서 납니다. 실측에서 `Qwen2.5-Coder-1.5B-Instruct -tp 4`(default preset)는 컴파일 `stage_0`(Embedding→첫 QkvProjection)에서 `O1089 (no tactic)` 로 **실패**했습니다 (트레이싱 49태스크 통과 후, 컴파일 78태스크 중 stage_0; 계측과 무관한 컴파일러 한계). 네이티브 컴파일러는 자체 병렬 lowering 스레드풀(파킹 ~62 + 활성 다수)로 동작 — 스트립 `??` 프레임의 region(=컴파일 패스) 간이 명명은 [`gdb_build.native_names.md`](../callgraph-analysis/03-synthesis/full-callgraphs/gdb_build.native_names.md).
+
 ---
 
 ## 1. 사전 조건
@@ -348,6 +353,52 @@ RNGD는 AOT 컴파일이라 *(batch_size, context_length)* 조합 하나하나�
 > LLM2Vec 등)이 오히려 MTEB 상위권입니다. 즉 "임베딩이라서 encoder"가 아니라,
 > *어텐션이 양방향이고 별도 부품이며 최종 임베딩을 내놓느냐*로 구분하는 게 정확합니다.
 
+#### 5.2.2 presets.py 의 prefill / decode / append 괄호 안 숫자
+
+`artifact/presets.py` 의 `BucketConfig` 는 버킷 종류마다 튜플 모양이 다릅니다. 이유는
+`artifact/resolver.py:101-108` 에서 각 튜플을 내부 `AttentionBucket(batch_size,
+attention_size, kv_cache_size)` 로 바꾸는 방식이 다르기 때문입니다. 기억할 공식 하나:
+**`input_ids_size = attention_size − kv_cache_size`** (이번에 새로 처리하는 토큰 수).
+
+**prefill — `(batch_size, context_length)` 2개**
+```python
+AttentionBucket.prefill(b, c)  # → (b, c, kv_cache_size=0)
+```
+- `b` = 한 번에 처리하는 요청 수(배치). 프리셋들은 거의 다 **1** (프롬프트는 한 요청씩).
+- `c` = 프롬프트 길이. `kv=0` 이라 `input_ids_size = c` → **c개 새 토큰을 한 번에** 처리.
+- 즉 두 번째 숫자 = "한 방에 밀어 넣는 프롬프트 토큰 수".
+- 예) `QWEN_3_32B_FP8` 의 `(1,128)…(1,1024)` = 배치1, 프롬프트를 128 간격으로 1024까지 커버.
+
+**decode — `(batch_size, context_length)` 2개**
+```python
+AttentionBucket.decode(b, c)  # → (b, c, kv_cache_size=c-1)
+```
+- `b` = 배치. decode는 여러 시퀀스를 동시에 굴리므로 **1~256** 까지 큼(continuous batching).
+- `c` = ⚠️ **총 컨텍스트 길이**(이미 캐시된 토큰 + 새 토큰 1개). `kv=c-1` 이라
+  `input_ids_size = 1` → **새 토큰은 항상 1개**.
+- 헷갈림 주의: decode의 두 번째 숫자는 "새로 만드는 토큰 수"가 **아니라**, 그 1개의 새
+  토큰이 **얼마나 긴 문맥을 바라보느냐**(총 길이)입니다. 그래서 `(1,1024)…(1,128*1024)` 처럼
+  1K~128K로 퍼져 있는 건 "대화가 그만큼 길어졌을 때 다음 한 토큰 생성"을 각각 커버하는 것.
+
+**append (= extend) — `(batch_size, attention_size, input_ids_size)` 3개**
+```python
+AttentionBucket(b, a, a - i)  # kv_cache_size = a - i
+```
+- `b` = 배치(프리셋은 `_build_append_buckets` 로 전부 1 고정).
+- `a` = 총 어텐션 윈도(캐시 + 새 토큰).
+- `i` = 이번에 한꺼번에 넣는 **새 토큰 수**. 캐시된 건 `a − i` 개.
+- 예) `(1, 512, 128)` = 배치1, 총 512 윈도 중 **128개가 새 토큰**, 384개는 이미 캐시.
+- prefix-cache 일부 재사용 + 새 청크 추가(chunked prefill)에 쓰입니다. 제약: `a > i`.
+
+**왜 prefill·decode는 2개인데 append만 3개인가** — `(attention_size, kv_cache_size)` 평면에서
+prefill은 `kv=0` 끝, decode는 `input_ids_size=1` 끝, 즉 **양쪽 극단**이라 숫자 2개로 한 점이
+정해집니다. append는 그 사이 **일반 케이스**라 `kv`·`input` 둘 다 자유 → 3개가 필요합니다.
+(`is_prefill`=`kv==0`, `is_decode`=`kv>0 & input==1`, `is_extend`=`kv>0 & input>1`,
+`metadata/config_types.py:164-173`.)
+
+> 임베딩/리랭커(`QWEN_3_8B_POOLING_PRESET`)는 `prefill_buckets=((1, 8192),)` 만 있고
+> decode·append 가 없습니다 — 생성을 안 하니 디코딩 버킷이 필요 없기 때문입니다.
+
 ### 5.3 CLI 인자 형식
 
 - `--prefill-buckets b,c` (`-pb`) → `(batch_size, context_length)` 튜플
@@ -615,6 +666,7 @@ builder.build("/path/to/artifacts/mistral-7b-tp8")
 | serving: HBM OOM | runtime | `--max-model-len` 줄여 재빌드 또는 카드 추가 |
 | 컴파일 중 `failed to lower the operator O861 (no tactic): AttentionKernel(... mask_tagged_shape: [0_1=128, 4_1=131072])` (stage_1, attention) | 번들 컴파일러 2026.2.0 (attention kernel tactic 부재) | ⚠️ **2026-06-02 재검증으로 메커니즘 정정** (이전 "64K 보편 상한" 서술은 틀림). 원인은 attention_size 절대값이 아니라 **`num_key_value_heads < tp`**. furiosa attention은 **head 단위 분할**(GQA/Megatron-TP 표준 동작, seq/context 분할 없음)이라 **131072 KV 길이는 tp를 키워도 PE당 그대로 131072**(tp32라서 되는 게 아님). ⚠️ **출처 정정(2026-06-11 워크플로 검증):** 'head 분할·seq 미분할'의 1차 근거는 ① 위 실패 텐서 shape `[131072,4,128]`(head축만 4로 줄고 seq는 131072 그대로) + ② GQA/Megatron-TP 표준 동작이다. 이전에 인용했던 `cc_calculator.py:274-291`은 head/seq/attention을 한 글자도 언급 않는 **범용 집합통신(Shard/Partial/Replicate placement 변환) 계산기**라 이 주장의 1차 출처가 아니다(grep `head`/`seq`/`attention` 0건; AllReduce는 L274, AllGather는 L291). KV head를 tp로 못 나누면(`kv_heads < tp`) KV가 **복제**돼 한 PE가 전체 head × 큰 seq attention을 떠안고 → 네이티브 tactic 없음. 실패 텐서 `[131072, 4, 128]` = qwen3_moe kv_head 4개가 한 PE에 통째로(4<8). **법칙: `kv_heads ≥ tp`(나눠떨어져 kv/PE≥1)면 131072도 tp8에서 컴파일됨** — 실측 근거: `llama-3.1-8b-tp8`(kv8=tp8, 131072 ✅), `exaone-4.0-32b-FP8`(131072 전버킷 ✅, 같은 W8fA16KV16), `qwen3-32b-fp8-tp8`(✅). 실패는 전부 kv<tp: qwen3-coder(4<8)·qwen2.5-coder-7b(4<8)·1.5b(2<8). FP8 무관(attention은 A16/KV16이라 bf16 계산, 실패 텐서 전부 bf16), embedding/tp32 무관. **모델별 해결:** kv<tp 모델(qwen3-coder 등)은 `--max-model-len ≤65536`으로 131072 버킷 제거(또는 kv가 나눠떨어지는 tp로 — qwen3-coder는 kv=4라 tp4면 131072 가능성, 미검증). kv≥tp 모델(Llama-3.3-70B kv8=tp8)은 캡 없이도 131072 빌드 가능. 단 네이티브 tactic 판정은 블랙박스라 "8 q-head/PE×131072×fp8×tp8 단일칩" 조합은 직접 관측 전(70B tp8pp4 빌드 진행 중). (2026-05-31 qwen 실패 + 2026-06-02 4-에이전트 메커니즘 재검증) |
 | 컴파일 중 `failed to lower the operatorO#### (no tactic): TacticKernel kind: EinsumByDpe name: einsum_rope_k` (stage_0 QkvProjection, **symbol=2**) + 빌드가 **종료 안 되고 무한 hang**(progress 5/N 고정·CPU 발산·Ray `GetRequest::Wait()` 영구대기, SIGTERM으로만 끝남) | 번들 컴파일러 2026.2.0이 exaone4의 **seq_len=2 RoPE-K einsum**을 lower할 tactic 없음 | **EXAONE-4.0-32B-FP8 `-tp 8`(및 `-tp 4`) 빌드 시 발생 (2026-06-02 실측, 4-에이전트 적대검증).** 원인: exaone4는 **하이브리드 attention**(sliding_window=4096, layer_types LLLG)+global층 **NoPE**라 `rope_k` einsum이 sliding-mask와 fused되는데, **seq<4 강제 tokenwise 버킷**(`compiler_config.py:73-83`이 seq<4→AttentionBucket(seq,128,127) 리맵)에서 bmm이 degenerate→no tactic. qwen3·llama는 sliding fusion 없어 동일 버킷도 컴파일됨(einsum 식은 셋 다 동일, `rotary_embedding.py:196`). 128~1024 버킷은 성공, **딱 symbol=2만 실패**. no-tactic이 예외 안 던지고 다음 단계 재진입→무한 hang. **max-model-len 무관**(seq=2는 모든 캡에 존재, uncapped·65536 동일 wedge). **tp4도 ❌(~12%)** — degeneracy가 seq=2 자유차원+`Exaone4Prefill` 스케줄(model-type 키, tp 무관). **CLI 우회 없음** — seq=2는 `EXAONE_4_32B_PRESET.tokenwise_seq_lens=(2,4,…)`(`presets.py:110`) 강제, tactic-timeout/einsum-disable env·flag 0건(`--additional-model-config` whitelist 6키 거부). **prebuilt tp32가 되는 건 다른 toolchain**(artifact `furiosa_compiler_version=d19a92a2f2`≠로컬 `compiler_git_short_hash()=5c885c73ee`)이라 그런 것 — 로컬 2026.2.0은 **tp 무관 불가**. → **해결: prebuilt tp32 serve.** (Python ArtifactBuilder로 `BucketConfig(tokenwise_seq_lens` seq=2 제외`, skip_validation=True)` 또는 `CompilerConfig.compiler_config_overrides`로 tactic search 완화 가능하나 미지원·버킷셋 변경·위험.) |
+| **저장(1.7) 단계** `shutil.Error: [Errno 28] No space left on device` (`builder.py:474 __preprocess_for_pipeline_save → :428 copy_param_file → shutil.copytree`) — **트레이싱·컴파일은 다 성공한 뒤** 마지막 param 복사에서만 죽음 | param 파일을 **하드링크가 아니라 `shutil.copytree`로 통째 복사**해 아티팩트 디렉터리에 또 한 벌 만듦 | **대형 bf16 모델 저장 시 디스크 함정 (2026-06-16 Qwen2.5-72B-Instruct `-tp 8` 실측).** bf16 72B param ≈ **136 GiB**. 저장 시 캐시(`~/.cache/furiosa/llm/param_files`, 136G) → 아티팩트(136G)로 **풀 복사**라 **순간 272G+ 필요**. tp8 72B는 트레이싱(89버킷)·컴파일(118유닛) 다 통과하고 **마지막 복사에서 `/home` 6G까지 차 ENOSPC**로 실패함(shard 9/31). **컴파일 실패 아님 — 순수 디스크.** **회피:** ① 저장 전 디스크 ≥ param크기+여유 확보(HF 가중치 캐시는 param 만든 뒤엔 불필요 → 삭제로 136G 회수 가능). ② **이미 같은 param 해시의 완성 아티팩트가 있으면 재빌드 말고 `cp -al`(하드링크 클론)** — 재빌드는 결정적이라 **바이트 동일**(param 해시·binary_bundle 크기 일치 실측)이므로 40분 재빌드+136G 낭비 대신 즉시 동일본 생성(디스크 0). ③ 근본적으론 `copy_param_file`을 `shutil.copytree(..., copy_function=os.link)` 로 패치하면 중복 0 (미적용, 요청 시). ⚠️ `--max-model-len`·컴파일과 무관, **모델 클수록·디스크 적을수록** 발생. |
 
 ### 8.1 9개 모델 실행에서 본 "빌드 OK · serve/요청 단계" 요약 (2026-06-05)
 
