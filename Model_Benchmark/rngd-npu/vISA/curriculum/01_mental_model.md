@@ -1,8 +1,7 @@
 # 01 · 멘탈 모델과 큰 그림
 
-> **이 모듈에서 배우는 것**: vISA가 무엇이고 왜 존재하는지, RNGD 하드웨어 계층·Tensor Unit 파이프라인·메모리 계층·실행 컨텍스트·수학 배경(텐서 수축)·4개 백엔드, 그리고 5개 quick-start 커널의 큰 그림을 잡습니다.  
-> **선행**: 없음 (여기서 시작) · **예상 시간**: 40분  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 01입니다. vISA가 무엇이고 왜 존재하는지, RNGD 하드웨어 계층·Tensor Unit 파이프라인·메모리 계층·실행 컨텍스트·수학 배경(텐서 수축)·4개 백엔드, 그리고 5개 quick-start 커널의 큰 그림을 잡습니다.
+*선행: 없음 (여기서 시작) · 예상 시간: 40분*
 
 ## 학습 목표
 
@@ -249,7 +248,7 @@ constant_add는 Vector+DM, elementwise_mul은 sub+VRF, dot_product는 Contractio
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 01.1 — 첫 시뮬레이션: GEMM 돌려보고 레퍼런스 검증까지
 *난이도 1/5 · 기반: `base-template/src/gemm.rs`*

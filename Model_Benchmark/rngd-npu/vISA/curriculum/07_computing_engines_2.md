@@ -1,8 +1,7 @@
 # 07 · 연산 엔진 II — Vector/Cast/Transpose
 
-> **이 모듈에서 배우는 것**: Vector 엔진의 서브 파이프라인과 풍부한 op 셋(Exp/Sqrt/Tanh/Sigmoid, reduce, clip 등)으로 softmax·layernorm을 조립하는 법, 그리고 Cast·Transpose의 제약을 배웁니다.  
-> **선행**: 06 연산 엔진 I · **예상 시간**: 하루  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 07입니다. Vector 엔진의 서브 파이프라인과 풍부한 op 셋(Exp/Sqrt/Tanh/Sigmoid, reduce, clip 등)으로 softmax·layernorm을 조립하는 법, 그리고 Cast·Transpose의 제약을 배웁니다.
+*선행: 06 연산 엔진 I · 예상 시간: 하루*
 
 ## 학습 목표
 
@@ -362,7 +361,7 @@ running 예(i8 8×8)는 `8 + 7×max(8,8) + 8 = 72` 사이클 (transpose-engine.m
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 07.1 — VE 풀 파이프라인을 시뮬레이션으로 돌려보기 (fxp→fp→clip)
 *난이도 1/5 · 기반: `furiosa-opt-examples/tests/vector_engine/normal.rs`*

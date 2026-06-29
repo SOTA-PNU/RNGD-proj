@@ -1,6 +1,6 @@
 # vISA 용어집
 
-처음 보면 헷갈리는 단어들을 한 줄씩 풀었습니다. 모듈을 보다 막히면 여기서 찾으세요.
+이 문서는 vISA 용어집입니다. 모듈을 읽다 막히는 단어를 여기서 찾으세요.
 
 ## 칩·하드웨어
 - **TCP (Tensor Contraction Processor)** — 퓨리오사 NPU 아키텍처. 곧 RNGD 칩. "텐서 축약(contraction)"에 최적화.

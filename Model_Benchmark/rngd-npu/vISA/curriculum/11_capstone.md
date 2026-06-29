@@ -1,8 +1,6 @@
 # 11 · 캡스톤 & 마스터리
 
-> **이 모듈에서 배우는 것**: 지금까지 배운 걸 모아 **직접 새 커널을 짜서 검증**합니다. 그리고 vISA의 현실(닫힌 컴파일러, EDF 포맷 차이)과 우리 프로젝트(DeltaNet 등)와의 연결, 디버깅 도구(Schedule Viewer)까지 정리해 "이제 혼자 할 수 있다"로 마무리합니다.  
-> **선행**: 01~10 전부 (특히 02 매핑, 03 원소별, 07 Vector, 08 스케줄러)  
-> **참고** — 용어 [`../GLOSSARY.md`](../GLOSSARY.md) · API [`../CHEATSHEET.md`](../CHEATSHEET.md) · 실험장 [`../experiments/`](../experiments/) · 분석문서 [`../../../info/README_virtual_isa.md`](../../../info/README_virtual_isa.md)
+이 문서는 vISA 커리큘럼 모듈 11입니다. 지금까지 배운 걸 모아 **직접 새 커널을 짜서 검증**합니다. 그리고 vISA의 현실(닫힌 컴파일러, EDF 포맷 차이)과 우리 프로젝트(DeltaNet 등)와의 연결, 디버깅 도구(Schedule Viewer)까지 정리해 "이제 혼자 할 수 있다"로 마무리합니다.
 
 ## 학습 목표
 - [ ] 빈 파일에서 새 `#[device]` 커널 + 호스트 프로그램 + `[[bin]]` 등록을 막힘없이 한다

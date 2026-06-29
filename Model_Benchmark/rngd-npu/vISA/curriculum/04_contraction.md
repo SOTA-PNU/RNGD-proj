@@ -1,8 +1,7 @@
 # 04 · 텐서 축약(Contraction)
 
-> **이 모듈에서 배우는 것**: dot product·GEMV·GEMM으로 Contraction 엔진(`contract_outer/packet/time/lane`)과 TRF, Switch 브로드캐스트, 출력 타일을 슬라이스에 분산하는 법을 배웁니다.  
-> **선행**: 03 원소별 연산 · **예상 시간**: 반나절  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 04입니다. dot product·GEMV·GEMM으로 Contraction 엔진(`contract_outer/packet/time/lane`)과 TRF, Switch 브로드캐스트, 출력 타일을 슬라이스에 분산하는 법을 배웁니다.
+*선행: 03 원소별 연산 · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -162,7 +161,7 @@ experiments 폴더에서 `cargo furiosa-opt` 플러그인이 `--cfg backend="...
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 04.1 — dot_product 시뮬레이션 실행 + 값 검증
 *난이도 1/5 · 기반: `Model_Benchmark/rngd-npu/vISA/experiments/src/dot_product.rs`*

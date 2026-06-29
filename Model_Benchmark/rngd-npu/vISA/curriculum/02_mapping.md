@@ -1,8 +1,7 @@
 # 02 · 매핑과 텐서 (가장 중요)
 
-> **이 모듈에서 배우는 것**: vISA에서 제일 어렵고 제일 중요한 개념입니다. `axes![]`와 `m![]` 매핑 언어(`/ % # = ,`)로 논리 축을 하드웨어 계층에 어떻게 펼치는지, 공간/시간 차원이 무엇인지 익힙니다.  
-> **선행**: 01 멘탈 모델 · **예상 시간**: 반나절  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 02입니다. vISA에서 제일 어렵고 제일 중요한 개념입니다. `axes![]`와 `m![]` 매핑 언어(`/ % # = ,`)로 논리 축을 하드웨어 계층에 어떻게 펼치는지, 공간/시간 차원이 무엇인지 익힙니다.
+*선행: 01 멘탈 모델 · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -251,7 +250,7 @@ Packet = m![C % 2]   // 매 반복 슬라이스당 2채널
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 02.1 — Pair 매핑을 손으로 예측한 뒤 map()으로 검증
 *난이도 1/5 · 기반: `new`*

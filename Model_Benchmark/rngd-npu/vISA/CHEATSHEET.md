@@ -1,6 +1,8 @@
 # vISA 치트시트 (빠른 참조)
 
-> 모든 이름은 `furiosa-opt` v0.2.0 소스에서 직접 확인한 것입니다. 정확한 시그니처는 rustdoc(<https://developer.furiosa.ai/furiosa-opt/rustdoc/furiosa_opt_std/>)이나 `reference/examples/`를 보세요.
+이 문서는 vISA API·매핑 연산자·명령어 빠른참조(치트시트)입니다.
+
+> 이름은 모두 `furiosa-opt` v0.2.0 소스에서 확인했습니다. 정확한 시그니처는 rustdoc(<https://developer.furiosa.ai/furiosa-opt/rustdoc/furiosa_opt_std/>)이나 `reference/examples/`를 보세요.
 
 ## 하드웨어 상수 (RNGD)
 | 항목 | 값 | 비고 |
