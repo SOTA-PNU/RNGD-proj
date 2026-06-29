@@ -3,6 +3,7 @@
 이 문서는 ACCV 2026 논문([info/README_accv2026_paper_plan.md])의 배경 자료로, furiosa-opt
 (<https://github.com/furiosa-ai/furiosa-opt> · <https://developer.furiosa.ai/furiosa-opt/book/>)에서
 무엇을 보고 이 주제를 떠올려 실험으로 옮겼는지와, 논문을 쓰는 데 필요한 지식을 정리합니다.
+쉬운 말로 푼 착상·코드 해설은 `rngd-npu/ACCV/`의 `01_논문주제.md`·`03_furiosa-opt_코드해설.md`에 있습니다.
 
 ---
 
