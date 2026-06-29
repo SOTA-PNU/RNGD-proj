@@ -1,8 +1,7 @@
 # 05 · 텐서 옮기기 (DMA·Fetch·Commit·메모리 성능)
 
-> **이 모듈에서 배우는 것**: 데이터를 메모리 계층 사이로 옮기는 엔진들(Sequencer, Fetch, Commit, DMA)과 성능의 핵심인 뱅크 충돌(치명적일 수 있음)을 익힙니다.  
-> **선행**: 04 텐서 축약 · **예상 시간**: 반나절  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 05입니다. 데이터를 메모리 계층 사이로 옮기는 엔진들(Sequencer, Fetch, Commit, DMA)과 성능의 핵심인 뱅크 충돌(치명적일 수 있음)을 익힙니다.
+*선행: 04 텐서 축약 · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -323,7 +322,7 @@ tCCD (Column-to-Column Delay) (docs/src/moving-tensors/memory-performance.md:269
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 05.1 — fetch+collect+commit 파이프라인 시뮬레이션 실행
 *난이도 1/5 · 기반: `furiosa-opt-examples/src/fetch_commit.rs`*

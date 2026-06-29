@@ -1,8 +1,7 @@
 # 06 · 연산 엔진 I — 분배와 축약
 
-> **이 모듈에서 배우는 것**: Switch 토폴로지, Collect(32바이트 flit 정규화), TRF/VRF 레지스터 뱅킹, 그리고 Contraction 엔진 내부(Outer/Packet/Time/Lane, 2D conv)를 깊게 봅니다.  
-> **선행**: 04 텐서 축약, 05 텐서 옮기기 · **예상 시간**: 하루  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 06입니다. Switch 토폴로지, Collect(32바이트 flit 정규화), TRF/VRF 레지스터 뱅킹, 그리고 Contraction 엔진 내부(Outer/Packet/Time/Lane, 2D conv)를 깊게 봅니다.
+*선행: 04 텐서 축약, 05 텐서 옮기기 · 예상 시간: 하루*
 
 ## 학습 목표
 
@@ -412,7 +411,7 @@ Stream Adapter가 sliding window를 어떻게 shift하느냐로 갈립니다: **
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 06.1 — GEMM 커널을 시뮬레이션으로 돌려 4단계 파이프라인 관찰
 *난이도 1/5 · 기반: `base-template/src/kernel/gemm_kernel.rs`*

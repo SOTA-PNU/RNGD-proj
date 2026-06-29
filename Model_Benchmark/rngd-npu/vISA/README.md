@@ -1,8 +1,8 @@
 # vISA 마스터 커리큘럼 — RNGD NPU를 직접 손으로 프로그래밍하기
 
-> 목표: **vISA가 뭔지 전혀 모르는 상태**에서, 빠르고 체계적으로 **RNGD NPU 커널을 직접 짤 수 있는 수준**까지 끌어올립니다.
-> 자료 출처: 퓨리오사 공식 책 <https://developer.furiosa.ai/furiosa-opt/book/> + 저장소 <https://github.com/furiosa-ai/furiosa-opt> (v0.2.0). 책·예제 원본은 `reference/` 에 오프라인 복사해 뒀습니다.
-> 같이 보면 좋은 분석: `../../info/README_virtual_isa.md` (이게 뭐고 뭘 할 수 있나 — 닫힌 컴파일러/EDF 현실 포함)
+이 문서는 vISA 커리큘럼의 시작점이자 전체 안내입니다. vISA를 전혀 모르는 상태에서 RNGD NPU 커널을 직접 짤 수 있는 수준까지 단계별로 데려갑니다.
+
+> 자료: 퓨리오사 공식 책 <https://developer.furiosa.ai/furiosa-opt/book/> · 저장소 <https://github.com/furiosa-ai/furiosa-opt> (v0.2.0, 원본은 `reference/`). 관련 분석: `../../info/README_virtual_isa.md`
 
 ---
 

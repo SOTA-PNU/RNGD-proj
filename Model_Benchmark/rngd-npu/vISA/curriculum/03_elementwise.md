@@ -1,8 +1,7 @@
 # 03 · 원소별 연산과 파이프라인 기초
 
-> **이 모듈에서 배우는 것**: 가장 단순한 커널들로 파이프라인의 뼈대(begin→fetch→collect→vector→commit)와 `to_dm`/`to_hbm`, 그리고 `sub` 컨텍스트로 VRF에 미리 싣는 패턴을 배웁니다.  
-> **선행**: 02 매핑 · **예상 시간**: 반나절  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 03입니다. 가장 단순한 커널들로 파이프라인의 뼈대(begin→fetch→collect→vector→commit)와 `to_dm`/`to_hbm`, 그리고 `sub` 컨텍스트로 VRF에 미리 싣는 패턴을 배웁니다.
+*선행: 02 매핑 · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -261,7 +260,7 @@ reduce 예제들(`furiosa-opt-examples/src/vector_engine/reduce.rs`)도 같은 b
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 03.1 — Constant Add를 시뮬레이션으로 돌리고 참조와 대조하기
 *난이도 1/5 · 기반: `base-template/src/constant_add.rs`*

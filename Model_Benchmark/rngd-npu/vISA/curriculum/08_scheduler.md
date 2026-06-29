@@ -1,8 +1,7 @@
 # 08 · 스케줄러와 동시성
 
-> **이 모듈에서 배우는 것**: main/sub/tdma/pdma 컨텍스트가 어떻게 병렬로 도는지, 해저드(RAW/WAR/WAW)와 수동 주소 배정, 더블버퍼링으로 연산과 데이터 이동을 겹치는 법을 배웁니다.  
-> **선행**: 03~07 (특히 03의 sub 컨텍스트) · **예상 시간**: 반나절  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 08입니다. main/sub/tdma/pdma 컨텍스트가 어떻게 병렬로 도는지, 해저드(RAW/WAR/WAW)와 수동 주소 배정, 더블버퍼링으로 연산과 데이터 이동을 겹치는 법을 배웁니다.
+*선행: 03~07 (특히 03의 sub 컨텍스트) · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -201,7 +200,7 @@ let _out_hbm = launch(elementwise_mul_kernel, (&mut ctx, &lhs_hbm, &rhs_hbm)).aw
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 08.1 — 베이스라인: elementwise_mul 을 시뮬레이션과 타입체크로 돌려 보기
 *난이도 1/5 · 기반: `Model_Benchmark/rngd-npu/vISA/experiments/src/kernel/elementwise_mul_kernel.rs`*

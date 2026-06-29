@@ -1,8 +1,7 @@
 # 09 · 타일링과 분할 전략
 
-> **이 모듈에서 배우는 것**: DM 용량(512KB/slice)을 넘는 워크로드를 시간·공간으로 쪼개는 법: 타일링, split-K, 그리고 chip/cluster reduce(손으로 짜는 ReduceScatter)를 matmul 예제로 봅니다.  
-> **선행**: 04 텐서 축약, 06 연산 엔진 I · **예상 시간**: 하루  
-> **참고** — 용어는 [`../GLOSSARY.md`](../GLOSSARY.md), API 빠른참조는 [`../CHEATSHEET.md`](../CHEATSHEET.md), 실험 실행법은 [`../experiments/README.md`](../experiments/README.md)
+이 문서는 vISA 커리큘럼 모듈 09입니다. DM 용량(512KB/slice)을 넘는 워크로드를 시간·공간으로 쪼개는 법: 타일링, split-K, 그리고 chip/cluster reduce(손으로 짜는 ReduceScatter)를 matmul 예제로 봅니다.
+*선행: 04 텐서 축약, 06 연산 엔진 I · 예상 시간: 하루*
 
 ## 학습 목표
 
@@ -336,7 +335,7 @@ cumsum도 분기가 없어야 해서 VE의 branch logger로 구현합니다 (`mi
 
 ## 3. 실험 (직접 돌리기)
 
-> NPU 없이 `simulation`(기본)·`typecheck`로 돌아갑니다. 큰 예제(matmul 변형·MNIST·트랜스포머)는 `00_SETUP.md`에서 클론한 상위 `furiosa-opt` 저장소나 [`../reference/examples/`](../reference/examples/)에서 보고, MNIST 테스트는 `cargo furiosa-opt test`(npu 백엔드 전용)임에 유의하세요.
+> 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
 ### 실험 09.1 — split-reduce2 행렬곱을 시뮬레이션으로 실행·검증(유일하게 NPU 없이 통과하는 matmul 테스트)
 *난이도 1/5 · 기반: `furiosa-opt-examples/src/matmul/matmul_split_reduce2.rs`*
