@@ -1,9 +1,8 @@
-# ACCV 2026 논문 — 주제 착상 경위(furiosa-opt 활용) + 필요 지식 정리
+# ACCV 2026 논문 — 착상 경위 + 필요 지식
 
-> [info/README_accv2026_paper_plan.md]의 자매 문서입니다. (1) 주신 두 주소
-> (<https://github.com/furiosa-ai/furiosa-opt>, <https://developer.furiosa.ai/furiosa-opt/book/>)에서
-> **무엇을 보고 이 주제를 떠올렸고 어떻게 논문·실험으로 옮겼는지**, (2) **이 논문을 하려면 알아야 할
-> 지식**을 정리합니다. 작성·검증일 2026-06-29.
+이 문서는 ACCV 2026 논문([info/README_accv2026_paper_plan.md])의 배경 자료로, furiosa-opt
+(<https://github.com/furiosa-ai/furiosa-opt> · <https://developer.furiosa.ai/furiosa-opt/book/>)에서
+무엇을 보고 이 주제를 떠올려 실험으로 옮겼는지와, 논문을 쓰는 데 필요한 지식을 정리합니다.
 
 ---
 
@@ -34,10 +33,8 @@
 > "감소정밀도 NPU에서 학습 CNN이 왜 붕괴하는지 진단하고, **하드웨어 정밀도 모델 하에서 per-channel
 > 고정소수점(int8) 스케일·클립을 최적화**해 ImageNet 정확도를 되살린다."
 
-특히 책에서 **누적은 넓고(i32/f32) 줄어든 정밀도는 operand cast에 있다**는 사실을 확인한 게
-결정적이었습니다. 이게 "단순 float 재스케일은 스케일 불변이라 안 통하고, 제어된 int8 표현 +
-clipping이 진짜 레버"라는 메커니즘을 좁혀줬고(그게 [paper_plan §2]의 정정), 동시에 **그 int8 제어를
-가능케 하는 도구가 바로 vISA의 Cast/vector_fxp**라는 점에서 furiosa-opt가 논문의 중심에 들어옵니다.
+메커니즘 상세(누적은 넓고 손실은 operand cast → 단순 float 재스케일은 무효, 제어된 int8 +
+clipping이 레버, 도구는 vISA Cast/`vector_fxp`)는 [paper_plan §2]에 있어 여기선 생략합니다.
 
 ### 1-3. 어떻게 활용했나 (주소의 각 요소 → 논문·실험)
 
