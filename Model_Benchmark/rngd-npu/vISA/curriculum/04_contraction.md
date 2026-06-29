@@ -117,7 +117,7 @@ contract_lane::<m![1], m![1 # 8]>(Interleaved)        // Lane=1(8로 패딩) 접
 ```
 즉 2048개 곱을 **"32(Packet, 공간) × 64(Time, 시간)"** 으로 쪼개 줄입니다. 공간 트리로 32개를 한 방에, 그걸 64사이클 누적. 이게 RNGD 축약의 표준 분해입니다.
 
-gemm(K=64)이면 `contract_outer::<..., m![K % 32], _, _>` 로 K%32(=32)를 Packet에, K/32(=2)를 Time(`.contract_time::<m![I % 32, J / 8 % 4]>` 가 줄이는 시간 안에 포함)에 둡니다 → K=64 = 32(공간) × 2(시간). 핵심 원칙(contraction-engine/index.md:123): **K는 가능하면 Packet에 둬서 트리로 한 번에 줄이고, 남는 출력 축(V,M,N)을 Cluster/Slice/Lane에 흩뿌려 병렬을 극대화**하세요. K를 Time에만 두면(K-in-Time) bf16 기준 32개 곱셈기 중 1개만 일해서 MAC 활용률 1/32로 떨어집니다 — 책이 "교육용 나쁜 예"로만 보여주는 케이스입니다(index.md:88).
+gemm(K=64)이면 `contract_outer::<..., m![K % 32], _, _>` 로 K%32(=32)를 Packet에, K/32(=2)를 Time(`.contract_time::<m![I % 32, J / 8 % 4]>` 가 줄이는 시간 안에 포함)에 둡니다 → K=64 = 32(공간) × 2(시간). 핵심 원칙(contraction-engine/index.md:123): **K는 가능하면 Packet에 둬서 트리로 한 번에 줄이고, 남는 출력 축(V,M,N)을 Cluster/Slice/Lane에 흩뿌려 병렬을 극대화**하세요. K를 Time에만 두면(K-in-Time) bf16 기준 32개 곱셈기 중 1개만 일해서 MAC 활용률 1/32로 떨어집니다 — 책이 "교육용 나쁜 예"로만 보여주는 경우입니다(index.md:88).
 
 ## 슬라이스/칩을 가로지르는 합은 Contraction이 못 합니다 — Vector Engine으로
 

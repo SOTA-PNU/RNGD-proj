@@ -91,7 +91,7 @@ pub fn switch<OutSlice: M, OutTime: M>(self, config: SwitchConfig)
 
 **TransposedBroadcast1**: `[slice2|slice1|slice0][time0]` → `[slice2|Y|slice1][time0|slice0]` (switch-engine.md:275-291). 이름 그대로 Transpose 다음 Broadcast1을 한 번에 적용한 것과 같습니다.
 
-> 공통 규칙: **브로드캐스트 축(X, Y)은 새 축이어야 합니다.** 입력 `Slice`나 입력 `Time`에 이미 등장하는 축을 브로드캐스트 축으로 쓰면 안 됩니다 (switch-engine.md:31). 예제 파일 `switch_assertions.rs`에 이 규칙을 어긴 케이스(`invalid_broadcast_axes_not_new`, switch_assertions.rs:393-409)가 일부러 들어 있습니다.
+> 공통 규칙: **브로드캐스트 축(X, Y)은 새 축이어야 합니다.** 입력 `Slice`나 입력 `Time`에 이미 등장하는 축을 브로드캐스트 축으로 쓰면 안 됩니다 (switch-engine.md:31). 예제 파일 `switch_assertions.rs`에 이 규칙을 어긴 경우(`invalid_broadcast_axes_not_new`, switch_assertions.rs:393-409)가 일부러 들어 있습니다.
 
 ### 아키텍처: 링 + 라우터 + snoop bitmap
 
@@ -152,7 +152,7 @@ pub fn collect<Time2: M, Packet2: M>(self)
 ```
 (collect.rs:43). `SwitchTensor`와 `FetchTensor` 둘 다 `.collect()`를 노출하며, `FetchTensor` 진입점은 slice 분배가 필요 없을 때 Switch 엔진을 건너뜁니다 (collect-engine.md:14-15).
 
-### 네 가지 케이스 (collect-engine.md:23-167)
+### 네 가지 경우 (collect-engine.md:23-167)
 
 dtype의 바이트 크기 × Packet 원소 수가 32바이트와 어떻게 비교되는지가 전부입니다.
 
@@ -161,7 +161,7 @@ dtype의 바이트 크기 × Packet 원소 수가 32바이트와 어떻게 비�
 - **Multi-Flit (32B 초과)**: flit로 쪼개고 바깥 flit 개수를 Time으로 흡수. 예: bf16 32원소 = 64B = 2 flit → 안쪽 16원소가 `Packet2 = m![B % 16]`, 바깥 2 flit이 `Time2 = m![A, B / 16]` (collect-engine.md:92-123).
 - **Multi-Flit + Padding (32B 비정렬)**: 먼저 32B 배수로 패딩 후 쪼갬. 예: i8 51원소 = 51B → 64B 패딩 → 2 flit → `Time2 = m![A, B # 64 / 32]`, `Packet2 = m![B # 64 % 32]` (collect-engine.md:127-167).
 
-이 네 케이스는 `switch_assertions.rs`의 `alignment`, `packet` 모듈에 실제 커널로 다 들어 있습니다(예: `aligned_fetch_packet_bf16`가 bf16을 `collect::<m![A, B/16], m![B%16]>()`로 multi-flit 처리, switch_assertions.rs:114). `collect_time_mismatch`(switch_assertions.rs:233-251)는 bf16 64B를 잘못된 `Time2 = m![A]`로 받아서 "Collect time mismatch"를 내는 의도된 오답 예제입니다.
+이 네 경우는 `switch_assertions.rs`의 `alignment`, `packet` 모듈에 실제 커널로 다 들어 있습니다(예: `aligned_fetch_packet_bf16`가 bf16을 `collect::<m![A, B/16], m![B%16]>()`로 multi-flit 처리, switch_assertions.rs:114). `collect_time_mismatch`(switch_assertions.rs:233-251)는 bf16 64B를 잘못된 `Time2 = m![A]`로 받아서 "Collect time mismatch"를 내는 의도된 오답 예제입니다.
 
 ### TRF/VRF로 적재
 
@@ -426,7 +426,7 @@ cargo furiosa-opt test --release --bin gemm
 
 **심화** — gemv, dot_product 바이너리도 같은 방식으로 돌려 Time/Packet/Lane 배치 차이를 비교(gemv는 J를 Time+Packet으로 쪼개 reduce, dot_product는 Packet에만).
 
-### 실험 06.2 — Switch 정규 설정 5종의 valid 케이스 타입체크/시뮬레이션
+### 실험 06.2 — Switch 정규 설정 5종의 valid 경우 타입체크/시뮬레이션
 *난이도 2/5 · 기반: `furiosa-opt-examples/src/switch_assertions.rs`*
 
 **목표** — Broadcast1/Broadcast01/Transpose/InterTranspose 매핑이 컴파일러 검증을 통과하는지 확인하고, 각 OutSlice/OutTime 구조를 코드와 대조한다.
@@ -438,7 +438,7 @@ cargo furiosa-opt test --test switch_assertions_tests
 
 **심화** — switch_assertions.rs의 broadcast1::valid_basic에서 SwitchConfig::Broadcast1{slice1:4, slice0:4}를 slice1:0으로 바꾸면 invalid_slice1_zero와 같은 검증 실패가 나는지 예측한 뒤, 임시로 valid_basic을 복제해 확인.
 
-### 실험 06.3 — Collect 네 가지 정규화 케이스를 dtype 바꿔가며 예측-후-확인
+### 실험 06.3 — Collect 네 가지 정규화 경우를 dtype 바꿔가며 예측-후-확인
 *난이도 2/5 · 기반: `furiosa-opt-examples/src/switch_assertions.rs`*
 
 **목표** — 같은 원소 수라도 dtype(i8 vs bf16)에 따라 패킷 바이트가 달라져 single/multi-flit 분기가 바뀜을 체득한다.
@@ -484,7 +484,7 @@ cargo furiosa-opt test --test switch_assertions_tests   # 기준 통과 확인 �
 ```bash
 cargo furiosa-opt test --test switch_assertions_tests   # valid_only_slice1 등이 컴파일/시뮬 통과하는지만 확인
 ```
-**관찰** — broadcast01::valid_only_slice1(slice1:256, slice0:1 → ring_size=256)과 broadcast1::valid_basic(slice1:4, slice0:4 → ring_size=16) 같은 케이스에서, switch-engine.md:115·168의 공식을 적용하면 사이클이 나온다. flits_per_packet = sizeof(i8)×Packet::SIZE/32 임을 dtype/Packet에서 계산.
+**관찰** — broadcast01::valid_only_slice1(slice1:256, slice0:1 → ring_size=256)과 broadcast1::valid_basic(slice1:4, slice0:4 → ring_size=16) 같은 경우에서, switch-engine.md:115·168의 공식을 적용하면 사이클이 나온다. flits_per_packet = sizeof(i8)×Packet::SIZE/32 임을 dtype/Packet에서 계산.
 
 **심화** — 같은 매핑을 bf16으로 바꾸면 flits_per_packet이 2배가 되어 사이클이 2배가 됨을 손으로 계산해 확인.
 
@@ -594,7 +594,7 @@ InTime::SIZE는 slice1×time0 = 2×2 = 4로 나눠떨어져야 함. slice2×slic
   ↳ 출처 `docs/src/computing-tensors/register-files.md:108-111`
 - to_vrf는 i32/f32(VeScalar)만 받는다. bf16/i8을 VRF에 넣으려 하면 컴파일 실패. 그런 타입은 TRF(Contraction)용이다.  
   ↳ 출처 `docs/src/computing-tensors/register-files.md:203, furiosa-opt-std/src/engine/vector/scalar.rs:18-27`
-- switch_assertions.rs와 contract_outer_assertions.rs의 invalid_* 함수는 테스트에서 호출되지 않는다(컴파일 타임 검증 panic을 문서화한 의도적 오답 예제). valid_* 만 실제로 실행/검증된다 — invalid 케이스를 돌려보려면 직접 복제해 트리거해야 한다.  
+- switch_assertions.rs와 contract_outer_assertions.rs의 invalid_* 함수는 테스트에서 호출되지 않는다(컴파일 타임 검증 panic을 문서화한 의도적 오답 예제). valid_* 만 실제로 실행/검증된다 — invalid 경우를 돌려보려면 직접 복제해 트리거해야 한다.  
   ↳ 출처 `furiosa-opt-examples/tests/switch_assertions_tests.rs (valid_*만 호출), furiosa-opt-examples/src/switch_assertions.rs:336-447`
 
 ## 6. 핵심 정리 & 다음
