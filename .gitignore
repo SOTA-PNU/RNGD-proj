@@ -12,6 +12,9 @@ node_modules/
 Model_Benchmark/rngd-npu/artifacts/*
 !Model_Benchmark/rngd-npu/artifacts/.gitkeep
 
+# 임베디드 git 저장소 (외부 ROBOTIS 클론 — 추적 안 함, 로컬에만 존재)
+Model_Benchmark/rngd-npu/turtlebot3-llm/turtlebot3_simulations/
+
 # OS / 에디터
 .DS_Store
 *.swp

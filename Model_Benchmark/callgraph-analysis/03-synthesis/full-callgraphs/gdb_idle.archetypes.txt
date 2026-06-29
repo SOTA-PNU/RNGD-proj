@@ -1,0 +1,268 @@
+# 03-synthesis/full-callgraphs/gdb_idle.txt
+# 681 threads, 30 distinct full stack archetypes (outermost -> innermost; native_runtime.so frames shown as so!0xADDR)
+
+==== 254 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970250,2970251,2970252,2970253,2970254,2970255 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76ea7d6a2
+                -> native_runtime.so!0x000076e76ea5ef33
+                    -> native_runtime.so!0x000076e76ea62bd4
+                        -> native_runtime.so!0x000076e76ea5d931
+                            -> native_runtime.so!0x000076e76ea7fbc5
+                                -> native_runtime.so!0x000076e76ea669cd
+                                    -> native_runtime.so!0x000076e76ea6bccd
+                                        -> native_runtime.so!0x000076e76ea6f366
+                                            -> native_runtime.so!0x000076e76ea718b8
+                                                -> native_runtime.so!0x000076e76ea6b318
+                                                    -> native_runtime.so!0x000076e76ea6a455
+                                                        -> native_runtime.so!0x000076e76ea6f8de
+                                                            -> native_runtime.so!0x000076e76ea85a69
+                                                                -> syscall
+
+==== 128 thread(s)  name='furiosa-llm'  LWP e.g. 2971503,2971504,2971505,2971506,2971507,2971508 ====
+   clone3
+    -> start_thread
+        -> std::sys::thread::unix::Thread::new::thread_start
+            -> core::ops::function::FnOnce::call_once{{vtable.shim}}
+                -> std::sys::backtrace::__rust_begin_short_backtrace
+                    -> rayon_core::registry::ThreadBuilder::run
+                        -> rayon_core::registry::WorkerThread::wait_until_cold
+                            -> rayon_core::sleep::Sleep::sleep
+                                -> std::sys::sync::condvar::futex::Condvar::wait
+                                    -> syscall
+
+==== 127 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970078,2970079,2970080,2970082,2970083,2970084 ====
+   clone3
+    -> start_thread
+        -> <std::sys::thread::unix::Thread>::new::thread_start
+            -> <std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                -> std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                    -> <tokio::runtime::task::harness::Harness<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                        -> <tokio::runtime::task::core::Core<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                            -> <tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}> as core::future::future::Future>::poll
+                                -> tokio::runtime::scheduler::multi_thread::worker::run
+                                    -> tokio::runtime::context::runtime::enter_runtime::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0},
+                                        -> <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0}::{closure#0},
+                                            -> <tokio::runtime::scheduler::multi_thread::worker::Context>::park_timeout
+                                                -> <tokio::runtime::scheduler::multi_thread::park::Parker>::park
+                                                    -> <parking_lot::condvar::Condvar>::wait_until_internal
+                                                        -> syscall
+
+==== 126 thread(s)  name='furiosa-llm'  LWP e.g. 2967227,2967228,2967229,2967230,2967231,2967232 ====
+   clone3
+    -> start_thread
+        -> blas_thread_server
+            -> ___pthread_cond_wait
+                -> __pthread_cond_wait_common
+                    -> __GI___futex_abstimed_wait_cancelable64
+                        -> __futex_abstimed_wait_common
+                            -> __futex_abstimed_wait_common64
+
+==== 8 thread(s)  name='furiosa-llm'  LWP e.g. 2970506,2970512,2970610,2970803,2970813,2970817 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76a20d5e9
+                -> native_runtime.so!0x000076e76a24c678
+                    -> native_runtime.so!0x000076e76a1ecdca
+                        -> native_runtime.so!0x000076e76a22b137
+                            -> native_runtime.so!0x000076e76a230909
+                                -> native_runtime.so!0x000076e76a251bea
+                                    -> native_runtime.so!0x000076e76a250d32
+                                        -> native_runtime.so!0x000076e76ea74d41
+                                            -> native_runtime.so!0x000076e76ea6728d
+                                                -> native_runtime.so!0x000076e76ea6d54f
+                                                    -> native_runtime.so!0x000076e76ea82a7b
+                                                        -> epoll_wait
+
+==== 4 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970832,2970833,2970834,2970835 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76ea7d6a2
+                -> native_runtime.so!0x000076e76ea5ef33
+                    -> native_runtime.so!0x000076e76ea62c5e
+                        -> native_runtime.so!0x000076e76ea85afd
+                            -> syscall
+
+==== 4 thread(s)  name='scheduler-eager'  LWP e.g. 2971480,2971481,2971482,2971483 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76970ba09
+                -> native_runtime.so!0x000076e769a21f74
+                    -> native_runtime.so!0x000076e769a89f02
+                        -> native_runtime.so!0x000076e76992be53
+                            -> native_runtime.so!0x000076e76ea70c2e
+                                -> native_runtime.so!0x000076e76ea85a69
+                                    -> syscall
+
+==== 4 thread(s)  name='libuv-worker'  LWP e.g. 2971632,2971633,2971634,2971635 ====
+   clone3
+    -> start_thread
+        -> worker
+            -> uv_cond_wait
+                -> ___pthread_cond_wait
+                    -> __pthread_cond_wait_common
+                        -> __GI___futex_abstimed_wait_cancelable64
+                            -> __futex_abstimed_wait_common
+                                -> __futex_abstimed_wait_common64
+
+==== 2 thread(s)  name='iou-wrk-2970507'  LWP e.g. 2970511,2970893 ====
+   unknown!0x0000000000000000
+
+==== 2 thread(s)  name='iou-wrk-2970614'  LWP e.g. 2970802,2971255 ====
+   unknown!0x0000000000000000
+
+==== 2 thread(s)  name='iou-wrk-2970814'  LWP e.g. 2970816,2971103 ====
+   unknown!0x0000000000000000
+
+==== 2 thread(s)  name='iou-wrk-2970822'  LWP e.g. 2970824,2970974 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970081 ====
+   clone3
+    -> start_thread
+        -> <std::sys::thread::unix::Thread>::new::thread_start
+            -> <std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                -> std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+                    -> <tokio::runtime::task::harness::Harness<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                        -> <tokio::runtime::task::core::Core<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+                            -> <tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}> as core::future::future::Future>::poll
+                                -> tokio::runtime::scheduler::multi_thread::worker::run
+                                    -> tokio::runtime::context::runtime::enter_runtime::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0},
+                                        -> <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0}::{closure#0},
+                                            -> <tokio::runtime::scheduler::multi_thread::worker::Context>::park_timeout
+                                                -> <tokio::runtime::scheduler::multi_thread::park::Parker>::park
+                                                    -> <tokio::runtime::time::Driver>::park_internal
+                                                        -> <tokio::runtime::io::driver::Driver>::turn
+                                                            -> <mio::poll::Poll>::poll
+                                                                -> epoll_wait
+
+==== 1 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970371 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76ea7d6a2
+                -> native_runtime.so!0x000076e76ea5ef33
+                    -> native_runtime.so!0x000076e76ea62bd4
+                        -> native_runtime.so!0x000076e76ea5d931
+                            -> native_runtime.so!0x000076e76ea7fbc5
+                                -> native_runtime.so!0x000076e76ea669cd
+                                    -> native_runtime.so!0x000076e76ea6bccd
+                                        -> native_runtime.so!0x000076e76ea6f366
+                                            -> native_runtime.so!0x000076e76ea718b8
+                                                -> native_runtime.so!0x000076e76ea6b318
+                                                    -> native_runtime.so!0x000076e76ea6a455
+                                                        -> native_runtime.so!0x000076e76ea6f85e
+                                                            -> native_runtime.so!0x000076e76ea6715d
+                                                                -> native_runtime.so!0x000076e76ea70a82
+                                                                    -> native_runtime.so!0x000076e76ea85afd
+                                                                        -> syscall
+
+==== 1 thread(s)  name='tokio-runtime-w'  LWP e.g. 2970379 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76ea7d6a2
+                -> native_runtime.so!0x000076e76ea5ef33
+                    -> native_runtime.so!0x000076e76ea62bd4
+                        -> native_runtime.so!0x000076e76ea5d931
+                            -> native_runtime.so!0x000076e76ea7fbc5
+                                -> native_runtime.so!0x000076e76ea669cd
+                                    -> native_runtime.so!0x000076e76ea6bccd
+                                        -> native_runtime.so!0x000076e76ea6f366
+                                            -> native_runtime.so!0x000076e76ea718b8
+                                                -> native_runtime.so!0x000076e76ea6b318
+                                                    -> native_runtime.so!0x000076e76ea6a455
+                                                        -> native_runtime.so!0x000076e76ea6f85e
+                                                            -> native_runtime.so!0x000076e76ea6728d
+                                                                -> native_runtime.so!0x000076e76ea6d54f
+                                                                    -> native_runtime.so!0x000076e76ea82a7b
+                                                                        -> epoll_wait
+
+==== 1 thread(s)  name='iou-sqp-2970506'  LWP e.g. 2970507 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970512'  LWP e.g. 2970513 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-wrk-2970513'  LWP e.g. 2970599 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970610'  LWP e.g. 2970614 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970803'  LWP e.g. 2970804 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-wrk-2970804'  LWP e.g. 2970812 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970813'  LWP e.g. 2970814 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970817'  LWP e.g. 2970818 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-wrk-2970818'  LWP e.g. 2970820 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970821'  LWP e.g. 2970822 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-sqp-2970825'  LWP e.g. 2970826 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='iou-wrk-2970826'  LWP e.g. 2970830 ====
+   unknown!0x0000000000000000
+
+==== 1 thread(s)  name='router'  LWP e.g. 2971479 ====
+   clone3
+    -> start_thread
+        -> native_runtime.so!0x000076e76eccb64f
+            -> native_runtime.so!0x000076e76970c439
+                -> native_runtime.so!0x000076e769a22624
+                    -> native_runtime.so!0x000076e769a8a795
+                        -> native_runtime.so!0x000076e76992cd52
+                            -> native_runtime.so!0x000076e76ea70c2e
+                                -> native_runtime.so!0x000076e76ea85a69
+                                    -> syscall
+
+==== 1 thread(s)  name='furiosa-llm'  LWP e.g. 2971631 ====
+   clone3
+    -> start_thread
+        -> unknown!0x00000000006b954c
+            -> unknown!0x00000000006f858c
+                -> unknown!0x000000000054ce52
+                    -> _PyEval_EvalFrameDefault
+                        -> PyObject_Vectorcall
+                            -> unknown!0x0000000000582102
+                                -> unknown!0x000000000064ddaa
+                                    -> __GI___clock_nanosleep
+
+==== 1 thread(s)  name='furiosa-llm'  LWP e.g. 2967220 ====
+   _start
+    -> __libc_start_main_impl
+        -> __libc_start_call_main
+            -> Py_BytesMain
+                -> Py_RunMain
+                    -> _PyRun_AnyFileObject
+                        -> _PyRun_SimpleFileObject
+                            -> unknown!0x00000000006b5263
+                                -> unknown!0x0000000000608b52
+                                    -> PyEval_EvalCode
+                                        -> _PyEval_EvalFrameDefault
+                                            -> PyObject_Vectorcall
+                                                -> __pyx_pw_6uvloop_4loop_4Loop_45run_until_complete
+                                                    -> __pyx_pf_6uvloop_4loop_4Loop_44run_until_complete
+                                                        -> PyObject_VectorcallMethod
+                                                            -> __pyx_pw_6uvloop_4loop_4Loop_25run_forever
+                                                                -> __pyx_pf_6uvloop_4loop_4Loop_24run_forever
+                                                                    -> __pyx_f_6uvloop_4loop_4Loop__run
+                                                                        -> __pyx_f_6uvloop_4loop_4Loop__Loop__run
+                                                                            -> uv_run
+                                                                                -> uv.io_poll
+                                                                                    -> __GI_epoll_pwait
+

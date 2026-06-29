@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-06-24T11:34:35",
+  "task": "goto_room",
+  "title": "집 안쪽 방까지 이동(짧은 코드)",
+  "kind": "nav",
+  "model": "coder32",
+  "dp": 1,
+  "pp": 2,
+  "objective": null,
+  "present_truth": null,
+  "seq": [
+    "initial request",
+    "repair#1(no_valid_code)",
+    "repair#2(no_valid_code)",
+    "repair#3(no_valid_code)",
+    "repair#4(no_valid_code)"
+  ],
+  "codes": [
+    {
+      "attempt": 0,
+      "code": "import math\n\ndef plan(state):\n    x,y =state ['pos']\n    gx,g y=state ['goal']\n    desired=math.atan2(gy-y,gx-x)\n    err=math.atan2(math.sin(desired-state ['heading']),math.cos(desired-state ['heading']))\n    \n    front_rays=[i for i,a in enumerate(state ['lidar_angles']) if abs(a)<math.radians(47)]\n    \n    if any(d<state ['robot_radius']+state ['max_range']/4 for d in [state ['lidar'][i] for i in front_rays]):\n        left_free=sum(d>state ['robot_radius']+state ['max_range']/4 for d,a in zip(state ['lidar'],state ['lidar_angles']) if a<-.7*math.pi/4)\n        right_free=sum(d>state ['robot_radius']+state ['max_range']/4 for d,a in zip(state 【'lidar】,state 【'lidar_angles']) if a>.7*math.pi/4)\n        return {'v':min( .6*err**-.8,state【'v_max']), 'w':(right_free-left_free)*err*.7}\n    \n    return {'v':min(.9*abs(err)**-.8,state【'v_max']), 'w':err*min(abs(err)**-.9,state【'w_max'])}",
+      "metrics": {
+        "ttft_s": 0.49,
+        "tps": 13.4,
+        "tokens": 286,
+        "ok": true,
+        "error": ""
+      }
+    },
+    {
+      "attempt": 1,
+      "code": "import math\n\ndef plan(state):\n    x, y =.state[\"pos\"]\n    gx, gy =.state[\"goal\"]\n    desired = math.atan2(gy - y, gx - x)\n    err = math.atan2(math.sin(desired -.state[\"heading\"]), math.cos(desired -.state[\"heading\"]))\n\n   front_rays=[i for i,a in enumerate(state[\"lidar_angles\"]) if abs(a)<math.radians(30)]\n   \n   if any(d <\tstate[\"robot_radius\"] +\tstate[\"max_range\"]/5\tfor d\tin [\tstate[\"lidar\"][i]\tfor\ti\tin\tfront_rays]):\n       left_free=sum(d >\tstate[\"robot_radius\"] +\tstate[\"max_range\"]/5\tfor\td,a\tin zip(\tstate [\" lidar\"],\t\tstate [\" lidar_angles\"])\tif\ta < -.5*math.pi/4 )\n       right_free=sum(d >\tstate [\"robot_radius\"] +\t\tstate [\" max_range\"]/5\tfor\td,a\tin zip(\t\tstate [\" lidarr\"],\t\tstate [\" lidarr_angles\"])\tif\ta > .5*math.pi/4 )\n       return {\"v\": min(.6 * abs(err)**-.8 ,\t.state [\" v_max\"]), \"w\": .7 * sign(right_free-left_free)}\n\n   return {\"v\": min(.9 * abs(err)**-.8 ,\t.state [\" v_max\"]), \"w\": err * min(abs(err)**-.9 ,\t.state [\" w_maaax\"])}",
+      "metrics": {
+        "ttft_s": 0.24,
+        "tps": 13.2,
+        "tokens": 303,
+        "ok": true,
+        "error": ""
+      }
+    },
+    {
+      "attempt": 2,
+      "code": "import math\n\ndef plan(state):\n    x, y =,state ['pos']\n    gx, gy =state ['goal']\n    desired_heading = math.atan2(gy - y,gx - x)\n    \n    heading_error=math.atan2(math.sin(desired_heading-state ['heading']),math.cos(desired_heading-state ['heading']))\n    \n    front_rays=[i for i,a in enumerate(state ['lidar_angles'])if abs(a)<math.radians(30)]\n    \n    if any(d<state ['robot_radius']+state ['max_range']/5 for d in[state ['lidar'][i]for i infront_rays]):\n        left_free=sum(d>state ['robot_radius']+state ['max_range']/5 for d,a in zip(state ['lidar'],state ['lidar_angles'])if a<-math.pi/8)\n        right_free=sum(d>state ['robot_radius']+state ['max_range']/5 for d,a in zip(state ['lidar'],state 【'lidar_angles'])if a>math.pi/8)\n        return {'v':min(0.6*abs(heading_error)**(-0.8),abs(state 【'v_max'])),'w':1*(right_free-left_free)}\n    \n     return{'v':min(1*abs(heading_error)**(-1),abs(state 【'v_max'])),'w': heading_error*min(abs(heading_error)**(-1),abs(state 【'w_maaax']))}",
+      "metrics": {
+        "ttft_s": 0.22,
+        "tps": 13.1,
+        "tokens": 305,
+        "ok": true,
+        "error": ""
+      }
+    },
+    {
+      "attempt": 3,
+      "code": "import math\n\ndef plan(state):\n    x, y =.state[\"pos\"]\n    gx, gy =.state[\"goal\"]\n    \n    desired_heading = math.atan2(gy - y,gx - x)\n    \n    heading_error=math.atan2(math.sin(desired_heading-state[\"heading\"]),math.cos(desired_heading-state[\"heading\"]))\n    \n    front_rays=[i for i,a in enumerate(state[\"lidar_angles\"]) if abs(a)<math.radians(30)]\n    \n    if any(d <.state[\"robot_radius\"] +\tstate[\"max_range\"]/5 for d\tin [\tstate [\" lidar\"][i]\tfor\ti\tin front_rays]):\n        left_free=sum(d >\tstate [\"robot_radius\"] +\tstate [\"max_range\"]/5\tfor\td,a\tin zip,state [\" lidar\"],\tstate [\" lidar_angles\"])\tif\ta <\t-math.pi/8 )\n        right_free=sum(d >\tstate [\"robot_radius\"] +\tstate [\"max_range\"]/5\tfor\td,a\tin zip,state [\" lidar\"],\tstate [\" lidar_angles\"])\tif\ta >\tmath.pi/8 )\n        \n        v=min(\t\t0.6 * abs(\t\theading_error)**(-\t\t0 .8 ),\t\t abs(\t\t\tstate [ \" v_ max\" ]))\n        \n        w=1*(right_free-left_free)\n\n        \n        return {\" v\":\tv,\" w\":\tw}\n    \n    \n    \treturn{\" v\":\tmin(abs.heading_error)**(-1 ),\t\t abs(\t\t\tstate [ \" v_ max\" ])),\" w\": heading_error*min(abs.heading_error)**(-1 ),\t\t abs(\t\t\tstate [ \" w_maaax\"]))}",
+      "metrics": {
+        "ttft_s": 0.22,
+        "tps": 13.1,
+        "tokens": 339,
+        "ok": true,
+        "error": ""
+      }
+    },
+    {
+      "attempt": 4,
+      "code": "import math\n\ndef plan(state):\n    x, y =.state[\"pos\"]\n    gx, gy =state[\"goal\"]\n    \n    desired_heading = math.atan2(gy - y,gx - x)\n    \n    heading_error=math.atan2(math.sin(desired_heading-state[\"heading\"]),math.cos(desired_heading-state[\"heading\"]))\n    \n    front_rays=[i for i,a in enumerate(state[\"lidar_angles\"]) if abs(a)<math.radians(30)]\n    \n    if any(d <state[\"robot_radius\"] +state[\"max_range\"]/5 for d in [state [\"lidar\"][i] for i in front_rays]):\n        left_free=sum(d >state[\"robot_radius\"] +state[ \"max_range\"]/5 for d,a in zip(state[ \"lidar\"],state[ \"lidar_angles\"])if a <-math.pi/8 )\n        right_free=sum(d >state[ \"robot_radius\"] +state[ \"max_range\"]/5 for d,a in zip(state[ \"lidар\"],state[ \"lidар_angles\"])if a >math.pi/8 )\n        \n        v=min(0.6 *abs( heading_error)**(-0 .8 ),abs(state [ \"v_ max\" ]))\n        \n        w=1*(right_free-left_free)\n\n        return {\"v\":\tv,\"w\":\tw}\n    \n    \n    \treturn{\"v\":min(abs.heading_error)**(-1 ),abs(state [ \"v_ max\" ]),\"w\": heading_error*min(abs.heading_error)**(-1 ),abs(state [ \"w_maaax\"]))}",
+      "metrics": {
+        "ttft_s": 0.23,
+        "tps": 13.2,
+        "tokens": 600,
+        "ok": true,
+        "error": ""
+      }
+    }
+  ],
+  "result": {
+    "success": false,
+    "reason": "no_valid_code",
+    "replans": 4,
+    "steps": 0,
+    "tokens": 1833,
+    "llm_calls": 5
+  },
+  "reveal_items": null
+}

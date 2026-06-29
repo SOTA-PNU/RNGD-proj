@@ -1,0 +1,139 @@
+digraph inference {
+    rankdir=LR;
+    labelloc="t";
+    label="furiosa-llm serve: scenario B — inference request path (HTTP -> FastAPI -> serving_* -> engine -> native -> NPU)";
+    node [shape=ellipse, fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=8];
+
+    // ---- HTTP / FastAPI route layer ----
+    subgraph cluster_server {
+        label="FastAPI routes (server/app.py)";
+        style=filled;
+        fillcolor=gray95;
+        http_in         [label="HTTP request\n(uvicorn ASGI)", shape=note];
+        r_chat          [label="create_chat_completion\nserver/app.py:191"];
+        r_compl         [label="create_completion\nserver/app.py:177"];
+        r_embed         [label="create_embedding\nserver/app.py:205"];
+        r_resp          [label="create_responses\nserver/app.py:316"];
+        r_tok           [label="tokenize / detokenize\nserver/app.py:273"];
+        r_health        [label="health (GET /health)\nserver/app.py:119"];
+        r_metrics       [label="prometheus_app (GET /metrics)\nserver/metrics.py:29"];
+        parse_request   [label="utils.parse_request\nserver/app.py:190"];
+    }
+
+    // ---- Serving handler layer ----
+    subgraph cluster_serving {
+        label="Serving handlers (serving_*.py)";
+        style=filled;
+        fillcolor=gray95;
+        s_chat          [label="OpenAIServingChat.create_chat_completion\nserving_chat.py:143"];
+        s_chat_harmony  [label="_make_request_with_harmony\nserving_chat.py:184"];
+        s_chat_stream   [label="chat_completion_stream_generator\nserving_chat.py:263"];
+        s_chat_full     [label="chat_completion_full_generator\nserving_chat.py:279"];
+        s_compl         [label="OpenAIServingCompletion.create_completion\nserving_completions.py:50"];
+        s_embed         [label="OpenAIServingEmbedding.create_embedding\nserving_embedding.py:70"];
+        s_resp          [label="OpenAIServingResponses.create_responses\nserving_responses.py:245"];
+        s_tok           [label="OpenAIServingTokenization.create_tokenize\nserving_tokenization.py:65"];
+        preprocess_chat [label="chat_utils.preprocess_chat\nchat_utils.py:1447"];
+        apply_tmpl      [label="apply_hf_chat_template\nchat_utils.py:1513"];
+        hf_apply_tmpl   [label="transformers apply_chat_template\nchat_utils.py:1411"];
+        to_sampling     [label="to_sampling_params\nserving_chat.py:211"];
+        merge_iters     [label="utils.merge_async_iterators\nserving_completions.py:115"];
+        handle_disc     [label="utils.handle_disconnect\nserving_chat.py:261"];
+    }
+
+    // ---- Engine layer ----
+    subgraph cluster_engine {
+        label="AsyncLLMEngine (llm_engine.py)";
+        style=filled;
+        fillcolor=gray95;
+        eng_generate    [label="AsyncLLMEngine.generate\nllm_engine.py:611"];
+        eng_encode      [label="AsyncLLMEngine.encode\nllm_engine.py:670"];
+        eng_abort       [label="AsyncLLMEngine.abort\nllm_engine.py:684"];
+        preprocess_prom [label="vllm_compat.preprocess_prompt\nllm_engine.py:600"];
+        convert_stream  [label="NativeOutputConverter.convert_stream\nllm_engine.py:626"];
+        stream_decode   [label="StreamDecoder.push_decode -> tokenizer.decode\noutputs.py:548"];
+    }
+
+    // ---- Native boundary ----
+    subgraph cluster_native {
+        label="Native boundary (furiosa.native_runtime.llm — Rust/PyO3 .so)";
+        style=filled;
+        fillcolor=gray90;
+        n_stream_gen    [label="NativeLLMEngine.stream_generate\nllm_engine.py:611", shape=box, style=filled, fillcolor=lightyellow];
+        n_encode        [label="NativeLLMEngine.encode\nllm_engine.py:670", shape=box, style=filled, fillcolor=lightyellow];
+        n_abort         [label="NativeLLMEngine.abort_request\nllm_engine.py:684", shape=box, style=filled, fillcolor=lightyellow];
+        n_is_alive      [label="NativeLLMEngine.is_alive\nserver/app.py:119", shape=box, style=filled, fillcolor=lightyellow];
+        n_prom_string   [label="get_metrics_as_prometheus_string\nserver/metrics.py:29", shape=box, style=filled, fillcolor=lightyellow];
+        n_req_output    [label="NativeRequestOutput (attr reads)\noutputs.py:336", shape=box, style=filled, fillcolor=lightyellow];
+    }
+
+    // ---- Kernel placeholder ----
+    subgraph cluster_kernel {
+        label="Kernel / NPU (eBPF target)";
+        style=filled;
+        fillcolor=gray85;
+        k_ioctl         [label="rngd ioctl\n(NPU driver: DMA/PDMA, pe_0/pe_1/pe_2)", shape=box, style=filled, fillcolor=orange];
+    }
+
+    // ---- HTTP -> route edges ----
+    http_in -> r_chat;
+    http_in -> r_compl;
+    http_in -> r_embed;
+    http_in -> r_resp;
+    http_in -> r_tok;
+    http_in -> r_health;
+    http_in -> r_metrics;
+
+    // ---- route -> serving edges ----
+    r_chat  -> parse_request    [label="server/app.py:190"];
+    r_chat  -> s_chat           [label="server/app.py:191"];
+    r_compl -> s_compl          [label="server/app.py:177"];
+    r_embed -> s_embed          [label="server/app.py:205"];
+    r_resp  -> s_resp           [label="server/app.py:316"];
+    r_tok   -> s_tok            [label="server/app.py:273"];
+
+    // ---- chat serving edges ----
+    s_chat -> preprocess_chat   [label="standard\nserving_chat.py:192"];
+    s_chat -> s_chat_harmony    [label="gpt_oss\nserving_chat.py:184"];
+    s_chat -> to_sampling       [label="serving_chat.py:211"];
+    s_chat -> handle_disc       [label="serving_chat.py:261"];
+    s_chat -> eng_generate      [label="DELTA stream\nserving_chat.py:257"];
+    s_chat -> eng_generate      [label="FINAL\nserving_chat.py:272"];
+    s_chat -> s_chat_stream     [label="serving_chat.py:263"];
+    s_chat -> s_chat_full       [label="serving_chat.py:279"];
+    handle_disc -> eng_abort    [label="_abort_request\nserving_chat.py:1363"];
+    preprocess_chat -> apply_tmpl [label="chat_utils.py:1513"];
+    apply_tmpl -> hf_apply_tmpl   [label="chat_utils.py:1411"];
+
+    // ---- completion serving edges ----
+    s_compl -> eng_generate     [label="per prompt\nserving_completions.py:112"];
+    s_compl -> merge_iters      [label="serving_completions.py:115"];
+
+    // ---- embedding serving edges ----
+    s_embed -> eng_encode       [label="serving_embedding.py:84"];
+    s_embed -> merge_iters      [label="serving_embedding.py:91"];
+
+    // ---- responses / tokenize serving edges ----
+    s_resp -> preprocess_chat   [label="serving_responses.py:245"];
+    s_resp -> eng_generate      [label="serving_responses.py:292"];
+    s_tok  -> preprocess_chat   [label="serving_tokenization.py:87"];
+
+    // ---- engine -> native edges ----
+    eng_generate -> preprocess_prom [label="llm_engine.py:600"];
+    eng_generate -> n_stream_gen    [label="llm_engine.py:611"];
+    eng_generate -> convert_stream  [label="llm_engine.py:626"];
+    eng_encode   -> n_encode        [label="llm_engine.py:670"];
+    eng_abort    -> n_abort         [label="llm_engine.py:684"];
+    convert_stream -> n_req_output  [label="async-iterate\noutputs.py:336"];
+    convert_stream -> stream_decode [label="outputs.py:404"];
+
+    // ---- request-time native lifecycle / metrics ----
+    r_health  -> n_is_alive     [label="server/app.py:119"];
+    r_metrics -> n_prom_string  [label="server/metrics.py:29"];
+
+    // ---- native -> kernel edges ----
+    n_stream_gen -> k_ioctl     [label="NPU exec (per decode step)"];
+    n_encode     -> k_ioctl     [label="NPU exec"];
+    n_req_output -> n_stream_gen [label="yields", style=dashed];
+}

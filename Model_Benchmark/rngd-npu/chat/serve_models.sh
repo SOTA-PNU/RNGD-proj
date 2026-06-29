@@ -28,12 +28,19 @@ declare -A CAT=(
   [coder7]="8002|8|$A/qwen2.5-coder-7b-inst-tp8|"
   [coder14]="8003|8|$A/qwen2.5-coder-14b-inst-tp8|"
   [coder14-base]="8007|8|$A/qwen2.5-coder-14b-tp8|"
+  # Coder-32B(bf16 62G)은 1장에 안 들어가 pp2(2장 레이어분할)로 띄운다. tp 필드 16 = "카드 2장".
+  # 실측(2026-06-18): pp2 면 per-card 29.7/31.4G(벽 ~32G 아래) → 정상. chat UI 는 pp_fixed=2 로 자동 2장.
+  [coder32]="8001|16|$A/qwen2.5-coder-32b-inst-tp8|-pp 2"
   [qwen3-32b]="8004|8|$A/qwen3-32b-fp8-tp8|--reasoning-parser qwen3"
   [qwen3-32b-16k]="8005|8|$A/qwen3-32b-fp8-tp8-16k|--reasoning-parser qwen3"
   # Qwen3-Coder-30B-A3B (MoE, max-model-len 65536). a3b-fp8 은 masquerade 로 FP8 MoE serve 부활(30G, 1장 OK).
   # a3b(bf16)은 58G > 1장 47.5G → 1장이면 OOM. 2장 레이어분할로 띄우려면 serve 때 -pp 2 를 직접 추가.
   [a3b-fp8]="8000|8|$A/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc|"
   [a3b]="8006|8|$A/qwen3-coder-30b-a3b-inst-tp8-65k-tc|"
+  # Qwen2.5-72B-Instruct (bf16 136G) — ❌ 2026.2.0서 serve 불가(비활성, 2026-06-17 실측).
+  # pp4(4칩)+큰 per-stage 가중치 바인딩이 NPU 드라이버 raw 에러(-1803550720)로 실패. OOM/KV 아님.
+  # 진짜 벽=per-card 가중치 ~32G 초과. 살리려면 FP8 양자화 후 -pp 4(18G/장). (해제 전 README §3·info/README_build.md)
+  # [qwen72b]="8008|32|$A/qwen2.5-72b-inst-tp8|-pp 4"
   [exaone-32b]="8011|32|$A/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31|--reasoning-parser exaone4"
   [llama-70b]="8012|32|$A/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440|--tool-call-parser llama3_json"
   [qwen3-32b-tp32]="8013|32|$A/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2|--reasoning-parser qwen3"
@@ -86,6 +93,9 @@ for k in "${SEL[@]}"; do
   if pgrep -f "furiosa-llm serve.*--port $PORT" >/dev/null 2>&1; then echo "✔  $k 포트 $PORT 이미 실행 중"; continue; fi
   if [ "$T" = "32" ]; then
     DEV="npu:0,npu:1,npu:2,npu:3"
+  elif [ "$T" = "16" ]; then
+    if [ "${#FREE[@]}" -lt 2 ]; then echo "✗ 빈 카드 2장 필요(pp2: $k 는 62G라 2장 분할)"; exit 1; fi
+    DEV="npu:${FREE[0]},npu:${FREE[1]}"; FREE=("${FREE[@]:2}")
   else
     if [ "${#FREE[@]}" -eq 0 ]; then echo "✗ 빈 카드 없음 — tp8 모델은 동시 최대 4개입니다."; exit 1; fi
     DEV="npu:${FREE[0]}"; FREE=("${FREE[@]:1}")

@@ -77,13 +77,29 @@ CATALOG = {
                            sub="qwen2.5-coder-14b-inst-tp8", extra=[], ctx=32768),
     "coder14-base":   dict(name="Qwen2.5-Coder-14B tp8", port=8007, kind="tp8",
                            sub="qwen2.5-coder-14b-tp8", extra=[], ctx=32768),
+    # Qwen2.5-Coder-32B-Inst (bf16 62G) — 1장(47.5G)엔 안 들어가 serve때 pp2 로 2장 레이어분할(pp_fixed=2).
+    # 실측(2026-06-18): pp2 면 per-card 가중치 29.7/31.4G(벽 ~32G 아래)+KV(15.8/14.1G) → 정상 serve·생성.
+    # a3b bf16(pp2 29.7G/장 OK) 선례와 동일. (pp2 가 막히면 pp_fixed=4 로 15.5G/장 안전화.)
+    "coder32":        dict(name="Qwen2.5-Coder-32B-Inst", port=8001, kind="tp8", pp_fixed=2,
+                           sub="qwen2.5-coder-32b-inst-tp8", extra=[], ctx=32768),
     # Qwen3-Coder-30B-A3B (MoE, --max-model-len 65536 로 빌드). a3b-fp8 은 masquerade 로 FP8 MoE serve
     # 부활시킨 것(artifact.json model_type=qwen3 위장) — 30G 라 1장 OK, 사용자가 8000 에서 운용 중.
-    # a3b(bf16)은 58G > 1장 47.5G 라 1장(dp1·pp1)이면 serve OOM → pp≥2(2장 레이어분할)로 띄워야 함.
+    # a3b(bf16)은 58G > 1장 47.5G 라 1장(dp1·pp1)이면 serve OOM → pp_fixed=2(2장 레이어분할, 29.7G/장 OK)로 강제.
+    # (전에는 pp 미고정이라 모델 바꿀 때 기본 pp1 로 떠 OOM '띄우기 실패' 났음 — 2026-06-18 정정.)
     "a3b-fp8":        dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp8", port=8000, kind="tp8",
                            sub="qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc", extra=[], ctx=65536),
-    "a3b":            dict(name="Qwen3-Coder-30B-A3B-Inst tp8", port=8006, kind="tp8",
+    "a3b":            dict(name="Qwen3-Coder-30B-A3B-Inst tp8", port=8006, kind="tp8", pp_fixed=2,
                            sub="qwen3-coder-30b-a3b-inst-tp8-65k-tc", extra=[], ctx=65536),
+    # Qwen2.5-72B-Instruct(bf16 tp8 아티팩트, 136G) — ❌ **2026.2.0서 serve 불가라 비활성**(2026-06-17 실측·4에이전트 규명).
+    # bf16 은 pp2면 67.7G/장>47.5라 pp4 강제인데, pp4(4칩 인터칩)+큰 per-stage 가중치(33.6G/장) 조합이
+    # NativeLLMEngine 가중치 바인딩(인터칩 DRAM 매핑) 단계에서 NPU 드라이버 raw 에러(-1803550720=0x94800000,
+    # errno 아님)로 죽음. OOM 아님(카드당 11G 여유·--max-model-len 4096 동일), KV 아님(KV 로그 도달 전).
+    # 대조: qwen3-32b-fp8(pp1·인터칩 없음) OK, coder7 pp4(작은 per-stage) OK, a3b bf16 pp2(2칩 큰 per-stage) OK.
+    # 진짜 벽은 per-card 가중치 ~32G 초과(bracket: a3b bf16 pp2 29.7G/장 OK / 72b pp4 33.6G/장 FAIL / a3b pp4 16G OK).
+    # → 살리려면 FP8 양자화 후 -pp 4(18G/장, 벽 아래) 가 1순위(미실측). FP8+pp2(36G/장)는 벽 위라 위험. 70B급 즉시
+    # 대안은 llama-3.3-70b(tp32 prebuilt). 상세 README.md §3·info/README_build.md·메모리. (FP8 생기면 pp_fixed=4로 부활.)
+    # "qwen72b":      dict(name="Qwen2.5-72B-Inst", port=8008, kind="tp8", pp_fixed=4,
+    #                     sub="qwen2.5-72b-inst-tp8", extra=[], ctx=32768),
     "qwen3-32b":      dict(name="Qwen3-32B-FP8", port=8004, kind="tp8",
                            sub="qwen3-32b-fp8-tp8", extra=["--reasoning-parser", "qwen3"], ctx=40960),
     "qwen3-32b-16k":  dict(name="Qwen3-32B-FP8-16k", port=8005, kind="tp8",
@@ -104,6 +120,10 @@ DISPLAY_NAMES = [m["name"] for m in CATALOG.values()]
 # 기본 선택 모델 = 가장 가벼운 정상 모델 coder7 (coder1.5 는 출력 깨짐으로 제외, 위 참고).
 DEFAULT_MODEL = CATALOG["coder7"]["name"]
 STARTUP_TIMEOUT = float(os.environ.get("CHAT_SERVE_TIMEOUT", "900"))
+# 마지막으로 고른 모델/병렬구성을 서버측에 기억 → 브라우저 새로고침 후에도 default(coder7)로 안 돌아감.
+# user_set=False 면(아직 아무도 안 바꿈) '지금 NPU 에 떠 있는 모델'로 시작한다(아래 _initial_model).
+# (단일 사용자 DEMO 전제. 새 세션/탭도 마지막 선택을 따른다.)
+_LAST_MODEL = {"name": DEFAULT_MODEL, "dp": 1, "pp": 1, "user_set": False}
 
 
 def _dd_choices():
@@ -147,6 +167,7 @@ class ServeManager:
         self._dev = {}
         self._par = {}     # key -> (dp, pp). tp8 의 복제 수·레이어분할 수(serve 명령에 -dp/-pp 로 반영)
         self._pending = {} # key -> (dp, pp). 전환 중에 들어온 새 dp/pp 요청 — 전환 끝나면 즉시 적용
+        self._stopping_all = False  # '전부 내리기' 진행 중 — in-flight 로딩을 조용히 중단시키는 플래그
         self._lru = []
 
     def _touch(self, key):
@@ -322,9 +343,11 @@ class ServeManager:
         base = f"http://127.0.0.1:{port}/v1"
         deadline = time.time() + STARTUP_TIMEOUT
         while time.time() < deadline:
-            # 로딩 중에 dp/pp 변경 요청(_pending)이 들어왔으면 이 로딩을 즉시 포기 →
-            # _transition 이 옛 serve 를 내리고 새 설정으로 다시 띄운다(변경 중 설정변경 반영).
+            # '전부 내리기' 가 눌렸으면 이 로딩을 조용히 포기(error 표시 없이 — stop_all 이 정리).
+            # 또는 로딩 중 dp/pp 변경 요청(_pending)이 들어왔으면 즉시 포기 → _transition 이 새 설정으로 재기동.
             with self._lock:
+                if self._stopping_all:
+                    return
                 pend = self._pending.get(key)
             if pend is not None and pend != self._par.get(key):
                 return
@@ -375,6 +398,34 @@ class ServeManager:
             self._dev.pop(key, None)
             self._state[key] = "down"
             self._err.pop(key, None)
+
+    def stop_all(self):
+        """떠 있는 furiosa-llm serve 를 전부 종료하고 카드를 비운다(UI '전부 내리기' 버튼).
+        MGR 가 띄운 것 + 터미널 등에서 띄운 것까지 모두. 로딩 중이어도 깔끔히 취소된다."""
+        with self._lock:
+            self._stopping_all = True       # in-flight _start_and_wait 가 error 안 내고 빠지게
+            for k in CATALOG:
+                if self._state.get(k) in ("up", "loading"):
+                    self._state[k] = "stopping"
+            procs = list(self._proc.values())
+        for p in procs:
+            self._kill(p)
+        # 트래킹 안 되는(터미널 등에서 띄운) serve 까지 전부 — serve_models.sh stop 과 동일
+        try:
+            subprocess.run(["pkill", "-f", "furiosa-llm serve"], check=False, timeout=10)
+        except Exception:
+            pass
+        time.sleep(2.0)
+        with self._lock:
+            self._proc.clear()
+            self._dev.clear()
+            self._par.clear()
+            self._pending.clear()
+            self._err.clear()
+            self._lru = []
+            for k in CATALOG:
+                self._state[k] = "down"
+            self._stopping_all = False
 
     def states(self):
         found = self._discover()    # pgrep 로 실제 살아있는 키
@@ -443,7 +494,10 @@ input:focus, textarea:focus, .gr-box:focus-within {{ outline:none !important; bo
 #model-dd {{ max-width:480px !important; min-width:340px !important; }}
 #model-dd, #model-dd .wrap, #model-dd .secondary-wrap {{ background:transparent !important; border:none !important; box-shadow:none !important; min-height:0 !important; }}
 /* 긴 모델명이 잘리지 않게: 폭 넉넉히 + 한 줄 + 넘치면 …(끝 칩은 input 밖 secondary-wrap 라 안 가림) */
-#model-dd input {{ font-weight:600 !important; font-size:13.5px !important; color:{TXT} !important; font-family:monospace !important; cursor:pointer; text-align:right; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; padding-right:2px !important; }}
+/* 우측 정렬 글자가 세모(caret) 아이콘과 겹치지 않게 input 오른쪽에 caret 폭만큼 여백 확보.
+   주의: .secondary-wrap 에는 손대지 않는다 — gradio 에선 그 래퍼가 input 을 품고 있어
+   pointer-events 등을 건드리면 클릭(드롭다운 열기)이 막힌다. 패딩만으로 겹침을 해결한다. */
+#model-dd input {{ font-weight:600 !important; font-size:13.5px !important; color:{TXT} !important; font-family:monospace !important; cursor:pointer; text-align:right; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; padding-right:30px !important; }}
 #model-dd .wrap:hover {{ background:{CARD} !important; border-radius:8px !important; }}
 
 /* 사이드바 */
@@ -462,6 +516,9 @@ input:focus, textarea:focus, .gr-box:focus-within {{ outline:none !important; bo
 #del-btn {{ background:transparent !important; border:none !important; color:{MUTE} !important; font-size:12.5px !important; text-align:left; }}
 #del-btn:hover {{ color:{RED} !important; }}
 #statusbox, #statusbox div {{ font-size:12.5px; line-height:1.7; color:{TXT} !important; }}
+/* '전부 내리기' — 사이드바 톤(투명·테두리)에 맞추되 카드를 비우는 동작이라 빨강(furiosa 강조)으로 hover */
+#stopall-btn {{ background:transparent !important; border:1px solid {BORDER} !important; color:{MUTE} !important; font-size:12.5px !important; border-radius:10px !important; }}
+#stopall-btn:hover {{ border-color:{RED} !important; color:{RED} !important; background:#1a0d0d !important; }}
 #sidebar .accordion, #sidebar .accordion * {{ border-color:{BORDER} !important; }}
 #userchip {{ border-top:1px solid {BORDER}; margin-top:8px; padding:10px 6px 4px; color:{MUTE}; font-size:13px; }}
 #settings-acc, #rag-acc {{ border:none !important; background:transparent !important; }}
@@ -481,15 +538,25 @@ input:focus, textarea:focus, .gr-box:focus-within {{ outline:none !important; bo
 #chatbot {{ background:transparent !important; border:none !important; max-width:100% !important; margin:0 !important; padding:0 22px !important; }}
 #inputwrap {{ max-width:100% !important; margin:0 !important; }}
 #chatbot .message-wrap, #chatbot .message-row {{ box-shadow:none !important; }}
-#chatbot .message-bubble-border {{ border-color:transparent !important; }}
+/* 중첩 둥근박스 원흉: gradio 가 .user-row(행)·.message-bubble-border(래퍼)·.user(버블) 각각에
+   배경/테두리/radius 를 줘서 박스가 겹쳐 보였다. → 행과 래퍼는 완전히 투명·무radius 로 죽이고
+   박스는 .user 버블 '한 겹만' 남긴다. */
+#chatbot .message-bubble-border {{ border:none !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; }}
+#chatbot .user-row, #chatbot .bot-row {{ background:transparent !important; }}
 #chatbot .bot-row .message, #chatbot .bot-row .bubble, #chatbot .bot {{ background:transparent !important; border:none !important; color:{TXT} !important; }}
-#chatbot .user-row .message, #chatbot .user-row .bubble, #chatbot .user {{ background:{CARD} !important; border:1px solid {BORDER} !important; color:#fff !important; border-radius:14px !important; }}
+#chatbot .user {{ background:{CARD} !important; border:1px solid {BORDER} !important; color:#fff !important; border-radius:14px !important; }}
+#chatbot .user .message-content, #chatbot .user .prose, #chatbot .user .md, #chatbot .user-row .bubble, #chatbot .user-row .message-content {{ background:transparent !important; border:none !important; border-radius:0 !important; box-shadow:none !important; padding:0 !important; }}
 #chatbot .avatar-container, #chatbot .avatar-image {{ display:none !important; }}
 #chatbot .message, #chatbot .message-content, #chatbot .bubble, #chatbot .message-row {{ opacity:1 !important; }}
 #chatbot .user-row .message-content, #chatbot .user-row .message {{ color:#fff !important; }}
 #chatbot .bot-row .message-content, #chatbot .bot-row .message {{ color:{TXT} !important; }}
 /* 답변(봇)은 채팅 폭을 꽉 채우게 — Gradio 기본 width 제한 해제 (질문 말풍선은 우측 컴팩트 유지) */
 #chatbot .bot-row, #chatbot .bot-row .message, #chatbot .bot-row .message-content, #chatbot .bot-row .prose {{ max-width:100% !important; width:100% !important; }}
+/* 가로 스크롤 방지: 대화 내용을 칸 폭에 맞춘다. 긴 텍스트/URL 은 줄바꿈, 코드블록·표는 '자체' 스크롤로 가둠. */
+#chatbot, #chatbot .message-wrap, #chatbot .bubble-wrap, #main, #main > div {{ overflow-x:hidden !important; }}
+#chatbot .message-content, #chatbot .prose, #chatbot .md, #chatbot p, #chatbot li, #chatbot span {{ overflow-wrap:break-word !important; word-break:break-word !important; max-width:100% !important; }}
+#chatbot pre {{ max-width:100% !important; overflow-x:auto !important; white-space:pre !important; }}
+#chatbot table {{ display:block !important; max-width:100% !important; overflow-x:auto !important; }}
 /* 사고 과정 — 접힘 = 연회색 한 줄, 펼침 = 은은한 박스 안 회색 추론 */
 #chatbot details {{ background:transparent !important; border:none !important; padding:0 !important; margin:2px 0 10px !important; }}
 #chatbot details summary {{ color:{MUTE} !important; font-size:13.5px !important; cursor:pointer; list-style:none; outline:none; user-select:none; }}
@@ -554,6 +621,37 @@ def status_html():
             + "".join(rows))
 
 
+def status_struct():
+    """모델 상태 패널의 '정적 구조'(값 자리만 id 로). LED 점/정보 텍스트는 클라이언트가 /status_data
+    를 폴링해 제자리 갱신 → 패널 전체 재렌더(깜빡임) 없이 바뀐 LED 만 바뀐다(전환 LED 펄스는 CSS)."""
+    rows = []
+    for k, m in CATALOG.items():
+        dot = (f'<span id="st-dot-{k}" style="display:inline-block;width:9px;height:9px;'
+               f'border-radius:50%;background:{_COLOR["down"]};margin-right:8px;vertical-align:middle;"></span>')
+        info = f'<span id="st-info-{k}" style="color:{MUTE};"></span>'
+        rows.append(f'<div style="padding:1px 0;">{dot}{m["name"]} {info}</div>')
+    return (f'<div style="color:{MUTE};margin-bottom:5px;">🟢 켜짐 · 🟡 전환중 · 🔴 꺼짐</div>'
+            + "".join(rows))
+
+
+def status_data():
+    """모델 상태를 JSON 으로(클라이언트 폴링용). 각 모델: 색·펄스여부·정보텍스트·에러여부."""
+    st = MGR.states()
+    out = []
+    for k, m in CATALOG.items():
+        s = st[k]
+        dev = MGR.device(k)
+        if m["kind"] != "tp32" and s in ("up", "loading"):
+            dp_v, pp_v = MGR.par(k)
+            dev = f"{dev} · dp{dp_v}·pp{pp_v}" if dev else dev
+        info = dev if (s in ("up", "loading") and dev) else ""
+        if s == "error" and MGR.error(k):
+            info = "실패"
+        out.append({"key": k, "color": _COLOR[s], "pulse": s in ("loading", "stopping"),
+                    "info": info, "err": s == "error"})
+    return {"models": out}
+
+
 # LED 자동 갱신은 '전환 중'에만 Timer 를 켜서 돌린다. 유휴 상태에선 Timer 를 꺼
 # (active=False) 패널을 아예 다시 그리지 않으므로 '전체 깜빡임'이 없다.
 # (gr.skip() 은 Timer.tick 에서 프런트 재렌더를 막지 못해, 켜져 있으면 매 틱 패널이
@@ -580,6 +678,11 @@ def status_force():
     h = status_html()
     _LAST_STATUS["html"] = h
     return h
+
+
+def stop_all_models():
+    """UI '전부 내리기' 버튼: 떠 있는 모델을 전부 종료(카드 비움). 상태 LED 갱신은 클라이언트 폴링."""
+    MGR.stop_all()
 
 
 def load_status():
@@ -687,6 +790,36 @@ _GEN = (gr.update(visible=False), gr.update(visible=True))     # 생성중: 전�
 _IDLE = (gr.update(visible=True), gr.update(visible=False))    # 대기: 전송 표시, 중지 숨김
 
 
+def _fit_context(msgs, ctx, reserve=768):
+    """이력이 모델 컨텍스트(ctx)를 넘으면 오래된 대화 턴부터 버려 항상 들어가게 만든다.
+    system 메시지(시스템 프롬프트·RAG)는 보존하고, 최근 턴을 우선 남긴다(최소 마지막 1턴은 유지).
+    토큰은 글자수/3 으로 보수 추정. 모델을 작은 ctx 로 바꿔도 기존 대화를 이어갈 수 있게 한다."""
+    sys_msgs = [mm for mm in msgs if mm.get("role") == "system"]
+    convo = [mm for mm in msgs if mm.get("role") != "system"]
+
+    def toklen(ms):
+        return sum(len(x.get("content", "")) for x in ms) // 3 + 16
+
+    budget = max(512, ctx - reserve)
+    kept = []
+    for mm in reversed(convo):                      # 최근 턴부터 채운다
+        if kept and toklen(sys_msgs + [mm] + kept) > budget:
+            break
+        kept.insert(0, mm)
+    return sys_msgs + kept
+
+
+# 답변 끝에 화면용으로 붙인 모델 마커(<span class="ans-model-meta">)·RAG 각주(🔎)를 떼어낸다(프롬프트 오염 방지).
+_META_RE = re.compile(
+    r'(?:\s*\n\n<span class="ans-model-meta"[^>]*>[^<]*</span>'
+    r'|\s*\n\n<div style="text-align:right;color:#6b6b73[^>]*>[^<]*</div>'
+    r'|\s*\n\n<span style="color:#888;font-size:12px;">🔎 RAG 참조:[^<]*</span>)+\s*$')
+
+
+def _strip_meta(content: str) -> str:
+    return _META_RE.sub("", content or "")
+
+
 def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt, temperature, max_tokens):
     """history(마지막 user) 뒤에 답변 스트리밍. 출력 7개:
     (chatbot, conv_id, txt, convo, status, send_btn, stop_btn).
@@ -701,7 +834,7 @@ def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt
     if key is None:
         history[-1]["content"] = f"⚠️ 알 수 없는 모델: {model_name}"
         _save_convo(conv_id, model_name, history)
-        yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), status_force(), *_IDLE
+        yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), gr.skip(), *_IDLE
         return
     m = CATALOG[key]
     port = m["port"]
@@ -716,7 +849,7 @@ def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt
             if MGR.state(key) == "error":
                 history[-1]["content"] = f"⚠️ '{model_name}' 띄우기 실패: {MGR.error(key)}"
                 _save_convo(conv_id, model_name, history)
-                yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), status_force(), *_IDLE
+                yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), gr.skip(), *_IDLE
                 return
             if MGR.state(key) == "down":   # 이전 모델 정리로 down 까지 떨어졌으면 다시 요청(idempotent)
                 MGR.request(key, dp, pp)
@@ -726,7 +859,7 @@ def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt
             if time.time() - t0 > STARTUP_TIMEOUT + 30:
                 history[-1]["content"] = f"⚠️ '{model_name}' 준비 시간 초과 — serve_logs/{port}.log"
                 _save_convo(conv_id, model_name, history)
-                yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), status_force(), *_IDLE
+                yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), gr.skip(), *_IDLE
                 return
 
     try:
@@ -734,11 +867,13 @@ def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt
     except Exception as e:
         history[-1]["content"] = f"⚠️ 서버 연결 실패: {e}"
         _save_convo(conv_id, model_name, history)
-        yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), status_force(), *_IDLE
+        yield history, conv_id, "", gr.update(choices=_convo_choices(), value=conv_id), gr.skip(), *_IDLE
         return
 
     msgs = ([{"role": "system", "content": system_prompt}] if system_prompt and system_prompt.strip() else [])
-    msgs += history[:-1]
+    # 답변 끝의 모델표식/ RAG 각주는 화면 표시용이라 다음 프롬프트엔 빼고 보낸다.
+    msgs += [({"role": mm["role"], "content": _strip_meta(mm.get("content", ""))}
+              if mm.get("role") == "assistant" else mm) for mm in history[:-1]]
 
     # ── RAG: 켜져 있고 문서가 있으면 마지막 질문으로 검색해 컨텍스트를 질문 직전에 주입 ──
     rag_sources = []
@@ -752,7 +887,10 @@ def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt
                 + ctx)}
             msgs.insert(len(msgs) - 1, rag_sys)   # 마지막 user 턴 바로 앞에 삽입
 
-    # 컨텍스트 초과 방지: prompt + max_tokens <= ctx. 프롬프트 토큰을 보수적으로 추정해 클램프.
+    # 컨텍스트 맞춤: 이력이 이 모델 ctx 를 넘으면 오래된 턴부터 버려 항상 들어가게 한다.
+    # (모델을 더 작은 ctx 로 바꿔도 '기존 채팅'이 그대로 이어진다 — 새 채팅 안 만들어도 됨.)
+    msgs = _fit_context(msgs, m["ctx"])
+    # 초과 방지: prompt + max_tokens <= ctx. 프롬프트 토큰을 보수적으로 추정해 클램프.
     est_prompt = sum(len(mm.get("content", "")) for mm in msgs) // 3 + 16
     eff_max = max(16, min(int(max_tokens), m["ctx"] - est_prompt - 256))
     rec = METRICS.start()
@@ -764,7 +902,11 @@ def _generate(history, conv_id, model_name, dp, pp, rag_on, rag_k, system_prompt
             history[-1]["content"] += (
                 f"\n\n<span style=\"color:#888;font-size:12px;\">🔎 RAG 참조: "
                 f"{', '.join(rag_sources)}</span>")
-            yield history, conv_id, "", gr.update(), gr.skip(), gr.skip(), gr.skip()
+        # 이 답변을 낸 모델 — 숨김 마커로 심어두면 클라이언트 JS 가 읽어서 답변의 복사/재생성 버튼
+        # (.message-buttons-left) 바로 옆에 작게(튀지 않는 회색) 붙인다. (오른쪽 끝이라 잘리던 것 해결)
+        history[-1]["content"] += (
+            f'\n\n<span class="ans-model-meta" style="display:none">{model_name}</span>')
+        yield history, conv_id, "", gr.update(), gr.skip(), gr.skip(), gr.skip()
     except Exception as e:
         history[-1]["content"] = f"⚠️ 생성 중 에러: {e}"
         yield history, conv_id, "", gr.update(), gr.skip(), gr.skip(), gr.skip()
@@ -829,10 +971,14 @@ def _par_updates(model_name, dp, pp):
     - tp32: dp·pp 비활성(4장 고정, 둘 다 1·선택 불가)
     - tp8 : pp 에 맞춰 dp 선택지를 제한(dp×pp ≤ 4 장). 반환: (dp_update, pp_update, dp, pp)"""
     key = DISPLAY2KEY.get(model_name)
-    is_tp32 = CATALOG.get(key, {}).get("kind") == "tp32"
-    if is_tp32:
+    m = CATALOG.get(key, {})
+    if m.get("kind") == "tp32":
         return (gr.update(value=1, choices=[1], interactive=False),
                 gr.update(value=1, choices=[1], interactive=False), 1, 1)
+    pf = m.get("pp_fixed")
+    if pf:   # 1장에 안 들어가 pp 가 강제되는 모델(예: 72B 136G) — dp1·pp=pf 고정, 선택 비활성
+        return (gr.update(value=1, choices=[1], interactive=False),
+                gr.update(value=pf, choices=[pf], interactive=False), 1, pf)
     pp = max(1, min(4, int(pp or 1)))
     max_dp = max(1, 4 // pp)                      # 카드 4장 한도: dp ≤ 4/pp
     dp = max(1, min(int(dp or 1), max_dp))
@@ -842,24 +988,63 @@ def _par_updates(model_name, dp, pp):
 
 def on_model_change(model_name, dp, pp):
     """모델 변경 → on-demand serve 즉시 시작 후 바로 반환(터널 연결 장시간 점유 X).
-    dp·pp 컨트롤 재구성 + max_tokens 를 그 모델 최대치로 재설정.
-    출력 5개: (status, maxtok, dp, pp, timer)."""
+    dp·pp 컨트롤 재구성 + max_tokens 를 그 모델 최대치로 재설정. 모델 상태 LED·대시보드 갱신은
+    클라이언트 폴링(/status_data·/dash_metrics)이 담당. 출력 3개: (maxtok, dp, pp)."""
     key = DISPLAY2KEY.get(model_name)
     ctx = CATALOG.get(key, {}).get("ctx", 8192)
     dp_u, pp_u, dp_v, pp_v = _par_updates(model_name, dp, pp)
     MGR.request(key, dp_v, pp_v)
-    timer_upd = gr.Timer(active=True) if _transitioning() else gr.skip()
-    return status_force(), gr.update(maximum=ctx, value=ctx), dp_u, pp_u, timer_upd
+    _LAST_MODEL.update(name=model_name, dp=dp_v, pp=pp_v, user_set=True)   # 새로고침 후 복원용 기억
+    return gr.update(maximum=ctx, value=ctx), dp_u, pp_u
 
 
 def on_par_change(model_name, dp, pp):
     """dp/pp 변경 → 새 병렬 구성으로 재-serve. dp×pp>4 면 제약에 맞춰 자동 보정.
-    max_tokens 는 건드리지 않음(모델 그대로). 출력 4개: (status, dp, pp, timer)."""
+    상태/대시보드는 클라이언트 폴링이 갱신. 출력 2개: (dp, pp)."""
     key = DISPLAY2KEY.get(model_name)
     dp_u, pp_u, dp_v, pp_v = _par_updates(model_name, dp, pp)
     MGR.request(key, dp_v, pp_v)
-    timer_upd = gr.Timer(active=True) if _transitioning() else gr.skip()
-    return status_force(), dp_u, pp_u, timer_upd
+    _LAST_MODEL.update(name=model_name, dp=dp_v, pp=pp_v, user_set=True)
+    return dp_u, pp_u
+
+
+def _serving_model_key():
+    """지금 NPU 에 떠 있는(serving) 모델 키 하나. up 우선, 없으면 loading, 없으면 None.
+    (MGR._discover 가 pgrep 으로 실제 furiosa-llm serve 프로세스를 읽으므로 터미널로 띄운 것도 잡힌다.)"""
+    try:
+        st = MGR.states()
+    except Exception:
+        return None
+    for want in ("up", "loading"):
+        for k in CATALOG:
+            if st.get(k) == want:
+                return k
+    return None
+
+
+def _initial_model():
+    """첫 시작 모델: 사용자가 아직 안 바꿨으면 '지금 떠 있는 모델', 없으면 default(coder7).
+    떠 있는 모델이면 그 실제 dp·pp 구성까지 _LAST_MODEL 에 반영한다."""
+    if not _LAST_MODEL.get("user_set"):
+        k = _serving_model_key()
+        if k:
+            try:
+                dp_v, pp_v = MGR.par(k)
+            except Exception:
+                dp_v, pp_v = 1, 1
+            _LAST_MODEL.update(name=CATALOG[k]["name"], dp=dp_v or 1, pp=pp_v or 1)
+    return _LAST_MODEL["name"]
+
+
+def restore_model():
+    """페이지(크롬) 새로고침/첫 접속 시 시작 모델을 드롭다운에 지정.
+    아직 아무도 안 바꿨으면 '지금 NPU 에 떠 있는 모델'로(없으면 default), 바꿨으면 마지막 선택으로.
+    그 모델에 맞는 max_tokens·dp·pp 도 함께 맞춘다. 출력 4개: (model_dd, maxtok, dp, pp)."""
+    name = _initial_model()
+    key = DISPLAY2KEY.get(name)
+    ctx = CATALOG.get(key, {}).get("ctx", 8192)
+    dp_u, pp_u, _, _ = _par_updates(name, _LAST_MODEL["dp"], _LAST_MODEL["pp"])
+    return gr.update(value=name), gr.update(maximum=ctx, value=ctx), dp_u, pp_u
 
 
 # ── 실시간 대시보드 ──────────────────────────────────────────────────
@@ -879,15 +1064,105 @@ def _active_cards(model_name):
     return cards or None
 
 
+def dash_metrics_data(model_name: str = ""):
+    """대시보드 클라이언트(/dash_metrics)가 폴링하는 데이터: HW 표본 1회 + 현재 수치 JSON + active.
+    active(생성중+5초 / 전환중) 면 클라가 빠르게(0.8s), 아니면 느리게(4s) 폴링한다."""
+    try:
+        METRICS.sample(_active_cards(model_name) if model_name else None)
+    except Exception:
+        pass
+    data = METRICS.metrics_json()
+    data["active"] = ((time.time() - METRICS.last_activity) <= DASH_IDLE_OFF) or _transitioning()
+    return data
+
+
+# 클라이언트 폴링 JS: /dash_metrics 를 받아 각 칸의 '값/막대/스파크라인'만 제자리 갱신한다.
+# 패널 HTML 을 통째로 안 바꾸므로 깜빡임이 없고(=#4), 변한 칸(예: NPU memory)만 실제로 바뀐다(=#3).
+POLL_JS = r"""
+() => {
+  if (window.__dashPolling) return; window.__dashPolling = true;
+  const $ = (id) => document.getElementById(id);
+  const setT = (id, t) => { const e=$(id); if(e && e.textContent!==t) e.textContent=t; };
+  const fmt = (v) => { v=+v; if(!isFinite(v)||v===0) return '0'; const a=Math.abs(v);
+    if(a>=100) return ''+Math.round(v); if(a>=10) return ''+(Math.round(v*10)/10);
+    if(a>=1) return ''+(Math.round(v*100)/100); return ''+(+v.toPrecision(3)); };
+  const spark = (key, vals, dashV) => {
+    const el=$('mp-'+key); if(!el) return;
+    if(!vals || vals.length<2){ el.setAttribute('points',''); return; }
+    const w=210,h=46; const vmax=Math.max.apply(null, (dashV!=null)?vals.concat([dashV]):vals);
+    const vmin=Math.min.apply(null, vals); const rng=(vmax-vmin)||1;
+    const pts=vals.map((v,i)=>{ const x=i/(vals.length-1)*w; const y=h-3-(v-vmin)/rng*(h-6);
+      return x.toFixed(1)+','+y.toFixed(1); }).join(' ');
+    el.setAttribute('points', pts);
+    const dl=$('md-'+key);
+    if(dl && dashV){ const dy=h-3-(dashV-vmin)/rng*(h-6);
+      dl.setAttribute('y1',dy.toFixed(1)); dl.setAttribute('y2',dy.toFixed(1)); dl.setAttribute('opacity','0.55'); }
+  };
+  const updStatus = (s) => {
+    (s.models||[]).forEach(md=>{
+      const dot=$('st-dot-'+md.key);
+      if(dot){ dot.style.background=md.color; dot.className = md.pulse?'led-pulse':''; }
+      const inf=$('st-info-'+md.key);
+      if(inf){ if(inf.textContent!==md.info) inf.textContent=md.info; inf.style.color = md.err?'#ef4444':'#888'; }
+    });
+  };
+  const tick = () => {
+    const inp=document.querySelector('#model-dd input'); const model=inp?inp.value:'';
+    fetch('/status_data').then(r=>r.json()).then(updStatus).catch(()=>{});   // 모델 상태 LED 제자리 갱신
+    fetch('/dash_metrics?model='+encodeURIComponent(model)).then(r=>r.json()).then(d=>{
+      setT('mv-tps', fmt(d.tps)); setT('mv-tpot', fmt(d.tpot));
+      setT('mv-e2e', fmt(d.e2e/1000)); setT('mv-ttft', fmt(d.ttft));
+      setT('mv-power', fmt(d.power)); setT('mv-temp', fmt(d.temp)); setT('mv-util', fmt(d.util));
+      spark('tps', d.tps_hist, d.max_tps||null); spark('tpot', d.tpot_hist, null); spark('power', d.power_hist, null);
+      for(let i=0;i<4;i++){ const row=$('mem-row-'+i); if(!row) continue;
+        const m=(d.mem||[]).find(x=>x[0]===i);
+        if(!m){ row.style.display='none'; continue; }
+        row.style.display='flex'; const used=m[1], total=m[2], pct=m[3];
+        const bar=$('mem-bar-'+i); if(bar){ bar.style.width=Math.max(0,Math.min(100,pct))+'%';
+          bar.style.background = (pct>=90)?'#dc2626':'#76d6ff'; }
+        setT('mem-used-'+i, used.toFixed(1)+'/'+total.toFixed(1)); setT('mem-pct-'+i, Math.round(pct)+'%');
+      }
+      setTimeout(tick, d.active?800:4000);
+    }).catch(()=>setTimeout(tick, 4000));
+  };
+  window.__dashTick = tick;   // 새로고침 버튼이 즉시 1회 갱신할 수 있게 노출
+  // 답변마다 모델명을 그 답변의 복사/재생성 버튼(.message-buttons-left) 아래에 작게 붙인다.
+  // - 메시지 전체가 단일 .message-wrap 이라, '마커[i] ↔ message-buttons-left[i]' 순서(둘 다 봇답변에만
+  //   생기고 DOM 순서 동일)로 매칭해 '모든' 답변에 붙인다(모델 바꿔 새 답변 와도 표기됨).
+  // - 라벨은 버튼박스 '밖'(다음 형제)에 둬 박스를 아이콘 크기 그대로 유지(가로로 안 늘어남).
+  const placeModels = () => {
+    const metas = document.querySelectorAll('#chatbot .ans-model-meta');
+    const boxes = document.querySelectorAll('#chatbot .message-buttons-left');
+    const n = Math.min(metas.length, boxes.length);
+    for (let i = 0; i < n; i++) {
+      const box = boxes[i];
+      const nx = box.nextElementSibling;
+      if (nx && nx.classList && nx.classList.contains('ans-model-label')) continue;  // 이미 붙음
+      const lab = document.createElement('span');
+      lab.className = 'ans-model-label';
+      lab.textContent = metas[i].textContent;
+      lab.style.cssText = 'display:block;color:#6b6b73;font-size:11px;margin:2px 0 0 4px;white-space:nowrap;';
+      box.insertAdjacentElement('afterend', lab);
+    }
+  };
+  const cbEl = document.querySelector('#chatbot');
+  if (cbEl) new MutationObserver(() => placeModels()).observe(cbEl, { childList: true, subtree: true });
+  placeModels();
+  tick();
+}
+"""
+
+
 def dash_tick(model_name):
     """대시보드 타이머 tick: 선택 모델 카드의 HW 표본 갱신 + furiosa 스타일 HTML 렌더.
-    활동이 멎으면(생성 종료 5초 후) 타이머를 스스로 끈다. 출력 2개: (dash, dash_timer)."""
+    생성 중(+여유 5초)이거나 모델 전환 중이면 계속 갱신(메모리 라이브), 둘 다 멎으면 스스로 끈다.
+    출력 2개: (dash, dash_timer)."""
     METRICS.sample(_active_cards(model_name))
     h = METRICS.render_html()
     html_out = gr.skip() if h == _LAST_DASH["html"] else h
     _LAST_DASH["html"] = h
-    idle = (time.time() - METRICS.last_activity) > DASH_IDLE_OFF
-    timer_out = gr.Timer(active=False) if idle else gr.skip()
+    busy = (time.time() - METRICS.last_activity) <= DASH_IDLE_OFF or _transitioning()
+    timer_out = gr.skip() if busy else gr.Timer(active=False)
     return html_out, timer_out
 
 
@@ -895,6 +1170,16 @@ def start_dash():
     """생성 시작 시 호출: 활동 표시 + 대시보드 타이머 켬(생성 중 라이브 갱신)."""
     METRICS.touch()
     return gr.Timer(active=True)
+
+
+def dash_initial():
+    """페이지 로드 시 한 번만 HW 표본을 떠서(카드별 메모리 등) 바로 보이게 한 뒤 렌더.
+    이후 갱신은 생성 중 dash_timer 가 담당(유휴 spawn 없음)."""
+    try:
+        METRICS.sample(None)   # active_cards=None → 모든 NPU(메모리는 전체 카드 표시)
+    except Exception:
+        pass
+    return METRICS.render_html()
 
 
 # ── RAG 컨트롤 핸들러 ────────────────────────────────────────────────
@@ -953,14 +1238,16 @@ def _header_html():
 
 
 def build_ui():
-    _ctx0 = CATALOG[DISPLAY2KEY[DEFAULT_MODEL]]["ctx"]
+    # 첫 시작 모델 = 지금 NPU 에 떠 있는 모델(없으면 default coder7). 드롭다운·max_tokens 도 그 모델로.
+    _init_model = _initial_model()
+    _ctx0 = CATALOG[DISPLAY2KEY[_init_model]]["ctx"]
     with gr.Blocks(title="Furiosa RNGD Chat", fill_height=True, css=CSS, theme=THEME) as demo:
         conv_id = gr.State("")
         # ── furiosa 헤더: 로고 + Furiosa RNGD Chat + DEMO | 모델 드롭다운 ──
         with gr.Row(elem_id="furheader", equal_height=True):
             with gr.Column(scale=1, min_width=200):
                 gr.HTML(_header_html())
-            model_dd = gr.Dropdown(_dd_choices(), value=DEFAULT_MODEL, show_label=False,
+            model_dd = gr.Dropdown(_dd_choices(), value=_init_model, show_label=False,
                                    container=False, elem_id="model-dd", scale=0, min_width=340)
         with gr.Row(equal_height=False):
             # ── 사이드바: 대화 이력 + 모델 상태(LED) + 설정(dp/pp) + RAG ──
@@ -973,8 +1260,10 @@ def build_ui():
                                        elem_id="convo-list", container=False)
                 del_btn = gr.Button("🗑  선택한 대화 삭제", size="sm", elem_id="del-btn")
                 with gr.Accordion("모델 상태", open=True):
-                    status = gr.HTML(value=status_force(), elem_id="statusbox")
-                    refresh_btn = gr.Button("🔄 새로고침", size="sm")
+                    status = gr.HTML(value=status_struct(), elem_id="statusbox")
+                    with gr.Row():
+                        refresh_btn = gr.Button("🔄 새로고침", size="sm")
+                        stopall_btn = gr.Button("🛑 전부 내리기", size="sm", elem_id="stopall-btn")
                 with gr.Accordion("⚙  설정 (dp·pp·생성)", open=False, elem_id="settings-acc"):
                     with gr.Row():
                         dp = gr.Dropdown([1, 2, 3, 4], value=1, label="복제 dp", scale=1,
@@ -1013,15 +1302,15 @@ def build_ui():
                         stop = gr.Button("■", elem_id="stop-btn", scale=0, visible=False)
                     gr.HTML('<div id="hint">RNGD NPU 위 furiosa-llm · 답변은 모델에 따라 부정확할 수 있어요.</div>')
             # ── 우측 실시간 성능 대시보드 (furiosa chat-playground 이식) ──
+            # 정적 구조만 1회 렌더하고, 값은 클라이언트 JS(POLL_JS)가 /dash_metrics 폴링해 제자리 갱신.
+            # → 패널을 통째로 안 바꾸므로 깜빡임 없이 매끄럽게 변하고, 변한 칸만 실제로 바뀐다.
             with gr.Column(scale=1, min_width=240, elem_id="dashboard"):
-                dash = gr.HTML(value=METRICS.render_html(), elem_id="dashbox")
+                dash = gr.HTML(value=METRICS.render_dashboard(), elem_id="dashbox")
 
         SP = "hidden"  # 도는 네모(progress 스피너) 끔 → LED 펄스만, 스트리밍/질문 즉시 노출
-        # 유휴 시엔 꺼두는 LED 자동갱신 Timer (전환 중에만 켜짐 → 유휴 패널 깜빡임 없음).
-        timer = gr.Timer(2.5, active=False)
-        # 대시보드 타이머: 유휴엔 꺼 두고(깜빡임·furiosa-smi 폴링 방지), 생성 시작 때 켜서
-        # 1.8s마다 HW·TPS 갱신하다가 활동이 멎으면 dash_tick 이 스스로 끈다.
-        dash_timer = gr.Timer(1.8, active=False)
+        # 모델 상태 LED 도 대시보드처럼 클라이언트 폴링(/status_data)으로 제자리 갱신 → 패널 전체
+        # 깜빡임 없이 바뀐 LED 만 바뀐다(전환 펄스는 CSS). 별도 Timer/재렌더 불필요.
+        IPOLL = "() => window.__dashTick && window.__dashTick()"   # 즉시 1회 폴링(버튼용)
         chat_inputs = [txt, chatbot, conv_id, model_dd, dp, pp, rag_on, rag_k, sys_box, temp, maxtok]
         chat_outputs = [chatbot, conv_id, txt, convo_radio, status, send, stop]
         regen_inputs = [chatbot, conv_id, model_dd, dp, pp, rag_on, rag_k, sys_box, temp, maxtok]
@@ -1029,41 +1318,52 @@ def build_ui():
         ev2 = send.click(respond, chat_inputs, chat_outputs, show_progress=SP)
         ev3 = chatbot.retry(regenerate, regen_inputs, chat_outputs, show_progress=SP)
         stop.click(lambda: _IDLE, None, [send, stop], cancels=[ev1, ev2, ev3], show_progress=SP)
-        # 생성 시작과 동시에 대시보드 타이머 켜기(라이브 갱신). 활동이 멎으면 dash_tick 이 끔.
-        for _trig in (txt.submit, send.click, chatbot.retry):
-            _trig(start_dash, None, dash_timer, show_progress=SP)
         new_btn.click(new_chat, None, [chatbot, conv_id, convo_radio, txt], show_progress=SP)
         del_btn.click(delete_convo, [convo_radio, conv_id], [chatbot, conv_id, convo_radio], show_progress=SP)
-        refresh_btn.click(status_force, None, [status], show_progress=SP)
+        refresh_btn.click(None, None, None, js=IPOLL, show_progress=SP)   # 즉시 폴링(LED 새로고침)
+        # '전부 내리기': 떠 있는 serve 전부 종료(카드 비움). LED 갱신은 폴링이 반영.
+        stopall_btn.click(stop_all_models, None, None, show_progress=SP)
         search.change(filter_convos, [search], [convo_radio], show_progress=SP)
         convo_radio.change(load_chat, [convo_radio], [chatbot, conv_id], show_progress=SP)
-        model_dd.change(on_model_change, [model_dd, dp, pp], [status, maxtok, dp, pp, timer], show_progress=SP)
-        dp.change(on_par_change, [model_dd, dp, pp], [status, dp, pp, timer], show_progress=SP)
-        pp.change(on_par_change, [model_dd, dp, pp], [status, dp, pp, timer], show_progress=SP)
+        model_dd.change(on_model_change, [model_dd, dp, pp], [maxtok, dp, pp], show_progress=SP)
+        dp.change(on_par_change, [model_dd, dp, pp], [dp, pp], show_progress=SP)
+        pp.change(on_par_change, [model_dd, dp, pp], [dp, pp], show_progress=SP)
         # RAG: 업로드/URL/붙여넣기/비우기 → 문서 인덱싱 + 정보 패널 갱신
         rag_files.upload(rag_add_files, [rag_files], [rag_info, rag_files], show_progress=SP)
         rag_url_btn.click(rag_add_url_fn, [rag_url], [rag_info, rag_url], show_progress=SP)
         rag_paste_btn.click(rag_add_text_fn, [rag_paste], [rag_info, rag_paste], show_progress=SP)
         rag_clear.click(rag_clear_fn, None, [rag_info], show_progress=SP)
-        # 전환 중에만 켜져 LED 를 갱신하고, 끝나면 status_tick 이 Timer 를 스스로 끈다.
-        timer.tick(status_tick, None, [status, timer], show_progress=SP)
-        # 대시보드: 생성 중에만 켜진 타이머가 선택 모델 카드의 HW·TPS 를 갱신하고 멎으면 스스로 끔.
-        dash_timer.tick(dash_tick, [model_dd], [dash, dash_timer], show_progress=SP)
-        # 터널 재접속/새 탭: 최신 상태 1회 갱신 + 전환 중이면 Timer 켜기 + 대시보드 마지막 스냅샷.
-        demo.load(load_status, None, [status, timer], show_progress=SP)
-        demo.load(lambda: METRICS.render_html(), None, [dash], show_progress=SP)
+        # 크롬 새로고침: 마지막에 고른 모델 복원(default 로 안 돌아가게). 상태·대시보드는 폴링이 채움.
+        demo.load(restore_model, None, [model_dd, maxtok, dp, pp], show_progress=SP)
+        # 대시보드: 값은 클라이언트 JS 가 /dash_metrics 폴링해 제자리 갱신(깜빡임 없음·변한 칸만).
+        demo.load(None, None, None, js=POLL_JS)
     return demo
 
 
 if __name__ == "__main__":
+    import uvicorn
+    from fastapi import FastAPI
+
     host = os.environ.get("CHAT_HOST", "0.0.0.0")
-    port = int(os.environ.get("CHAT_PORT", "7860"))
+    port = int(os.environ.get("CHAT_PORT", "7870"))
     root_path = os.environ.get("CHAT_ROOT_PATH", "")
-    share = os.environ.get("CHAT_SHARE", "0") == "1"
     _auth = os.environ.get("CHAT_AUTH", "")
     auth = tuple(_auth.split(":", 1)) if ":" in _auth else None
-    # default_concurrency_limit>1: 대시보드/LED 타이머가 스트리밍 생성과 동시에 돌아야
-    # 생성 중에도 TPS·전력이 라이브로 갱신된다(큐가 직렬화되면 생성 끝까지 멈춰버림).
-    build_ui().queue(default_concurrency_limit=12).launch(
-        server_name=host, server_port=port, show_error=True,
-        root_path=root_path, share=share, auth=auth)
+
+    # default_concurrency_limit>1: 스트리밍 생성과 다른 이벤트(상태 타이머 등)가 동시에 돌도록.
+    demo = build_ui().queue(default_concurrency_limit=12)
+
+    # FastAPI 에 대시보드 폴링 라우트를 붙이고 그 위에 gradio 를 마운트한다.
+    # 클라이언트 JS(POLL_JS)가 이 JSON 을 받아 칸 값만 제자리 갱신 → 패널 무깜빡임.
+    app = FastAPI()
+
+    @app.get("/dash_metrics")
+    def _dash_metrics(model: str = ""):
+        return dash_metrics_data(model)
+
+    @app.get("/status_data")
+    def _status_data():
+        return status_data()
+
+    app = gr.mount_gradio_app(app, demo, path="/", root_path=root_path, auth=auth)
+    uvicorn.run(app, host=host, port=port)

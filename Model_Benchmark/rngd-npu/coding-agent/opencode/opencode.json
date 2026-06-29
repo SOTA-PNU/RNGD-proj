@@ -1,0 +1,93 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "furiosa": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "FuriosaNPU (router)",
+      "options": {
+        "baseURL": "http://localhost:8400/v1"
+      },
+      "models": {
+        "Qwen2.5-Coder-7B-Instruct [tools-weak]": {
+          "name": "Qwen2.5-Coder-7B-Instruct [tools-weak]",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        },
+        "Qwen2.5-Coder-14B-Instruct": {
+          "name": "Qwen2.5-Coder-14B-Instruct",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        },
+        "Qwen2.5-Coder-14B-Base [tools-weak]": {
+          "name": "Qwen2.5-Coder-14B-Base [tools-weak]",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        },
+        "Qwen2.5-Coder-32B-Instruct": {
+          "name": "Qwen2.5-Coder-32B-Instruct",
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          }
+        },
+        "Qwen3-32B-FP8": {
+          "name": "Qwen3-32B-FP8",
+          "limit": {
+            "context": 40960,
+            "output": 8192
+          }
+        },
+        "Qwen3-32B-FP8-16k": {
+          "name": "Qwen3-32B-FP8-16k",
+          "limit": {
+            "context": 16384,
+            "output": 8192
+          }
+        },
+        "Qwen3-Coder-30B-A3B-FP8 [tools-weak]": {
+          "name": "Qwen3-Coder-30B-A3B-FP8 [tools-weak]",
+          "limit": {
+            "context": 65536,
+            "output": 8192
+          }
+        },
+        "Qwen3-Coder-30B-A3B-bf16 [tools-weak]": {
+          "name": "Qwen3-Coder-30B-A3B-bf16 [tools-weak]",
+          "limit": {
+            "context": 65536,
+            "output": 8192
+          }
+        },
+        "EXAONE-4.0-32B-FP8 [chat-only]": {
+          "name": "EXAONE-4.0-32B-FP8 [chat-only]",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "Llama-3.3-70B-Instruct": {
+          "name": "Llama-3.3-70B-Instruct",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "Qwen3-32B-FP8-tp32": {
+          "name": "Qwen3-32B-FP8-tp32",
+          "limit": {
+            "context": 40960,
+            "output": 8192
+          }
+        }
+      }
+    }
+  },
+  "model": "furiosa/Qwen3-32B-FP8",
+  "small_model": "furiosa/Qwen3-32B-FP8"
+}

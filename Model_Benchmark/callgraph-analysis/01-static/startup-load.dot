@@ -1,0 +1,135 @@
+digraph startup_load {
+    rankdir=LR;
+    labelloc="t";
+    label="furiosa-llm serve: scenario A — startup + artifact load (native engine construct / device-map / warmup)";
+    node [shape=ellipse, fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=8];
+
+    // ---- CLI layer ----
+    subgraph cluster_cli {
+        label="CLI bootstrap";
+        style=filled;
+        fillcolor=gray95;
+        cli_main        [label="cli.main.main\ncli/main.py:11"];
+        add_serve_args  [label="cli.serve.add_serve_args\ncli/serve.py:381"];
+        cli_serve       [label="cli.serve.serve\ncli/serve.py:385"];
+    }
+
+    // ---- Server layer ----
+    subgraph cluster_server {
+        label="Server setup (FastAPI / uvicorn)";
+        style=filled;
+        fillcolor=gray95;
+        run_server      [label="server.app.run_server\nserver/app.py:536"];
+        init_app        [label="server.app.init_app\nserver/app.py:389"];
+        load_llm        [label="server.models.load_llm_from_args\nserver/models.py:42"];
+        sched_cfg       [label="SchedulerConfig.load_from_args\nserver/models.py:40"];
+        models_resp     [label="protocol.ModelsResponse.from_llm\nserver/app.py:401"];
+        serving_chat    [label="OpenAIServingChat\nserver/app.py:414"];
+        serving_compl   [label="OpenAIServingCompletion\nserver/app.py:413"];
+        serving_resp    [label="OpenAIServingResponses\nserver/app.py:426"];
+        serving_embed   [label="OpenAIServingEmbedding\nserver/app.py:438"];
+        serving_score   [label="ServingScores\nserver/app.py:440"];
+        serving_tok     [label="OpenAIServingTokenization\nserver/app.py:446"];
+        fastapi_app     [label="fastapi.FastAPI\nserver/app.py:467"];
+        include_router  [label="app.include_router(router)\nserver/app.py:468"];
+        metrics_mount   [label="metrics.get_metrics_mount\nserver/app.py:479"];
+        lifespan        [label="lifespan (asynccontextmanager)\nserver/app.py:457"];
+        install_metrics [label="metrics.install_metrics_logging_thread\nserver/app.py:457"];
+        prewarm         [label="server.app.prewarm_server\nserver/app.py:460"];
+        uvicorn_run     [label="uvicorn.run\nserver/app.py:549"];
+    }
+
+    // ---- Engine / API layer ----
+    subgraph cluster_engine {
+        label="Engine API (furiosa_llm.api.LLM)";
+        style=filled;
+        fillcolor=gray95;
+        llm_init        [label="LLM.__init__\napi.py:216"];
+        init_artifact   [label="LLM._init_from_artifact\napi.py:321"];
+        init_v3         [label="LLM._init_from_v3_engine\napi.py:197"];
+        resolve_path    [label="utils.resolve_artifact_path\napi.py:346"];
+        get_tokenizer   [label="tokenizer.get_tokenizer\napi.py:347"];
+        resolve_dev     [label="device.resolve_devices\napi.py:352"];
+        get_avail_dev   [label="utils.get_available_devices\ndevice.py:201"];
+        bucket_len      [label="utils.compute_bucket_lengths\napi.py:360"];
+        diff_sampling   [label="generation_config.get_diff_sampling_params\napi.py:378"];
+        serialize_obj   [label="LLM._serialize_obj\napi.py:390"];
+    }
+
+    // ---- Artifact resolution (Python, non-native) ----
+    subgraph cluster_artifact {
+        label="Artifact resolution (HF download / config)";
+        style=filled;
+        fillcolor=gray95;
+        hf_download     [label="utils.get_path_or_hf_download\nutils.py:299"];
+        gen_cfg_load    [label="generation_config.try_load_generation_config\ngeneration_config.py:42"];
+    }
+
+    // ---- Native boundary ----
+    subgraph cluster_native {
+        label="Native boundary (Rust / PyO3 .so + external Rust)";
+        style=filled;
+        fillcolor=gray90;
+        n_engine_init   [label="NativeLLMEngine.__init__\n(native_runtime.so) api.py:383", shape=box, style=filled, fillcolor=lightyellow];
+        n_load_blob     [label="NextGenArtifact.load_without_blob\n(native_llm_common) api.py:349", shape=box, style=filled, fillcolor=lightyellow];
+        n_override      [label="NextGenArtifact.override_with\n(native_llm_common) api.py:354", shape=box, style=filled, fillcolor=lightyellow];
+        n_to_json       [label="pydantic_core.to_json\napi.py:417", shape=box, style=filled, fillcolor=lightyellow];
+        n_tok_to_str    [label="tokenizers.Tokenizer.to_str\napi.py:392", shape=box, style=filled, fillcolor=lightyellow];
+        n_auto_tok      [label="transformers.AutoTokenizer.from_pretrained\n(HF tokenizers Rust) tokenizer.py:83", shape=box, style=filled, fillcolor=lightyellow];
+        n_hf_hub        [label="huggingface_hub.snapshot_download\nutils.py:315", shape=box, style=filled, fillcolor=lightyellow];
+        n_smi           [label="furiosa_smi_py.list_devices\nutils.py:396", shape=box, style=filled, fillcolor=lightyellow];
+        n_pooling       [label="NativePoolingOutput\n(native_runtime.so) server/app.py:501", shape=box, style=filled, fillcolor=lightyellow];
+        n_shutdown      [label="NativeLLMEngine.shutdown\n(native_runtime.so) server/app.py:465", shape=box, style=filled, fillcolor=lightyellow];
+    }
+
+    // ---- CLI edges ----
+    cli_main -> add_serve_args   [label="cli/main.py:17"];
+    cli_main -> cli_serve        [label="dispatch_function\ncli/main.py:28"];
+    cli_serve -> run_server      [label="cli/serve.py:385"];
+
+    // ---- Server setup edges ----
+    run_server -> init_app       [label="server/app.py:536"];
+    run_server -> uvicorn_run    [label="server/app.py:549"];
+    init_app -> load_llm         [label="server/app.py:389"];
+    load_llm -> sched_cfg        [label="server/models.py:40"];
+    load_llm -> llm_init         [label="server/models.py:42"];
+    init_app -> models_resp      [label="server/app.py:401"];
+    init_app -> serving_compl    [label="GENERATION\nserver/app.py:413"];
+    init_app -> serving_chat     [label="GENERATION\nserver/app.py:414"];
+    init_app -> serving_resp     [label="GENERATION\nserver/app.py:426"];
+    init_app -> serving_embed    [label="EMBED\nserver/app.py:438"];
+    init_app -> serving_score    [label="SCORE\nserver/app.py:440"];
+    init_app -> serving_tok      [label="always\nserver/app.py:446"];
+    init_app -> fastapi_app      [label="server/app.py:467"];
+    init_app -> include_router   [label="server/app.py:468"];
+    init_app -> metrics_mount    [label="server/app.py:479"];
+    fastapi_app -> lifespan      [label="lifespan="];
+    lifespan -> install_metrics  [label="startup\nserver/app.py:457"];
+    lifespan -> prewarm          [label="startup\nserver/app.py:460"];
+    lifespan -> n_shutdown       [label="shutdown\nserver/app.py:465"];
+    prewarm -> n_pooling         [label="POOLING\nserver/app.py:501"];
+
+    // ---- Engine / artifact-load edges ----
+    llm_init -> init_artifact    [label="fxb is None\napi.py:216"];
+    llm_init -> init_v3          [label="fxb given\napi.py:197"];
+    init_artifact -> resolve_path   [label="api.py:346"];
+    init_artifact -> get_tokenizer  [label="api.py:347"];
+    init_artifact -> n_load_blob    [label="api.py:349"];
+    init_artifact -> resolve_dev    [label="api.py:352"];
+    init_artifact -> n_override     [label="api.py:354"];
+    init_artifact -> bucket_len     [label="api.py:360"];
+    init_artifact -> diff_sampling  [label="api.py:378"];
+    init_artifact -> serialize_obj  [label="api.py:390"];
+    init_artifact -> n_tok_to_str   [label="api.py:392"];
+    init_artifact -> n_engine_init  [label="api.py:383"];
+    init_v3 -> n_engine_init        [label="api.py:301"];
+
+    resolve_path -> hf_download     [label="utils.py:379"];
+    hf_download -> n_hf_hub         [label="utils.py:315"];
+    get_tokenizer -> n_auto_tok     [label="tokenizer/tokenizer.py:83"];
+    resolve_dev -> get_avail_dev    [label="devices is None\ndevice.py:201"];
+    get_avail_dev -> n_smi          [label="utils.py:396"];
+    diff_sampling -> gen_cfg_load   [label="generation_config.py:42"];
+    serialize_obj -> n_to_json      [label="api.py:417"];
+}

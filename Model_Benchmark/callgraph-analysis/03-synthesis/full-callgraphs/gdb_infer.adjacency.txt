@@ -1,0 +1,304 @@
+# 03-synthesis/full-callgraphs/gdb_infer.txt
+# COMPLETE call-graph adjacency, ALL 99 functions seen.
+# format:  CALLER\n    -> callee  (xCOUNT)
+
+clone3
+    -> start_thread  (x656)
+
+start_thread
+    -> native_runtime.so!0x000076e76eccb64f  (x269)
+    -> <std::sys::thread::unix::Thread>::new::thread_start  (x128)
+    -> std::sys::thread::unix::Thread::new::thread_start  (x128)
+    -> blas_thread_server  (x126)
+    -> worker  (x4)
+    -> unknown!0x00000000006b954c  (x1)
+
+native_runtime.so!0x000076e76eccb64f
+    -> native_runtime.so!0x000076e76ea7d6a2  (x256)
+    -> native_runtime.so!0x000076e76a20d5e9  (x8)
+    -> native_runtime.so!0x000076e76970ba09  (x4)
+    -> native_runtime.so!0x000076e76970c439  (x1)
+
+native_runtime.so!0x000076e76ea85a69
+    -> syscall  (x259)
+
+native_runtime.so!0x000076e76ea7d6a2
+    -> native_runtime.so!0x000076e76ea5ef33  (x256)
+
+native_runtime.so!0x000076e76ea5ef33
+    -> native_runtime.so!0x000076e76ea62bd4  (x256)
+
+native_runtime.so!0x000076e76ea62bd4
+    -> native_runtime.so!0x000076e76ea5d931  (x256)
+
+native_runtime.so!0x000076e76ea5d931
+    -> native_runtime.so!0x000076e76ea7fbc5  (x256)
+
+native_runtime.so!0x000076e76ea7fbc5
+    -> native_runtime.so!0x000076e76ea669cd  (x256)
+
+native_runtime.so!0x000076e76ea669cd
+    -> native_runtime.so!0x000076e76ea6bccd  (x256)
+
+native_runtime.so!0x000076e76ea6bccd
+    -> native_runtime.so!0x000076e76ea6f366  (x256)
+
+native_runtime.so!0x000076e76ea6f366
+    -> native_runtime.so!0x000076e76ea718b8  (x256)
+
+native_runtime.so!0x000076e76ea718b8
+    -> native_runtime.so!0x000076e76ea6b318  (x256)
+
+native_runtime.so!0x000076e76ea6b318
+    -> native_runtime.so!0x000076e76ea6a455  (x256)
+
+native_runtime.so!0x000076e76ea6a455
+    -> native_runtime.so!0x000076e76ea6f8de  (x254)
+    -> native_runtime.so!0x000076e76ea6f85e  (x2)
+
+native_runtime.so!0x000076e76ea6f8de
+    -> native_runtime.so!0x000076e76ea85a69  (x254)
+
+___pthread_cond_wait
+    -> __pthread_cond_wait_common  (x130)
+
+__pthread_cond_wait_common
+    -> __GI___futex_abstimed_wait_cancelable64  (x130)
+
+__GI___futex_abstimed_wait_cancelable64
+    -> __futex_abstimed_wait_common  (x130)
+
+__futex_abstimed_wait_common
+    -> __futex_abstimed_wait_common64  (x130)
+
+<std::sys::thread::unix::Thread>::new::thread_start
+    -> <std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},  (x128)
+
+<std::thread::lifecycle::spawn_unchecked<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+    -> std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},  (x128)
+
+std::sys::backtrace::__rust_begin_short_backtrace::<<tokio::runtime::blocking::pool::Spawner>::spawn_thread::{closure#0},
+    -> <tokio::runtime::task::harness::Harness<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll  (x128)
+
+<tokio::runtime::task::harness::Harness<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+    -> <tokio::runtime::task::core::Core<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll  (x128)
+
+<tokio::runtime::task::core::Core<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}>, tokio::runtime::blocking::schedule::BlockingSchedule>>::poll
+    -> <tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}> as core::future::future::Future>::poll  (x128)
+
+<tokio::runtime::blocking::task::BlockingTask<<tokio::runtime::scheduler::multi_thread::worker::Launch>::launch::{closure#0}> as core::future::future::Future>::poll
+    -> tokio::runtime::scheduler::multi_thread::worker::run  (x128)
+
+tokio::runtime::scheduler::multi_thread::worker::run
+    -> tokio::runtime::context::runtime::enter_runtime::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0},  (x128)
+
+tokio::runtime::context::runtime::enter_runtime::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0},
+    -> <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0}::{closure#0},  (x128)
+
+<tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<tokio::runtime::scheduler::multi_thread::worker::run::{closure#0}::{closure#0},
+    -> <tokio::runtime::scheduler::multi_thread::worker::Context>::park_timeout  (x128)
+
+<tokio::runtime::scheduler::multi_thread::worker::Context>::park_timeout
+    -> <tokio::runtime::scheduler::multi_thread::park::Parker>::park  (x128)
+
+<tokio::runtime::scheduler::multi_thread::park::Parker>::park
+    -> <parking_lot::condvar::Condvar>::wait_until_internal  (x127)
+    -> <tokio::runtime::time::Driver>::park_internal  (x1)
+
+std::sys::thread::unix::Thread::new::thread_start
+    -> core::ops::function::FnOnce::call_once{{vtable.shim}}  (x128)
+
+core::ops::function::FnOnce::call_once{{vtable.shim}}
+    -> std::sys::backtrace::__rust_begin_short_backtrace  (x128)
+
+std::sys::backtrace::__rust_begin_short_backtrace
+    -> rayon_core::registry::ThreadBuilder::run  (x128)
+
+rayon_core::registry::ThreadBuilder::run
+    -> rayon_core::registry::WorkerThread::wait_until_cold  (x128)
+
+rayon_core::registry::WorkerThread::wait_until_cold
+    -> rayon_core::sleep::Sleep::sleep  (x128)
+
+rayon_core::sleep::Sleep::sleep
+    -> std::sys::sync::condvar::futex::Condvar::wait  (x128)
+
+std::sys::sync::condvar::futex::Condvar::wait
+    -> syscall  (x128)
+
+<parking_lot::condvar::Condvar>::wait_until_internal
+    -> syscall  (x127)
+
+blas_thread_server
+    -> ___pthread_cond_wait  (x126)
+
+native_runtime.so!0x000076e76ea6728d
+    -> native_runtime.so!0x000076e76ea6d54f  (x9)
+
+native_runtime.so!0x000076e76ea6d54f
+    -> native_runtime.so!0x000076e76ea82a7b  (x9)
+
+native_runtime.so!0x000076e76ea82a7b
+    -> epoll_wait  (x9)
+
+native_runtime.so!0x000076e76a20d5e9
+    -> native_runtime.so!0x000076e76a24c678  (x8)
+
+native_runtime.so!0x000076e76a24c678
+    -> native_runtime.so!0x000076e76a1ecdca  (x8)
+
+native_runtime.so!0x000076e76a1ecdca
+    -> native_runtime.so!0x000076e76a22b137  (x8)
+
+native_runtime.so!0x000076e76a22b137
+    -> native_runtime.so!0x000076e76a230909  (x8)
+
+native_runtime.so!0x000076e76a230909
+    -> native_runtime.so!0x000076e76a251bea  (x8)
+
+native_runtime.so!0x000076e76a251bea
+    -> native_runtime.so!0x000076e76a250d32  (x8)
+
+native_runtime.so!0x000076e76a250d32
+    -> native_runtime.so!0x000076e76ea74d41  (x8)
+
+native_runtime.so!0x000076e76ea74d41
+    -> native_runtime.so!0x000076e76ea6728d  (x8)
+
+native_runtime.so!0x000076e76ea70c2e
+    -> native_runtime.so!0x000076e76ea85a69  (x5)
+
+native_runtime.so!0x000076e76970ba09
+    -> native_runtime.so!0x000076e769a21f74  (x4)
+
+native_runtime.so!0x000076e769a21f74
+    -> native_runtime.so!0x000076e769a89f02  (x4)
+
+native_runtime.so!0x000076e769a89f02
+    -> native_runtime.so!0x000076e76992be53  (x4)
+
+native_runtime.so!0x000076e76992be53
+    -> native_runtime.so!0x000076e76ea70c2e  (x4)
+
+worker
+    -> uv_cond_wait  (x4)
+
+uv_cond_wait
+    -> ___pthread_cond_wait  (x4)
+
+native_runtime.so!0x000076e76ea6f85e
+    -> native_runtime.so!0x000076e76ea6715d  (x1)
+    -> native_runtime.so!0x000076e76ea6728d  (x1)
+
+_PyEval_EvalFrameDefault
+    -> unknown!0x000000000064ddaa  (x1)
+    -> PyObject_Vectorcall  (x1)
+
+<tokio::runtime::time::Driver>::park_internal
+    -> <tokio::runtime::io::driver::Driver>::turn  (x1)
+
+<tokio::runtime::io::driver::Driver>::turn
+    -> <mio::poll::Poll>::poll  (x1)
+
+<mio::poll::Poll>::poll
+    -> epoll_wait  (x1)
+
+native_runtime.so!0x000076e76ea6715d
+    -> native_runtime.so!0x000076e76ea70a82  (x1)
+
+native_runtime.so!0x000076e76ea70a82
+    -> native_runtime.so!0x000076e76ea85afd  (x1)
+
+native_runtime.so!0x000076e76ea85afd
+    -> syscall  (x1)
+
+native_runtime.so!0x000076e76970c439
+    -> native_runtime.so!0x000076e769a22624  (x1)
+
+native_runtime.so!0x000076e769a22624
+    -> native_runtime.so!0x000076e769a8a795  (x1)
+
+native_runtime.so!0x000076e769a8a795
+    -> native_runtime.so!0x000076e76992cd52  (x1)
+
+native_runtime.so!0x000076e76992cd52
+    -> native_runtime.so!0x000076e76ea70c2e  (x1)
+
+unknown!0x00000000006b954c
+    -> unknown!0x00000000006f858c  (x1)
+
+unknown!0x00000000006f858c
+    -> unknown!0x000000000054ce52  (x1)
+
+unknown!0x000000000054ce52
+    -> _PyEval_EvalFrameDefault  (x1)
+
+unknown!0x000000000064ddaa
+    -> __GI___clock_nanosleep  (x1)
+
+_start
+    -> __libc_start_main_impl  (x1)
+
+__libc_start_main_impl
+    -> __libc_start_call_main  (x1)
+
+__libc_start_call_main
+    -> Py_BytesMain  (x1)
+
+Py_BytesMain
+    -> Py_RunMain  (x1)
+
+Py_RunMain
+    -> _PyRun_AnyFileObject  (x1)
+
+_PyRun_AnyFileObject
+    -> _PyRun_SimpleFileObject  (x1)
+
+_PyRun_SimpleFileObject
+    -> unknown!0x00000000006b5263  (x1)
+
+unknown!0x00000000006b5263
+    -> unknown!0x0000000000608b52  (x1)
+
+unknown!0x0000000000608b52
+    -> PyEval_EvalCode  (x1)
+
+PyEval_EvalCode
+    -> _PyEval_EvalFrameDefault  (x1)
+
+PyObject_Vectorcall
+    -> __pyx_pw_6uvloop_4loop_4Loop_45run_until_complete  (x1)
+
+__pyx_pw_6uvloop_4loop_4Loop_45run_until_complete
+    -> __pyx_pf_6uvloop_4loop_4Loop_44run_until_complete  (x1)
+
+__pyx_pf_6uvloop_4loop_4Loop_44run_until_complete
+    -> PyObject_VectorcallMethod  (x1)
+
+PyObject_VectorcallMethod
+    -> __pyx_pw_6uvloop_4loop_4Loop_25run_forever  (x1)
+
+__pyx_pw_6uvloop_4loop_4Loop_25run_forever
+    -> __pyx_pf_6uvloop_4loop_4Loop_24run_forever  (x1)
+
+__pyx_pf_6uvloop_4loop_4Loop_24run_forever
+    -> __pyx_f_6uvloop_4loop_4Loop__run  (x1)
+
+__pyx_f_6uvloop_4loop_4Loop__run
+    -> __pyx_f_6uvloop_4loop_4Loop__Loop__run  (x1)
+
+__pyx_f_6uvloop_4loop_4Loop__Loop__run
+    -> uv_run  (x1)
+
+uv_run
+    -> uv.io_poll  (x1)
+
+uv.io_poll
+    -> __GI_epoll_pwait  (x1)
+
+# LEAF functions (no callee observed; innermost frames) — 5:
+  __GI___clock_nanosleep
+  __GI_epoll_pwait
+  __futex_abstimed_wait_common64
+  epoll_wait
+  syscall

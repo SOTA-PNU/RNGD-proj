@@ -1,0 +1,349 @@
+# /home/jun/RNGD-proj/Model_Benchmark/callgraph-analysis/03-synthesis/full-callgraphs/gdb_build_trace_worker.txt
+# COMPLETE call-graph adjacency, ALL 106 functions seen.
+# format:  CALLER\n    -> callee  (xCOUNT)
+
+_PyEval_EvalFrameDefault
+    -> PyObject_Vectorcall  (x68)
+    -> PyObject_Call  (x6)
+    -> unknown!0x000000000064ddb4  (x2)
+    -> _PyObject_MakeTpCall  (x2)
+    -> _PyEval_EvalFrameDefault  (x1)
+
+PyObject_Vectorcall
+    -> _PyEval_EvalFrameDefault  (x64)
+    -> unknown!0x00000000005516b8  (x2)
+    -> __pyx_pw_3ray_7_raylet_10CoreWorker_5run_task_loop(_object*, _object* const*, long, _object*)  (x1)
+    -> unknown!0x00000000005d5a3c  (x1)
+
+clone3
+    -> start_thread  (x54)
+
+start_thread
+    -> grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void  (x38)
+    -> execute_native_thread_routine  (x8)
+    -> unknown!0x00000000006b954c  (x4)
+    -> boost_asio_detail_posix_thread_function  (x2)
+    -> thread_proxy  (x1)
+    -> background_thread_entry  (x1)
+
+absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold]
+    -> AbslInternalPerThreadSemWait_lts_20230802  (x40)
+
+AbslInternalPerThreadSemWait_lts_20230802
+    -> absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout)  (x40)
+
+absl::lts_20230802::synchronization_internal::FutexWaiter::Wait(absl::lts_20230802::synchronization_internal::KernelTimeout)
+    -> absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout)  (x40)
+
+absl::lts_20230802::synchronization_internal::FutexWaiter::WaitUntil(std::atomic<int>*, int, absl::lts_20230802::synchronization_internal::KernelTimeout)
+    -> syscall  (x40)
+
+pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)
+    -> pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)  (x20)
+    -> gpr_cv_wait  (x19)
+    -> epoll_wait  (x1)
+
+grpc_core::(anonymous namespace)::ThreadInternalsPosix::ThreadInternalsPosix(char const*, void
+    -> grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*)  (x16)
+    -> grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*)  (x16)
+    -> grpc_core::Executor::ThreadMain(void*)  (x2)
+    -> timer_thread(void*)  (x2)
+    -> grpc_event_engine::experimental::TimerManager::MainLoop()  (x1)
+    -> grpc::ThreadManager::WorkerThread::Run()  (x1)
+
+gpr_cv_wait
+    -> absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration)  (x21)
+    -> absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold]  (x3)
+
+absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration)
+    -> absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold]  (x22)
+
+cq_next(grpc_completion_queue*, gpr_timespec, void*)
+    -> grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)  (x20)
+    -> (anonymous namespace)::non_polling_poller_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)  (x1)
+
+grpc_pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)
+    -> pollset_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)  (x20)
+
+grpc_event_engine::experimental::OriginalThreadPool::StartThread(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>, grpc_event_engine::experimental::OriginalThreadPool::StartThreadReason)::{lambda(void*)#1}::_FUN(void*)
+    -> grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>)  (x16)
+
+grpc_event_engine::experimental::OriginalThreadPool::ThreadFunc(std::shared_ptr<grpc_event_engine::experimental::OriginalThreadPool::State>)
+    -> grpc_event_engine::experimental::OriginalThreadPool::Queue::Step()  (x16)
+
+grpc_event_engine::experimental::OriginalThreadPool::Queue::Step()
+    -> absl::lts_20230802::CondVar::WaitCommon(absl::lts_20230802::Mutex*, absl::lts_20230802::synchronization_internal::KernelTimeout) [clone .cold]  (x15)
+    -> void absl::lts_20230802::internal_any_invocable::LocalInvoker<false, void, grpc_event_engine::experimental::PosixEventEngine::PosixEventEngine()::{lambda()#1}&>(absl::lts_20230802::internal_any_invocable::TypeErasedState*)  (x1)
+
+grpc::(anonymous namespace)::CallbackAlternativeCQ::Ref()::{lambda(void*)#1}::_FUN(void*)
+    -> cq_next(grpc_completion_queue*, gpr_timespec, void*)  (x15)
+    -> gpr_sleep_until  (x1)
+
+execute_native_thread_routine
+    -> ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int)  (x4)
+    -> boost::asio::io_context::run()  (x1)
+    -> ray::rpc::GrpcServer::PollEventsFromCompletionQueue(int)  (x1)
+    -> ray::core::worker::TaskEventBufferImpl::Start(bool)::{lambda()#1}::operator()() const  (x1)
+    -> opentelemetry::v1::sdk::metrics::PeriodicExportingMetricReader::DoBackgroundWork()  (x1)
+
+__GI___futex_abstimed_wait_cancelable64
+    -> __futex_abstimed_wait_common  (x8)
+
+__futex_abstimed_wait_common
+    -> __futex_abstimed_wait_common64  (x8)
+
+boost::asio::detail::scheduler::run(boost::system::error_code&)
+    -> boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&)  (x6)
+
+boost::asio::detail::scheduler::do_run_one(boost::asio::detail::conditionally_enabled_mutex::scoped_lock&, boost::asio::detail::scheduler_thread_info&, boost::system::error_code const&)
+    -> boost::asio::detail::epoll_reactor::run(long, boost::asio::detail::op_queue<boost::asio::detail::scheduler_operation>&)  (x3)
+    -> ___pthread_cond_wait  (x2)
+    -> boost::asio::detail::executor_op<boost::asio::detail::binder0<std::function<void  (x1)
+
+grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec)
+    -> cq_next(grpc_completion_queue*, gpr_timespec, void*)  (x6)
+
+__pthread_cond_wait_common
+    -> __GI___futex_abstimed_wait_cancelable64  (x6)
+
+PyObject_Call
+    -> unknown!0x000000000054ceb4  (x5)
+    -> unknown!0x00000000005a37f8  (x1)
+
+unknown!0x000000000054ceb4
+    -> dynamo.custom_eval_frame  (x3)
+    -> _PyEval_EvalFrameDefault  (x2)
+
+boost::asio::io_context::run()
+    -> boost::asio::detail::scheduler::run(boost::system::error_code&)  (x4)
+
+ray::rpc::ClientCallManager::PollEventsFromCompletionQueue(int)
+    -> grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec)  (x4)
+
+unknown!0x00000000006b954c
+    -> unknown!0x00000000006f858c  (x4)
+
+unknown!0x00000000006f858c
+    -> unknown!0x000000000054ce52  (x4)
+
+unknown!0x000000000054ce52
+    -> _PyEval_EvalFrameDefault  (x4)
+
+_PyObject_Call_Prepend
+    -> _PyEval_EvalFrameDefault  (x4)
+
+boost::asio::detail::epoll_reactor::run(long, boost::asio::detail::op_queue<boost::asio::detail::scheduler_operation>&)
+    -> epoll_wait  (x3)
+
+___pthread_cond_timedwait64
+    -> __pthread_cond_wait_common  (x3)
+
+___pthread_cond_wait
+    -> __pthread_cond_wait_common  (x3)
+
+unknown!0x00000000005a37f8
+    -> _PyObject_Call_Prepend  (x3)
+
+dynamo.custom_eval_frame
+    -> dynamo__custom_eval_frame::{lambda()#1}::operator()() const  (x2)
+    -> PyObject_CallObject  (x1)
+
+grpc_core::Executor::ThreadMain(void*)
+    -> gpr_cv_wait  (x2)
+
+timer_thread(void*)
+    -> gpr_cv_wait  (x2)
+
+unknown!0x00000000005516b8
+    -> unknown!0x000000000064dbfa  (x2)
+
+unknown!0x000000000064dbfa
+    -> PyThread_acquire_lock_timed  (x2)
+
+PyThread_acquire_lock_timed
+    -> __new_sem_wait_slow64  (x2)
+
+__new_sem_wait_slow64
+    -> do_futex_wait  (x2)
+
+do_futex_wait
+    -> __GI___futex_abstimed_wait_cancelable64  (x2)
+
+unknown!0x000000000064ddb4
+    -> PyEval_RestoreThread  (x2)
+
+PyEval_RestoreThread
+    -> unknown!0x00000000005fc083  (x2)
+
+unknown!0x00000000005fc083
+    -> ___pthread_cond_timedwait64  (x2)
+
+boost_asio_detail_posix_thread_function
+    -> boost::asio::detail::posix_thread::func<boost::asio::thread_pool::thread_function>::run()  (x2)
+
+boost::asio::detail::posix_thread::func<boost::asio::thread_pool::thread_function>::run()
+    -> boost::asio::detail::scheduler::run(boost::system::error_code&)  (x2)
+
+std::_Function_handler<void
+    -> EventTracker::RecordExecution(std::function<void  (x1)
+    -> std::_Function_handler<ray::Status  (x1)
+
+std::_Function_handler<ray::Status
+    -> ray::core::CoreWorker::ExecuteTask(ray::TaskSpecification const&, std::optional<std::unordered_map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::pair<long, double>, std::allocator<std::pair<long, double> > >, std::hash<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::equal_to<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::vector<std::pair<long, double>, std::allocator<std::pair<long, double> > > > > > >, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, bool>, std::allocator<std::pair<ray::ObjectID, bool> > >*, google::protobuf::RepeatedPtrField<ray::rpc::ObjectReferenceCount>*, bool*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*)  (x1)
+    -> __pyx_f_3ray_7_raylet_task_execution_handler(ray::rpc::Address const&, ray::rpc::TaskType, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ray::core::RayFunction const&, std::unordered_map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, std::hash<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::equal_to<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, double> > > const&, std::vector<std::shared_ptr<ray::RayObject>, std::allocator<std::shared_ptr<ray::RayObject> > > const&, std::vector<ray::rpc::ObjectReference, std::allocator<ray::rpc::ObjectReference> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, bool>, std::allocator<std::pair<ray::ObjectID, bool> > >*, std::shared_ptr<ray::LocalMemoryBuffer>&, bool*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<ray::ConcurrencyGroup, std::allocator<ray::ConcurrencyGroup> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, bool, bool, long, std::optional<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >)  (x1)
+
+__Pyx_PyObject_Call(_object*, _object*, _object*)
+    -> __pyx_pw_3ray_7_raylet_12execute_task_3function_executor(_object*, _object*, _object*)  (x1)
+    -> _PyEval_EvalFrameDefault  (x1)
+
+dynamo__custom_eval_frame::{lambda()#1}::operator()() const
+    -> _PyEval_EvalFrameDefault  (x2)
+
+_PyObject_MakeTpCall
+    -> unknown!0x00000000005a37f8  (x1)
+    -> unknown!0x0000000000599c53  (x1)
+
+void absl::lts_20230802::internal_any_invocable::LocalInvoker<false, void, grpc_event_engine::experimental::PosixEventEngine::PosixEventEngine()::{lambda()#1}&>(absl::lts_20230802::internal_any_invocable::TypeErasedState*)
+    -> grpc_event_engine::experimental::PosixEventEngine::PollerWorkInternal(std::shared_ptr<grpc_event_engine::experimental::PosixEnginePollerManager>)  (x1)
+
+grpc_event_engine::experimental::PosixEventEngine::PollerWorkInternal(std::shared_ptr<grpc_event_engine::experimental::PosixEnginePollerManager>)
+    -> grpc_event_engine::experimental::Epoll1Poller::Work(std::chrono::duration<long, std::ratio<1l, 1000000000l> >, absl::lts_20230802::FunctionRef<void  (x1)
+
+grpc_event_engine::experimental::Epoll1Poller::Work(std::chrono::duration<long, std::ratio<1l, 1000000000l> >, absl::lts_20230802::FunctionRef<void
+    -> grpc_event_engine::experimental::Epoll1Poller::DoEpollWait(std::chrono::duration<long, std::ratio<1l, 1000000000l> >)  (x1)
+
+grpc_event_engine::experimental::Epoll1Poller::DoEpollWait(std::chrono::duration<long, std::ratio<1l, 1000000000l> >)
+    -> epoll_wait  (x1)
+
+grpc_event_engine::experimental::TimerManager::MainLoop()
+    -> grpc_event_engine::experimental::TimerManager::WaitUntil(grpc_core::Timestamp)  (x1)
+
+grpc_event_engine::experimental::TimerManager::WaitUntil(grpc_core::Timestamp)
+    -> absl::lts_20230802::CondVar::WaitWithTimeout(absl::lts_20230802::Mutex*, absl::lts_20230802::Duration)  (x1)
+
+thread_proxy
+    -> ray::core::CoreWorkerProcessImpl::CreateCoreWorker(ray::core::CoreWorkerOptions, ray::WorkerID const&)::{lambda()#1}::operator()() const  (x1)
+
+ray::core::CoreWorkerProcessImpl::CreateCoreWorker(ray::core::CoreWorkerOptions, ray::WorkerID const&)::{lambda()#1}::operator()() const
+    -> boost::asio::io_context::run()  (x1)
+
+gpr_sleep_until
+    -> __GI___nanosleep  (x1)
+
+__GI___nanosleep
+    -> __GI___clock_nanosleep  (x1)
+
+grpc::ThreadManager::WorkerThread::Run()
+    -> grpc::ThreadManager::MainWorkLoop()  (x1)
+
+grpc::ThreadManager::MainWorkLoop()
+    -> grpc::Server::SyncRequestThreadManager::PollForWork(void**, bool*)  (x1)
+
+grpc::Server::SyncRequestThreadManager::PollForWork(void**, bool*)
+    -> grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec)  (x1)
+
+(anonymous namespace)::non_polling_poller_work(grpc_pollset*, grpc_pollset_worker**, grpc_core::Timestamp)
+    -> gpr_cv_wait  (x1)
+
+ray::rpc::GrpcServer::PollEventsFromCompletionQueue(int)
+    -> grpc::CompletionQueue::AsyncNextInternal(void**, bool*, gpr_timespec)  (x1)
+
+ray::core::worker::TaskEventBufferImpl::Start(bool)::{lambda()#1}::operator()() const
+    -> boost::asio::io_context::run()  (x1)
+
+opentelemetry::v1::sdk::metrics::PeriodicExportingMetricReader::DoBackgroundWork()
+    -> ___pthread_cond_timedwait64  (x1)
+
+background_thread_entry
+    -> ___pthread_cond_wait  (x1)
+
+_start
+    -> __libc_start_main_impl  (x1)
+
+__libc_start_main_impl
+    -> __libc_start_call_main  (x1)
+
+__libc_start_call_main
+    -> Py_BytesMain  (x1)
+
+Py_BytesMain
+    -> Py_RunMain  (x1)
+
+Py_RunMain
+    -> _PyRun_AnyFileObject  (x1)
+
+_PyRun_AnyFileObject
+    -> _PyRun_SimpleFileObject  (x1)
+
+_PyRun_SimpleFileObject
+    -> unknown!0x00000000006b5263  (x1)
+
+unknown!0x00000000006b5263
+    -> unknown!0x0000000000608b52  (x1)
+
+unknown!0x0000000000608b52
+    -> PyEval_EvalCode  (x1)
+
+PyEval_EvalCode
+    -> _PyEval_EvalFrameDefault  (x1)
+
+__pyx_pw_3ray_7_raylet_10CoreWorker_5run_task_loop(_object*, _object* const*, long, _object*)
+    -> ray::core::CoreWorkerProcessImpl::RunWorkerTaskExecutionLoop()  (x1)
+
+ray::core::CoreWorkerProcessImpl::RunWorkerTaskExecutionLoop()
+    -> ray::core::CoreWorker::RunTaskExecutionLoop()  (x1)
+
+ray::core::CoreWorker::RunTaskExecutionLoop()
+    -> boost::asio::io_context::run()  (x1)
+
+boost::asio::detail::executor_op<boost::asio::detail::binder0<std::function<void
+    -> std::_Function_handler<void  (x1)
+
+EventTracker::RecordExecution(std::function<void
+    -> ray::core::CoreWorker::HandlePushTask(ray::rpc::PushTaskRequest, ray::rpc::PushTaskReply*, std::function<void  (x1)
+
+ray::core::CoreWorker::HandlePushTask(ray::rpc::PushTaskRequest, ray::rpc::PushTaskReply*, std::function<void
+    -> ray::core::TaskReceiver::QueueTaskForExecution(ray::rpc::PushTaskRequest, ray::rpc::PushTaskReply*, std::function<void  (x1)
+
+ray::core::TaskReceiver::QueueTaskForExecution(ray::rpc::PushTaskRequest, ray::rpc::PushTaskReply*, std::function<void
+    -> ray::core::OrderedActorTaskExecutionQueue::EnqueueTask(long, long, ray::core::TaskToExecute)  (x1)
+
+ray::core::OrderedActorTaskExecutionQueue::EnqueueTask(long, long, ray::core::TaskToExecute)
+    -> ray::core::OrderedActorTaskExecutionQueue::ExecuteQueuedTasks()  (x1)
+
+ray::core::OrderedActorTaskExecutionQueue::ExecuteQueuedTasks()
+    -> ray::core::OrderedActorTaskExecutionQueue::ExecuteRequest(ray::core::TaskToExecute&&)  (x1)
+
+ray::core::OrderedActorTaskExecutionQueue::ExecuteRequest(ray::core::TaskToExecute&&)
+    -> ray::core::OrderedActorTaskExecutionQueue::AcceptRequestOrRejectIfCanceled(ray::TaskID, ray::core::TaskToExecute&)  (x1)
+
+ray::core::OrderedActorTaskExecutionQueue::AcceptRequestOrRejectIfCanceled(ray::TaskID, ray::core::TaskToExecute&)
+    -> std::_Function_handler<void  (x1)
+
+ray::core::CoreWorker::ExecuteTask(ray::TaskSpecification const&, std::optional<std::unordered_map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::pair<long, double>, std::allocator<std::pair<long, double> > >, std::hash<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::equal_to<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::vector<std::pair<long, double>, std::allocator<std::pair<long, double> > > > > > >, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, bool>, std::allocator<std::pair<ray::ObjectID, bool> > >*, google::protobuf::RepeatedPtrField<ray::rpc::ObjectReferenceCount>*, bool*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+    -> std::_Function_handler<ray::Status  (x1)
+
+__pyx_f_3ray_7_raylet_task_execution_handler(ray::rpc::Address const&, ray::rpc::TaskType, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, ray::core::RayFunction const&, std::unordered_map<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, double, std::hash<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::equal_to<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, double> > > const&, std::vector<std::shared_ptr<ray::RayObject>, std::allocator<std::shared_ptr<ray::RayObject> > > const&, std::vector<ray::rpc::ObjectReference, std::allocator<ray::rpc::ObjectReference> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> >, std::allocator<std::pair<ray::ObjectID, std::shared_ptr<ray::RayObject> > > >*, std::vector<std::pair<ray::ObjectID, bool>, std::allocator<std::pair<ray::ObjectID, bool> > >*, std::shared_ptr<ray::LocalMemoryBuffer>&, bool*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<ray::ConcurrencyGroup, std::allocator<ray::ConcurrencyGroup> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, bool, bool, long, std::optional<std::basic_string<char, std::char_traits<char>, std::allocator<char> > >)
+    -> __Pyx_PyObject_Call(_object*, _object*, _object*)  (x1)
+
+__pyx_pw_3ray_7_raylet_12execute_task_3function_executor(_object*, _object*, _object*)
+    -> __Pyx_PyObject_Call(_object*, _object*, _object*)  (x1)
+
+PyObject_CallObject
+    -> unknown!0x00000000005a37f8  (x1)
+
+unknown!0x0000000000599c53
+    -> unknown!0x000000000059e16f  (x1)
+
+unknown!0x000000000059e16f
+    -> _PyObject_Call_Prepend  (x1)
+
+unknown!0x00000000005d5a3c
+    -> unknown!0x00000000006087f0  (x1)
+
+# LEAF functions (no callee observed; innermost frames) — 5:
+  __GI___clock_nanosleep
+  __futex_abstimed_wait_common64
+  epoll_wait
+  syscall
+  unknown!0x00000000006087f0

@@ -3,14 +3,10 @@
 /home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
   from furiosa.models.core.attention.backends import LLMAttentionBackend
 INFO:furiosa_llm.server.models:Loading LLM from artifact: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-tp8-65k-tc
-[2m2026-06-16T11:47:48.160848522+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-tp8-65k-tc
-[2m2026-06-16T11:47:51.51722309+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::commons[0m[2m:[0m Loading artifact with schema version: 3.0
-[2m2026-06-16T11:47:51.818437649+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Loaded target artifact: SchemaVersion { major: 3, minor: 0 }
-[2m2026-06-16T11:47:51.818550505+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Parallelism Config: tp=8, pp=1, dp=1
-[2m2026-06-16T11:47:52.213762392+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Loading the target model ...
-[2m2026-06-16T11:47:52.215394662+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:1:0-3, npu:1:4-7]) started
-[2m2026-06-16T11:47:52.480434982+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#0 allocation plan: Binary=81.2 MiB, Model weights=57.0 GiB, Reserved IO memory=4.0 GiB
-[2m2026-06-16T11:47:52.497544924+09:00[0m [32m INFO[0m [2mfuriosa_generator::backing_file[0m[2m:[0m Total size of parameters loaded: 47.5 GiB in 0.017052092 s
+[2m2026-06-22T17:25:10.438679538+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen3-coder-30b-a3b-inst-tp8-65k-tc
+[2m2026-06-22T17:25:13.730057969+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::commons[0m[2m:[0m Loading artifact with schema version: 3.0
+[2m2026-06-22T17:25:13.9929507+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Loaded target artifact: SchemaVersion { major: 3, minor: 0 }
+[2m2026-06-22T17:25:13.99306724+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Parallelism Config: tp=8, pp=2, dp=1
 Traceback (most recent call last):
   File "/home/jun/furiosa/bin/furiosa-llm", line 6, in <module>
     sys.exit(main())
@@ -33,4 +29,4 @@ Traceback (most recent call last):
   File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 383, in _init_from_artifact
     self.engine = NativeLLMEngine(
                   ^^^^^^^^^^^^^^^^
-ValueError: NPU error: Allocating size 402653184 using 50683466240, cause: out of memory, requested: 402653184, capacity: 51002736640
+ValueError: NPU error: Npu npu0pe0-3: EBUSY: Device or resource busy

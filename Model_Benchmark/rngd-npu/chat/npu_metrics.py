@@ -28,6 +28,7 @@ CARD_BG = "#151515"
 CARD_BORDER = "#444"
 NUM = "#ffffff"
 MUTE = "#888"
+RED = "#dc2626"     # 메모리 거의 가득(>=90%) 경고 막대
 
 
 def _run(cmd, timeout=6):
@@ -64,6 +65,7 @@ class Metrics:
         self._last_sample_t = time.time()
         self.last_activity = 0.0       # 마지막 토큰/생성시작 시각 — 대시보드 타이머 on/off 게이트
         self._smi_cache = (0.0, None)  # (ts, per-card dict)
+        self.mem = {}                  # idx -> (used_gib, total_gib, pct) — 카드별 HBM 점유
 
     # ── 요청 타이밍: 생성 코드(_generate/_stream_reply)가 호출 ──────────────
     def start(self):
@@ -129,15 +131,24 @@ class Metrics:
                     d["temp"] = float(mt.group(1))
                 if mp:
                     d["power"] = float(mp.group(1))
-            # status: 디바이스 블록(+---+ 구분)마다 npuN + 최대 Core %
+            # status: 디바이스 블록(+---+ 구분)마다 npuN + 최대 Core % + Memory(used/total GiB, %)
             for block in re.split(r"\+[-+]+\+", status):
                 mi = re.search(r"npu(\d+)\b", block)
                 if not mi:
                     continue
                 idx = int(mi.group(1))
+                d = per.setdefault(idx, {"power": 0.0, "temp": 0.0, "util": 0.0})
                 cores = [float(x) for x in re.findall(r"Core\s*\d+:\s*([\d.]+)\s*%", block)]
                 if cores:
-                    per.setdefault(idx, {"power": 0.0, "temp": 0.0, "util": 0.0})["util"] = max(cores)
+                    d["util"] = max(cores)
+                # 예: "43.56/47.50 GiB"  +  "(91.71%)"
+                mm = re.search(r"([\d.]+)\s*/\s*([\d.]+)\s*GiB", block)
+                if mm:
+                    d["mem_used"] = float(mm.group(1))
+                    d["mem_total"] = float(mm.group(2))
+                mpct = re.search(r"\(([\d.]+)\s*%\)", block)
+                if mpct:
+                    d["mem_pct"] = float(mpct.group(1))
             cached = per
             self._smi_cache = (now, per)
         per = cached or {}
@@ -153,6 +164,9 @@ class Metrics:
         """타이머가 호출: HW 읽고 라이브 TPS(윈도 글자수/4 / 경과초) 갱신, 히스토리 push.
         라이브 TPS 는 추정치라 max_tps(점선)에는 넣지 않는다 — 점선은 finish 의 정확 평균 피크만."""
         power, temp, util = self._read_smi(active_cards)
+        per = self._smi_cache[1] or {}
+        mem = {i: (round(d.get("mem_used", 0.0), 1), round(d.get("mem_total", 0.0), 1),
+                   round(d.get("mem_pct", 0.0), 1)) for i, d in per.items()}
         now = time.time()
         with self._lock:
             elapsed = max(0.5, now - self._last_sample_t)
@@ -160,11 +174,46 @@ class Metrics:
             live_tps = round((self._window_chars / 4) / elapsed) if self._window_chars else 0
             self._window_chars = 0
             self.power, self.temp, self.util = power, temp, util
+            self.mem = mem
             self.power_hist.append(power)
             self.util_hist.append(util)
             self.tps_hist.append(live_tps)
 
-    # ── 렌더 ─────────────────────────────────────────────────────────────
+    # ── JSON(클라이언트 폴링용) ──────────────────────────────────────────
+    def metrics_json(self) -> dict:
+        """대시보드 클라이언트가 폴링해 '값만 제자리 갱신'하도록 현재 수치를 dict 로.
+        (HTML 통째 교체 대신 이 JSON 으로 텍스트/막대/스파크라인만 바꿔 깜빡임을 없앤다.)"""
+        with self._lock:
+            return {
+                "tps": self.tps, "tpot": round(self.tpot, 1), "e2e": self.e2e, "ttft": self.ttft,
+                "power": self.power, "temp": self.temp, "util": self.util, "max_tps": self.max_tps,
+                "tps_hist": list(self.tps_hist), "tpot_hist": list(self.tpot_hist),
+                "power_hist": list(self.power_hist),
+                "mem": [[i, u, t, p] for i, (u, t, p) in sorted(self.mem.items())],
+            }
+
+    # ── 렌더(정적 구조 1회) ──────────────────────────────────────────────
+    def render_dashboard(self) -> str:
+        """값이 들어갈 자리(id)만 있는 정적 구조를 1회 렌더. 실제 수치는 클라이언트 JS 가
+        /dash_metrics 를 폴링해 각 id 의 텍스트/막대/스파크라인만 바꿔 채운다(제자리 갱신=무깜빡임)."""
+        cards = [
+            _dcard("tps", "TPS", "tok/s", spark=True, dash=True),
+            _dcard("tpot", "TPOT", "ms", spark=True),
+            _dcard("e2e", "E2E", "s", spark=False),
+            _dcard("ttft", "TTFT", "ms", spark=False),
+            _dcard("power", "Power / card", "W", spark=True),
+            _row2(_dcard("temp", "Temp", "°C", spark=False, mini=True),
+                  _dcard("util", "NPU util", "%", spark=False, mini=True)),
+            _mem_card_struct(),
+        ]
+        return (
+            f'<div style="display:flex;flex-direction:column;gap:9px;">'
+            f'<div style="color:{MUTE};font-size:12px;letter-spacing:.5px;'
+            f'text-transform:uppercase;margin-bottom:1px;">Real-time performance</div>'
+            + "".join(cards) + "</div>"
+        )
+
+    # ── 렌더(레거시: HTML 통째) — 호환용으로 남겨둠 ───────────────────────
     def render_html(self):
         with self._lock:
             ttft, e2e, tpot, tps = self.ttft, self.e2e, self.tpot, self.tps
@@ -173,6 +222,7 @@ class Metrics:
             tpot_hist = list(self.tpot_hist)
             power_hist = list(self.power_hist)
             max_tps = self.max_tps
+            mem = dict(self.mem)
         cards = [
             _card("TPS", "tok/s", _fmt(tps), tps_hist, dash=max_tps or None),
             _card("TPOT", "ms", _fmt(tpot), tpot_hist),
@@ -186,7 +236,9 @@ class Metrics:
             f'<div style="display:flex;flex-direction:column;gap:9px;">'
             f'<div style="color:{MUTE};font-size:12px;letter-spacing:.5px;'
             f'text-transform:uppercase;margin-bottom:1px;">Real-time performance</div>'
-            + "".join(cards) + "</div>"
+            + "".join(cards)
+            + _mem_card(mem)            # 위 성능 카드 아래에 카드별 메모리 점유 추가
+            + "</div>"
         )
 
 
@@ -251,3 +303,83 @@ def _row2(a, b):
     return (f'<div style="display:flex;gap:9px;">'
             f'<div style="flex:1;min-width:0;">{a}</div>'
             f'<div style="flex:1;min-width:0;">{b}</div></div>')
+
+
+def _mem_bar(idx, used, total, pct):
+    """카드 한 장의 메모리 한 줄: NPUn [막대] used/total  pct%. 위 카드들과 같은 팔레트.
+    90% 이상이면 막대를 빨강(거의 가득)으로, 아니면 시안으로."""
+    pct = max(0.0, min(100.0, pct if pct else (used / total * 100 if total else 0)))
+    fill = RED if pct >= 90 else CYAN
+    return (
+        f'<div style="display:flex;align-items:center;gap:8px;margin:6px 0 0;">'
+        f'<span style="color:{MUTE};font-size:12px;width:42px;flex:none;">NPU{idx}</span>'
+        f'<div style="flex:1;height:8px;background:#000;border:1px solid #333;border-radius:4px;'
+        f'overflow:hidden;">'
+        f'<div style="width:{pct:.1f}%;height:100%;background:{fill};"></div></div>'
+        f'<span style="color:{NUM};font-family:monospace;font-size:12px;width:92px;text-align:right;'
+        f'flex:none;">{used:.1f}/{total:.1f}</span>'
+        f'<span style="color:{MUTE};font-family:monospace;font-size:12px;width:38px;text-align:right;'
+        f'flex:none;">{pct:.0f}%</span>'
+        f'</div>'
+    )
+
+
+def _dcard(key, title, unit, spark=True, dash=False, mini=False):
+    """클라이언트가 채울 빈 카드(값 span 은 id=mv-<key>, 스파크라인 polyline 은 id=mp-<key>)."""
+    val = (f'<span id="mv-{key}" style="color:{NUM};font-family:monospace;'
+           f'font-size:26px;line-height:1;">—</span>')
+    head = (
+        f'<div style="display:flex;justify-content:space-between;align-items:flex-start;">'
+        f'<span style="color:{CYAN};font-size:13px;font-weight:500;">{title}'
+        f'<span style="color:{CYAN};"> ({unit})</span></span>{val}</div>'
+    )
+    sp = ""
+    if spark:
+        dl = (f'<line id="md-{key}" x1="0" y1="0" x2="210" y2="0" stroke="{PURPLE}" '
+              f'stroke-width="1" stroke-dasharray="4 4" opacity="0" />') if dash else ""
+        sp = (f'<svg viewBox="0 0 210 46" preserveAspectRatio="none" '
+              f'style="width:100%;height:46px;display:block;">'
+              f'<polyline id="mp-{key}" points="" fill="none" stroke="{PURPLE}" stroke-width="1.5" />'
+              f'{dl}</svg>')
+    pad = "9px 12px" if mini else "11px 13px"
+    return (f'<div style="background:{CARD_BG};border:1px solid {CARD_BORDER};border-radius:8px;'
+            f'padding:{pad};box-sizing:border-box;">{head}{sp}</div>')
+
+
+def _mem_card_struct():
+    """카드별 메모리 막대 빈 구조(NPU0~3 고정 행, 처음엔 숨김). 클라이언트가 width/색/텍스트만 갱신.
+    width 에 CSS transition 을 줘 차오름이 매끄럽게 보입니다."""
+    rows = ""
+    for i in range(4):
+        rows += (
+            f'<div id="mem-row-{i}" style="display:none;align-items:center;gap:8px;margin:6px 0 0;">'
+            f'<span style="color:{MUTE};font-size:12px;width:42px;flex:none;">NPU{i}</span>'
+            f'<div style="flex:1;height:8px;background:#000;border:1px solid #333;border-radius:4px;'
+            f'overflow:hidden;">'
+            f'<div id="mem-bar-{i}" style="width:0%;height:100%;background:{CYAN};'
+            f'transition:width .5s ease;"></div></div>'
+            f'<span id="mem-used-{i}" style="color:{NUM};font-family:monospace;font-size:12px;'
+            f'width:92px;text-align:right;flex:none;">—</span>'
+            f'<span id="mem-pct-{i}" style="color:{MUTE};font-family:monospace;font-size:12px;'
+            f'width:38px;text-align:right;flex:none;">—</span></div>')
+    head = (
+        f'<div style="display:flex;justify-content:space-between;align-items:flex-start;">'
+        f'<span style="color:{CYAN};font-size:13px;font-weight:500;">NPU memory'
+        f'<span style="color:{CYAN};"> (GiB)</span></span></div>'
+    )
+    return (f'<div style="background:{CARD_BG};border:1px solid {CARD_BORDER};border-radius:8px;'
+            f'padding:11px 13px;box-sizing:border-box;">{head}{rows}</div>')
+
+
+def _mem_card(mem):
+    """카드별 HBM 점유를 한 카드 안에 NPU0~3 막대로. 성능 카드와 동일한 검정 카드 디자인."""
+    rows = [_mem_bar(i, *mem[i]) for i in sorted(mem) if mem[i][1] > 0]
+    body = ("".join(rows) if rows
+            else f'<div style="color:{MUTE};font-size:12px;margin-top:4px;">측정 대기 중…</div>')
+    head = (
+        f'<div style="display:flex;justify-content:space-between;align-items:flex-start;">'
+        f'<span style="color:{CYAN};font-size:13px;font-weight:500;">NPU memory'
+        f'<span style="color:{CYAN};"> (GiB)</span></span></div>'
+    )
+    return (f'<div style="background:{CARD_BG};border:1px solid {CARD_BORDER};border-radius:8px;'
+            f'padding:11px 13px;box-sizing:border-box;">{head}{body}</div>')

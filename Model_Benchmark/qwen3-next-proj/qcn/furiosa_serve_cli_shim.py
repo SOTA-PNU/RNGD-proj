@@ -52,12 +52,21 @@ def _patched_init(self, model_id_or_path=None, *args, **kwargs):
     아니면 원래 furiosa-llm 동작."""
     path = model_id_or_path if model_id_or_path is not None else kwargs.get("model_id_or_path")
     if path is not None and _is_host_loop_artifact(path):
-        from qcn.model import QCNModel
         from qcn.furiosa_serve_adapter import HostLoopEngine
-        m = QCNModel()
+        # pp4: QCN_PP set or QCN_CARDS>1 -> PipelineModel (layers split across cards).
+        # Otherwise the proven single-card QCNModel. Both expose prefill/decode_step.
+        _pp = os.environ.get("QCN_PP") or (int(os.environ.get("QCN_CARDS", "1")) > 1)
+        if _pp:
+            from qcn.pipeline import PipelineModel
+            m = PipelineModel(artifact_dir=str(path))
+            print(f"[cli-shim] pp 모드: PipelineModel({m.n_stages} stages {m.ranges})", flush=True)
+        else:
+            from qcn.model import QCNModel
+            m = QCNModel()
         self.engine = HostLoopEngine(m)
         self.tokenizer = m.get_tokenizer()
         self.model_metadata = _HostLoopMeta()
+        self.artifact_id = os.path.basename(str(path).rstrip("/"))  # Model.from_llm reads this
         self.prompt_max_seq_len = int(m.cfg_d.get("max_position_embeddings", 262144))
         self.max_seq_len_to_capture = 65536
         self.default_generation_config = {}

@@ -51,7 +51,13 @@ class HostLoopEngine:
         return True
 
     def shutdown(self) -> None:
-        pass
+        # tear down pp stage workers when serve stops (PipelineModel.shutdown)
+        sd = getattr(self.model, "shutdown", None)
+        if callable(sd):
+            try:
+                sd()
+            except Exception:
+                pass
 
     def abort_request(self, request_id: str) -> None:
         self._abort.add(request_id)

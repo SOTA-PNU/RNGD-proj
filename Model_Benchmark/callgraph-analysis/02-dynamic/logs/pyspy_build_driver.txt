@@ -1,0 +1,35 @@
+Process 3028169: /home/jun/furiosa/bin/python3 /home/jun/furiosa/bin/furiosa-llm build /home/jun/.cache/huggingface/hub/models--Qwen--Qwen2.5-Coder-1.5B-Instruct/snapshots/2e1fd397ee46e1388853d2af2c993145b0f1098a/ build_out_val -tp 4 --max-model-len 2048 --name qwen25-coder-1p5b-tp4
+Python v3.12.3 (/usr/bin/python3.12)
+
+Thread 3028169 (idle): "MainThread"
+    wait (ray/_private/worker.py:3227)
+    wrapper (ray/_private/client_mode_hook.py:107)
+    auto_init_wrapper (ray/_private/auto_init_hook.py:22)
+    build_pipeline (furiosa_llm/parallelize/new_pipeline_builder.py:1583)
+    _build_model_artifact (furiosa_llm/artifact/builder.py:268)
+    build (furiosa_llm/artifact/builder.py:363)
+    convert (convert.py:214)
+    main (main.py:28)
+    <module> (furiosa-llm:6)
+Thread 3037156 (idle): "PythonGCThread"
+    wait (threading.py:355)
+    wait (threading.py:655)
+    run (ray/_private/gc_collect_manager.py:29)
+    _bootstrap_inner (threading.py:1073)
+    _bootstrap (threading.py:1030)
+Thread 3037158 (idle): "ray_listen_error_messages"
+    listen_error_messages (ray/_private/worker.py:2452)
+    run (threading.py:1010)
+    _bootstrap_inner (threading.py:1073)
+    _bootstrap (threading.py:1030)
+Thread 3037159 (idle): "ray_print_logs"
+    print_logs (ray/_private/worker.py:1061)
+    run (threading.py:1010)
+    _bootstrap_inner (threading.py:1073)
+    _bootstrap (threading.py:1030)
+Thread 3037161 (idle): "Thread-1"
+    wait (threading.py:359)
+    wait (threading.py:655)
+    run (tqdm/_monitor.py:60)
+    _bootstrap_inner (threading.py:1073)
+    _bootstrap (threading.py:1030)

@@ -262,6 +262,7 @@ nohup furiosa-llm serve artifacts/<새-아티팩트-폴더> \
 | `coder14-base` | 8007 | tp8(1장) | Qwen2.5-Coder-14B tp8 | base(non-inst) 14B |
 | `a3b-fp8` | 8000 | tp8(1장) | Qwen3-Coder-30B-A3B-Inst-FP8 tp8 | MoE FP8, max-model-len 65536. masquerade 로 serve 부활(30G·1장 OK) |
 | `a3b` | 8006 | tp8(1장) | Qwen3-Coder-30B-A3B-Inst tp8 | MoE bf16, 65536. **58G > 1장 47.5G → dp1·pp1 이면 OOM, pp≥2(2장 분할)로 띄워야 함** |
+| `qwen72b` | 8009 | host-loop | Qwen2.5-72B-Inst (**bf16 원본**) | ✅ **bf16 원본 serve 가능 — host 추론 루프**(`qcn/serve_q25.py`, `Q25Model`, 2026-06-17). 표준 `furiosa-llm serve`는 전부 막힘(아래)이라, host가 추론 루프를 들고 가중치를 레이어별로 NPU에 스트리밍하는 방식(Qwen3-Coder-Next 80B와 동일). 실측: "프랑스 수도?"→**"Paris" 정답, CPU폴백 0(전부 NPU)**. ⚠️ **매우 느림(~수백초/토큰)** — bf16 dense 72B는 토큰마다 135GiB를 디스크 스트리밍(RAM 116GB 초과). 정확도 우선용. 실행: `RNGD_DEV=rngd:4 PYTHONPATH=<proj> ~/furiosa/bin/python qcn/serve_q25.py`(포트 8009). <br>**왜 표준 serve는 불가(참고):** tp32 빌드=inter-chip DramShapeGuide 미구현(`allow_inter_chip_dram` 플래그로도 실패, radare2 실측), pp4 serve=인터칩 가중치 바인딩 `-1803550720` 실패(per-stage 33.6G), pp2=67G/장>47.5라 2장 초과. 빠른 native가 필요하면 FP8 양자화→`-pp 4` 또는 `llama-70b`(tp32 prebuilt). |
 | `qwen3-32b` | 8004 | tp8(1장) | Qwen3-32B-FP8 | 추론(사고과정). NPU에서 응답 느린 편 |
 | `qwen3-32b-16k` | 8005 | tp8(1장) | Qwen3-32B-FP8-16k | 추론. 위 모델의 컨텍스트 16K 축소판 |
 | `exaone-32b` | 8011 | tp32(4장) | EXAONE-4.0-32B-FP8 | 정상 (단독 serve) |

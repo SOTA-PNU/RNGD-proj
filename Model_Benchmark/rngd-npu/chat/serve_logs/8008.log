@@ -1,0 +1,42 @@
+/home/jun/furiosa/lib/python3.12/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.3) or chardet (7.4.3)/charset_normalizer (3.4.7) doesn't match a supported version!
+  warnings.warn(
+/home/jun/furiosa/lib/python3.12/site-packages/furiosa/models/core/attention/attention.py:6: UserWarning: LTW Backend is provided temporarily for compatibility purposes only. This feature may be removed without notice in future versions. (Default behavior, set USE_WTL_BACKEND=1 to use WTL backend)
+  from furiosa.models.core.attention.backends import LLMAttentionBackend
+INFO:furiosa_llm.server.models:Loading LLM from artifact: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-72b-inst-tp8
+[2m2026-06-17T14:17:26.258885413+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::next_gen[0m[2m:[0m Loading artifact from path: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/qwen2.5-72b-inst-tp8
+[2m2026-06-17T14:17:33.160651276+09:00[0m [32m INFO[0m [2mfuriosa_llm_common::artifact::types::commons[0m[2m:[0m Loading artifact with schema version: 3.0
+[2m2026-06-17T14:17:33.414278599+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Loaded target artifact: SchemaVersion { major: 3, minor: 0 }
+[2m2026-06-17T14:17:33.414355413+09:00[0m [32m INFO[0m [2mfuriosa::llm::engine[0m[2m:[0m Parallelism Config: tp=8, pp=4, dp=1
+[2m2026-06-17T14:17:35.047163891+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::hf_compat_next_gen[0m[2m:[0m Loading the target model ...
+[2m2026-06-17T14:17:35.048510382+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:2:0-3, npu:2:4-7]) started
+[2m2026-06-17T14:17:35.048616304+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:0:0-3, npu:0:4-7]) started
+[2m2026-06-17T14:17:35.048712896+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:1:0-3, npu:1:4-7]) started
+[2m2026-06-17T14:17:35.049197938+09:00[0m [32m INFO[0m [2mdevice_runtime::context[0m[2m:[0m Memory dump thread for Device([npu:3:0-3, npu:3:4-7]) started
+[2m2026-06-17T14:17:35.409005617+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#0 allocation plan: Binary=49.6 MiB, Model weights=33.6 GiB, Reserved IO memory=2.5 GiB
+[2m2026-06-17T14:17:35.409038784+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#1 allocation plan: Binary=47.7 MiB, Model weights=32.7 GiB, Reserved IO memory=2.5 GiB
+[2m2026-06-17T14:17:35.409040872+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#2 allocation plan: Binary=47.7 MiB, Model weights=32.7 GiB, Reserved IO memory=2.5 GiB
+[2m2026-06-17T14:17:35.409042442+09:00[0m [32m INFO[0m [2mfuriosa_generator::next_gen::pipeline::resolve[0m[2m:[0m PP device#3 allocation plan: Binary=51.2 MiB, Model weights=36.5 GiB, Reserved IO memory=2.5 GiB
+[2m2026-06-17T14:17:52.98459456+09:00[0m [32m INFO[0m [2mfuriosa_generator::backing_file[0m[2m:[0m Total size of parameters loaded: 135.4 GiB in 17.574217 s
+Traceback (most recent call last):
+  File "/home/jun/furiosa/bin/furiosa-llm", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/main.py", line 28, in main
+    args.dispatch_function(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/cli/serve.py", line 385, in serve
+    run_server(args)
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/app.py", line 536, in run_server
+    app = init_app(args)
+          ^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/app.py", line 389, in init_app
+    llm = load_llm_from_args(args, served_model_name=served_model_name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/server/models.py", line 42, in load_llm_from_args
+    return LLM(
+           ^^^^
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 216, in __init__
+    self._init_from_artifact(
+  File "/home/jun/furiosa/lib/python3.12/site-packages/furiosa_llm/api.py", line 383, in _init_from_artifact
+    self.engine = NativeLLMEngine(
+                  ^^^^^^^^^^^^^^^^
+ValueError: NPU error: Npu npu0pe0-3: Unknown error -1803550720 (os error -1803550720)
