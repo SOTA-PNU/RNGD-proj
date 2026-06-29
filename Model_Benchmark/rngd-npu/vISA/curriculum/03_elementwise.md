@@ -138,7 +138,7 @@ Fxp 클러스터(i32 정수/고정소수, 8-way)의 ALU 배치(`docs/src/computi
 
 Float 클러스터(f32, 4-way)는 5개 ALU(FpFma, FpFpu, FpExp, FpMul0, FpMul1)를 노출합니다(`docs/src/computing-tensors/vector-engine/intra-slice-chain.md:310-347`). `MulF`는 `FpMulAlu::Mul0/Mul1/Fma`로 어느 곱셈기를 쓸지 직접 고를 수 있습니다 — 곱셈 두 번을 한 패스에 넣고 싶으면 Mul0·Mul1로 분산하면 됩니다. `ve_elementwise_full_pipeline`이 fxp→fp 변환, narrow, fp 곱, widen, fp→fxp, clip을 한 줄로 엮은 종합 예제입니다(`furiosa-opt-examples/src/vector_engine/normal.rs:47-73`).
 
-Clip 클러스터(8-way)는 `Min/Max/AbsMin/AbsMax`(클램핑)과 `AddFxp`(또 다른 덧셈 경로!)를 제공합니다(`furiosa-opt-std/src/engine/vector/op/mod.rs:603`). 즉 Fxp의 FxpAdd가 이미 찼어도 Clip의 ClipAdd로 한 번 더 더할 수 있습니다 — ALU가 다른 단계라 별개입니다.
+Clip 클러스터(8-way)에는 `Min/Max/AbsMin/AbsMax`(클램핑)과 `AddFxp`(또 다른 덧셈 경로!)가 있습니다(`furiosa-opt-std/src/engine/vector/op/mod.rs:603`). 즉 Fxp의 FxpAdd가 이미 찼어도 Clip의 ClipAdd로 한 번 더 더할 수 있습니다 — ALU가 다른 단계라 별개입니다.
 
 ### 3.4 피연산자 소스와 인자 모드, Stash
 

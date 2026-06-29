@@ -247,7 +247,7 @@ R은 `R # PADDED_SIZE` 형태로 패딩되고, 각 부분식은 `R # PADDED_SIZE
 
 **Time Filter** (vcg.md:54-83) — 각 슬라이스 s에서 각 시간 스텝 t가 valid R 데이터를 들었는지 판정. 필드: sequencer(t→R index 복원), slice_mask/slice_thres/time_thres, mode(SliceMajor|TimeMajor). `valid()` 로직: `(s & slice_mask)`를 slice_thres와 비교해 Less면 무조건 true, (Greater & SliceMajor)면 false, 그 외엔 `idx < time_thres`. R이 Time/Slice에 부분식이 없으면 slice_mask=0, slice_thres=1로 비활성(항상 true) (vcg.md:58).
 
-배치 케이스들:
+배치하는 경우들:
 - **R as Time**: t가 곧 R index. `t < R::SIZE`면 valid (vcg.md:85-127). 예제처럼 R#16에서 R::SIZE=12면 t=0..11 valid, 12..15 제외.
 - **R in Time(다른 축과 공유, 순서 무관)**: sequencer가 t를 부분식별 카운터로 분해, R 할당 카운터의 `value×stride` 합이 idx (vcg.md:128-180). 비-R 축(A)은 stride 0이라 idx에 기여 안 함 → 위치 무관.
 - **R in Slice and Time (SliceMajor)** (vcg.md:181-253): Slice 부분식이 더 major(큰 stride). Slice 안에서는 stride 내림차순, 각 부분식은 2의 거듭제곱 크기·stride여야 slice_mask 비트가 연속. Time 안에서는 순서 자유. 슬라이스를 "전부 valid / 경계 / 전부 invalid" 세 영역으로 나눔. slice_thres가 경계 슬라이스의 R 기여 인코딩, time_thres = R::SIZE - 경계기여.
@@ -431,7 +431,7 @@ cargo furiosa-opt test -p furiosa-opt-examples --test vector_engine_tests test_v
 ```bash
 cargo furiosa-opt test -p furiosa-opt-std transpose::tests::valid -- --nocapture
 ```
-**관찰** — basic/small/large_col/bf16 단위테스트 통과. 각 케이스의 in_cols/in_rows/out_rows가 표(transpose-engine.md:45-50)와 일치. verify_transpose(transpose.rs:66)가 Packet=32B, in_rows≤8B, in_cols∈{8,16,32}, out_rows≤in_cols를 assert로 검사.
+**관찰** — basic/small/large_col/bf16 단위테스트 통과. 각 경우의 in_cols/in_rows/out_rows가 표(transpose-engine.md:45-50)와 일치. verify_transpose(transpose.rs:66)가 Packet=32B, in_rows≤8B, in_cols∈{8,16,32}, out_rows≤in_cols를 assert로 검사.
 
 **심화** — transpose.rs의 valid::basic을 복사해 i8 대신 f32로 같은 in_rows=8을 주면(8×4=32B>8B) assert가 터지는지 손으로 예측(원소가 넓어지면 max in_rows가 2로 줄기 때문).
 
@@ -544,7 +544,7 @@ i8 8원소는 8바이트뿐이라 한 flit(32B)이 안 된다. cast 출력은 �
   ↳ 출처 `docs/src/computing-tensors/vector-engine/intra-slice-reduce.md:135-155`
 - VCG는 모든 축 배치를 표현하지 못한다. Slice 부분식 stride 역순, Slice-Time interleave, TimeMajor 과패딩(PADDED_SIZE-R::SIZE > slice_span), Packet에 R major부/타축 공유, R이 Slice+Packet 동시(R::SIZE%packet_span≠0)는 전부 불가.  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/vcg.md:589-788`
-- packet clipper의 Packet 형태는 정확히 m![R # PADDED_SIZE % packet_span # 8]이어야 한다. 다른 축이 Packet을 R과 공유하면 그 축 원소가 prefix valid_size에 의해 조용히 패딩으로 취급돼 잘못 제외된다.  
+- packet clipper의 Packet 형태는 정확히 m![R # PADDED_SIZE % packet_span # 8]이어야 한다. 다른 축이 Packet을 R과 공유하면 그 축 원소가 prefix valid_size 때문에 조용히 패딩으로 취급돼 잘못 제외된다.  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/vcg.md:357-358,721-743`
 - VCG의 trim_way4는 v≤4를 정적으로 보장하는 매핑에서만 안전하다. 상위 4원소가 valid일 수 있으면 trim이 데이터를 잃는다.  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/vcg.md:819-820`

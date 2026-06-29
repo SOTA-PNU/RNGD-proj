@@ -126,7 +126,7 @@ pub fn fetch<D2: Scalar, Time2: M, Packet2: M>(self) -> FetchTensor<...>
 ### 3.4 최적화 3요소
 
 Fetch 처리량은 세 가지로 결정됩니다 (docs/src/moving-tensors/fetch-engine.md:138):
-- 입력 대역폭: read_size는 DM 축 연속성과 패킷 크기에 의해 제한됩니다. 비인접 축은 access_size를, 그래서 read_size를 떨어뜨립니다. 패킷을 더 큰 2의 거듭제곱으로 패딩하면 올라갑니다.
+- 입력 대역폭: read_size는 DM 축 연속성과 패킷 크기에 따라 제한됩니다. 비인접 축은 access_size를, 그래서 read_size를 떨어뜨립니다. 패킷을 더 큰 2의 거듭제곱으로 패딩하면 올라갑니다.
 - 출력 대역폭: 다운스트림 Collect 엔진이 패킷을 32바이트 flit으로 변환하므로, 32바이트에 안 맞는 패킷은 대역폭을 낭비합니다. 20바이트 패킷은 flit 하나에 12바이트 제로패딩→37.5% 낭비, 40바이트 패킷은 flit 두 개(64바이트)에 걸쳐 24바이트 제로패딩→역시 37.5% 낭비.
 - 공간 병렬성: 페치를 슬라이스 전반에 분산하면 처리량 최대화.
 - 그리고 경고: 같은 뱅크를 연속 64회 이상 때리는 접근은 우선순위 낮은 Commit/DMA 엔진을 굶겨 치명적 NoC 타임아웃을 부릅니다 (docs/src/moving-tensors/fetch-engine.md:145). 7절에서 자세히.
@@ -137,10 +137,10 @@ Fetch 처리량은 세 가지로 결정됩니다 (docs/src/moving-tensors/fetch-
 
 어댑터는 시퀀서 패킷에 원소별 변환을 가합니다. main-context는 네 단계 전부, sub-context는 zero-point만 지원합니다 (docs/src/moving-tensors/fetch-engine.md:191).
 
-(1) 마스킹: 패딩된 원소를 중립값으로 덮어 다운스트림에 영향 없게 합니다. 패딩이 필요한 이유는 TU 내부 데이터 경로가 고정폭 단위(32바이트 flit = 8원소 × 32비트)로 동작하므로, 크기가 flit 폭의 배수가 아닌 축은 올림(예: 63→64)됩니다. 마스킹 없으면 패딩 슬롯이 임의값이라 sum/max 같은 리덕션이 망가집니다 (docs/src/moving-tensors/fetch-engine.md:196). 설정은 세 파라미터로 합니다: `last_dim`(마스킹할 차원 인덱스, 0이 가장 안쪽), `left_pad`(왼쪽에서 0으로 만들 개수), `last_dim_rightmost_valid_count[0]`(오른쪽에서 0으로 만들 개수; 4비트 타입 0-255, f32 0-31로 제한 — 최종 패킷이 256바이트 안에 있어야 하므로). 패딩 모양에 따라 세 케이스가 있습니다 (그림 fetch-engine-padding-1/2/3.png):
-  - 케이스 1: 가장 안쪽 축에 연속된 왼쪽 패딩 하나 + 오른쪽 패딩 하나. 예: A=32,B=90, Element=m![A,B#96], lpad=2, rightmost_valid=4 → `(#2 + B + #4)`의 앞 2·뒤 4 값이 0 (docs/src/moving-tensors/fetch-engine.md:229).
-  - 케이스 2: 케이스 1과 같은 마스킹이지만 패딩 영역이 연속이 아니라 쪼개진 경우. Time 순서만 `m![B'/32, A]`로 바뀜 (docs/src/moving-tensors/fetch-engine.md:248).
-  - 케이스 3: 케이스 1·2의 오른쪽 패딩 한계(255×4비트)를 풀어, 엔트리 인덱스마다 자기 `last_dim_rightmost_valid_count[i]`를 줌. 축 크기가 8 이하일 때 `[0..8]` 8개까지 지원. 예: A=32,B=97,f32, valid_count=[16,16,16,16,16,16,1,0] → 97개 유효, 31개 무효 마스킹 (docs/src/moving-tensors/fetch-engine.md:264).
+(1) 마스킹: 패딩된 원소를 중립값으로 덮어 다운스트림에 영향 없게 합니다. 패딩이 필요한 이유는 TU 내부 데이터 경로가 고정폭 단위(32바이트 flit = 8원소 × 32비트)로 동작하므로, 크기가 flit 폭의 배수가 아닌 축은 올림(예: 63→64)됩니다. 마스킹 없으면 패딩 슬롯이 임의값이라 sum/max 같은 리덕션이 망가집니다 (docs/src/moving-tensors/fetch-engine.md:196). 설정은 세 파라미터로 합니다: `last_dim`(마스킹할 차원 인덱스, 0이 가장 안쪽), `left_pad`(왼쪽에서 0으로 만들 개수), `last_dim_rightmost_valid_count[0]`(오른쪽에서 0으로 만들 개수; 4비트 타입 0-255, f32 0-31로 제한 — 최종 패킷이 256바이트 안에 있어야 하므로). 패딩 모양에 따라 세 경우가 있습니다 (그림 fetch-engine-padding-1/2/3.png):
+  - 경우 1: 가장 안쪽 축에 연속된 왼쪽 패딩 하나 + 오른쪽 패딩 하나. 예: A=32,B=90, Element=m![A,B#96], lpad=2, rightmost_valid=4 → `(#2 + B + #4)`의 앞 2·뒤 4 값이 0 (docs/src/moving-tensors/fetch-engine.md:229).
+  - 경우 2: 경우 1과 같은 마스킹이지만 패딩 영역이 연속이 아니라 쪼개진 경우. Time 순서만 `m![B'/32, A]`로 바뀜 (docs/src/moving-tensors/fetch-engine.md:248).
+  - 경우 3: 경우 1·2의 오른쪽 패딩 한계(255×4비트)를 풀어, 엔트리 인덱스마다 자기 `last_dim_rightmost_valid_count[i]`를 줌. 축 크기가 8 이하일 때 `[0..8]` 8개까지 지원. 예: A=32,B=97,f32, valid_count=[16,16,16,16,16,16,1,0] → 97개 유효, 31개 무효 마스킹 (docs/src/moving-tensors/fetch-engine.md:264).
 
 (2) 테이블 인덱싱: 각 값을 미리 구성한 룩업테이블의 인덱스로 보고 테이블 엔트리를 대신 출력합니다. Sigmoid·GeLU 같은 비선형 활성화나 MXFP4 같은 커스텀 인코딩 변환에 씁니다. `input.fetch_with_table(table)`로 호출 (docs/src/moving-tensors/fetch-engine.md:281).
 
