@@ -14,3 +14,9 @@
 - **결정권자 핵심 2명:** Jiwen Lu(양자화·하드웨어 공동설계 전문가), Hyunjung Shim(원인 먼저 진단하고 고치는 방식 선호). 둘의 취향에 정확히 맞춘 주제다.
 - **상세 근거 문서(이 레포):** `Model_Benchmark/info/README_virtual_isa.md`(furiosa-opt 분석), `README_vision_compile.md`(비전 모델 NPU 실측), `README_op_support.md`(연산·정밀도 실측).
 - **실험에 쓰는 코드:** `Model_Benchmark/rngd-npu/vision_models/classify.py`, `rngd-npu/run_edf.py`(둘 다 이미 동작 확인됨).
+
+## 자주 받는 질문
+
+**Q. RNGD에서 비전 신경망이 되나?** 됩니다 — 풀링 없는 CNN(MobileNetV1/V2·EfficientNet-B0)은 `furiosa.torch`로 컴파일돼 칩에서 실행됩니다(~6.7ms, 실측). 단 ① 학습 가중치는 감소정밀도로 정확도가 붕괴하고(top-1 ~0%, 우리 논문 주제), ② ResNet·YOLO는 중간 풀링/검출 헤드로 컴파일이 막히며, ③ 동작 경로는 `furiosa.torch` 하나뿐입니다(공식 비전 모델 라이브러리·ONNX CLI는 현 SDK서 못 씀). 근거: `../../info/README_vision_compile.md`.
+
+**Q. 국산 NPU로 한 실험이 ACCV에 accept될까?** "국산"은 유불리가 없습니다 — ACCV는 이중맹검이라 칩을 "a commercial reduced-precision NPU"로 가려야 하고, 벤더·국적을 평가하지 않습니다. accept를 가르는 건 ① CV 기여(ImageNet 정확도가 헤드라인, 칩/커널은 부록) ② 재현성(GPU bf16로 같은 현상 독립 재현) ③ 일반성(한 칩 버그가 아니라 부동소수 누적 일반현상)입니다. 셋을 지키면 가능(전례 nuLSQ ACCV'24), 시스템 논문처럼 보이면 스코프 밖 reject. 상세: `../../info/README_accv2026_paper_plan.md` §1·§6.
