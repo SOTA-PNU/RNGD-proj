@@ -1,7 +1,8 @@
 # ACCV 2026 논문 계획 — Silent Precision Collapse (OPTIMIZATION)
 
-이 문서는 ACCV 2026에 낼 논문의 주제·실험·진도 계획과 실험 실행 방법을 담은 계획서입니다.
-결정권자 분석 근거·furiosa-opt 활용 경위·필요 지식은 [info/README_accv2026_background.md]에 있습니다.
+이 문서는 ACCV 2026에 낼 논문의 주제·전략·실험 계획 개요를 담은 계획서입니다. 자세한 실험 과정·논문 주제 설명·furiosa-opt
+코드 해설은 `rngd-npu/ACCV/` 폴더에 옮겨 정리했습니다. 결정권자 분석 근거·필요 지식은
+[info/README_accv2026_background.md]에 있습니다.
 
 ---
 
@@ -167,61 +168,8 @@ furiosa-opt 정밀도 엔진을 정면으로 쓰는 확장 → ACCV2027/CVPR/IJC
 
 ## 7. 실험 실행 방법
 
-**환경(공통)**
-```bash
-source ~/furiosa/bin/activate                 # furiosa SDK 2026.2.0
-pip install --no-deps torchvision scipy       # 모델 정의·통계용(검증 후 제거 가능)
-cd ~/RNGD-proj/Model_Benchmark/rngd-npu/vision_models
-furiosa-smi status                            # 빈 카드 확인 — 보통 npu3 유휴(npu0~2=LLM serve)
-```
-기존 스크립트(그대로 사용):
-- `python compile_vision.py <model> [--run 3]` — 컴파일 성공/실패(+실행, 랜덤 가중치).
-- `python run_edf.py compile <model>` / `run <model> --npu 3` — EDF 저장→재사용 실행.
-- `python classify.py <model> --npu 3 --images a.jpg ... [--reuse-edf F.edf]` — **학습 가중치**로
-  NPU vs CPU top-5. 모델: `mobilenet_v2`, `efficientnet_b0`. 재사용 함수: `make_model`, `preprocess`, `topk`.
-
-**M0 — 평가 하네스 (NPU 불필요)**
-1. ImageNet-1k val(50k) + GT 라벨 준비(ImageFolder 또는 `(path,label)` 리스트).
-2. 라벨 매핑: 모델 출력 인덱스 = `weights.meta["categories"]`(1000) 순서를 ILSVRC2012 val GT에 정렬.
-3. **sanity:** CPU FP32 top-1이 **MobileNetV2 71.9% / EfficientNet-B0 77.7%** 나와야 매핑 정상.
-```python
-from classify import make_model, preprocess     # 기존 함수 재사용
-m, w = make_model("mobilenet_v2"); cats = w.meta["categories"]
-# acc = mean( m(preprocess(p,w)).argmax(-1)==label  for p,label in val )
-```
-
-**M1 — 칩 붕괴 곡선 (E1)**
-- 빠른 재현: `python classify.py mobilenet_v2 --npu 3 --images /tmp/dog.jpg /tmp/cat.jpg`
-  → NPU top-1이 전부 한 클래스("window screen")면 붕괴 확인.
-- 정량화: classify.py를 val 루프로 확장(`cm` 1회 컴파일 후 이미지마다 `cm(x.to(dev),device=dev)`)
-  → NPU·CPU top-1/top-5 집계. per-layer rel-L2는 forward hook으로 conv 출력 NPU vs CPU 비교(첫 발산 층).
-
-**M2 — kurtosis 진단 (E3, host)**
-```python
-from scipy.stats import kurtosis
-# conv 가중치 W:[out,in,kh,kw] → per-output-channel kurtosis
-k = kurtosis(W.reshape(W.shape[0], -1).numpy(), axis=1)
-# k ↔ per-layer rel-L2 의 Spearman 상관 + 붕괴층 분류 AUC
-```
-
-**M3 — Q_npu surrogate (E2/E5, host, NPU 불필요)**
-- bf16-operand 캐스트 + f32 누적 fake-quant conv: `W_q=W.to(torch.bfloat16).float()`,
-  `X_q=X.to(torch.bfloat16).float()` 후 f32 conv → 칩 붕괴 재현 여부 확인.
-- 라운딩/클립을 **칩 logit에 calibrate**, argmax 일치율 보고. **held-out split + 2nd 모델**로 검증(circular 방지).
-
-**M4 — 최적화 복구 (E4, host)**
-- equalization scale(닫힌형): `d_k = max|W[:,k]|^a / max|X[:,k]|^(1-a)`, `a`는 kurtosis로 결정 →
-  coordinate descent로 `KL(FP32 logits ‖ Q_npu logits)` 최소화.
-- 가중치 접기: `W'=W*d`(인접 BN/conv 역보정) → **FP32 logit 불변 assert** + per-channel clip.
-- 복구 top-1을 Q_npu에서 측정 + ablation(clip/scale/both, kurtosis-α vs α=0.5 vs uniform, calib 1/8/32/128).
-
-**M5 — 칩 복구 (★GO/NO-GO)**
-- fold된 모델을 그대로 컴파일·실행: `python classify.py mobilenet_v2 --npu 3 --images ...`(model을 fold본으로).
-- 빠른 sweep: `run_edf.py compile`로 EDF 1회 저장 후 설정마다 가중치만 갈아끼워(`--reuse-edf`) **재컴파일 0초**.
-- npu3에서 복구 top-1 측정. **~0%면 폴백 B**(operand-cast 국소화 + 시뮬 복구).
-
-**E6/E8 (정밀도 모드·vISA upside):** bf16 vs i8은 surrogate/vISA-sim에서. vISA cold-start 설치는
-[info/README_accv2026_background.md] §D + [info/README_virtual_isa.md] §6.
+구체적 실행 절차(환경 준비, M0~M5 단계별 명령어·코드 골격)는 `rngd-npu/ACCV/02_실험계획.md`로
+옮겼습니다. furiosa-opt의 어느 코드를 왜 쓰는지는 `rngd-npu/ACCV/03_furiosa-opt_코드해설.md` 참고.
 
 ---
 
