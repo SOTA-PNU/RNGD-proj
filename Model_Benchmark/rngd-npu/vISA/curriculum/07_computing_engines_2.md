@@ -14,13 +14,13 @@
 
 ## 0. 큰 그림: Vector Engine은 무엇을 하나요
 
-RNGD의 한 Tensor Unit 안에는 여러 엔진이 파이프라인으로 줄지어 있습니다. 그중 Vector Engine(VE)은 "원소별(elementwise) 계산"과 "리덕션(reduction)"을 담당합니다. 활성화 함수(GELU, SiLU), 정규화(softmax, layer norm), 이항/삼항 연산, 그리고 축 합/최대/최소가 전부 여기서 나옵니다 (docs/src/computing-tensors/vector-engine/index.md:1-4).
+RNGD의 한 Tensor Unit 안에는 여러 엔진이 파이프라인으로 줄지어 있습니다. 그중 Vector Engine(VE)은 "원소 단위(elementwise) 계산"과 "리덕션(reduction)"을 담당합니다. 활성화 함수(GELU, SiLU), 정규화(softmax, layer norm), 이항/삼항 연산, 그리고 축 합/최대/최소가 전부 여기서 나옵니다 (docs/src/computing-tensors/vector-engine/index.md:1-4).
 
 가장 먼저 기억할 사실 하나: **VE는 32비트 타입(i32, f32)만 받습니다** (index.md:6). 왜냐면 VE는 정밀도 손실 없이 누적·계산하는 단계라서, 입력을 미리 32비트로 넓혀(widen) 두어야 하기 때문입니다. 보통 앞단의 Contraction Engine이 자동으로 넓혀줍니다(bf16 곱은 f32로, i8 곱은 i32로 누적). Contraction을 건너뛰면 Fetch Engine의 타입 캐스트 어댑터가 대신 넓혀 줍니다 (index.md:7-8). 좁은 타입(bf16, i8 등)으로 되돌리는 일은 VE가 끝난 뒤 Cast Engine이 합니다(아래 8장).
 
 VE 호출은 메서드 체인으로 표현합니다. 시작은 항상 `vector_init()`, 끝은 항상 `vector_final()`입니다 (index.md:12). 이 둘 사이에 두 개의 하위 부품이 들어갑니다.
 
-- **Intra-Slice Chain(슬라이스 내부 체인)**: 각 슬라이스의 데이터를 독립적으로 원소별/이항/슬라이스 내부 리덕션 처리 (intra-slice-chain.md).
+- **Intra-Slice Chain(슬라이스 내부 체인)**: 각 슬라이스의 데이터를 독립적으로 원소 단위/이항/슬라이스 내부 리덕션 처리 (intra-slice-chain.md).
 - **Inter-Slice Reducer(슬라이스 간 리듀서)**: 한 클러스터의 256개 슬라이스를 가로질러 리덕션 (inter-slice-reducer.md).
 
 둘 다 쓸 수도, 하나만 쓸 수도 있습니다. 둘 다 쓸 때 순서는 두 가지뿐입니다: `IntraFirst`(체인 먼저, 그다음 리듀서) 또는 `InterFirst`(리듀서 먼저, 그다음 체인) (index.md:15). 이 순서는 타입에 `VeOrder` 상수로 박혀서 컴파일 타임에 강제됩니다.
@@ -135,7 +135,7 @@ input
 
 **Stash**(`vector_stash()`)는 잔차/스킵 연결(`max(f(x), x)`처럼 원본 x를 나중에 다시 쓰기)에 씁니다 (intra-slice-chain.md:103-108). 규칙:
 - 호출 가능한 단계는 Stashable한 곳: Branch, Logic, Fxp, Narrow, Fp, FpDiv, Clip.
-- **단일 사용**(두 번째 `vector_stash()`는 컴파일 에러), **타입 고정**(i32 스태시는 i32 연산에만). 교차 타입은 런타임 패닉(예제 `ve_stash_fxp_fp`, `ve_stash_fp_fxp`).
+- **단일 사용**(두 번째 `vector_stash()`는 컴파일 오류), **타입 고정**(i32 스태시는 i32 연산에만). 교차 타입은 런타임 패닉(예제 `ve_stash_fxp_fp`, `ve_stash_fp_fxp`).
 - 매핑이 스트림을 따라가므로 Narrow 전에 스태시해도 Widen 후에 쓸 수 있습니다(예제 `ve_stash_across_narrow_widen`).
 - **Pair Mode에서는 사용 불가**, 그리고 **IntraFirst로 inter-slice reducer로 넘어가면 스태시가 사라집니다**.
 
@@ -184,7 +184,7 @@ ALU 매핑은 각 enum의 `alu()` 메서드에 코드로 박혀 있으니, "어�
 시그니처는 `vector_intra_slice_reduce::<Reduce, OutTime, OutPacket>(op)`이고, Way4 상태에서만 호출됩니다(타입 바운드 `{ Way4 }`) (furiosa-opt-std/src/engine/vector/tensor/vector_tensor.rs:1440). 그래서 예제들은 항상 reduce 전에 `vector_narrow_clip`/`split`을 거칩니다 (furiosa-opt-examples/src/vector_engine/reduce.rs:18-19).
 
 R이 어디에 놓이느냐에 따라 동작이 달라집니다 (intra-slice-reduce.md:21-96):
-- **Time에만**: 시간 스텝을 가로질러 누적(temporal accumulation).
+- **Time에만**: 시간 단계을 가로질러 누적(temporal accumulation).
 - **Packet에만**: 한 flit 안에서 4-way 트리 리듀스 `op(op(a,b), op(c,d))`.
 - **둘 다**: Packet 부분은 flit 내 트리, Time 부분은 시간 누적.
 - **Slice 부분이 남으면**: intra-slice는 Time/Packet만 접고 Slice 부분은 출력에 남습니다(per-slice reduction). 이때 패딩 제외는 VCG가 처리(아래).
@@ -203,7 +203,7 @@ Packet 리덕션은 4개 원소가 두 길 중 하나 (intra-slice-reduce.md:160
 1. **VCG(Valid Count Generator)** — 축 배치가 지원되면 우선. 컴파일러가 매핑에서 VCG를 자동 설정, 각 flit에 `valid_count`를 태깅해 패딩을 자동 제외(5장).
 2. **Identity-element 패딩** — 패딩 칸을 리듀스 연산의 항등원으로 미리 채움(Fetch Engine의 masking이 적재 시 기록). 항등원: AddSat/Add→0, Max→i32::MIN/f32::NEG_INFINITY, Min→i32::MAX/f32::INFINITY (intra-slice-reduce.md:179-183). **단, 리듀스 앞에 비가역 변환이 없어야 함**. softmax의 `exp(x)+exp(y)+...`처럼 합의 항등원 0을 만드는 p(즉 exp(p)=0)가 없으면 이 전략은 못 씁니다 → VCG가 필요해집니다 (intra-slice-reduce.md:184-185). 이게 실무에서 자주 물리는 함정입니다.
 
-성능 (intra-slice-reduce.md:188-193): 처리량은 사이클당 1 flit 유지(트리 리듀스가 완전 파이프라인). 다만 첫 출력까지 리듀스 축의 시간 스텝 수 n만큼 지연(누적 그룹의 모든 flit을 모아야 결과가 나오므로). 멀티 엔진 파이프라인에선 이 지연이 하류 엔진을 멈출 수 있습니다.
+성능 (intra-slice-reduce.md:188-193): 처리량은 사이클당 1 flit 유지(트리 리듀스가 완전 파이프라인). 다만 첫 출력까지 리듀스 축의 시간 단계 수 n만큼 지연(누적 그룹의 모든 flit을 모아야 결과가 나오므로). 멀티 엔진 파이프라인에선 이 지연이 하류 엔진을 멈출 수 있습니다.
 
 ---
 
@@ -243,9 +243,9 @@ R은 `R # PADDED_SIZE` 형태로 패딩되고, 각 부분식은 `R # PADDED_SIZE
 
 ### 구조
 
-`valid_size(s, t) ∈ {0..8}`을 각 flit에 부여(s=슬라이스 id, t=시간 스텝). 처음 valid_size개가 진짜, 나머지는 패딩 (vcg.md:30). 의사코드 (vcg.md:33-48): time filter 3개가 전부 valid라고 하면 packet clipper가 개수를 정하고, 하나라도 invalid면 그 flit 전체를 제외.
+`valid_size(s, t) ∈ {0..8}`을 각 flit에 부여(s=슬라이스 id, t=시간 단계). 처음 valid_size개가 진짜, 나머지는 패딩 (vcg.md:30). 의사코드 (vcg.md:33-48): time filter 3개가 전부 valid라고 하면 packet clipper가 개수를 정하고, 하나라도 invalid면 그 flit 전체를 제외.
 
-**Time Filter** (vcg.md:54-83) — 각 슬라이스 s에서 각 시간 스텝 t가 valid R 데이터를 들었는지 판정. 필드: sequencer(t→R index 복원), slice_mask/slice_thres/time_thres, mode(SliceMajor|TimeMajor). `valid()` 로직: `(s & slice_mask)`를 slice_thres와 비교해 Less면 무조건 true, (Greater & SliceMajor)면 false, 그 외엔 `idx < time_thres`. R이 Time/Slice에 부분식이 없으면 slice_mask=0, slice_thres=1로 비활성(항상 true) (vcg.md:58).
+**Time Filter** (vcg.md:54-83) — 각 슬라이스 s에서 각 시간 단계 t가 valid R 데이터를 들었는지 판정. 필드: sequencer(t→R index 복원), slice_mask/slice_thres/time_thres, mode(SliceMajor|TimeMajor). `valid()` 로직: `(s & slice_mask)`를 slice_thres와 비교해 Less면 무조건 true, (Greater & SliceMajor)면 false, 그 외엔 `idx < time_thres`. R이 Time/Slice에 부분식이 없으면 slice_mask=0, slice_thres=1로 비활성(항상 true) (vcg.md:58).
 
 배치하는 경우들:
 - **R as Time**: t가 곧 R index. `t < R::SIZE`면 valid (vcg.md:85-127). 예제처럼 R#16에서 R::SIZE=12면 t=0..11 valid, 12..15 제외.
@@ -261,7 +261,7 @@ R은 `R # PADDED_SIZE` 형태로 패딩되고, 각 부분식은 `R # PADDED_SIZE
 
 **표현 불가 패턴들** (vcg.md:589-788) — 외워두면 디버깅에 도움:
 - R이 Slice에서 stride 역순(major가 안쪽) → 비단조 → 단일 slice_thres로 못 잡음.
-- R의 Slice 인수가 두 Time 인수 사이에 끼임(interleave) → 슬라이스마다 valid 스텝 수가 달라짐.
+- R의 Slice 인수가 두 Time 인수 사이에 끼임(interleave) → 슬라이스마다 valid 단계 수가 달라짐.
 - TimeMajor 과패딩(`PADDED_SIZE - R::SIZE > slice_span`) → below 그룹이 패딩을 몰래 포함.
 - Packet에 R의 major부(`/8` 형태)나 R과 다른 축 공유 → prefix 성질 깨짐.
 - R이 Slice와 Packet에 걸침 → 슬라이스마다 valid_size가 달라야 하는데 packet clipper는 t로만 정함(예: R=2045, 슬라이스 0~254는 8, 255는 5 필요). 단 `R::SIZE % packet_span = 0`인 퇴화 경우는 Slice-only로 환원돼 지원.
@@ -322,14 +322,14 @@ VE 결과(f32/i32)를 Commit이 DM에 쓰기 전에 더 좁은 타입(bf16 등)�
 ### 4단계 (running 예: i8 8×8)
 
 (transpose-engine.md:71-98)
-1. **Unpack**: 각 32B 패킷에서 valid_size개만 남기고 패딩 버림. 시간 스텝들이 in_cols 폭의 한 행을 이루고, in_rows 행이 쌓여 `[in_rows × in_cols]` 행렬. `[D, E#32] → [D, E]`.
+1. **Unpack**: 각 32B 패킷에서 valid_size개만 남기고 패딩 버림. 시간 단계들이 in_cols 폭의 한 행을 이루고, in_rows 행이 쌓여 `[in_rows × in_cols]` 행렬. `[D, E#32] → [D, E]`.
 2. **Transpose**: `[in_rows × in_cols] → [in_cols × in_rows]`. `[D, E] → [E, D]`.
 3. **Trim**: 일부 입력 패킷이 valid_size보다 적게 들었으면 전치 후 패딩 행이 생기는데 이를 버려 `[out_rows × in_rows]`(out_rows ≤ in_cols). 완전 활용이면 안 버림. (Small Matrix 예제 transpose-engine.md:110-142에서 6행 trim.)
 4. **Align**: 전치된 행은 in_rows 폭이라 32B로 패딩 → `[out_rows × (in_rows # F)]`, F는 D[F]=32B가 되게.
 
 ### 버퍼링과 지연
 
-내부 버퍼 2개, 각 16열 보유 (transpose-engine.md:288). `in_cols ≤ 16`이면 더블 버퍼링(입출력 겹침으로 사이클 단축), 초과면 싱글 버퍼링(직렬화) (transpose-engine.md:289).
+내부 버퍼 2개, 각 16열 보유 (transpose-engine.md:288). `in_cols ≤ 16`이면 이중 버퍼링(입출력 겹침으로 사이클 단축), 초과면 싱글 버퍼링(직렬화) (transpose-engine.md:289).
 - 버스트는 `n = OutTime::SIZE / out_rows`번 반복, 각 반복은 `in_flits = in_rows × (in_cols / valid_size)` 입력 flit과 out_rows 출력 flit을 옮김 (transpose-engine.md:283-284).
 - 싱글: `n × (in_flits + out_rows)` (transpose-engine.md:291-293).
 - 더블: `in_flits + (n-1) × max(in_flits, out_rows) + out_rows`(입력채움 + 겹침 + 마지막드레인) (transpose-engine.md:296-303).
@@ -538,7 +538,7 @@ i8 8원소는 8바이트뿐이라 한 flit(32B)이 안 된다. cast 출력은 �
   ↳ 출처 `docs/src/computing-tensors/vector-engine/intra-slice-chain.md:176-178,252-262`
 - softmax처럼 exp 뒤에 sum-reduce가 오면 identity 패딩(0)이 불가능(exp(p)=0인 p가 없음)하다. 반드시 VCG로 패딩을 제외해야 정확하다.  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/intra-slice-reduce.md:184-185`
-- Stash는 단일 사용·타입 고정이다. 두 번째 vector_stash()는 컴파일 에러, i32 스태시를 f32로 읽으면 런타임 패닉. Pair Mode에선 아예 못 쓰고, IntraFirst로 inter-slice reducer로 넘어가면 스태시가 사라진다.  
+- Stash는 단일 사용·타입 고정이다. 두 번째 vector_stash()는 컴파일 오류, i32 스태시를 f32로 읽으면 런타임 패닉. Pair Mode에선 아예 못 쓰고, IntraFirst로 inter-slice reducer로 넘어가면 스태시가 사라진다.  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/intra-slice-chain.md:103-108`
 - intra-slice reduce의 Time 누적 슬롯은 8개뿐. OutTime(InnerTime)의 곱이 8을 넘으면 reduce 호출이 거부된다(예: 3×4=12).  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/intra-slice-reduce.md:135-155`

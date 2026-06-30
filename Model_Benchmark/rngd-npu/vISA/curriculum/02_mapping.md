@@ -1,7 +1,7 @@
 # 02 · 매핑과 텐서 (가장 중요)
 
 이 문서는 vISA 커리큘럼 모듈 02입니다. vISA에서 제일 어렵고 제일 중요한 개념입니다. `axes![]`와 `m![]` 매핑 언어(`/ % # = ,`)로 논리 축을 하드웨어 계층에 어떻게 펼치는지, 공간/시간 차원이 무엇인지 익힙니다.
-*선행: 01 멘탈 모델 · 예상 시간: 반나절*
+*선행: 01 큰 그림 · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -38,7 +38,7 @@ vISA에서 가장 먼저, 그리고 가장 정확하게 잡고 가야 하는 개
 axes![A = 8, B = 512];
 ```
 
-이 매크로는 각 `이름 = 크기` 쌍을 유닛 구조체 하나와 `AxisName` 구현으로 펼칩니다(furiosa-mapping-macro/src/lib.rs:54-112). 펼쳐진 코드는 `pub struct A;`와 `impl AxisName for A { const NAME = Ident::new("A"); const SIZE = 8; }` 형태입니다(lib.rs:98-110, AxisName 정의는 furiosa-mapping/src/mapping.rs:12-17). 즉 축은 "타입"이고, 크기는 그 타입의 연관 상수 `SIZE`입니다. 그래서 나중에 `<m![A]>::SIZE`처럼 컴파일타임에 크기를 읽을 수 있습니다. 같은 invocation 안에서 이름을 중복 선언하면(`axes![A=8, A=16]`) 컴파일 에러를 냅니다(lib.rs:75-96).
+이 매크로는 각 `이름 = 크기` 쌍을 유닛 구조체 하나와 `AxisName` 구현으로 펼칩니다(furiosa-mapping-macro/src/lib.rs:54-112). 펼쳐진 코드는 `pub struct A;`와 `impl AxisName for A { const NAME = Ident::new("A"); const SIZE = 8; }` 형태입니다(lib.rs:98-110, AxisName 정의는 furiosa-mapping/src/mapping.rs:12-17). 즉 축은 "타입"이고, 크기는 그 타입의 연관 상수 `SIZE`입니다. 그래서 나중에 `<m![A]>::SIZE`처럼 컴파일타임에 크기를 읽을 수 있습니다. 같은 invocation 안에서 이름을 중복 선언하면(`axes![A=8, A=16]`) 컴파일 오류를 냅니다(lib.rs:75-96).
 
 ## 3. M 트레잇 — 모든 매핑이 지켜야 할 계약
 
@@ -89,7 +89,7 @@ floor 나눗셈과 나머지로 인덱스를 분해한다는 점을 꼭 기억�
 
 ### 4-3. Identity(`m![1]`)
 
-`m![1]`은 단일 원소 버퍼로, 0번 위치를 빈 인덱스 `i![]`에 대응시킵니다(mapping.rs:40-50). Pair의 항등원이라 `m![1, A]`와 `m![A, 1]` 모두 `m![A]`과 동등합니다(mapping-expressions.md:122-142). 파서에서 정수 리터럴 중 `1`만 Identity로 허용되고, 그 외 숫자(`m![64]`)는 컴파일 에러입니다(parser.lalrpop:59-65). 크기가 필요하면 `axes!`로 이름을 붙이라는 뜻입니다.
+`m![1]`은 단일 원소 버퍼로, 0번 위치를 빈 인덱스 `i![]`에 대응시킵니다(mapping.rs:40-50). Pair의 항등원이라 `m![1, A]`와 `m![A, 1]` 모두 `m![A]`과 동등합니다(mapping-expressions.md:122-142). 파서에서 정수 리터럴 중 `1`만 Identity로 허용되고, 그 외 숫자(`m![64]`)는 컴파일 오류입니다(parser.lalrpop:59-65). 크기가 필요하면 `axes!`로 이름을 붙이라는 뜻입니다.
 
 ### 4-4. `#` Padding(버퍼를 늘려 정렬)
 
@@ -168,7 +168,7 @@ Modulo와 Resize의 차이가 헷갈리기 쉬운데(mapping-expressions.md:288-
 - 무연산: `E ≡ m![{E}/1] ≡ m![{E} # E::SIZE] ≡ m![{E} = E::SIZE]`.
 - `m![E % 1] ≡ m![1]`.
 
-## 7. 컴파일타임 나눗셈 제약 — 가장 자주 만나는 에러
+## 7. 컴파일타임 나눗셈 제약 — 가장 자주 만나는 오류
 
 `/`와 `%`는 아무 숫자나 못 씁니다. Stride와 Modulo의 `SIZE`는 const 평가 중 `assert!(L::SIZE % SIZE == 0)`을 합니다(mapping.rs:104, mapping.rs:133). 메시지는 각각 "Stride size must divide the original size", "Modulo size must divide the original size"입니다. 예를 들어 B=512에서 `m![B / 7]`은 512 % 7 != 0 이라 컴파일이 실패합니다. 이건 런타임 검사가 아니라 타입 수준 불변식이라, 잘못된 레이아웃은 애초에 빌드되지 않습니다. NPU 없이 `--backend typecheck`만으로도 잡힙니다.
 
@@ -236,14 +236,14 @@ Packet = m![C % 2]   // 매 반복 슬라이스당 2채널
 
 | 이름 | 쓰는 법 | 설명 | 출처 |
 |---|---|---|---|
-| `axes!` | `axes![A = 8, B = 512];` | 각 이름=크기를 유닛 구조체 + AxisName impl(NAME, SIZE 상수)로 펼침. 같은 호출 내 이름 중복은 컴파일 에러. | `furiosa-mapping-macro/src/lib.rs:54-112, furiosa-mapping/src/mapping.rs:12-17` |
+| `axes!` | `axes![A = 8, B = 512];` | 각 이름=크기를 유닛 구조체 + AxisName impl(NAME, SIZE 상수)로 펼침. 같은 호출 내 이름 중복은 컴파일 오류. | `furiosa-mapping-macro/src/lib.rs:54-112, furiosa-mapping/src/mapping.rs:12-17` |
 | `M 트레잇` | `trait M { const SIZE: usize; fn to_value() -> Mapping; fn map(i: usize) -> Option<Index>; }` | 모든 m![] 타입이 구현. SIZE=버퍼 칸 수, map(i)=버퍼 위치->텐서 인덱스(범위 밖이면 None). 두 매핑 동등 = SIZE 같고 모든 i에 map(i) 같음. | `furiosa-mapping/src/mapping.rs:22-31` |
 | `m![] (Pair, ',')` | `m![A, B] => Pair<m![A], m![B]>; map(i): l=L::map(i / R::SIZE), r=R::map(i % R::SIZE)` | 왼쪽 major, 오른쪽 minor. 우측 결합(m![A,B,C,D]=Pair<A,Pair<B,Pair<C,D>>>). floor 나눗셈/나머지로 분해. | `furiosa-mapping/src/mapping.rs:204-231, mapping-expressions.md:89-120` |
 | `m![] (Stride '/')` | `m![B / 64] => Stride<m![B], 64>; SIZE = L::SIZE/64; map(i)=L::map(i*64)` | 한 축의 바깥 블록 인덱스. SIZE 계산 중 assert!(L::SIZE % 64 == 0) 컴파일타임 검사. | `furiosa-mapping/src/mapping.rs:99-118` |
 | `m![] (Modulo '%')` | `m![B % 64] => Modulo<m![B], 64>; SIZE=64; map(i)=L::map(i % L::SIZE)` | 블록 내부 위치. 버퍼 크기 유지하며 분할. assert!(L::SIZE % 64 == 0) 컴파일타임 검사. m![E % 1] ≡ m![1]. | `furiosa-mapping/src/mapping.rs:121-148` |
 | `m![] (Resize '=')` | `m![D = 2] => Resize<m![D], 2>; SIZE=2; map(i)= i<2 ? L::map(i) : None` | 논리 뷰를 잘라 줄임(버퍼 늘리는 Padding과 반대). 잘린 인덱스는 버려짐. | `furiosa-mapping/src/mapping.rs:151-174` |
 | `m![] (Padding '#')` | `m![D # 64] => Padding<m![D], 64>; SIZE=64; map(i)=L::map(i) (늘어난 칸은 None)` | 버퍼를 SIZE로 키워 정렬/하드웨어 유닛 수 맞춤. 여분 슬롯은 임의 값 가능. m![{E} # E::SIZE] ≡ E. | `furiosa-mapping/src/mapping.rs:177-201` |
-| `m![1] (Identity)` | `type E = m![1]; E::map(0)=Some(i![]); E::map(1)=None` | Pair 항등원. m![1,A] ≡ m![A,1] ≡ m![A]. 1 외의 bare 정수(m![64])는 컴파일 에러. | `furiosa-mapping/src/mapping.rs:34-51, parser.lalrpop:59-65` |
+| `m![1] (Identity)` | `type E = m![1]; E::map(0)=Some(i![]); E::map(1)=None` | Pair 항등원. m![1,A] ≡ m![A,1] ≡ m![A]. 1 외의 bare 정수(m![64])는 컴파일 오류. | `furiosa-mapping/src/mapping.rs:34-51, parser.lalrpop:59-65` |
 | `i!` | `i![A: 2, B: 3] -> Index` | 텐서 인덱스 생성. i![A: 0]은 빈 인덱스 i![]과 동등. | `mapping-expressions.md:30-39, furiosa-mapping-macro/src/lib.rs:207-231` |
 | `.tile()` | `view.tile::<m![B], 2, m![A, B = 2 # 4]>(start)` | 복사 없는 부분 뷰(indexed view). 타입파라미터=타일차원,타일크기,결과매핑 + 값=시작인덱스. 결과매핑 '# 4'로 물리 보폭 보존 안 하면 잘못된 위치 읽음. | `mapping-expressions.md:201-227, examples/.../tile.rs:11-13` |
 | `.to_dm()` | `hbm.to_dm(&mut ctx.tdma, addr) -> DmTensor<...>` | 수학적 텐서 이동(f(T)=T): 매핑은 Chip/Cluster/Slice/Element로 다르게 펼쳐지지만 담는 텐서는 동일. addr는 슬라이스 내 DM 오프셋. | `tensor-semantics.md:46-64` |
@@ -293,7 +293,7 @@ cargo test --bin gemv stride_modulo
 
 **심화** — m![B/4, B%4](B=16로 axes 변경)로 mapping-expressions.md:281-286의 4x4 표를 손으로 재현해 보라.
 
-### 실험 02.3 — 나눗셈 제약 컴파일 에러 만들기 (find-the-type-error)
+### 실험 02.3 — 나눗셈 제약 컴파일 오류 만들기 (find-the-type-error)
 *난이도 2/5 · 기반: `new`*
 
 **목표** — / 와 % 의 컴파일타임 divisibility 불변식을 직접 깨뜨려 본다. NPU 불필요.
@@ -359,11 +359,11 @@ cargo test --bin gemv pad_vs_resize
 
 </details>
 
-**Q3.** 다음 중 컴파일 에러가 나는 것을 모두 고르고 이유를 적어라: (a) axes![B=512]; m![B / 8]  (b) m![B / 7]  (c) m![64]  (d) m![1]  (e) m![B % 3]
+**Q3.** 다음 중 컴파일 오류가 나는 것을 모두 고르고 이유를 적어라: (a) axes![B=512]; m![B / 8]  (b) m![B / 7]  (c) m![64]  (d) m![1]  (e) m![B % 3]
 
 <details><summary>정답/힌트</summary>
 
-(b) 512%7!=0 Stride assert, (c) bare 64는 Identity(1)만 허용이라 에러, (e) 512%3!=0 Modulo assert. (a)(d)는 정상.
+(b) 512%7!=0 Stride assert, (c) bare 64는 Identity(1)만 허용이라 오류, (e) 512%3!=0 Modulo assert. (a)(d)는 정상.
 
 </details>
 
@@ -409,7 +409,7 @@ SIZE = 13 * 64 = 832. map(62)=None(패딩 영역, 61~63은 어떤 인덱스에�
   ↳ 출처 `docs/src/mapping-tensors/mapping-expressions.md:288-290`
 - .tile()의 결과 매핑에서 '# 물리크기'를 빼면 타일 간 stride가 논리 크기로 줄어 잘못된 버퍼 위치를 읽는다. m![A, B = 2 # 4]에서 '# 4'가 빠지면 보폭이 2가 되어 깨진다.  
   ↳ 출처 `mapping-expressions.md:223-227`
-- bare 정수 리터럴은 1만 허용된다(Identity). m![64] 같은 표현은 컴파일 에러이며, 크기가 필요하면 axes!로 이름 붙인 축을 써야 한다.  
+- bare 정수 리터럴은 1만 허용된다(Identity). m![64] 같은 표현은 컴파일 오류이며, 크기가 필요하면 axes!로 이름 붙인 축을 써야 한다.  
   ↳ 출처 `furiosa-mapping-macro/src/parser/parser.lalrpop:59-65, furiosa-mapping-macro/src/lib.rs:128-136`
 - Chip/Cluster/Slice 크기는 하드웨어 개수와 정확히 일치해야 한다(Cluster::SIZE==2, Slice::SIZE==256). 적게 쓰면 '#'로 패딩해 채워야 하고, 현재 런타임은 칩 단위라 칩/클러스터 부분 사용은 아직 안 된다.  
   ↳ 출처 `docs/src/mapping-tensors/spatial-temporal-dimensions.md:56-69`
