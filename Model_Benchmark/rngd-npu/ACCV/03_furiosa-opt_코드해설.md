@@ -38,7 +38,8 @@ furiosa-opt는 RNGD NPU(퓨리오사의 추론용 칩)를 **사람이 직접 저
 - **어디:** `docs/src/computing-tensors/contraction-engine/index.md` (furiosa-opt 책).
 - **인용:** *"the Multiplier widens to the contraction output type (`i4`/`i8` -> `i32`, `f8`/`bf16` -> `f32`)"* (56행). 또 *"the Outer stage caps `Lane ≤ 8` and `Packet ≤ 64 B` (on RNGD)"* (62행).
 - **무슨 뜻(쉽게):** 칩의 곱셈-덧셈 장치는 입력 숫자는 **잘게(bf16/int8)** 받지만, 곱한 결과를 더할 때는 **넓은 그릇(i32/f32)** 에 모읍니다. 즉 **더하다 넘쳐서** 망가지는 게 아닙니다 — 망가지는 지점은 **곱하기 직전에 입력을 잘게 깎는 단계**입니다. 그리고 한 번에 곱하는 칸이 8개로 제한됩니다(`Lane ≤ 8`).
-- **왜 쓰나:** 이 한 줄이 우리 논문의 **메커니즘을 확정**합니다. 흉내 모델 Q_npu를 "입력을 bf16으로 깎고 → f32로 넓게 더한다"로 만들어야 칩과 맞습니다(M3). 또 `Lane ≤ 8` 제한이 우리가 채널을 8개 묶음 단위로 다루는 "8-tile" 제약의 근거입니다(`README_op_support.md`의 8-tile 발견과 일치).
+- **conv = matmul (중요):** 같은 책 첫 문장 *"The Contraction Engine performs binary tensor contractions such as matmul and convolution"* 과 `docs/.../contraction-engine/2d-convolution.md`는 **conv가 matmul 매핑을 재사용하는 einsum**임을 보입니다. 즉 conv든 Linear/attention이든 **같은 엔진·같은 operand 캐스트**를 거칩니다. → 붕괴 현상이 'CNN 특유'가 아니라 'contraction operand 일반'이라는 근거(01번 §7의 ConvNeXt+ViT 통합 논리).
+- **왜 쓰나:** 흉내 모델 Q_npu를 "입력을 좁게 깎고 → f32로 넓게 더한다"로 만들어야 칩과 맞습니다(M3). `Lane ≤ 8`은 8-tile 제약의 근거(`README_op_support.md`와 일치). ⚠️ **단 이건 우리 논문의 "전제(mechanism premise)"이지 "기여"가 아닙니다.** "엔진 하나가 conv·matmul을 다 한다"는 벤더 사양일 뿐이라, 그걸 새로움으로 내세우면 안 됩니다(기여는 붕괴 진단 + 출력보존 복구). 또 **입력을 깎는 정확한 포맷(bf16/int8/fp8)은 측정해야** 합니다(02번 E0) — bf16을 단정하지 않습니다.
 
 ---
 

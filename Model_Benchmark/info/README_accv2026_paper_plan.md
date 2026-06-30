@@ -95,6 +95,7 @@ CNNs on a Closed-Compiler Reduced-Precision NPU*
 | # | 실험 | 지표 | 백엔드 | 상태 |
 |---|---|---|---|---|
 | E1 | 붕괴 특성화(MobileNetV2·EfficientNet-B0) | top-1/top-5 + per-layer rel-L2 | 칩 vs FP32 | 보장 |
+| E1b | 구조 일반화: ViT(DeiT-S/vit_b_16) 붕괴·복구 | ViT top-1/top-5 + 복구 | 칩 vs FP32 | 조건부(컴파일 가능 시) |
 | E2 | surrogate Q_npu 충실도(held-out·2nd-model 검증) | sim↔칩 top-1/argmax 불일치율 | host vs 칩 | 보장 |
 | E3 | kurtosis 진단·예측기 | kurtosis·range ↔ rel오차(Spearman, 붕괴층 AUC) | host | 보장 |
 | E4 | **복구 + 비용 곡선 + ablation** | top-1 vs calibration budget; clip/scale/both; kurtosis-α vs SmoothQuant α=0.5 | 칩 + host | 보장 |
@@ -108,6 +109,12 @@ AWQ salient-channel · clip-only · nuLSQ(전례 인용, 닫힌 컴파일러라 
 
 **실험 절약:** EDF는 가중치 독립(가중치=fp32 런타임 입력) → 접은 가중치를 컴파일된 프로그램 하나에
 끼워(`--reuse-edf`) **재컴파일 없이** Pareto를 돌립니다.
+
+**구조 일반성(ViT — "CNN 한정" 반박 차단):** 현상은 *학습된 heavy-tailed 가중치 + 감소정밀도
+operand-cast*라 구조 무관 → CNN에 더해 **ViT(DeiT-S/vit_b_16)** 로 E1·E4 확장(E1b). ViT는 풀링이
+없어 ResNet보다 컴파일 유망하나 **미검증** → 초기에 `compile_vision.py`로 컴파일부터 확인. ViT는
+activation outlier가 커 붕괴가 더 클 수 있어 복구 가치↑(SmoothQuant/AWQ·Shim DGQ 계보, Lu의
+Quantformer/efficient-ViT와 정합). 막히면 "왜 막히나"가 별도 기여, CNN은 엣지·NPU 효율 표준으로 유지.
 
 **정직성 보정 2개(반박 차단):**
 - **"latency Pareto" 금지** — 가중치 접기 복구는 지연 불변. 축을 **"복구 vs calibration 예산"**, 진짜

@@ -362,7 +362,11 @@ NPU가 CPU를 "그대로 베끼기"가 쉬웠을 뿐, 입력 의존 계산의 �
 - furiosa.torch는 conv/matmul을 **감소정밀도**(BF16/TF32급, `info/README_op_support.md`의
   "matmul ~0.23%"와 같은 계열)로 내립니다. **랜덤 가우시안 가중치는 이 정밀도를 견디지만
   (1e-11), 학습 가중치는 heavy-tailed**(예: depthwise conv `features.1.conv.0.0.weight`
-  kurtosis 11.6)라 감소정밀도에서 누적 오차가 폭발해 출력이 붕괴합니다.
+  kurtosis 11.6)라 감소정밀도 **operand 캐스트**(누적기는 넓은 f32/i32 — 손실은 누적이 아니라
+  곱하기 직전 operand를 좁게 깎는 데서 발생)에서 쏠린 큰 값에 작은 값이 뭉개져 출력이 붕괴합니다.
+  ⚠️ 단 `README_op_support.md`의 "conv/mm 상대오차 ~0.23%로 일정(크기 키워도 누적 안 됨)"과 표면상
+  충돌하므로(0.23%·누적없음이 어떻게 100% 단일클래스 붕괴가 되는가), 실제 캐스트 포맷(bf16/int8/fp8)과
+  주범(라운딩 vs 클립/오버플로)은 **측정으로 확정**해야 합니다 → `rngd-npu/ACCV/02_실험계획.md`의 E0.
 - **고칠 Python 옵션이 없습니다.** `CompileModule.from_exported(ep, compiler_config=...)`의
   `compiler_config`(=`furiosa.native_torch.compiler.Config`)는 필드 12개 중 **정밀도/양자화
   관련이 0개**입니다. 실제로 두 레버를 시도했지만(실측):
