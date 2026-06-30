@@ -9,7 +9,7 @@
 ## 0. 결론
 
 - **타깃:** ACCV 2026 본 트랙(등록 7/3, 제출 7/5). ACCV 정식 트랙 "Optimization Methods".
-- **주제:** *Silent Precision Collapse → Per-Channel Scale Optimization.* 학습된 CNN이 감소정밀도
+- **주제:** *Silent Precision Collapse → Per-Channel Scale Optimization.* 학습된 CNN이 저정밀도
   NPU에서 top-1 ~0%로 붕괴하는 현상을 진단하고, **per-channel 고정소수점(int8) 스케일·클립을
   최적화**해(라벨·재학습 없이) ImageNet 정확도를 되살립니다. 전례 nuLSQ(ACCV'24, 양자화 step-size
   최적화)와 같은 장르라 스코프 안전.
@@ -44,7 +44,7 @@
 
 [info/README_vision_compile.md] 한계 ③ 실측:
 
-> 학습된 CNN(MobileNetV2)을 RNGD에 올리면 컴파일·실행은 되는데 **감소정밀도 로워링이 학습
+> 학습된 CNN(MobileNetV2)을 RNGD에 올리면 컴파일·실행은 되는데 **저정밀도 로워링이 학습
 > 가중치를 무너뜨려 모든 사진을 "window screen"으로 오분류**합니다(CPU 정답, NPU top-1 ≈ 0%).
 > 원인은 가중치의 **heavy-tailed 분포**(depthwise conv kurtosis 11.6), 끌 **Python 옵션 없음**.
 
@@ -62,7 +62,7 @@ furiosa-opt의 **명시적 Cast 엔진 + vector_fxp/clip**. 어느 성분이 지
 **제목(가안):** *Silent Precision Collapse: Per-Channel Scale Optimization to Recover Trained
 CNNs on a Closed-Compiler Reduced-Precision NPU*
 
-**한 줄 주장:** 학습된 CNN이 감소정밀도 NPU에서 top-1 ~0%로 붕괴하는 원인은 heavy-tailed
+**한 줄 주장:** 학습된 CNN이 저정밀도 NPU에서 top-1 ~0%로 붕괴하는 원인은 heavy-tailed
 가중치이며, 하드웨어 정밀도 모델 하에서 **per-channel 고정소수점(int8) 스케일·클립을 최적화**하면
 라벨·재학습 없이 ImageNet 정확도를 거의 FP32까지 되살립니다.
 
@@ -110,7 +110,7 @@ AWQ salient-channel · clip-only · nuLSQ(전례 인용, 닫힌 컴파일러라 
 **실험 절약:** EDF는 가중치 독립(가중치=fp32 런타임 입력) → 접은 가중치를 컴파일된 프로그램 하나에
 끼워(`--reuse-edf`) **재컴파일 없이** Pareto를 돌립니다.
 
-**구조 일반성(ViT — "CNN 한정" 반박 차단):** 현상은 *학습된 heavy-tailed 가중치 + 감소정밀도
+**구조 일반성(ViT — "CNN 한정" 반박 차단):** 현상은 *학습된 heavy-tailed 가중치 + 저정밀도
 operand-cast*라 구조 무관 → CNN에 더해 **ViT(DeiT-S/vit_b_16)** 로 E1·E4 확장(E1b). ViT는 풀링이
 없어 ResNet보다 컴파일 유망하나 **미검증** → 초기에 `compile_vision.py`로 컴파일부터 확인. ViT는
 activation outlier가 커 붕괴가 더 클 수 있어 복구 가치↑(SmoothQuant/AWQ·Shim DGQ 계보, Lu의

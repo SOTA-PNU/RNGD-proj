@@ -1,13 +1,13 @@
-# 10 · 실전 워크로드 — 트랜스포머·MoE·MNIST
+# 10 · 실전 사례 — 트랜스포머·MoE·MNIST
 
-이 문서는 vISA 커리큘럼 모듈 10입니다. 실제 LLM(Qwen2.5-0.5B)이 vISA 커널로 어떻게 분해되는지, MoE 라우팅을 프리미티브로 어떻게 조립하는지, 그리고 완전 검증된 MNIST를 봅니다.
+이 문서는 vISA 커리큘럼 모듈 10입니다. 실제 LLM(Qwen2.5-0.5B)이 vISA 커널로 어떻게 분해되는지, MoE 라우팅을 기본 연산로 어떻게 조립하는지, 그리고 완전 검증된 MNIST를 봅니다.
 *선행: 04·06·07 (Contraction·Vector) · 예상 시간: 하루*
 
 ## 학습 목표
 
 - [ ] 디코더가 embedding→attention→decoder→head로 분해되는 구조를 안다
 - [ ] masked GQA softmax 커널을 트레이스한다
-- [ ] MNIST end-to-end를 (NPU 백엔드로) 검증한다
+- [ ] MNIST 전 과정를 (NPU 백엔드로) 검증한다
 - [ ] 무엇이 검증됐고 무엇이 TODO인지 구분한다
 
 ## 1. 개념
@@ -16,7 +16,7 @@
 
 지금까지 vISA의 "문법"(매핑 `m![...]`, Fetch/Collect/Contraction/Vector 엔진, 스케줄러)을 배웠다면, 이 장은 "그래서 이걸로 진짜 트랜스포머 LLM을 어떻게 짜느냐"를 다룹니다. 결론부터 말하면, vISA에는 **Qwen2.5-0.5B 디코더 전체가 손으로 쓴 커널로 들어있습니다** (`furiosa-opt-examples/src/transformer/`). 한 줄짜리 행렬곱이 아니라, 임베딩 → 24개 디코더 레이어 → LM 헤드까지 PyTorch 모델 하나가 통째로 vISA로 번역돼 있어요. 이걸 읽으면 "추상적인 매핑 문법"이 "실제 LLM의 어느 연산"에 대응되는지가 한눈에 들어옵니다.
 
-다만 한 가지 현실을 먼저 못 박아 둡니다. **이 예제들을 진짜 NPU에서 끝까지 돌리려면 닫힌(closed) 컴파일러가 필요**합니다. 저장소에 들어있는 `cargo-furiosa-opt`는 소스가 아니라 껍데기입니다. 실제 파일을 보면
+다만 한 가지 현실을 먼저 못 박아 둡니다. **이 예제들을 진짜 NPU에서 끝까지 돌리려면 비공개(closed) 컴파일러가 필요**합니다. 저장소에 들어있는 `cargo-furiosa-opt`는 소스가 아니라 껍데기입니다. 실제 파일을 보면
 
 ```rust
 // cargo-furiosa-opt/src/main.rs (전부입니다)
@@ -166,11 +166,11 @@ V도 두 T-반쪽으로 나눠 TRF에 올리고, score 반쪽 × V 반쪽 조합
 - `final_norm`: 마지막 레이어 후, **출력 타일링이 다름** — attention/MLP 소비자는 H-연속(`m![S%2,H%224]`), lm_head 소비자는 S-연속(`m![H%14,S]`)이 필요해서 final_norm만 S-연속으로 냅니다(`norm.rs:178`). "다음 단계가 원하는 레이아웃에 맞춰 정규화 출력 모양을 바꾼다"는 게 vISA 커널 조립의 현실적 디테일입니다. 잔차합은 `begin_interleaved` + `vector_clip_zip(Add)`로 두 텐서를 더해서 만듭니다(`norm.rs:42`).
 
 ### 6.5 head + lm_head (`src/transformer/head/`)
-head 커널은 decoder 뒷부분 + 최종 RMSNorm + LM 헤드입니다(`head/mod.rs:39`). lm_head는 `logits = hidden @ embedding_tableᵀ`인데, **가중치 묶기(tie_word_embeddings=True)** 때문에 임베딩 표를 그대로 LM 헤드 가중치로 씁니다(`lm_head.rs:43`). vocab W=151936이 너무 커서 `C_lmhead=8192` 청크로 19번(`for chunk_idx in 0..19`) 나눠 처리하며, **더블 버퍼링**(짝/홀 청크마다 다른 SRAM 주소)으로 로드와 계산을 겹칩니다(`lm_head.rs:74`). 8192×19=155648 ≥ 151936이라 vocab을 덮습니다. 거대 vocab을 청크+더블버퍼로 흘리는 이 패턴이 LLM 출력층의 표준 처리법입니다.
+head 커널은 decoder 뒷부분 + 최종 RMSNorm + LM 헤드입니다(`head/mod.rs:39`). lm_head는 `logits = hidden @ embedding_tableᵀ`인데, **가중치 묶기(tie_word_embeddings=True)** 때문에 임베딩 표를 그대로 LM 헤드 가중치로 씁니다(`lm_head.rs:43`). vocab W=151936이 너무 커서 `C_lmhead=8192` 청크로 19번(`for chunk_idx in 0..19`) 나눠 처리하며, **이중 버퍼링**(짝/홀 청크마다 다른 SRAM 주소)으로 로드와 계산을 겹칩니다(`lm_head.rs:74`). 8192×19=155648 ≥ 151936이라 vocab을 덮습니다. 거대 vocab을 청크+더블버퍼로 흘리는 이 패턴이 LLM 출력층의 표준 처리법입니다.
 
 ## 7. MNIST — 유일하게 끝까지 검증된 신경망 (`src/mnist/mod.rs`, `tests/mnist_tests.rs`)
 
-트랜스포머는 거대해서 "조각별로는 맞다"를 보이지만, **엔드투엔드 수치 정합이 완전히 검증된 진짜 NN은 MNIST**입니다. 구조는 단순한 FC 분류기: 784→256(ReLU)→10(`src/mnist/README.md`). 그래서 vISA를 처음 배울 때 "전체가 돌아가는 한 바퀴"를 보기에 딱 좋습니다.
+트랜스포머는 거대해서 "조각별로는 맞다"를 보이지만, **전 과정 수치 정합이 완전히 검증된 진짜 NN은 MNIST**입니다. 구조는 단순한 FC 분류기: 784→256(ReLU)→10(`src/mnist/README.md`). 그래서 vISA를 처음 배울 때 "전체가 돌아가는 한 바퀴"를 보기에 딱 좋습니다.
 
 구조:
 - `fc1_matmul`: 입력 `[X=800]`을 TRF에 올리고 가중치 `[H=256, X]`와 contraction (`mnist/mod.rs:8`)
@@ -198,7 +198,7 @@ head 커널은 decoder 뒷부분 + 최종 RMSNorm + LM 헤드입니다(`head/mod
 vISA의 LLM 예제는 "완성된 제품"이 아니라 "진행 중인 분해 작업"입니다. 정확히 어디까지 됐는지 구분해야 합니다.
 
 - **완전 검증(수치까지)**: MNIST(NPU), scatter_minimal(simulation). 
-- **단계별로 존재하지만 엔드투엔드 미검증**: Qwen2.5-0.5B의 embedding/attention/decoder/head 커널들. `tests/transformer_tests.rs`의 `run_qwen`은 24레이어를 호스트에서 오케스트레이션하지만 **`#[ignore = "DmaCommandScatter lowering not yet implemented"]`** 로 막혀 있습니다(`transformer_tests.rs:266`). 즉 KV 캐시 scatter의 하드웨어 lowering이 아직 안 돼서 끝까지 못 돕니다. run_embedding/run_attention/run_decoder/run_head는 #[test]가 아니라 헬퍼 async fn이고, 가중치도 `HostTensor::uninit()`(미초기화 플레이스홀더)이라 "형상/배선 검증용"입니다(주석: "TODO: Fill with actual weight values", `transformer_tests.rs:21`).
+- **단계별로 존재하지만 전 과정 미검증**: Qwen2.5-0.5B의 embedding/attention/decoder/head 커널들. `tests/transformer_tests.rs`의 `run_qwen`은 24레이어를 호스트에서 오케스트레이션하지만 **`#[ignore = "DmaCommandScatter lowering not yet implemented"]`** 로 막혀 있습니다(`transformer_tests.rs:266`). 즉 KV 캐시 scatter의 하드웨어 lowering이 아직 안 돼서 끝까지 못 돕니다. run_embedding/run_attention/run_decoder/run_head는 #[test]가 아니라 헬퍼 async fn이고, 가중치도 `HostTensor::uninit()`(미초기화 플레이스홀더)이라 "형상/배선 검증용"입니다(주석: "TODO: Fill with actual weight values", `transformer_tests.rs:21`).
 - **명백한 스텁(미완성)**: `src/attention.rs`는 Llama-3.1 8PE/4chip prefill 첫 블록을 노린 커널인데, embedding gather와 norm weight 로드까지만 있고 루프 본문이 **`// TODO: Complete the function definition.`** 로 끝납니다(`attention.rs:92`). 이름(`compile_llama3_1_mlperf_..._b1_s1024`)만 거창하고 실제로는 미완성이라는 걸 알아야 헛다리를 안 짚습니다.
 
 이 지도를 머리에 넣고 있으면 "왜 transformer 예제를 simulation으로 돌렸는데 안 끝나지?"에서 헤매지 않습니다. 답은 "원래 #[ignore]이고, scatter lowering이 미구현"이기 때문입니다.
@@ -206,10 +206,10 @@ vISA의 LLM 예제는 "완성된 제품"이 아니라 "진행 중인 분해 작�
 ## 10. 툴링과 숙련의 현실
 
 ### 10.1 cargo furiosa-opt = 미리 빌드된 rustc 드라이버
-앞서 봤듯 저장소의 `cargo-furiosa-opt`는 껍데기이고, 진짜는 binstall로 받는 닫힌 바이너리입니다(`cargo-furiosa-opt/Cargo.toml`의 `disabled-strategies=["quick-install","compile"]`이 "소스 컴파일 불가"를 박아둠). NPU 디바이스 바이너리(`*.bin`)를 낼 땐 `aarch64-linux-gnu-{gcc,as,ld,objcopy}`를 부르고, `furiosa-opt-std/build.rs`가 bindgen으로 `libclang.so`를 씁니다(`README.md:32`). 즉 컴파일러 내부(EDF 코드젠)는 비공개입니다.
+앞서 봤듯 저장소의 `cargo-furiosa-opt`는 껍데기이고, 진짜는 binstall로 받는 비공개 바이너리입니다(`cargo-furiosa-opt/Cargo.toml`의 `disabled-strategies=["quick-install","compile"]`이 "소스 컴파일 불가"를 박아둠). NPU 디바이스 바이너리(`*.bin`)를 낼 땐 `aarch64-linux-gnu-{gcc,as,ld,objcopy}`를 부르고, `furiosa-opt-std/build.rs`가 bindgen으로 `libclang.so`를 씁니다(`README.md:32`). 즉 컴파일러 내부(EDF 코드젠)는 비공개입니다.
 
-### 10.2 Schedule Viewer (벤더 스케줄 시각화)
-`docs/src/moving-tensors/memory-performance.md:136`이 "Schedule Viewer를 보면 어떤 연산이 병렬로 도는지, 실제 컨텍스트 배정이 맞는지 확인할 수 있다"고 안내합니다(introduction.md#schedule-viewer 앵커로 링크하지만 이 스냅샷의 introduction.md엔 해당 섹션이 비어 있어 사실상 죽은 링크입니다). 우리 분석/벤더 답변 기준 사용법은 `cargo furiosa-opt compiler build --dump-schedule`로 스케줄을 덤프한 뒤 `furiosa-schedule-viewer` GUI로 여는 것입니다(콜그래프 도구의 후속). 스케줄러 자체는 "텍스트 작성 순서 + 명시적 메모리 주소" 두 입력으로 동작하며 **순서를 재배치하지 않습니다**. 같은 컨텍스트는 직렬화, 다른 컨텍스트(`ctx.main`/`ctx.sub`)는 병렬입니다(`docs/src/scheduler.md:4`). 그래서 `ctx.sub`로 TRF 로드를 하고 `ctx.main`으로 contraction을 하면 TRF 절반이 달라(WAR 해저드 없음) 자동으로 겹쳐 돕니다(`scheduler.md:91`).
+### 10.2 Schedule Viewer (퓨리오사 스케줄 시각화)
+`docs/src/moving-tensors/memory-performance.md:136`이 "Schedule Viewer를 보면 어떤 연산이 병렬로 도는지, 실제 컨텍스트 배정이 맞는지 확인할 수 있다"고 안내합니다(introduction.md#schedule-viewer 앵커로 링크하지만 이 스냅샷의 introduction.md엔 해당 섹션이 비어 있어 사실상 죽은 링크입니다). 우리 분석/퓨리오사 답변 기준 사용법은 `cargo furiosa-opt compiler build --dump-schedule`로 스케줄을 덤프한 뒤 `furiosa-schedule-viewer` GUI로 여는 것입니다(콜그래프 도구의 후속). 스케줄러 자체는 "텍스트 작성 순서 + 명시적 메모리 주소" 두 입력으로 동작하며 **순서를 재배치하지 않습니다**. 같은 컨텍스트는 직렬화, 다른 컨텍스트(`ctx.main`/`ctx.sub`)는 병렬입니다(`docs/src/scheduler.md:4`). 그래서 `ctx.sub`로 TRF 로드를 하고 `ctx.main`으로 contraction을 하면 TRF 절반이 달라(WAR 해저드 없음) 자동으로 겹쳐 돕니다(`scheduler.md:91`).
 
 ### 10.3 Language Server (`docs/src/appendix/language-server.md`)
 `furiosa-rust-analyzer-proxy`는 rust-analyzer를 감싸서, `Stride<Symbol<A>, 8>` 같은 장황한 내부 타입을 `m![A/8]` 매핑 표기로 바꿔 보여줍니다(`appendix/language-server.md:3`). Hover/Inlay Hints/Signature Help/Call Hierarchy 등 표준 IDE 기능을 매핑 표기로 변환해 줍니다. 팁: `rust-analyzer.inlayHints.maxLength`를 `null`로 두면 긴 힌트가 `_`로 잘리는 걸 줄일 수 있습니다(`language-server.md:88`). 함정: 사용자가 `Symbol<T>` 같은 이름을 직접 정의하면 LSP가 그걸 `m![T]`로 오인 표시할 수 있는데, 이건 화면 표시 문제일 뿐 동작엔 영향 없습니다(`language-server.md:103`). vISA의 매핑 타입은 사람이 읽기엔 끔찍하게 길어서, 이 프록시 없이 손으로 디버깅하는 건 사실상 비현실적입니다 — 숙련의 일부가 이 도구에 의존한다는 뜻입니다.
@@ -218,10 +218,10 @@ vISA의 LLM 예제는 "완성된 제품"이 아니라 "진행 중인 분해 작�
 주요 타깃: `make check`(cargo check), `make clippy`(`-D warnings`), `make test`(workspace release), `make test-typecheck`(`--cfg backend="typecheck"`로 전체 테스트), `make mdbook-serve/build/test`(문서). typecheck 변형이 별도로 있는 게 포인트 — 매핑/형상 검증을 NPU 없이 CI에 거는 표준 경로입니다(`Makefile:57`).
 
 ### 10.5 ⛔ vISA .bin ≠ furiosa-llm .edf (우리 프로젝트의 핵심 결론)
-이건 furiosa-opt 저장소가 아니라 우리 분석/벤더 공식 답변에서 나온 사실이라 별도로 표시합니다(MEMORY: virtual-isa). vISA 컴파일러가 내는 디바이스 바이너리(`.bin`, pert-ipc 포맷)는 furiosa-llm serve가 먹는 `.edf`(CBOR 그래프) 포맷과 **다릅니다**. 그래서 vISA로 만든 커널을 furiosa-llm serve에 masquerade로 끼워 넣을 수 없습니다 — "같은 칩, 다른 경로"입니다. 또 우리가 진짜 필요로 하는 온칩 순환 상태(Persistent Kernel)와 동적 shape는 둘 다 벤더 로드맵(올해~1년)이라, vISA는 "우리가 이미 한 host-loop의 더 저수준 재구현"일 뿐 새로 풀어주는 serve 경로는 없습니다. 정리하면: **vISA = 커널을 손으로 짜서 NPU 연산력에 직접 접근하는 길이지, furiosa-llm serve 게이트를 우회하는 길은 아니다.**
+이건 furiosa-opt 저장소가 아니라 우리 분석/퓨리오사 공식 답변에서 나온 사실이라 별도로 표시합니다(MEMORY: virtual-isa). vISA 컴파일러가 내는 디바이스 바이너리(`.bin`, pert-ipc 포맷)는 furiosa-llm serve가 먹는 `.edf`(CBOR 그래프) 포맷과 **다릅니다**. 그래서 vISA로 만든 커널을 furiosa-llm serve에 masquerade로 끼워 넣을 수 없습니다 — "같은 칩, 다른 경로"입니다. 또 우리가 진짜 필요로 하는 온칩 순환 상태(Persistent Kernel)와 동적 shape는 둘 다 퓨리오사 로드맵(올해~1년)이라, vISA는 "우리가 이미 한 host-loop의 더 저수준 재구현"일 뿐 새로 풀어주는 serve 경로는 없습니다. 정리하면: **vISA = 커널을 손으로 짜서 NPU 연산력에 직접 접근하는 길이지, furiosa-llm serve 게이트를 우회하는 길은 아니다.**
 
 ## 11. 한 문장 요약
-vISA는 Qwen2.5-0.5B 디코더를 임베딩/어텐션/디코더/헤드 네 개의 손으로 쓴 커널로 분해해 두었고(공통 블록 o_proj/mlp/norm/rope 재사용), MNIST만이 엔드투엔드로 완전 검증된 NN이며, 트랜스포머 엔드투엔드(run_qwen)는 scatter lowering 미구현으로 #[ignore], Llama 스텁(attention.rs)은 TODO, 컴파일러는 닫힌 미리빌드 바이너리이고, NPU 없이는 simulation(수치)·typecheck(형상)로 학습하며, .bin은 serve용 .edf와 다른 포맷이라는 것 — 이게 vISA로 LLM을 다루는 현실의 전부입니다.
+vISA는 Qwen2.5-0.5B 디코더를 임베딩/어텐션/디코더/헤드 네 개의 손으로 쓴 커널로 분해해 두었고(공통 블록 o_proj/mlp/norm/rope 재사용), MNIST만이 전 과정로 완전 검증된 NN이며, 트랜스포머 전 과정(run_qwen)는 scatter lowering 미구현으로 #[ignore], Llama 스텁(attention.rs)은 TODO, 컴파일러는 비공개 미리빌드 바이너리이고, NPU 없이는 simulation(수치)·typecheck(형상)로 학습하며, .bin은 serve용 .edf와 다른 포맷이라는 것 — 이게 vISA로 LLM을 다루는 현실의 전부입니다.
 
 ## 2. 핵심 API · 패턴
 
@@ -276,14 +276,14 @@ cargo furiosa-opt --backend typecheck test --release --test transformer_tests --
 cargo furiosa-opt --backend typecheck test --release --test transformer_tests -- --ignored run_qwen
 # 확인 후 git checkout -- furiosa-opt-examples/src/transformer/axes.rs 로 원복
 ```
-**관찰** — T가 더 이상 512/8 등으로 나눠떨어지지 않아 attn_weight/softmax의 m![...] 분해에서 매핑/나눗셈 단언 오류가 발생. 에러 메시지가 어느 collect/fetch에서 났는지 보고, 형상이 '딱 떨어져야' 하는 vISA의 규칙을 확인.
+**관찰** — T가 더 이상 512/8 등으로 나눠떨어지지 않아 attn_weight/softmax의 m![...] 분해에서 매핑/나눗셈 단언 오류가 발생. 오류 메시지가 어느 collect/fetch에서 났는지 보고, 형상이 '딱 떨어져야' 하는 vISA의 규칙을 확인.
 
 **심화** — 대신 G=7을 G=6으로 바꿔 softmax의 GROUP_SRAM_ADDRS(7개 고정 배열)와 G 축 불일치가 어떻게 드러나는지 비교.
 
 ### 실험 10.4 — MNIST 커널 매핑을 typecheck로 검증하고 PyTorch 레퍼런스 살펴보기
 *난이도 2/5 · 기반: `furiosa-opt-examples/tests/mnist_tests.rs`*
 
-**목표** — 유일하게 엔드투엔드 검증된 NN의 구조(FC→ReLU→FC)를 형상 레벨에서 통과시키고, simulation에서 왜 #[ignore]되는지 함정을 직접 본다.
+**목표** — 유일하게 전 과정 검증된 NN의 구조(FC→ReLU→FC)를 형상 레벨에서 통과시키고, simulation에서 왜 #[ignore]되는지 함정을 직접 본다.
 
 ```bash
 cargo furiosa-opt --backend typecheck test --release --test mnist_tests -- --ignored --nocapture
@@ -366,7 +366,7 @@ exp(거대음수 - max) ≈ 0 → 정규화 후 확률 0. max-subtract는 exp �
 
 ## 5. 흔한 함정
 
-- 트랜스포머 엔드투엔드(run_qwen)는 simulation으로 돌려도 끝나지 않는다 — 원래 #[ignore = "DmaCommandScatter lowering not yet implemented"]이기 때문. 강제 실행해도 scatter lowering 미구현으로 막힌다.  
+- 트랜스포머 전 과정(run_qwen)는 simulation으로 돌려도 끝나지 않는다 — 원래 #[ignore = "DmaCommandScatter lowering not yet implemented"]이기 때문. 강제 실행해도 scatter lowering 미구현으로 막힌다.  
   ↳ 출처 `furiosa-opt-examples/tests/transformer_tests.rs:266`
 - MNIST 테스트는 simulation/typecheck에서 기본 SKIP된다. #[cfg_attr(not(backend="npu"), ignore)]로 막혀 있고, fc1_bias_prepared의 패딩 reshape가 CPU-sim의 verify_transpose를 건드려 강제 실행 시 오히려 실패할 수 있다. 진짜 수치 검증은 NPU에서.  
   ↳ 출처 `furiosa-opt-examples/tests/mnist_tests.rs:8`
@@ -378,9 +378,9 @@ exp(거대음수 - max) ≈ 0 → 정규화 후 확률 0. max-subtract는 exp �
   ↳ 출처 `furiosa-opt-examples/src/scatter_gather.rs:6`
 - cargo check는 어떤 백엔드든 커널 본문을 실행하지 않아 'Collect output packet must be exactly 32 bytes' 같은 매핑 단언에 도달하지 못한다. 형상 단언까지 보려면 --backend typecheck run을 써야 한다.  
   ↳ 출처 `docs/src/introduction.md:133`
-- Schedule Viewer 링크(introduction.md#schedule-viewer)는 이 문서 스냅샷에서 해당 섹션이 비어 있어 죽은 앵커다. 실제 사용은 cargo furiosa-opt compiler build --dump-schedule 후 furiosa-schedule-viewer로 연다(벤더/프로젝트 분석 기준).  
+- Schedule Viewer 링크(introduction.md#schedule-viewer)는 이 문서 스냅샷에서 해당 섹션이 비어 있어 죽은 앵커다. 실제 사용은 cargo furiosa-opt compiler build --dump-schedule 후 furiosa-schedule-viewer로 연다(퓨리오사/프로젝트 분석 기준).  
   ↳ 출처 `docs/src/moving-tensors/memory-performance.md:136`
-- 저장소의 cargo-furiosa-opt 소스는 '설치 안내만 출력하고 종료'하는 껍데기다. 실제 컴파일러는 닫힌 미리빌드 바이너리(cargo binstall)이고 소스 컴파일이 막혀 있다(disabled-strategies). EDF 코드젠은 비공개.  
+- 저장소의 cargo-furiosa-opt 소스는 '설치 안내만 출력하고 종료'하는 껍데기다. 실제 컴파일러는 비공개 미리빌드 바이너리(cargo binstall)이고 소스 컴파일이 막혀 있다(disabled-strategies). EDF 코드젠은 비공개.  
   ↳ 출처 `cargo-furiosa-opt/src/main.rs:1`
 - norm 변형은 출력 타일링이 다르다. final_norm만 S-연속(m![H%14,S])으로 내보내는데(lm_head용), 이를 무시하고 residual_norm처럼 H-연속을 기대하면 lm_head 입력 형상이 어긋난다.  
   ↳ 출처 `furiosa-opt-examples/src/transformer/common/norm.rs:178`
@@ -395,7 +395,7 @@ exp(거대음수 - max) ≈ 0 → 정규화 후 확률 0. max-subtract는 exp �
 - prefill 시퀀스 S_prefill=1024, kv_cache_len C_kvcache=1124(=1024+100 패딩), decode 토큰 길이 S_decode=128 (`furiosa-opt-examples/src/transformer/axes.rs:14`)
 - attention scale = head_dim^-0.5 = 64^-0.5 = 0.125, GQA는 14 Q헤드를 2 KV헤드가 7개씩 공유하므로 softmax를 그룹당 독립 수행 (`furiosa-opt-examples/src/transformer/attention/mod.rs:50`)
 - 임베딩 룩업은 행렬곱이 아니라 DMA gather이며, 토큰 ID를 H×sizeof(bf16)=1792 바이트 오프셋으로 변환 후 dma_gather(scaled=true) 수행 (`furiosa-opt-examples/src/transformer/embedding/embedding.rs:36`)
-- lm_head는 tie_word_embeddings=True라 임베딩 표를 가중치로 재사용하고, vocab 151936을 C_lmhead=8192 청크로 19회 더블버퍼링 처리(8192×19=155648≥151936) (`furiosa-opt-examples/src/transformer/head/lm_head.rs:43`)
+- lm_head는 tie_word_embeddings=True라 임베딩 표를 가중치로 재사용하고, vocab 151936을 C_lmhead=8192 청크로 19회 이중 버퍼링 처리(8192×19=155648≥151936) (`furiosa-opt-examples/src/transformer/head/lm_head.rs:43`)
 - TRF 적재 전략: 큰 피연산자(o_proj/Q proj의 [896,896] 가중치)는 SRAM에서 스트리밍하고 작은 쪽(활성)을 TRF FirstHalf에 고정하는 '역방향 matmul'을 씀 (`furiosa-opt-examples/src/transformer/common/o_proj.rs:21`)
 - 공개 SDK에는 오늘 기준 호스트용 NPU 시뮬레이터가 없음; simulation 백엔드는 사이클 시뮬이 아니라 호스트 인터프리터, typecheck는 매핑/형상만 검증 (`docs/src/introduction.md:44`)
 

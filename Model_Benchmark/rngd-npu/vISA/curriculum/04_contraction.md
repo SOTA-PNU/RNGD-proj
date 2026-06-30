@@ -1,7 +1,7 @@
 # 04 · 텐서 축약(Contraction)
 
 이 문서는 vISA 커리큘럼 모듈 04입니다. dot product·GEMV·GEMM으로 Contraction 엔진(`contract_outer/packet/time/lane`)과 TRF, Switch 브로드캐스트, 출력 타일을 슬라이스에 분산하는 법을 배웁니다.
-*선행: 03 원소별 연산 · 예상 시간: 반나절*
+*선행: 03 원소 단위 연산 · 예상 시간: 반나절*
 
 ## 학습 목표
 
@@ -14,7 +14,7 @@
 
 ## 큰 그림: "축약(contraction)"이 곧 RNGD의 본업입니다
 
-RNGD 칩의 정식 이름이 TCP, 즉 Tensor **Contraction** Processor입니다. 칩 설계 자체가 "두 텐서를 곱해서 공유 축(공통 축)을 따라 합치는" 연산을 빠르게 하려고 만들어졌어요. 우리가 매일 쓰는 행렬곱(matmul), 행렬·벡터 곱(GEMV), 내적(dot product)이 전부 이 한 가지 패턴의 변종입니다. 책에서는 이걸 세 단계로 쪼갭니다(docs/src/quick-start.md:30): **Broadcast(맞춰 늘리기) → Multiply(원소별 곱) → Reduce(합치기)**.
+RNGD 칩의 정식 이름이 TCP, 즉 Tensor **Contraction** Processor입니다. 칩 설계 자체가 "두 텐서를 곱해서 공유 축(공통 축)을 따라 합치는" 연산을 빠르게 하려고 만들어졌어요. 우리가 매일 쓰는 행렬곱(matmul), 행렬·벡터 곱(GEMV), 내적(dot product)이 전부 이 한 가지 패턴의 변종입니다. 책에서는 이걸 세 단계로 쪼갭니다(docs/src/quick-start.md:30): **Broadcast(맞춰 늘리기) → Multiply(원소 단위 곱) → Reduce(합치기)**.
 
 einsum 표기로 보면 한눈에 들어옵니다(quick-start.md:35-39):
 - 내적: `I, I → 1` (브로드캐스트 없음, 두 축이 이미 같음)
@@ -35,7 +35,7 @@ einsum 표기로 보면 한눈에 들어옵니다(quick-start.md:35-39):
 vISA의 핵심 아이디어는 이 계층을 **Rust 타입으로 노출**한다는 점입니다. 예를 들어 `DmTensor<bf16, m![1], m![1 # 2], m![A / 8 # 256], m![A % 8]>` 는 "bf16 벡터를 칩 1개, 클러스터 2개 중 1개, 256슬라이스에 분산(슬라이스당 A/8개 인덱스), 슬라이스 안에 8개씩"이라는 뜻입니다(quick-start.md:82). `m![]` 안의 세 연산자만 알면 됩니다(quick-start.md:85-88):
 - `/` 는 stride로 쪼갬: `A / 8` → 2048/8 = 256개 (보통 슬라이스 개수)
 - `%` 는 안쪽 개수: `A % 8` → 슬라이스 안 8개
-- `#` 는 하드웨어 단위로 패딩: `# 256` → 256슬라이스에 맞춰 채움(남는 칸은 쓰레기값)
+- `#` 는 하드웨어 단위로 패딩: `# 256` → 256슬라이스에 맞춰 채움(남는 칸은 임의값)
 
 그리고 파이프라인을 흐르는 텐서에는 두 가지 특수 축이 더 붙습니다(quick-start.md:90): **`Time`(파이프라인 반복 횟수, 시간축)** 과 **`Packet`(한 번에 처리하는 원소 묶음, 공간축)**. 축약에서 "K를 Packet에 두면 공간 병렬로 한 번에 줄이고, Time에 두면 사이클마다 누적"하는 식으로 갈립니다. 이게 04 모듈에서 제일 중요한 직관입니다.
 
@@ -54,7 +54,7 @@ Tensor Unit은 고정 파이프라인입니다(quick-start.md:57): **Fetch → S
 Contraction Engine은 네 단으로 나뉩니다(contraction-engine/index.md:54-60). 하나는 곱하기, 셋은 줄이기입니다. 커널 체인의 `.contract_outer → .contract_packet → .contract_time → .contract_lane` 네 호출이 정확히 이 네 단입니다.
 
 **1) Outer (`.contract_outer(&trf)`) — Broadcast + Multiply**
-두 피연산자를 공통 모양 `[Chip, Cluster, Slice, Lane, Time, Packet]`으로 맞춰 늘린 뒤 원소별로 곱합니다(outer.md:1-14). 내부적으로 세 부품:
+두 피연산자를 공통 모양 `[Chip, Cluster, Slice, Lane, Time, Packet]`으로 맞춰 늘린 뒤 원소 단위로 곱합니다(outer.md:1-14). 내부적으로 세 부품:
 - **Stream Adapter**: 흐르는 피연산자를 처리. Collect가 32바이트 flit를 주면, `PackSize ∈ {1,2}`개를 묶어 32B 또는 64B 패킷을 만듭니다(이게 "Packing", outer.md:44-57). PackSize=2면 64B를 꽉 채워 MAC 100% 활용, PackSize=1이면 절반(32B)이 0으로 패딩돼 throughput 절반(outer.md:105-107). dot_product 커널 주석 "Pair consecutive 32-byte flits into 64-byte packets, halving time steps (A/16 → A/32)"가 바로 PackSize=2입니다.
 - **TRF Sequencer**: 세워둔(TRF) 피연산자를 매 사이클 64B씩 읽어 같은 모양으로 늘립니다(outer.md:117-135).
 - **Multiplier**: 두 피연산자를 곱하면서 **출력 타입을 넓힙니다**: `i4/i8 → i32`, `f8/bf16 → f32`(outer.md:12,200). 누적 중 오버플로를 막으려는 거예요. 그래서 bf16 행렬곱의 누산기는 f32입니다.
@@ -84,7 +84,7 @@ TRF(Tensor Register File)는 Contraction Engine 전용 슬라이스별 SRAM입�
 
 주소 인자는 `TrfAddress` enum이고 세 가지입니다(furiosa-opt-std/src/tensor/memory.rs:101-108):
 - `Full`: 128행 전부, 용량 65,536바이트(memory.rs:116). dot_product/gemv/gemm이 모두 `Full`을 써서 TRF 전체를 한 텐서에 줍니다.
-- `FirstHalf`(0–63행) / `SecondHalf`(64–127행): 각 32,768바이트. **더블 버퍼링**용입니다 — 한 반쪽을 읽는 동안 다른 반쪽을 채워 main/sub를 겹쳐 돌립니다(register-files.md:90-96). matmul_split_reduce2가 루프 안에서 `FirstHalf`/`SecondHalf`를 번갈아 쓰는 게 그 예입니다.
+- `FirstHalf`(0–63행) / `SecondHalf`(64–127행): 각 32,768바이트. **이중 버퍼링**용입니다 — 한 반쪽을 읽는 동안 다른 반쪽을 채워 main/sub를 겹쳐 돌립니다(register-files.md:90-96). matmul_split_reduce2가 루프 안에서 `FirstHalf`/`SecondHalf`를 번갈아 쓰는 게 그 예입니다.
 
 ## Switch 브로드캐스트 — GEMV·GEMM이 슬라이스를 가로질러야 하는 이유
 
@@ -112,7 +112,7 @@ dot_product(A=2048)로 추적해 봅시다(dot_product_kernel.rs:36-39):
 ```
 contract_outer::<m![A / 32], m![A % 32], _, _>(&rhs)  // OutTime=A/32(=64), OutPacket=A%32(=32원소=64B, PackSize=2)
 contract_packet::<m![1]>()                            // 패킷 안 32원소를 트리로 → 스칼라
-contract_time::<m![1]>()                              // 64개 Time스텝을 누적 → 스칼라
+contract_time::<m![1]>()                              // 64개 Time단계을 누적 → 스칼라
 contract_lane::<m![1], m![1 # 8]>(Interleaved)        // Lane=1(8로 패딩) 접기
 ```
 즉 2048개 곱을 **"32(Packet, 공간) × 64(Time, 시간)"** 으로 쪼개 줄입니다. 공간 트리로 32개를 한 방에, 그걸 64사이클 누적. 이게 RNGD 축약의 표준 분해입니다.
@@ -128,7 +128,7 @@ Contraction Engine은 한 슬라이스 **안에서** Packet/Time/Lane만 줄입�
 - **matmul_4096** (i8, `[4096,4096]×[4096]→[4096]`): contraction으로 슬라이스별 부분합을 낸 뒤 `vector_inter_slice_reduce`로 합칩니다. 출력은 i32 누산 후 `.cast::<i8, ...>()`로 되돌리고, `unsafe HbmTensor::from_addr` + `slice_tile` + `to_hbm_view`로 HBM에 직접 씁니다(matmul_4096.rs:42-46). Cluster를 `m![A / 2048 % 2]`로 써 A를 두 클러스터에 나눕니다.
 - **matmul_wo_broadcast** (i8, 4칩, `[32768]·[32768]→[1]`): 이름 그대로 **Switch 브로드캐스트가 필요 없는** 큰 내적입니다. 두 피연산자를 동일하게 분산하고 칩 4개에 걸쳐 곱한 뒤 inter-slice reduce로 합칩니다(matmul_wo_broadcast.rs). 내적은 브로드캐스트가 없다는 걸 큰 규모로 보여줍니다.
 - **matmul_split_reduce** (i8, `[1024,2048]×[2048]→[1024]`): contraction 축 B(=2048)를 512씩 4타일로 쪼개 **부분합을 Vector Engine에 쌓아 누적**합니다(split-K). `begin_interleaved` + `vector_intra_slice_unzip` + `vector_clip_zip(ClipBinaryOpI32::AddFxp)`로 이전 타일과 새 타일을 합칩니다(matmul_split_reduce.rs:18-46, 64-135). DM 용량(512KB/슬라이스)을 못 넘기게 K를 시간 분할하는 실전 패턴입니다.
-- **matmul_split_reduce2** (bf16, `[64,1024]×[1024,128]→[64,128]`): 가장 복잡. 루프 안에서 `.switch(SwitchConfig::InterTranspose{...})`, `.switch(SwitchConfig::TransposedBroadcast1{...})`로 데이터를 재배치하고, TRF를 `FirstHalf`/`SecondHalf`로 더블버퍼링하며, 누산기를 DM에 두고 매 반복 `vector_clip_zip(ClipBinaryOpF32::Add)`로 누적합니다. 명시적 Switch + 더블버퍼 + 루프 누적의 종합 예제입니다.
+- **matmul_split_reduce2** (bf16, `[64,1024]×[1024,128]→[64,128]`): 가장 복잡. 루프 안에서 `.switch(SwitchConfig::InterTranspose{...})`, `.switch(SwitchConfig::TransposedBroadcast1{...})`로 데이터를 재배치하고, TRF를 `FirstHalf`/`SecondHalf`로 이중 버퍼링하며, 누산기를 DM에 두고 매 반복 `vector_clip_zip(ClipBinaryOpF32::Add)`로 누적합니다. 명시적 Switch + 더블버퍼 + 루프 누적의 종합 예제입니다.
 
 ## 호스트 쪽 검증 흐름 (test가 어떻게 도는가)
 
@@ -147,13 +147,13 @@ experiments 폴더에서 `cargo furiosa-opt` 플러그인이 `--cfg backend="...
 
 | 이름 | 쓰는 법 | 설명 | 출처 |
 |---|---|---|---|
-| `contract_outer` | `.contract_outer::<OutTime, OutPacket, _, _>(&trf)  // 뒤 두 제네릭(Lane, TrfElement)은 TRF에서 추론` | Outer 단(Broadcast+Multiply). 흐르는 피연산자와 TRF 피연산자를 공통 모양으로 늘려 원소별 곱. OutTime/OutPacket이 곱 결과의 시간/패킷 모양을 정함. 곱하며 i8→i32, bf16→f32로 widening. | `furiosa-opt-std/src/engine/contraction/outer/mod.rs:74` |
+| `contract_outer` | `.contract_outer::<OutTime, OutPacket, _, _>(&trf)  // 뒤 두 제네릭(Lane, TrfElement)은 TRF에서 추론` | Outer 단(Broadcast+Multiply). 흐르는 피연산자와 TRF 피연산자를 공통 모양으로 늘려 원소 단위 곱. OutTime/OutPacket이 곱 결과의 시간/패킷 모양을 정함. 곱하며 i8→i32, bf16→f32로 widening. | `furiosa-opt-std/src/engine/contraction/outer/mod.rs:74` |
 | `contract_packet` | `.contract_packet::<OutPacket>()  // OutPacket = 패킷 안에서 살아남는(줄이지 않는) 부분` | Packet Reducer. 패킷 안 contraction 축을 레인별 덧셈 트리로 공간 합산. 전부 줄이면 m![1]. | `furiosa-opt-std/src/engine/contraction/packet.rs:34` |
 | `contract_time` | `.contract_time::<OutTime>()  // OutTime = 살아남는 Time 차원, 나머지는 누적되어 사라짐` | Time Reducer. Packet Reducer의 매 사이클 출력을 시간축 누산기에 더함. OutTime ⊆ Time(순서 보존) 검사. | `furiosa-opt-std/src/engine/contraction/time.rs:22` |
 | `contract_lane` | `.contract_lane::<OutTime, OutPacket>(LaneMode::Interleaved)  // 또는 LaneMode::Sequential` | Lane Folder. Lane을 합치지 않고 OutPacket(Interleaved) 또는 OutTime(Sequential)으로 접음. 8원소 버스. | `furiosa-opt-std/src/engine/contraction/lane.rs:45` |
 | `LaneMode` | `enum LaneMode { Interleaved, Sequential }` | Interleaved=Lane을 OutPacket으로(출력채널 나란히), Sequential=Lane을 OutTime으로(레인 순차). dot/gemv/gemm은 Interleaved, matmul 큰 예제들은 Sequential. | `furiosa-opt-std/src/engine/contraction/lane.rs:19-26` |
 | `to_trf` | `.to_trf::<Lane, Element>(address)  // 보통 .to_trf(TrfAddress::Full)` | Collect 스트림을 TRF에 적재. 흐르는 Time/Packet을 Lane(공간 1/2/4/8)·Element(레인별 레이아웃)로 재배치. 보통 sub 컨텍스트에서 호출해 미리 채워둠. | `furiosa-opt-std/src/engine/collect.rs:56` |
-| `TrfAddress` | `enum TrfAddress { FirstHalf, SecondHalf, Full }  // Full.capacity()=65536, Half=32768` | TRF 적재 영역 선택. Full=128행 전부, FirstHalf=0–63행, SecondHalf=64–127행(더블버퍼링). dot/gemv/gemm은 Full, split_reduce2는 FirstHalf/SecondHalf 번갈아. | `furiosa-opt-std/src/tensor/memory.rs:101-119` |
+| `TrfAddress` | `enum TrfAddress { FirstHalf, SecondHalf, Full }  // Full.capacity()=65536, Half=32768` | TRF 적재 영역 선택. Full=128행 전부, FirstHalf=0–63행, SecondHalf=64–127행(이중 버퍼링). dot/gemv/gemm은 Full, split_reduce2는 FirstHalf/SecondHalf 번갈아. | `furiosa-opt-std/src/tensor/memory.rs:101-119` |
 | `cast` | `.cast::<bf16, m![1 # 16]>()  // bf16 16원소=32바이트(1 flit)` | f32 누산 결과를 출력 타입으로 되돌림. 출력 패킷을 정확히 32바이트로 패딩(bf16=16원소). 크기 틀리면 'output packet must be exactly 32 bytes' 단언. | `furiosa-opt-std/src/engine/cast.rs:38` |
 | `switch / SwitchConfig::Broadcast01` | `input.switch(SwitchConfig::Broadcast01 { slice1: 256, slice0: 1, time0: 1 })` | GEMV/GEMM에서 한 피연산자를 모든 출력 슬라이스로 브로드캐스트. slice0·slice1을 Slice에서 Time으로 옮겨 서브링 전체에 복제. 명시적 사용 예는 matmul_split_reduce2(InterTranspose/TransposedBroadcast1). | `furiosa-opt-std/src/engine/switch.rs:35-42 + docs/src/quick-start.md:236-245` |
 | `vector_inter_slice_reduce` | `.vector_init().vector_inter_slice_reduce::<OutSlice, ReduceDim>(InterSliceReduceOpI32::Add).vector_final()` | contraction 축이 슬라이스에 걸칠 때 Contraction이 못 하는 슬라이스 간 합을 Vector Engine이 마무리. 큰 matmul 필수 패턴. | `furiosa-opt-examples/src/matmul/matmul_4096.rs:35-37` |
@@ -207,7 +207,7 @@ cd /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/vISA/experiments && sed -i 's/.c
 ```bash
 cd /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/vISA/experiments && sed -i 's/axes!\[A = 2048\];/axes![A = 4096];/' src/kernel/dot_product_kernel.rs && cargo furiosa-opt test --release --bin dot_product ; sed -i 's/axes!\[A = 4096\];/axes![A = 2048];/' src/kernel/dot_product_kernel.rs
 ```
-**관찰** — A=4096이어도 test 통과(호스트가 같은 axes를 import하므로 자동 일치). A/32=128 Time스텝 × 32 Packet으로 줄어든다 — A=2048(64×32) 대비 Time만 2배. 마지막 명령이 원복.
+**관찰** — A=4096이어도 test 통과(호스트가 같은 axes를 import하므로 자동 일치). A/32=128 Time단계 × 32 Packet으로 줄어든다 — A=2048(64×32) 대비 Time만 2배. 마지막 명령이 원복.
 
 **심화** — gemv에서 J를 2048→1024로 바꿔(반드시 32의 배수 유지) 같은 실험. Time=J/32가 64→32로 줄어드는 걸 확인. gemv_kernel.rs:8-9의 Time/Packet 정의와 대조.
 
@@ -315,7 +315,7 @@ Interleaved는 Lane을 OutPacket의 가장 안쪽으로 접어 매 사이클 8�
 - Packet Reducer 덧셈 트리 깊이는 타입별로 다르다: bf16 5단(패킷 32원소), i8/f8 6단(64), i4 7단(128). 깊이는 첫 출력 지연만 늘리고 정상 throughput(매 사이클 1패킷)은 유지된다. (`docs/src/computing-tensors/contraction-engine/packet-reducer.md:47,58-60`)
 - Packing의 PackSize가 MAC 활용률을 정한다: PackSize=2면 64B를 꽉 채워 모든 MAC 사용, PackSize=1이면 32B만 채우고 나머지 절반이 0 곱이라 throughput 절반. (`docs/src/computing-tensors/contraction-engine/outer.md:105-107`)
 - K를 Time에만 두는 배치(K-in-Time)는 bf16 기준 32개 곱셈기 중 1개만 일해 MAC 활용률이 1/32로 떨어지는 퇴화 커널이다. K는 Packet에 둬 트리로 줄이는 게 정석. (`docs/src/computing-tensors/contraction-engine/index.md:88,123`)
-- TRF는 슬라이스당 8레인 × 2뱅크 × 128행 × 320비트 = 80KB. Full 주소모드 용량은 65,536바이트, FirstHalf/SecondHalf는 각 32,768바이트(더블버퍼링용). (`docs/src/computing-tensors/register-files.md:72,92-94 + furiosa-opt-std/src/tensor/memory.rs:111-119`)
+- TRF는 슬라이스당 8레인 × 2뱅크 × 128행 × 320비트 = 80KB. Full 주소모드 용량은 65,536바이트, FirstHalf/SecondHalf는 각 32,768바이트(이중 버퍼링용). (`docs/src/computing-tensors/register-files.md:72,92-94 + furiosa-opt-std/src/tensor/memory.rs:111-119`)
 - Time Reducer 누산기는 1,024셀. 슬롯 용량은 LaneMode에 의존: Interleaved면 128/Packet::SIZE, Sequential이면 32/Lane::SIZE. InnerTime::SIZE가 이를 넘으면 컴파일 단계에서 막힌다. (`docs/src/computing-tensors/contraction-engine/time-reducer.md:88-94`)
 
 ➡️ 다음: [05_moving_tensors.md](./05_moving_tensors.md)

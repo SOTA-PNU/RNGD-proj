@@ -1,4 +1,4 @@
-# 03 · 원소별 연산과 파이프라인 기초
+# 03 · 원소 단위 연산과 파이프라인 기초
 
 이 문서는 vISA 커리큘럼 모듈 03입니다. 가장 단순한 커널들로 파이프라인의 뼈대(begin→fetch→collect→vector→commit)와 `to_dm`/`to_hbm`, 그리고 `sub` 컨텍스트로 VRF에 미리 싣는 패턴을 배웁니다.
 *선행: 02 매핑 · 예상 시간: 반나절*
@@ -30,7 +30,7 @@ TCP 장치는 4단계로 중첩돼 있습니다(`docs/src/quick-start.md:45-53`)
 
 핵심 흐름: 호스트(CPU)가 PCIe DMA로 데이터를 **HBM**에 올리고 → Tensor DMA로 **DM**에 내리고 → Tensor Unit 파이프라인(Fetch→…→Vector→…→Commit)이 DM에서 스트림을 빨아들여 계산하고 결과를 다시 DM에 쓰고 → Tensor DMA로 **HBM**에 올리고 → 호스트가 PCIe DMA로 가져갑니다(`docs/src/moving-tensors/index.md:1-30`). 즉 NPU 연산기는 HBM을 직접 만지지 않습니다. 항상 DM을 거칩니다.
 
-Tensor Unit은 고정된 파이프라인입니다: **Fetch → Switch → Collect → Contraction → Vector → Cast → Transpose → Commit**(`docs/src/quick-start.md:57`). 대부분 단계는 slice 안에서 독립적으로 돕니다. 원소별 커널에서는 Contraction(행렬곱)을 건너뛰고 Fetch → Collect → Vector → Commit만 씁니다.
+Tensor Unit은 고정된 파이프라인입니다: **Fetch → Switch → Collect → Contraction → Vector → Cast → Transpose → Commit**(`docs/src/quick-start.md:57`). 대부분 단계는 slice 안에서 독립적으로 돕니다. 원소 단위 커널에서는 Contraction(행렬곱)을 건너뛰고 Fetch → Collect → Vector → Commit만 씁니다.
 
 ## 1. 텐서 매핑: m![] 의 / % # 이 뭔가
 
@@ -45,7 +45,7 @@ pub type Slice   = m![A / 8 # 256];
 `m![]` 안에서 쓰는 연산자 3개의 의미입니다(`docs/src/quick-start.md:85-88`):
 - `/` 는 **stride로 쪼개기**: `A / 8` = 2048/8 = 256, 즉 slice 인덱스 256개
 - `%` 는 **안쪽 개수**: `A % 8` = slice 안의 8개 원소
-- `#` 는 **하드웨어 단위 수로 패딩**: `# 256` = slice 256개에 맞춰 채움(남는 칸은 쓰레기값)
+- `#` 는 **하드웨어 단위 수로 패딩**: `# 256` = slice 256개에 맞춰 채움(남는 칸은 임의값)
 
 그래서 `DmTensor<i32, m![1], m![1#2], m![A/8 # 256], m![A%8]>`는 "i32 벡터를, 칩 1개·클러스터 1개(2개 중)·256 slice에 8개씩"이라는 뜻입니다. A의 각 원소는 정확히 한 slice의 한 자리로 매핑됩니다.
 
@@ -97,12 +97,12 @@ DM 결과를 다시 HBM으로 올립니다(`furiosa-opt-std/src/tensor/memory.rs
 
 ## 3. Vector Engine 입문: 32비트 전용, 두 엔진, 고정 순서, ALU 한 번 규칙
 
-Vector Engine(VE)은 원소별 계산과 reduction을 담당합니다 — 활성함수(GELU, SiLU), 정규화(softmax, layer norm), 이항 연산, slice 내/간 reduction 등(`docs/src/computing-tensors/vector-engine/index.md:1-4`).
+Vector Engine(VE)은 원소 단위 계산과 reduction을 담당합니다 — 활성함수(GELU, SiLU), 정규화(softmax, layer norm), 이항 연산, slice 내/간 reduction 등(`docs/src/computing-tensors/vector-engine/index.md:1-4`).
 
 **중요한 제약 하나: VE는 32비트 타입(i32, f32)만 받습니다**(`docs/src/computing-tensors/vector-engine/index.md:6-8`). bf16·i8 같은 좁은 타입은 Contraction Engine이 곱하면서 자동으로 넓혀주지만(bf16→f32, i8→i32), Contraction을 건너뛰면 Fetch의 타입캐스트 어댑터가 넓혀야 합니다.
 
 VE는 두 조각으로 나뉩니다(`docs/src/computing-tensors/vector-engine/index.md:11-20`):
-- **Intra-Slice Chain**: slice 안에서 원소별/이항/slice-내 reduce. `vector_intra_slice_tag()`(단일 스트림) 또는 `vector_intra_slice_unzip()`(2그룹 짝 모드)로 진입.
+- **Intra-Slice Chain**: slice 안에서 원소 단위/이항/slice-내 reduce. `vector_intra_slice_tag()`(단일 스트림) 또는 `vector_intra_slice_unzip()`(2그룹 짝 모드)로 진입.
 - **Inter-Slice Reducer**: 클러스터의 256 slice를 가로질러 reduce. `vector_inter_slice_reduce()`로 진입.
 
 `vector_init()`과 `vector_final()` 사이에서 체인만, reducer만, 또는 둘 다 돌릴 수 있습니다. 둘 다면 순서는 `IntraFirst`(체인 먼저) 또는 `InterFirst`(reducer 먼저)입니다.
@@ -120,9 +120,9 @@ VE는 두 조각으로 나뉩니다(`docs/src/computing-tensors/vector-engine/in
 ### 3.2 Tag 단계: 조건부 실행의 씨앗
 
 체인 입구 Tag 단계는 각 32비트 원소에 4비트 `Tag`(0~15)를 붙입니다(`docs/src/computing-tensors/vector-engine/intra-slice-chain.md:180-196`). 비트3(MSB)은 `GroupId`(Filter·짝 모드가 사용), 비트0~2는 비교 결과 플래그입니다. `TagMode`(`furiosa-opt-std/src/engine/vector/branch.rs:17`)는:
-- `Zero`: 모든 비트 0, 모두 무조건 실행(원소별 커널의 기본)
+- `Zero`: 모든 비트 0, 모두 무조건 실행(원소 단위 커널의 기본)
 - `AxisToggle { axis }`: GroupId = 축 인덱스 % 2 (짝 모드의 내부 구현)
-- `Comparison([cmp0..cmp3])`: 원소별 비교 4개 결과로 비트를 채움
+- `Comparison([cmp0..cmp3])`: 원소 단위 비교 4개 결과로 비트를 채움
 - `ValidCount`, `Vrf`: VCG 출력 / VRF에서 태그 재사용
 
 ### 3.3 단계별 연산과 "ALU 한 번" 규칙 (가장 자주 걸리는 함정)
@@ -151,7 +151,7 @@ Clip 클러스터(8-way)에는 `Min/Max/AbsMin/AbsMax`(클램핑)과 `AddFxp`(�
 
 ## 4. VRF와 sub 컨텍스트: 두 번째 피연산자를 미리 채워두기
 
-원소별 곱처럼 입력이 둘이면, 하나는 파이프라인으로 흘리고 다른 하나는 **VRF**(slice당 레지스터)에 미리 채워둡니다. VE가 매 사이클 VRF를 읽어 stream과 결합합니다(`docs/src/computing-tensors/register-files.md:114-116`).
+원소 단위 곱처럼 입력이 둘이면, 하나는 파이프라인으로 흘리고 다른 하나는 **VRF**(slice당 레지스터)에 미리 채워둡니다. VE가 매 사이클 VRF를 읽어 stream과 결합합니다(`docs/src/computing-tensors/register-files.md:114-116`).
 
 ### 4.1 두 컨텍스트: main과 sub
 
@@ -235,7 +235,7 @@ reduce 예제들(`furiosa-opt-examples/src/vector_engine/reduce.rs`)도 같은 b
 - **typecheck 백엔드**: `--backend typecheck`를 붙이면 텐서가 phantom이라 값 비교 루프가 생략되고, 타입·매핑 정합성만 검사합니다(`base-template/src/constant_add.rs:34-36`). 컴파일/타입 오류 실험에 좋습니다.
 - **examples 크레이트**(라이브러리 + 통합 테스트): `cargo furiosa-opt test --release --test binary_add_tests`, `--test vector_engine_tests`, `--test fetch_commit_tests` 형태로 돕니다(`furiosa-opt-examples/tests/`).
 
-요약하면, 원소별 커널은 전부 같은 골격입니다: HBM에서 `to_dm`으로 내리고 → `begin/fetch/collect`로 파이프라인에 흘리고 → `vector_init`부터 `vector_final`까지 VE로 계산하고 → `commit`으로 DM에 쓰고 → `to_hbm`으로 올린다. 달라지는 건 VE 안에서 어떤 연산을 부르느냐, operand를 상수·VRF·짝 그룹 중 무엇으로 주느냐뿐입니다.
+요약하면, 원소 단위 커널은 전부 같은 골격입니다: HBM에서 `to_dm`으로 내리고 → `begin/fetch/collect`로 파이프라인에 흘리고 → `vector_init`부터 `vector_final`까지 VE로 계산하고 → `commit`으로 DM에 쓰고 → `to_hbm`으로 올린다. 달라지는 건 VE 안에서 어떤 연산을 부르느냐, operand를 상수·VRF·짝 그룹 중 무엇으로 주느냐뿐입니다.
 
 ## 2. 핵심 API · 패턴
 
@@ -427,7 +427,7 @@ vector_narrow_clip(Way8→Way4)을 fp_unary(Sigmoid) 앞에, vector_widen_pad(Wa
   ↳ 출처 `base-template/src/constant_add.rs:28-39`
 - typecheck 백엔드에서는 출력 텐서가 phantom이라 값 비교 루프가 0번 돌고 단언이 그냥 통과한다. 실제 수치 검증은 simulation 백엔드에서 해야 한다.  
   ↳ 출처 `base-template/src/constant_add.rs:34-36`
-- Vector Engine은 32비트(i32/f32)만 받는다. Contraction을 건너뛰는 원소별 커널에서 i8 같은 좁은 입력은 fetch에서 i32로 widen해야 한다(binary_add가 i8 입력을 .fetch::<i32,...>로 넓힌다).  
+- Vector Engine은 32비트(i32/f32)만 받는다. Contraction을 건너뛰는 원소 단위 커널에서 i8 같은 좁은 입력은 fetch에서 i32로 widen해야 한다(binary_add가 i8 입력을 .fetch::<i32,...>로 넓힌다).  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/index.md:6-8, furiosa-opt-examples/src/binary_add.rs:35`
 - float 연산 앞뒤로 narrow/widen을 빼먹으면 타입이 안 맞아 컴파일이 막힌다. Float 단계는 Way4라 vector_narrow_clip/split(8→4) 이후에만 호출되고, vector_widen_pad/concat(4→8)으로 되돌려야 final/clip로 갈 수 있다.  
   ↳ 출처 `docs/src/computing-tensors/vector-engine/intra-slice-chain.md:72-80`

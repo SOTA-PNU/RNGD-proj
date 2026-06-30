@@ -1,6 +1,6 @@
 # 08 · 스케줄러와 동시성
 
-이 문서는 vISA 커리큘럼 모듈 08입니다. main/sub/tdma/pdma 컨텍스트가 어떻게 병렬로 도는지, 해저드(RAW/WAR/WAW)와 수동 주소 배정, 더블버퍼링으로 연산과 데이터 이동을 겹치는 법을 배웁니다.
+이 문서는 vISA 커리큘럼 모듈 08입니다. main/sub/tdma/pdma 컨텍스트가 어떻게 병렬로 도는지, 해저드(RAW/WAR/WAW)와 수동 주소 배정, 이중 버퍼링으로 연산과 데이터 이동을 겹치는 법을 배웁니다.
 *선행: 03~07 (특히 03의 sub 컨텍스트) · 예상 시간: 반나절*
 
 ## 학습 목표
@@ -8,7 +8,7 @@
 - [ ] 네 컨텍스트(main/sub/tdma/pdma)의 역할과 병렬 규칙을 안다
 - [ ] 스케줄러가 작성 순서를 지키고 재배치하지 않음을 안다
 - [ ] RAW/WAR/WAW 해저드를 주소로 어떻게 잡는지 안다
-- [ ] TRF 반쪽 더블버퍼링 패턴을 안다
+- [ ] TRF 반쪽 이중 버퍼링 패턴을 안다
 
 ## 1. 개념
 
@@ -79,7 +79,7 @@ pub struct Context {
 `base-template/src/kernel/elementwise_mul_kernel.rs`를 줄 단위로 읽어 봅시다(이 파일은 `experiments/` 프로젝트에도 동일하게 들어 있어 바로 실행 가능합니다):
 
 ```rust
-// 1) tdma로 두 피연산자를 HBM -> DM 으로 이동. 서로 다른 베이스 주소!
+// 1) tdma로 두 피연산자를 HBM -> DM 으로 이동. 서로 다른 기준 주소!
 let lhs_dm = lhs.to_dm::<...>(&mut ctx.tdma, 0);        // DM 주소 0
 let rhs_dm = rhs.to_dm::<...>(&mut ctx.tdma, 1 << 12);  // DM 주소 4096
 
@@ -120,11 +120,11 @@ vISA는 **텐서마다 정확한 메모리 주소가 필요하고, 그 주소를
 
 ### TRF는 절반으로 나뉜다, VRF는 자유 분할
 
-TRF(Tensor Register File)는 각 뱅크를 두 절반으로 나눕니다(`docs/src/computing-tensors/register-files.md:90`). `TrfAddress`의 세 모드: `Full`은 128행 전부(65,536바이트), `FirstHalf`는 0–63행, `SecondHalf`는 64–127행이며 절반 모드는 슬라이스당 40KB로 용량이 제한됩니다(enum 용량은 `furiosa-opt-std/src/tensor/memory.rs:111`). 반면 VRF는 하드웨어가 강제로 절반을 나누지 않습니다(`docs/src/scheduler.md:60`). 각 슬라이스의 8KB VRF를 여러 텐서가 자유롭게 쪼개 쓰고, 더블 버퍼링을 원하면 프로그래머가 "겹치지 않는 영역"을 직접 잡아 줘야 합니다(이게 또 "수동 주소"의 한 단면입니다).
+TRF(Tensor Register File)는 각 뱅크를 두 절반으로 나눕니다(`docs/src/computing-tensors/register-files.md:90`). `TrfAddress`의 세 모드: `Full`은 128행 전부(65,536바이트), `FirstHalf`는 0–63행, `SecondHalf`는 64–127행이며 절반 모드는 슬라이스당 40KB로 용량이 제한됩니다(enum 용량은 `furiosa-opt-std/src/tensor/memory.rs:111`). 반면 VRF는 하드웨어가 강제로 절반을 나누지 않습니다(`docs/src/scheduler.md:60`). 각 슬라이스의 8KB VRF를 여러 텐서가 자유롭게 쪼개 쓰고, 이중 버퍼링을 원하면 프로그래머가 "겹치지 않는 영역"을 직접 잡아 줘야 합니다(이게 또 "수동 주소"의 한 단면입니다).
 
-## 더블 버퍼링(Double-Buffering) — 기다림을 없애는 패턴
+## 이중 버퍼링(Double-Buffering) — 기다림을 없애는 패턴
 
-elementwise_mul처럼 "sub가 채우고 같은 회차에 main이 읽으면" RAW 때문에 main이 sub를 기다립니다. 이 기다림을 없애는 게 더블 버퍼링입니다(`docs/src/scheduler.md:55`). 아이디어: TRF를 두 절반으로 나눠, **sub는 한쪽 절반에 "다음" 배치를 채우고, 동시에 main은 다른 쪽 절반에서 "지금" 배치를 읽습니다.** 회차마다 두 절반을 번갈아(swap) 씁니다.
+elementwise_mul처럼 "sub가 채우고 같은 회차에 main이 읽으면" RAW 때문에 main이 sub를 기다립니다. 이 기다림을 없애는 게 이중 버퍼링입니다(`docs/src/scheduler.md:55`). 아이디어: TRF를 두 절반으로 나눠, **sub는 한쪽 절반에 "다음" 배치를 채우고, 동시에 main은 다른 쪽 절반에서 "지금" 배치를 읽습니다.** 회차마다 두 절반을 번갈아(swap) 씁니다.
 
 ```rust,ignore
 // 루프 전에 첫 절반을 미리 채움
@@ -164,7 +164,7 @@ let _out_hbm = launch(elementwise_mul_kernel, (&mut ctx, &lhs_hbm, &rhs_hbm)).aw
 
 ## 가장 중요한(그리고 헷갈리는) 진실: 시뮬레이션/타입체크는 주소를 "검사하지 않는다"
 
-여기서 초심자가 거의 항상 오해하는 지점을 짚겠습니다. 위에서 "주소가 겹치면 위험하다"고 했는데, **그 위험 분석은 닫힌(closed) NPU 컴파일러/스케줄러가 하는 일**입니다. 공개된 호스트 백엔드 두 개는 물리적 SRAM을 모델링하지 않습니다.
+여기서 초심자가 거의 항상 오해하는 지점을 짚겠습니다. 위에서 "주소가 겹치면 위험하다"고 했는데, **그 위험 분석은 비공개(closed) NPU 컴파일러/스케줄러가 하는 일**입니다. 공개된 호스트 백엔드 두 개는 물리적 SRAM을 모델링하지 않습니다.
 - **simulation** 백엔드는 매 연산을 매핑 대수로 인터프리트하는데, 데이터는 각 텐서가 들고 있는 자기 버퍼(`MathRawTensor`, `ArrayD`)에 저장됩니다(`furiosa-opt-std/src/runtime/simulation/backend.rs:9`, `furiosa-opt-std/src/tensor/raw.rs:5`). 주소는 그냥 텐서 핸들에 같이 들고 다니는 메타데이터일 뿐이고, 주소로 색인되는 공용 메모리 풀이 없습니다. `fetch`도 주소가 아니라 `self.inner`(그 텐서 자기 버퍼)에서 읽습니다(`furiosa-opt-std/src/engine/fetch.rs` fetch_impl).
 - **typecheck** 백엔드는 축(axes)만 들고 값 버퍼가 아예 없습니다(`PhantomRawTensor`, `furiosa-opt-std/src/tensor/raw.rs:7`). 매핑/모양만 검증합니다.
 
@@ -192,7 +192,7 @@ let _out_hbm = launch(elementwise_mul_kernel, (&mut ctx, &lhs_hbm, &rhs_hbm)).aw
 | `launch` | `launch(kernel_fn, (&mut ctx, &a_hbm, &b_hbm)).await -> F::Output` | 함수 값은 버려지고 타입만 트레잇 디스패치에 사용. 내부는 F::execute(args).await. 실제 평가 백엔드는 --cfg backend 가 결정. | `furiosa-opt-std/src/runtime/mod.rs:195` |
 | `HbmTensor::to_dm` | `.to_dm::<Cluster, Slice, Elem>(&mut ctx.tdma, address: u64)` | HBM→DM 적재. 두 번째 인자가 수동 DM 주소. 자동 할당 없음. | `furiosa-opt-std/src/tensor/memory.rs:423` |
 | `CollectTensor::to_vrf` | `.to_vrf::<Element>(address: Address) -> VrfTensor` | Collect→VRF. raw u64 주소. 충돌 검사 없음(self.inner 데이터 + 주소 메타데이터). | `furiosa-opt-std/src/engine/collect.rs:72` |
-| `CollectTensor::to_trf` | `.to_trf::<Lane, Element>(address: TrfAddress) -> TrfTensor` | Collect→TRF. raw 숫자가 아니라 enum(FirstHalf/SecondHalf/Full). 더블 버퍼링용 절반 선택. | `furiosa-opt-std/src/engine/collect.rs:56` |
+| `CollectTensor::to_trf` | `.to_trf::<Lane, Element>(address: TrfAddress) -> TrfTensor` | Collect→TRF. raw 숫자가 아니라 enum(FirstHalf/SecondHalf/Full). 이중 버퍼링용 절반 선택. | `furiosa-opt-std/src/engine/collect.rs:56` |
 | `enum TrfAddress` | `TrfAddress::FirstHalf \| SecondHalf \| Full ; .capacity()` | Full=65536B(0~127행), FirstHalf=0~63행, SecondHalf=64~127행, 절반=32768B(40KB cap). | `furiosa-opt-std/src/tensor/memory.rs:101` |
 | `*::commit` | `.commit::<Element>(address: Address) -> DmTensor` | 파이프라인 결과를 DM 주소에 쓰기. 입력 텐서의 DM 주소와 겹치지 않게 잡아야 함. | `furiosa-opt-std/src/engine/commit.rs:27` |
 | `DmTensor::to_hbm` | `.to_hbm(&mut ctx.tdma, address) ; HostTensor::to_hbm(&mut ctx.pdma, address).await` | 커널 내 DM→HBM 은 tdma, 호스트 프로그램의 host→HBM 적재는 pdma 를 쓴다. | `furiosa-opt-std/src/tensor/memory.rs:387` |
@@ -202,7 +202,7 @@ let _out_hbm = launch(elementwise_mul_kernel, (&mut ctx, &lhs_hbm, &rhs_hbm)).aw
 
 > 실험은 NPU 없이 `simulation`·`typecheck`로 돌아갑니다. 실행법은 [`../experiments/README.md`](../experiments/README.md), MNIST는 `cargo furiosa-opt test`(npu 전용).
 
-### 실험 08.1 — 베이스라인: elementwise_mul 을 시뮬레이션과 타입체크로 돌려 보기
+### 실험 08.1 — 기준: elementwise_mul 을 시뮬레이션과 타입체크로 돌려 보기
 *난이도 1/5 · 기반: `Model_Benchmark/rngd-npu/vISA/experiments/src/kernel/elementwise_mul_kernel.rs`*
 
 **목표** — 스케줄러가 sub(VRF 적재)와 main(벡터 곱)을 한 커널에서 어떻게 엮는지 실제로 통과시켜 감을 잡는다.
@@ -236,7 +236,7 @@ cd /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/vISA/experiments && cargo furios
 # `let rhs_dm = rhs.to_dm::<...>(&mut ctx.tdma, 1 << 12);` 의 주소 `1 << 12` 를 `0` 으로 바꿔 lhs_dm 과 충돌시킨다. 그 뒤:
 cd /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/vISA/experiments && cargo furiosa-opt test --release --bin elementwise_mul && cargo furiosa-opt --backend typecheck run --release --bin elementwise_mul
 ```
-**관찰** — 예측(흔한 오해): lhs 가 rhs 를 덮어써서 테스트 실패. 실제 관찰: simulation/test 도, typecheck 도 그대로 통과한다. 이유: 두 백엔드는 주소로 색인되는 공용 SRAM 을 모델링하지 않아 충돌이 조용히 무시된다(furiosa-opt-std/src/tensor/raw.rs:5, runtime/simulation/backend.rs:9). 진짜 RAW/WAR/WAW 강제는 닫힌 NPU 스케줄러(--backend npu)에서만 일어난다.
+**관찰** — 예측(흔한 오해): lhs 가 rhs 를 덮어써서 테스트 실패. 실제 관찰: simulation/test 도, typecheck 도 그대로 통과한다. 이유: 두 백엔드는 주소로 색인되는 공용 SRAM 을 모델링하지 않아 충돌이 조용히 무시된다(furiosa-opt-std/src/tensor/raw.rs:5, runtime/simulation/backend.rs:9). 진짜 RAW/WAR/WAW 강제는 비공개 NPU 스케줄러(--backend npu)에서만 일어난다.
 
 **심화** — 끝나면 주소를 1<<12 로 복구하라. 이 실험이 주는 메타 교훈을 한 문장으로 적어 보라: '시뮬레이션 통과 != 주소 배치 안전'.
 
@@ -291,7 +291,7 @@ RAW(read-after-write). 스케줄러가 main 의 read 앞에 암묵적 대기를 
 
 </details>
 
-**Q4.** 더블 버퍼링 루프에서 i=0 에 sub 가 FirstHalf 를 미리 채웠다. for 루프 안 표현식 `if i % 2 == 0 { SecondHalf } else { FirstHalf }` 기준으로, i=0,1,2 에서 sub 가 '다음 배치'를 채우는 절반은 각각 어디인가? 그리고 왜 main 의 현재 읽기와 충돌하지 않는가?
+**Q4.** 이중 버퍼링 루프에서 i=0 에 sub 가 FirstHalf 를 미리 채웠다. for 루프 안 표현식 `if i % 2 == 0 { SecondHalf } else { FirstHalf }` 기준으로, i=0,1,2 에서 sub 가 '다음 배치'를 채우는 절반은 각각 어디인가? 그리고 왜 main 의 현재 읽기와 충돌하지 않는가?
 
 <details><summary>정답/힌트</summary>
 
@@ -327,15 +327,15 @@ sub 는 main 의 부분집합이라 Contraction 엔진을 구동하지 못한다
 
 - 메모리 주소를 직접 안 적으면 안 된다 — 자동 할당기가 없다. to_dm/to_vrf/commit 등은 모두 주소 인자를 요구하며, 텐서들이 겹치지 않게 배치하는 책임은 전적으로 프로그래머에게 있다.  
   ↳ 출처 `docs/src/scheduler.md:24, furiosa-opt-std/src/tensor/memory.rs:21`
-- 주소를 일부러 겹쳐도 simulation/typecheck 는 통과한다. 이 두 호스트 백엔드는 주소로 색인되는 공용 SRAM 을 모델링하지 않아 충돌이 조용히 무시된다. '시뮬레이션 통과 = 주소 안전'이라고 착각하면 NPU 에서 데이터 손상으로 터진다. RAW/WAR/WAW 강제는 닫힌 NPU 스케줄러에서만 일어난다.  
+- 주소를 일부러 겹쳐도 simulation/typecheck 는 통과한다. 이 두 호스트 백엔드는 주소로 색인되는 공용 SRAM 을 모델링하지 않아 충돌이 조용히 무시된다. '시뮬레이션 통과 = 주소 안전'이라고 착각하면 NPU 에서 데이터 손상으로 터진다. RAW/WAR/WAW 강제는 비공개 NPU 스케줄러에서만 일어난다.  
   ↳ 출처 `furiosa-opt-std/src/runtime/simulation/backend.rs:9, furiosa-opt-std/src/tensor/raw.rs:5, docs/src/scheduler.md:49`
 - 다른 컨텍스트라고 무조건 병렬은 아니다. 같은 주소에서 RAW/WAR/WAW 가 생기면 스케줄러가 대기를 끼워 직렬화한다. 반대로 같은 컨텍스트는 주소가 안 겹쳐도 자원 충돌로 직렬화된다.  
   ↳ 출처 `docs/src/scheduler.md:37`
 - sub 컨텍스트는 Contraction 엔진을 구동하지 못한다. 행렬곱/어텐션 같은 컨트랙션을 sub 에 넣으려 하지 말 것 — sub 는 적재(TRF/VRF 프리페치) 담당이고 컨트랙션은 main 몫이다.  
   ↳ 출처 `docs/src/computing-tensors/index.md:74`
-- 더블 버퍼링에서 sub 와 main 이 같은 TRF 절반을 쓰면 WAR 가 생겨 오버랩이 깨지고 직렬화된다. 회차마다 FirstHalf/SecondHalf 를 반드시 번갈아 써야 겹쳐 돈다.  
+- 이중 버퍼링에서 sub 와 main 이 같은 TRF 절반을 쓰면 WAR 가 생겨 오버랩이 깨지고 직렬화된다. 회차마다 FirstHalf/SecondHalf 를 반드시 번갈아 써야 겹쳐 돈다.  
   ↳ 출처 `docs/src/scheduler.md:91`
-- VRF 는 하드웨어가 절반을 나눠 주지 않는다. VRF 더블 버퍼링을 원하면 8KB 안에서 겹치지 않는 영역을 프로그래머가 직접 잡아야 한다(TRF 처럼 자동 절반 모드가 없음).  
+- VRF 는 하드웨어가 절반을 나눠 주지 않는다. VRF 이중 버퍼링을 원하면 8KB 안에서 겹치지 않는 영역을 프로그래머가 직접 잡아야 한다(TRF 처럼 자동 절반 모드가 없음).  
   ↳ 출처 `docs/src/scheduler.md:60`
 - cargo check 는 함수 본문을 실행하지 않아 매핑/모양 단언까지 도달하지 못한다. 모양 검증을 빠르게 하려면 cargo furiosa-opt --backend typecheck run 을 써야 한다.  
   ↳ 출처 `docs/src/introduction.md:133`

@@ -26,7 +26,7 @@ sudo apt install libclang-dev gcc-aarch64-linux-gnu
 - `libclang-dev` — 빌드 시 `furiosa-opt-std/build.rs`가 `bindgen`을 돌리는데 `libclang.so`가 필요. **모든 백엔드에서 빌드할 때 필요** (npu 모듈이 항상 컴파일되므로).
 - `gcc-aarch64-linux-gnu` — `--backend npu`로 NPU용 `.bin`을 만들 때 `aarch64-linux-gnu-{gcc,as,ld,objcopy}`를 호출. (시뮬레이션만 할 거면 당장은 없어도 되지만, 깔아두면 편함) (출처: `README.md:28-33`)
 
-### (3) 닫힌 컴파일러 바이너리 `cargo-furiosa-opt`
+### (3) 비공개 컴파일러 바이너리 `cargo-furiosa-opt`
 실제 vISA→EDF 컴파일러는 소스가 없고 **미리 빌드된 바이너리**로만 배포됩니다(x86_64 리눅스만). `cargo-binstall`로 받습니다:
 
 ```bash
@@ -36,7 +36,7 @@ cargo binstall cargo-furiosa-opt
 
 > 이건 GitHub 릴리스의 63MB tgz를 받아 깝니다. 소스 빌드는 막혀 있어요(`disabled-strategies=["compile"]`). (출처: `cargo-furiosa-opt/Cargo.toml:17-21`)
 
-### (선택) 새 프로젝트 스캐폴딩용 `cargo-generate`
+### (선택) 새 프로젝트 뼈대 만들기용 `cargo-generate`
 
 ```bash
 cargo install cargo-generate
@@ -44,7 +44,7 @@ cargo install cargo-generate
 cargo generate furiosa-ai/furiosa-opt base-template
 ```
 
-이 커리큘럼은 이미 `experiments/`에 스캐폴드를 만들어 뒀으니, 당장은 없어도 됩니다.
+이 커리큘럼은 이미 `experiments/`에 뼈대를 만들어 뒀으니, 당장은 없어도 됩니다.
 
 ---
 
@@ -65,7 +65,7 @@ cargo furiosa-opt test --release --bin constant_add
 cargo furiosa-opt --backend typecheck run --release --bin constant_add
 ```
 
-> 첫 빌드는 **인터넷이 필요**합니다. `furiosa-mapping`의 build.rs가 닫힌 `libfuriosa_mapping_impl.a`(15MB)를 GitHub 릴리스에서 받아 SHA256 검증 후 정적 링크하거든요. (출처: `furiosa-mapping/build.rs:18-63`)
+> 첫 빌드는 **인터넷이 필요**합니다. `furiosa-mapping`의 build.rs가 비공개 `libfuriosa_mapping_impl.a`(15MB)를 GitHub 릴리스에서 받아 SHA256 검증 후 정적 링크하거든요. (출처: `furiosa-mapping/build.rs:18-63`)
 
 ---
 
@@ -107,7 +107,7 @@ cd furiosa-opt && mdbook serve docs --open
 
 ---
 
-## 6. 트러블슈팅
+## 6. 문제 해결
 
 | 증상 | 원인 / 해결 |
 |---|---|

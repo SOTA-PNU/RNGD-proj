@@ -2,14 +2,14 @@
 
 이 폴더는 **직접 돌려보는 vISA 커널 모음**입니다. 퓨리오사 공식 `base-template`을 그대로 가져와(검증된 코드) 실행 가능한 cargo 프로젝트로 만든 것이고, 커리큘럼 모듈을 따라가며 여기에 커널을 추가·수정합니다.
 
-> ⚠️ 먼저 `../00_SETUP.md` 를 끝내야 합니다. 툴체인(nightly-2026-05-01)과 `cargo-furiosa-opt`(닫힌 컴파일러 바이너리)가 깔려 있어야 아래 명령이 돕니다. **NPU는 필요 없습니다** — 기본 `simulation` 백엔드는 호스트 CPU에서 돌아가요.
+> ⚠️ 먼저 `../00_SETUP.md` 를 끝내야 합니다. 툴체인(nightly-2026-05-01)과 `cargo-furiosa-opt`(비공개 컴파일러 바이너리)가 깔려 있어야 아래 명령이 돕니다. **NPU는 필요 없습니다** — 기본 `simulation` 백엔드는 호스트 CPU에서 돌아가요.
 
 ## 들어있는 커널 (기본 5종, base-template 원본)
 
 | bin 이름 | 무엇을 하나 | 배우는 개념 | 관련 모듈 |
 |---|---|---|---|
 | `constant_add` | 벡터의 모든 원소에 1 더하기 | Fetch→Collect→Vector→Commit, `to_dm`/`to_hbm` | 03 |
-| `elementwise_mul` | 두 벡터 원소별 곱 | `sub` 컨텍스트로 VRF 프리로드 | 03 |
+| `elementwise_mul` | 두 벡터 원소 단위 곱 | `sub` 컨텍스트로 VRF 프리로드 | 03 |
 | `dot_product` | 두 벡터 내적 | Contraction 엔진, TRF | 04 |
 | `gemv` | 행렬×벡터 | Switch 브로드캐스트 | 04 |
 | `gemm` | 행렬×행렬 | 출력 타일을 슬라이스에 분산, Lane Folder | 04 |

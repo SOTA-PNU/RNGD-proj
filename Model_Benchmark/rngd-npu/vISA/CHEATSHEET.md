@@ -1,14 +1,14 @@
-# vISA 치트시트 (빠른 참조)
+# vISA 빠른 참조
 
-이 문서는 vISA API·매핑 연산자·명령어 빠른참조(치트시트)입니다.
+이 문서는 vISA API·매핑 연산자·명령어 빠른 참조입니다.
 
 > 이름은 모두 `furiosa-opt` v0.2.0 소스에서 확인했습니다. 정확한 시그니처는 rustdoc(<https://developer.furiosa.ai/furiosa-opt/rustdoc/furiosa_opt_std/>)이나 `reference/examples/`를 보세요.
 
 ## 하드웨어 상수 (RNGD)
 | 항목 | 값 | 비고 |
 |---|---|---|
-| Cluster / chip | 2 | `fetch.rs:50` 하드 단언 |
-| Slice / cluster | 256 | `fetch.rs:51` 하드 단언 |
+| Cluster / chip | 2 | `fetch.rs:50` 단언 |
+| Slice / cluster | 256 | `fetch.rs:51` 단언 |
 | Lane / slice | 8 | Contraction MAC 한 행 |
 | flit | 32 byte | Collect가 정규화하는 단위 |
 | packet | 64 byte | Contraction Outer 입력 |
@@ -39,7 +39,7 @@ FURIOSA_OPT_NPUS=0,1 cargo furiosa-opt --backend npu run --release --bin NAME
 | `,` | Pair | 두 축 합침 (왼쪽이 상위), 우결합 | `m![A, B]` = `Pair<A,Pair...>` |
 | `/ n` | Stride | n으로 나눈 **바깥(블록) 인덱스** (크기=A/n) | `m![A / 8]` |
 | `% n` | Modulo | n으로 나눈 **안쪽 위치** (크기=n) | `m![A % 8]` |
-| `# n` | Padding | 하드웨어 단위 수 n으로 패딩(남는 칸=쓰레기값) | `m![A / 8 # 256]` |
+| `# n` | Padding | 하드웨어 단위 수 n으로 패딩(남는 칸=임의값) | `m![A / 8 # 256]` |
 | `= n` | Resize | 논리 크기를 n으로 자름(축소) | `m![D = 2]` |
 | `1` | Identity | 1칸짜리, Pair의 항등원 | `m![1]` |
 | `{ X }` | Escape | 타입 별칭 X를 매핑에 끼움 | `m![{ L }, { R }]` |
@@ -49,7 +49,7 @@ FURIOSA_OPT_NPUS=0,1 cargo furiosa-opt --backend npu run --release --bin NAME
 - `m![A / 8, A % 8]` ≡ `m![A]` (stride·modulo 분해, A가 8로 나눠떨어질 때).
 - 디바이스 텐서 매핑 순서: `<dtype, Chip, Cluster, Slice, (Lane), (Time), Packet/Element>`.
 - 예: `DmTensor<bf16, m![1], m![1 # 2], m![A / 8 # 256], m![A % 8]>` = 칩1·클러스터2중1·256슬라이스에 8개씩.
-- `axes![A = 2048, B = 512];` 로 축·크기 선언(중복 이름은 컴파일 에러).
+- `axes![A = 2048, B = 512];` 로 축·크기 선언(중복 이름은 컴파일 오류).
 - 나눠떨어짐은 컴파일타임 const 단언으로 검사(`Stride`: `L::SIZE % SIZE == 0`).
 
 ## 메모리 텐서 타입 & 이동 (`tensor/memory.rs`)
@@ -92,7 +92,7 @@ ctx.main.begin(dm.view())
   .cast::<OutD, OutPacket>()      // dtype 변환 (선택)
   .commit::<Element>(addr);
 ```
-- `begin`은 `ctx.main` 또는 `ctx.sub`(보통 프리페치). collect 전에 commit 부르면 **타입 에러**.
+- `begin`은 `ctx.main` 또는 `ctx.sub`(보통 프리페치). collect 전에 commit 부르면 **타입 오류**.
 
 ### Switch 토폴로지 (`engine/switch.rs`)
 `Broadcast01{slice1,slice0,time0}` · `Broadcast1{slice1,slice0}` · `Transpose{slice1,slice0}` · `InterTranspose{slice1,slice0,time0}` · `CustomBroadcast{ring_size}` (+ Transpose+Broadcast1 결합형)
@@ -120,7 +120,7 @@ pub fn my_kernel(ctx: &mut Context, x: &HbmTensor<...>) -> HbmTensor<...> { ... 
 ```
 - 컨텍스트: `ctx.main`(주 연산) · `ctx.sub`(프리페치) · `ctx.tdma`(텐서 DMA) · `ctx.pdma`(PCIe DMA). 서로 다른 컨텍스트는 **병렬**, 같은 컨텍스트는 직렬.
 - 스케줄러는 **재배치 안 함**(작성 순서 그대로). 해저드(RAW/WAR/WAW)는 주소 분석으로 자동 대기 삽입. **주소는 사람이 배정**(겹치면 안 됨).
-- 더블버퍼링: TRF `FirstHalf`↔`SecondHalf` 번갈아 → sub가 채우는 동안 main이 읽음.
+- 이중 버퍼링: TRF `FirstHalf`↔`SecondHalf` 번갈아 → sub가 채우는 동안 main이 읽음.
 - ⚠️ 같은 뱅크 64회 충돌 → **클러스터 리셋(치명)**. (`memory-performance.md`)
 
 ## dtype (`scalar.rs`, `cast.rs`)

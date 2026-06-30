@@ -32,9 +32,9 @@ vISA에서 "계산"은 Tensor Unit이 하지만, 그 전에 데이터를 올바�
 
 칩당 피크 대역폭은 다음과 같습니다 (docs/src/moving-tensors/memory-performance.md:9): DM 2 TB/s, SPM 2 TB/s, HBM 1.5 TB/s. DM은 칩당 256MB SRAM(작업 메모리), HBM은 칩당 48GB DRAM(대용량 저장)입니다.
 
-여기에 더해 계산 엔진에 직접 붙는 레지스터파일이 두 개 있습니다 (docs/src/moving-tensors/memory-performance.md:158): TRF는 `.to_trf()`로 채우고 Contraction 엔진이 매 사이클 읽으며, VRF는 `.to_vrf()`로 채우고 Vector 엔진이 매 사이클 읽습니다. 이 둘은 전용 이동 엔진이 아니라 Tensor Unit 프리미티브가 채우므로 "Computing Tensors" 장에서 다룹니다 (docs/src/moving-tensors/index.md:9).
+여기에 더해 계산 엔진에 직접 붙는 레지스터파일이 두 개 있습니다 (docs/src/moving-tensors/memory-performance.md:158): TRF는 `.to_trf()`로 채우고 Contraction 엔진이 매 사이클 읽으며, VRF는 `.to_vrf()`로 채우고 Vector 엔진이 매 사이클 읽습니다. 이 둘은 전용 이동 엔진이 아니라 Tensor Unit 기본 연산가 채우므로 "Computing Tensors" 장에서 다룹니다 (docs/src/moving-tensors/index.md:9).
 
-DM과 SPM은 둘 다 온칩 SRAM이고 문서화된 지연/용량 차이는 없습니다. 차이는 용도(그리고 그에 따른 컴파일러 할당 정책)뿐입니다 (docs/src/moving-tensors/memory-performance.md:142). DM은 파이프라인을 흐르는 텐서의 일반 작업 메모리이고, SPM은 컴파일러가 명시적으로 고른 "작고 자주 재사용되는 값"(스칼라 상수, 활성화함수 룩업테이블, DMN별 소규모 작업셋)을 두는 곳입니다. DM에서 매번 다시 읽어오기 싫은 데이터를 옆에 staging해 두는 용도라고 보면 됩니다. 각 DMN이 전용 SPM을 가져서 DMN 간 경합이 없고 128 B/cycle을 냅니다.
+DM과 SPM은 둘 다 온칩 SRAM이고 문서화된 지연/용량 차이는 없습니다. 차이는 용도(그리고 그에 따른 컴파일러 할당 정책)뿐입니다 (docs/src/moving-tensors/memory-performance.md:142). DM은 파이프라인을 흐르는 텐서의 일반 작업 메모리이고, SPM은 컴파일러가 명시적으로 고른 "작고 자주 재사용되는 값"(스칼라 상수, 활성화함수 룩업테이블, DMN별 소규모 작업셋)을 두는 곳입니다. DM에서 매번 다시 읽어오기 싫은 데이터를 옆에 임시 저장해 두는 용도라고 보면 됩니다. 각 DMN이 전용 SPM을 가져서 DMN 간 경합이 없고 128 B/cycle을 냅니다.
 
 ---
 
@@ -76,9 +76,9 @@ access_size가 클수록 패킷당 접근 횟수가 적어 좋습니다. 대부�
 - 브로드캐스트(Broadcast): Time/Packet에는 있는데 Buf에는 없는 축은 stride `: 0` 엔트리가 되어 같은 주소를 반복 방문. P가 브로드캐스트면 공간 브로드캐스트(패킷 안에서 같은 원소 복제), T면 시간 브로드캐스트(시간축으로 같은 데이터 반복) (docs/src/moving-tensors/sequencer.md:344). 부분 축 fragment(`N / 512` 등)가 Buf에 없을 때도 똑같이 적용됩니다.
 - 엔트리 병합(Merging): 하드웨어는 엔트리 최대 8개만 허용하므로, 변환이 9개 이상을 만들면 컴파일러가 인접한 연속 엔트리를 병합합니다. `(n1:s1)`과 `(n2:s2)`는 `s1 == n2 * s2`일 때 `(n1*n2 : s2)`로 합쳐집니다 (docs/src/moving-tensors/sequencer.md:380). 병합은 time/packet 경계도 넘을 수 있습니다(예: `W/8%2 (2:8)`와 `W%8 (8:1)`이 `W%16 (16:1)`로).
 
-### 2.5 제약 (어기면 컴파일 에러)
+### 2.5 제약 (어기면 컴파일 오류)
 
-RNGD에서 다음 하드웨어 한계를 넘으면 컴파일 에러입니다 (docs/src/moving-tensors/sequencer.md:493):
+RNGD에서 다음 하드웨어 한계를 넘으면 컴파일 오류입니다 (docs/src/moving-tensors/sequencer.md:493):
 - 엔트리 한계: 최대 8개 (그래서 병합)
 - 반복 한계: 엔트리당 `size <= 65,536`
 - 패킷 크기: 1, 2, 4, 8, 16, 32 바이트 중 하나
@@ -96,7 +96,7 @@ RNGD에서 다음 하드웨어 한계를 넘으면 컴파일 에러입니다 (do
 
 ## 3. Fetch 엔진 — DM에서 파이프라인으로
 
-Fetch 엔진은 두 단계입니다 (docs/src/moving-tensors/fetch-engine.md:3): Fetch Sequencer(슬라이스별 시퀀서로 DM을 읽어 패킷 스트림 생성)와 Fetch Adapter(선택적 원소별 변환).
+Fetch 엔진은 두 단계입니다 (docs/src/moving-tensors/fetch-engine.md:3): Fetch Sequencer(슬라이스별 시퀀서로 DM을 읽어 패킷 스트림 생성)와 Fetch Adapter(선택적 원소 단위 변환).
 
 ### 3.1 인터페이스와 핵심 제약
 
@@ -107,7 +107,7 @@ Fetch 엔진은 두 단계입니다 (docs/src/moving-tensors/fetch-engine.md:3):
 pub fn fetch<D2: Scalar, Time2: M, Packet2: M>(self) -> FetchTensor<...>
     where D: FetchCast<D2>
 ```
-출력 타입 파라미터로 시퀀서와 어댑터를 동시에 설정합니다: `D2`는 타입 캐스팅(i8→i32 등), `Time2`는 출력 스트림의 시간 스텝 수, `Packet2`는 패킷 안 원소 레이아웃입니다. 컴파일러가 나머지 하드웨어 설정을 출력 타입에서 유도합니다 (docs/src/moving-tensors/fetch-engine.md:23).
+출력 타입 파라미터로 시퀀서와 어댑터를 동시에 설정합니다: `D2`는 타입 캐스팅(i8→i32 등), `Time2`는 출력 스트림의 시간 단계 수, `Packet2`는 패킷 안 원소 레이아웃입니다. 컴파일러가 나머지 하드웨어 설정을 출력 타입에서 유도합니다 (docs/src/moving-tensors/fetch-engine.md:23).
 
 `.fetch()`는 Chip, Cluster, Slice 차원을 입력에서 그대로 보존합니다. 각 슬라이스가 자기 DM 파티션을 독립적으로 읽기 때문입니다 (docs/src/moving-tensors/fetch-engine.md:20).
 
@@ -135,7 +135,7 @@ Fetch 처리량은 세 가지로 결정됩니다 (docs/src/moving-tensors/fetch-
 
 ### 3.5 Fetch Adapter — 네 단계 변환
 
-어댑터는 시퀀서 패킷에 원소별 변환을 가합니다. main-context는 네 단계 전부, sub-context는 zero-point만 지원합니다 (docs/src/moving-tensors/fetch-engine.md:191).
+어댑터는 시퀀서 패킷에 원소 단위 변환을 적용합니다. main-context는 네 단계 전부, sub-context는 zero-point만 지원합니다 (docs/src/moving-tensors/fetch-engine.md:191).
 
 (1) 마스킹: 패딩된 원소를 중립값으로 덮어 다운스트림에 영향 없게 합니다. 패딩이 필요한 이유는 TU 내부 데이터 경로가 고정폭 단위(32바이트 flit = 8원소 × 32비트)로 동작하므로, 크기가 flit 폭의 배수가 아닌 축은 올림(예: 63→64)됩니다. 마스킹 없으면 패딩 슬롯이 임의값이라 sum/max 같은 리덕션이 망가집니다 (docs/src/moving-tensors/fetch-engine.md:196). 설정은 세 파라미터로 합니다: `last_dim`(마스킹할 차원 인덱스, 0이 가장 안쪽), `left_pad`(왼쪽에서 0으로 만들 개수), `last_dim_rightmost_valid_count[0]`(오른쪽에서 0으로 만들 개수; 4비트 타입 0-255, f32 0-31로 제한 — 최종 패킷이 256바이트 안에 있어야 하므로). 패딩 모양에 따라 세 경우가 있습니다 (그림 fetch-engine-padding-1/2/3.png):
   - 경우 1: 가장 안쪽 축에 연속된 왼쪽 패딩 하나 + 오른쪽 패딩 하나. 예: A=32,B=90, Element=m![A,B#96], lpad=2, rightmost_valid=4 → `(#2 + B + #4)`의 앞 2·뒤 4 값이 0 (docs/src/moving-tensors/fetch-engine.md:229).
@@ -152,7 +152,7 @@ Fetch 처리량은 세 가지로 결정됩니다 (docs/src/moving-tensors/fetch-
 
 ## 4. Commit 엔진 — 파이프라인에서 DM으로
 
-Commit은 Fetch의 거울상이지만 역방향입니다 (docs/src/moving-tensors/commit-engine.md:15). 두 단계: Commit Adapter(원소별 연산)와 Commit Sequencer(슬라이스별 DM 쓰기).
+Commit은 Fetch의 거울상이지만 역방향입니다 (docs/src/moving-tensors/commit-engine.md:15). 두 단계: Commit Adapter(원소 단위 연산)와 Commit Sequencer(슬라이스별 DM 쓰기).
 
 ### 4.1 인터페이스와 검증
 
@@ -274,7 +274,7 @@ PCIe DMA (docs/src/moving-tensors/dma-engine.md:574): host 시스템 메모리 �
 
 기하 (docs/src/moving-tensors/memory-performance.md:30): 칩당 256MB, 클러스터 2/칩, DMN 8/클러스터, 슬라이스 32/DMN, 뱅크 16/슬라이스, row 4096/뱅크, 8바이트/row. 슬라이스 하나는 512KB SRAM에 16개 병렬 뱅크(각 8바이트)로 총 128 B/cycle. 개별 뱅크 접근은 직렬이지만 주소 공간이 연속 128바이트를 16뱅크에 8바이트씩 분산해 병렬 접근을 가능케 합니다. DM 주소 비트: 0~2 byte, 3~6 bank, 7~18 row (docs/src/moving-tensors/memory-performance.md:53). 그래서 연속 주소가 서로 다른 뱅크로 가 순차 스캔 시 병렬 접근이 됩니다.
 
-DMN/슬라이스 인터리빙 (docs/src/moving-tensors/memory-performance.md:62): DMN 하나는 128 B/cycle뿐(32 슬라이스가 데이터 경로 공유)이라 표준 256바이트 전송 단위는 DMN당 2사이클이 듭니다. 두 DMN에 파이프라인하면 연속 처리량이 유지됩니다. 슬라이스는 DMA/Fetch/Commit이 공유하므로 32 슬라이스에 요청을 퍼뜨리면 경합이 줍니다. 각 슬라이스는 2-entry 명령 큐를 가지며, M개 슬라이스에 분산하면 슬라이스당 필요 처리량이 1/M로 떨어집니다.
+DMN/슬라이스 인터리빙 (docs/src/moving-tensors/memory-performance.md:62): DMN 하나는 128 B/cycle뿐(32 슬라이스가 데이터 경로 공유)이라 표준 256바이트 전송 단위는 DMN당 2사이클이 듭니다. 두 DMN을 교대로 사용하면 연속 처리량이 유지됩니다. 슬라이스는 DMA/Fetch/Commit이 공유하므로 32 슬라이스에 요청을 퍼뜨리면 경합이 줍니다. 각 슬라이스는 2-entry 명령 큐를 가지며, M개 슬라이스에 분산하면 슬라이스당 필요 처리량이 1/M로 떨어집니다.
 
 ### 6.2 뱅크 기아 — 가장 위험한 함정
 
@@ -306,7 +306,7 @@ tCCD (Column-to-Column Delay) (docs/src/moving-tensors/memory-performance.md:269
 
 | 이름 | 쓰는 법 | 설명 | 출처 |
 |---|---|---|---|
-| `TuTensor::fetch` | `fn fetch<D2: Scalar, Time2: M, Packet2: M>(self) -> FetchTensor<...> where D: FetchCast<D2>` | BeginTensor를 패킷 스트림으로. D2=타입캐스트, Time2=시간 스텝, Packet2=패킷 레이아웃. Cluster=2/Slice=256/8바이트정렬 검증. | `furiosa-opt-std/src/engine/fetch.rs:35` |
+| `TuTensor::fetch` | `fn fetch<D2: Scalar, Time2: M, Packet2: M>(self) -> FetchTensor<...> where D: FetchCast<D2>` | BeginTensor를 패킷 스트림으로. D2=타입캐스트, Time2=시간 단계, Packet2=패킷 레이아웃. Cluster=2/Slice=256/8바이트정렬 검증. | `furiosa-opt-std/src/engine/fetch.rs:35` |
 | `ctx.main.begin_interleaved` | `ctx.main.begin_interleaved::<I, _, _, _, _, _>(lhs.view(), rhs.view()).fetch()` | 매핑 같은 두 텐서를 한 페치로 교대. 최대 2개. I=2 축이 교대를 인코딩. | `docs/src/moving-tensors/fetch-engine.md:127` |
 | `fetch_with_table / fetch_with_zero_point(s)` | `input.fetch_with_table(table); input.fetch_with_zero_point(zp); input.fetch_with_zero_points([zp1,zp2])` | Fetch Adapter: 룩업테이블(Sigmoid/GeLU/MXFP4), 비대칭 양자화 zero-point 빼기(텐서별 가능). | `docs/src/moving-tensors/fetch-engine.md:301` |
 | `TuTensor::commit / commit_view` | `fn commit<Element: M>(self, address: Address) -> DmTensor<...>; fn commit_view<Element>(self, dst: DmTensorViewMut)` | 스트림을 DM에. Element가 Time/Packet 대체하며 Time 재배열로 전치 가능. 입력=32B flit, 출력=8/16/24/32B. | `furiosa-opt-std/src/engine/commit.rs:27` |
@@ -488,7 +488,7 @@ write_size=gcd(valid_size, access_size)=gcd(32,8)=8. 패킷당 write=valid_size/
 ## 6. 핵심 정리 & 다음
 
 기억할 사실:
-- 세 이동 엔진의 역할: Fetch = DM→Tensor Unit 스트림, Commit = Tensor Unit 스트림→DM, DMA = DM·SPM·HBM 중 임의 두 계층 직접 이동. TRF/VRF는 이동 엔진이 아니라 TU 프리미티브가 채움. (`docs/src/moving-tensors/index.md:4`)
+- 세 이동 엔진의 역할: Fetch = DM→Tensor Unit 스트림, Commit = Tensor Unit 스트림→DM, DMA = DM·SPM·HBM 중 임의 두 계층 직접 이동. TRF/VRF는 이동 엔진이 아니라 TU 기본 연산가 채움. (`docs/src/moving-tensors/index.md:4`)
 - 칩당 메모리 피크 대역폭: DM 2 TB/s, SPM 2 TB/s, HBM 1.5 TB/s. (`docs/src/moving-tensors/memory-performance.md:9`)
 - Sequencer Config 한계: 엔트리 최대 8개, 엔트리당 size <= 65,536, 패킷 크기는 1/2/4/8/16/32 바이트 중 하나, 가장 안쪽 엔트리는 연속((s==0||s==1)&&n%packet_size==0) 또는 이산(packet_size==1) 접근. (`docs/src/moving-tensors/sequencer.md:493`)
 - access_size = gcd(Packet::SIZE, contiguous_run); contiguous_run은 인접 엔트리가 s_outer == n_inner*s_inner일 때까지 곱해 나간 가장 안쪽 연속 구간 길이. (`docs/src/moving-tensors/sequencer.md:143`)

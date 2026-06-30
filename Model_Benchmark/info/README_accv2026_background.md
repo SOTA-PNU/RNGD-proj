@@ -20,7 +20,7 @@
    `vector_clip`(클램프)이 있습니다(Vector는 i32/f32만 처리, widening은 Contraction이 담당).
    → 한마디로 **"하드웨어는 정밀도를 사람이 통제할 수 있게 설계돼 있다."**
 2. **그런데 우리가 실제로 쓰는 고수준 경로(`furiosa.torch`)엔 그 손잡이가 0개입니다.** 직접
-   실측해 보니([info/README_vision_compile.md] 한계 ③) 학습된 CNN이 감소정밀도 로워링으로
+   실측해 보니([info/README_vision_compile.md] 한계 ③) 학습된 CNN이 저정밀도 로워링으로
    **top-1 ~0%로 붕괴**(모든 사진을 "window screen"으로)하는데, `compiler_config`에 정밀도/양자화
    필드가 하나도 없어 끌 방법이 없었습니다.
 3. **simulation 백엔드가 있습니다.** NPU 없이 호스트에서 커널을 수치로 돌려 검증할 수 있어,
@@ -31,7 +31,7 @@
 위 1·2를 나란히 놓으면 **간극**이 보입니다 — *하드웨어는 정밀도를 제어할 수 있는데(주소에서 확인),
 고수준 경로는 그 제어를 막아 학습 모델을 망가뜨린다(우리 실측).* 이 간극을 메우는 것이 주제입니다:
 
-> "감소정밀도 NPU에서 학습 CNN이 왜 붕괴하는지 진단하고, **하드웨어 정밀도 모델 하에서 per-channel
+> "저정밀도 NPU에서 학습 CNN이 왜 붕괴하는지 진단하고, **하드웨어 정밀도 모델 하에서 per-channel
 > 고정소수점(int8) 스케일·클립을 최적화**해 ImageNet 정확도를 되살린다."
 
 메커니즘 상세(누적은 넓고 손실은 operand cast → 단순 float 재스케일은 무효, 제어된 int8 +
@@ -81,7 +81,7 @@ clipping이 레버, 도구는 vISA Cast/`vector_fxp`)는 [paper_plan §2]에 있
 ### C. RNGD/TCP 하드웨어 정밀도 모델
 - **무엇:** Contraction(Broadcast·Multiply·Reduce, i4/i8→i32·f8/bf16→f32), Cast 엔진,
   Vector 엔진(`vector_fxp`·`vector_clip`·intra/inter-slice reduce, i32/f32 처리), SRAM 계층,
-  8-lane Contraction cap·8-tile 정렬, ~0.23% matmul 감소정밀도.
+  8-lane Contraction cap·8-tile 정렬, ~0.23% matmul 저정밀도.
 - **왜:** Q_npu surrogate를 *추측이 아니라 사양에 맞춰* 세우고, 온칩 복구(M5b)를 설계하려면.
 - **레퍼런스:** furiosa-opt book — contraction-engine / cast-engine / vector-engine /
   2d-convolution / scheduling(<https://developer.furiosa.ai/furiosa-opt/book/>) · 우리

@@ -1,6 +1,6 @@
 # 09 · 타일링과 분할 전략
 
-이 문서는 vISA 커리큘럼 모듈 09입니다. DM 용량(512KB/slice)을 넘는 워크로드를 시간·공간으로 쪼개는 법: 타일링, split-K, 그리고 chip/cluster reduce(손으로 짜는 ReduceScatter)를 matmul 예제로 봅니다.
+이 문서는 vISA 커리큘럼 모듈 09입니다. DM 용량(512KB/slice)을 넘는 작업를 시간·공간으로 쪼개는 법: 타일링, split-K, 그리고 chip/cluster reduce(손으로 짜는 ReduceScatter)를 matmul 예제로 봅니다.
 *선행: 04 텐서 축약, 06 연산 엔진 I · 예상 시간: 하루*
 
 ## 학습 목표
@@ -44,7 +44,7 @@
 
 여기서 중요한 직관 하나: **reduce(합산) 축을 어느 차원에 배치하느냐가 곧 성능을 결정**합니다. 같은 행렬곱이라도 reduce할 축(K축)을 Packet/Time/Slice에 두면 칩 안에서 싸게 끝나지만, Chip/Cluster에 두면 칩 사이 통신(DMA)이 필요해서 비쌉니다. 그래서 문서는 "가능하면 reduce 축은 Slice/Element에 두라"고 권합니다 (`docs/src/kernel-examples/chip-cluster-reduce.md:314`).
 
-`quick-start.md:284`도 같은 말을 합니다: 512KB/slice를 넘는 워크로드에는 두 전략이 있다 — temporal은 타일을 시간순으로, spatial은 타일을 병렬 유닛으로.
+`quick-start.md:284`도 같은 말을 합니다: 512KB/slice를 넘는 작업에는 두 전략이 있다 — temporal은 타일을 시간순으로, spatial은 타일을 병렬 유닛으로.
 
 ## 2. 타일링 (Tiling)
 
@@ -61,7 +61,7 @@
 타일 크기가 모든 걸 결정합니다 (`tiling.md:23`). 조건은:
 - VRF(8KB) / DM 용량에 맞을 것,
 - 정렬 제약(32바이트 flit)을 만족할 것,
-- fetch와 compute를 겹치려면(더블 버퍼링) 여유 공간을 남길 것.
+- fetch와 compute를 겹치려면(이중 버퍼링) 여유 공간을 남길 것.
 
 타일 크기가 정해지면 실행은 4단계입니다 (`tiling.md:24`): (1) 바깥 차원에서 타일 루프, (2) HBM→DM로 타일 fetch, (3) 계산, (4) 부분 결과 누적 후 write-back.
 
@@ -168,13 +168,13 @@ reduce 축이 `Chip`/`Cluster`에 걸쳐 있으면 칩 간에 부분 결과를 �
 - Step5: VE add로 T0+T1+T2+T3 → A축 소거,
 - Step6: AllGather로 필요한 분배.
 
-대각 슬라이스가 핵심인 이유: "각 출력 원소에 필요한 데이터를 모든 칩에서 미리 모아둬서 통신 라운드를 최소화"하기 위함입니다 (`chip-cluster-reduce.md:185`).
+대각 슬라이스가 핵심인 이유: "각 출력 원소에 필요한 데이터를 모든 칩에서 미리 모아둬서 통신 횟수를 최소화"하기 위함입니다 (`chip-cluster-reduce.md:185`).
 
 ### 4.3 AllReduce — 균일 회전
 
 AllReduce는 ReduceScatter와 달리 **모든 칩이 동일한 전체 결과**를 갖습니다(데이터 병렬 학습의 gradient 평균 등). 대각이 아니라 균일 ChipShuffle 회전을 씁니다 (`chip-cluster-reduce.md:188-312`): 원본 T0에 회전 3번으로 T1,T2,T3을 만들고 넷을 더하면 모든 칩이 같은 합을 얻습니다(덧셈 교환법칙). n칩이면 회전 n-1번 (8칩=7번, 16칩=15번).
 
-### 4.4 구현 프리미티브 3종 (`chip-cluster-reduce.md:316-339`)
+### 4.4 구현 기본 연산 3종 (`chip-cluster-reduce.md:316-339`)
 
 - **Asymmetric Slice(비대칭 슬라이스)**: 서브컨텍스트에서 `ParallelCopy`(`stos` = Store to SRAM)로 구현. 특정 칩 위치에서 일부 원소만 골라 복사. main 계산과 겹쳐 실행 가능.
 - **Shuffle**: 칩 내부는 `DmaCommand`(HBM↔HBM), 칩 간은 `PCIeDmaCommand`. 칩 간 데이터 이동이라 chip/cluster reduce의 주요 비용. 수백~수천 cycle.
@@ -357,9 +357,9 @@ cd <furiosa-opt 워크스페이스 루트> && cargo furiosa-opt test --release -
 ```bash
 cd <워크스페이스 루트> && cargo furiosa-opt check --release -p furiosa-opt-examples
 ```
-**관찰** — 에러 없이 통과. tile/fetch/collect/commit/parallel_copy/shuffle의 모든 m![...] 매핑이 나눠떨어짐(assert_div)과 모양 일치를 만족한다는 뜻.
+**관찰** — 오류 없이 통과. tile/fetch/collect/commit/parallel_copy/shuffle의 모든 m![...] 매핑이 나눠떨어짐(assert_div)과 모양 일치를 만족한다는 뜻.
 
-**심화** — matmul_chip_reduce.rs:80의 parallel_copy_chip_slice 인덱스 &[0,1,2,3]를 &[0,1,2]로 줄여보라(CHIP_DIM=4와 배열 길이 불일치). 컴파일 에러가 어디서 나는지 확인.
+**심화** — matmul_chip_reduce.rs:80의 parallel_copy_chip_slice 인덱스 &[0,1,2,3]를 &[0,1,2]로 줄여보라(CHIP_DIM=4와 배열 길이 불일치). 컴파일 오류가 어디서 나는지 확인.
 
 ### 실험 09.3 — chip-reduce의 ChipShuffle 회전 패턴을 깨고 결과 오류 예측
 *난이도 3/5 · 기반: `furiosa-opt-examples/src/matmul/matmul_chip_reduce.rs`*

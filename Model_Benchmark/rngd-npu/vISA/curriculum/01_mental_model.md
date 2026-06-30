@@ -1,4 +1,4 @@
-# 01 · 멘탈 모델과 큰 그림
+# 01 · 큰 그림과 전체 구조
 
 이 문서는 vISA 커리큘럼 모듈 01입니다. vISA가 무엇이고 왜 존재하는지, RNGD 하드웨어 계층·Tensor Unit 파이프라인·메모리 계층·실행 컨텍스트·수학 배경(텐서 수축)·4개 백엔드, 그리고 5개 quick-start 커널의 큰 그림을 잡습니다.
 *선행: 없음 (여기서 시작) · 예상 시간: 40분*
@@ -23,11 +23,11 @@ FuriosaAI의 가속기는 이름이 TCP, 즉 Tensor Contraction Processor 입니
 - 저수준 커널 API: 바이트 단위로 주소를 계산해야 하는 세계입니다. 강력하지만 너무 번거롭습니다.
 - vISA: 그 중간입니다. "텐서 단위로 생각하면서도, 메모리 할당과 Tensor Unit 스케줄링은 내가 직접 제어"합니다 (introduction.md:7). 즉 byte 단위 reasoning 없이도 직접 제어권을 줍니다 (introduction.md:4).
 
-우리 프로젝트 맥락에서 한 가지를 분명히 해두면 좋습니다. furiosa-llm의 컴파일러는 닫힌(closed) 미리 빌드된 바이너리라 우리가 손댈 수 없고, 그 컴파일러가 만드는 EDF 포맷(CBOR 그래프)으로만 serve 게이트를 통과합니다. 반면 vISA는 furiosa-opt-std 라는 공개 Rust API로, RNGD의 저수준 커널을 직접 작성할 수 있게 열어 줍니다. 다만 vISA가 만드는 산출물 포맷(.bin, pert-ipc)은 furiosa-llm의 .edf와 서로 달라서, vISA로 짠 것을 정식 serve 스택에 주입하지는 못합니다. 같은 칩을 향하는 "다른 경로"라고 이해하면 됩니다. 이 강의는 그 다른 경로, 즉 vISA 자체를 처음부터 배우는 자리입니다.
+우리 프로젝트 맥락에서 한 가지를 분명히 해두면 좋습니다. furiosa-llm의 컴파일러는 비공개(closed) 미리 빌드된 바이너리라 우리가 손댈 수 없고, 그 컴파일러가 만드는 EDF 포맷(CBOR 그래프)으로만 serve 게이트를 통과합니다. 반면 vISA는 furiosa-opt-std 라는 공개 Rust API로, RNGD의 저수준 커널을 직접 작성할 수 있게 열어 줍니다. 다만 vISA가 만드는 산출물 포맷(.bin, pert-ipc)은 furiosa-llm의 .edf와 서로 달라서, vISA로 짠 것을 정식 serve 스택에 주입하지는 못합니다. 같은 칩을 향하는 "다른 경로"라고 이해하면 됩니다. 이 강의는 그 다른 경로, 즉 vISA 자체를 처음부터 배우는 자리입니다.
 
 대상 독자는 두 부류입니다 (introduction.md:8). vISA를 손으로 직접 쓰는 프로그래머, 그리고 vISA를 자동 생성하는 컴파일러를 만드는 개발자입니다. 둘 다 기본적인 Rust 지식을 전제합니다 (introduction.md:9). vISA 프로그램은 결국 "furiosa-opt-std API를 쓰는 평범한 Rust 프로그램"이기 때문입니다 (introduction.md:114).
 
-한 가지 주의: 이 빌드는 알파 테스트, 실험적이고 미완성인 소프트웨어입니다 (introduction.md:13-15). 프로덕션에 쓰기 전에는 Furiosa 엔지니어와 상의해야 합니다.
+한 가지 주의: 이건 알파 단계의 실험적이고 미완성인 소프트웨어입니다 (introduction.md:13-15). 프로덕션에 쓰기 전에는 Furiosa 엔지니어와 상의해야 합니다.
 
 ## 2. 수학 배경 — 텐서, 모양(shape), 텐서 수축, einsum
 
@@ -45,12 +45,12 @@ TCP를 이해하려면 먼저 이 칩이 "텐서 네이티브" 프로세서라�
 
 ### 텐서 수축(tensor contraction) = 행렬곱의 일반화
 
-텐서 수축은 행렬곱을 임의의 텐서로 일반화한 것입니다 (quick-start.md:29). 정의는 단순합니다. 두 입력 텐서를 원소별로 곱한 뒤, 둘이 공유하는(수축되는) 축을 따라 합칩니다.
+텐서 수축은 행렬곱을 임의의 텐서로 일반화한 것입니다 (quick-start.md:29). 정의는 단순합니다. 두 입력 텐서를 원소 단위로 곱한 뒤, 둘이 공유하는(수축되는) 축을 따라 합칩니다.
 
 그리고 **모든 수축은 정확히 세 단계로 분해됩니다: Broadcast → Multiply → Reduce** (quick-start.md:30). 이 세 단계가 나중에 하드웨어 엔진들과 거의 1:1로 대응되기 때문에 꼭 기억해야 합니다.
 
 - Broadcast: 한쪽에만 있는 축을 다른 쪽으로 펼칩니다.
-- Multiply: 원소별 곱셈.
+- Multiply: 원소 단위 곱셈.
 - Reduce: 공유 축을 따라 더해서 그 축을 없앱니다.
 
 이걸 짧게 적는 표기법이 einsum 입니다 (quick-start.md:31). 규칙은: 각 입력 텐서를 그 축 라벨로 나열하고, `→` 뒤에 출력 축을 적고, 입력에는 있는데 출력에 없는 축이 곧 수축되는 축입니다.
@@ -88,7 +88,7 @@ Tensor Unit은 온칩 연산 파이프라인입니다. DM에서 텐서를 읽어
 - Switch(Switching): 데이터를 슬라이스 사이로 이동시킵니다. 링(ring) 네트워크를 쓰며, 유일하게 Slice를 바꿀 수 있습니다 (quick-start.md:59). 대부분 엔진은 슬라이스 안에서 독립적으로 동작하는데, Switch만 슬라이스들을 연결해 데이터를 슬라이스 배열 전체에 퍼뜨립니다.
 - Collect: 들어온 패킷들을 정확히 32바이트짜리 flit으로 정규화합니다. 출력은 정확히 flit 하나입니다 (computing-tensors/index.md:10, 43). 이 32바이트 flit이 그 아래 모든 엔진(Contraction, Vector, Cast, Transpose, Commit)이 다루는 단위입니다 (computing-tensors/index.md:11).
 - Contraction: einsum, 즉 matmul·convolution·attention을 수행합니다. 한 피연산자는 TRF에 상주하고 다른 하나는 스트림으로 흘러 들어옵니다.
-- Vector: 원소별·이항·리듀스 연산. 입력은 i32 또는 f32만 받습니다 (이건 중요한 제약입니다).
+- Vector: 원소 단위·이항·리듀스 연산. 입력은 i32 또는 f32만 받습니다 (이건 중요한 제약입니다).
 - Cast: 정밀도 낮추기(예: f32 → bf16)를 배치로 수행합니다. 출력은 정확히 flit 하나.
 - Transpose: flit 안에서만 원소를 재배열합니다(within-flit only).
 - Commit: 결과를 DM에 다시 씁니다. flit 정렬된 쓰기.
@@ -116,7 +116,7 @@ Tensor Unit 안을 흐르는 모든 텐서 스트림은 다섯 차원 `[Chip, Cl
 
 머릿속 그림은 이렇습니다. 큰 데이터는 HBM에 있고 → DMA로 DM(빠른 온칩 작업 메모리)으로 옮긴 뒤 → 파이프라인이 DM에서 읽어 계산하고 → 다시 DM에 쓰고 → DMA로 HBM으로 보냅니다. TRF/VRF는 파이프라인 도중 "한쪽 피연산자를 슬라이스마다 상주시켜 매 사이클 읽는" 아주 작고 빠른 칸입니다.
 
-용량 감각도 중요합니다. DM은 슬라이스당 512 KB뿐이라, 큰 워크로드는 DM 용량을 넘깁니다. 그래서 타일링이 필요합니다 (quick-start.md:282-284): 시간적 분할(temporal partitioning)은 타일을 시간 순서로 처리하고, 공간적 분할(spatial partitioning)은 타일을 병렬 하드웨어 유닛에 펼칩니다.
+용량 감각도 중요합니다. DM은 슬라이스당 512 KB뿐이라, 큰 작업는 DM 용량을 넘깁니다. 그래서 타일링이 필요합니다 (quick-start.md:282-284): 시간적 분할(temporal partitioning)은 타일을 시간 순서로 처리하고, 공간적 분할(spatial partitioning)은 타일을 병렬 하드웨어 유닛에 펼칩니다.
 
 ## 6. 텐서 매핑 — 타입으로 표현하는 하드웨어 분배
 
@@ -150,7 +150,7 @@ DmTensor<bf16, m![1], m![1 # 2], m![A / 8 # 256], m![A % 8]>
 
 동기화 규칙(quick-start.md:99): main이 필요한 피연산자를 sub가 아직 가져오는 중이면, main이 자동으로 sub의 완료를 기다립니다. 즉 정확성은 보장됩니다.
 
-스케줄링 규칙(computing-tensors/index.md:77-82): 한 컨텍스트 안에서는 연산이 직렬화되고, 서로 다른 컨텍스트끼리는 병렬로 돕니다. 그래서 sub가 다음 배치를 TRF/VRF로 미리 채우는 동안 main이 현재 배치를 계산하는 더블 버퍼링(double-buffering), DMA가 독립적으로 대량 이동을 겹치는 오버랩(overlap)이 가능합니다. 단, 일부 엔진은 한 번에 한 컨텍스트만 구동할 수 있는 "하나의 스케줄링 단위"를 이룹니다 — 예를 들어 Vector Engine과 Cast Engine이 한 단위라서, sub가 Vector를 돌리는 동안 main은 Cast 대신 Commit Engine의 타입 캐스팅으로 우회합니다.
+스케줄링 규칙(computing-tensors/index.md:77-82): 한 컨텍스트 안에서는 연산이 직렬화되고, 서로 다른 컨텍스트끼리는 병렬로 돕니다. 그래서 sub가 다음 배치를 TRF/VRF로 미리 채우는 동안 main이 현재 배치를 계산하는 이중 버퍼링(double-buffering), DMA가 독립적으로 대량 이동을 겹치는 오버랩(overlap)이 가능합니다. 단, 일부 엔진은 한 번에 한 컨텍스트만 구동할 수 있는 "하나의 스케줄링 단위"를 이룹니다 — 예를 들어 Vector Engine과 Cast Engine이 한 단위라서, sub가 Vector를 돌리는 동안 main은 Cast 대신 Commit Engine의 타입 캐스팅으로 우회합니다.
 
 메모리 주의(quick-start.md:101-102): 두 컨텍스트는 같은 평평한(flat) 온칩 SRAM을 공유합니다. 그래서 프로그래머가 DM 주소를 명시적으로 배정해 텐서끼리 겹치지 않게 해야 합니다. 이게 `.to_dm()`, `.commit()` 의 `addr` 인자입니다. 주소는 충돌하면 안 되지만 비연속(non-contiguous)이어도 됩니다. 실제 커널에서 `0`, `1 << 12`, `1 << 13`, `1 << 28` 같은 서로 다른 주소가 보이는 이유가 이것입니다.
 
@@ -163,7 +163,7 @@ vISA 프로그램은 furiosa-opt-std API를 쓰는 Rust 프로그램이고, `car
 - typecheck: 커널 몸체가 phantom(빈) 텐서로 돕니다. 값 계산은 건너뛰고 모양/매핑 오류만 빠르게 잡습니다 (introduction.md:118, backend.rs:14-15). SDK·NPU 불필요.
 - simulation: 기본값. 호스트 CPU에서 매핑 표현식으로 연산을 해석하는 완전한 호스트측 해석(full host-side interpretation)입니다. 수치 정확성을 검증합니다 (introduction.md:119, backend.rs:9). SDK·NPU 불필요.
 - emulation: 미래의 Cpu+Buffer 인터프리터용 호스트측 `BufRawTensor` 저장소인데, 오늘은 값 생성 메서드가 전부 `todo!()` 플레이스홀더입니다 (backend.rs:10-11). 즉 실제로는 아직 동작하지 않습니다.
-- npu: 컴파일된 EDF를 실제 하드웨어에서 돌립니다 (introduction.md:120). 호스트 코드가 네이티브 스테이징 버퍼를 소유하고 `to_hbm`/`from_hbm`에서 DMA를 수행하지만, 호스트에서 텐서 수학을 해석하지는 않습니다 (backend.rs:12-13). 실제 NPU와 SDK가 필요합니다 (introduction.md:40).
+- npu: 컴파일된 EDF를 실제 하드웨어에서 돌립니다 (introduction.md:120). 호스트 코드가 네이티브 임시 저장 버퍼를 소유하고 `to_hbm`/`from_hbm`에서 DMA를 수행하지만, 호스트에서 텐서 수학을 해석하지는 않습니다 (backend.rs:12-13). 실제 NPU와 SDK가 필요합니다 (introduction.md:40).
 
 중요한 현실(introduction.md:42-44): simulation과 typecheck는 SDK가 전혀 필요 없고 호스트에서 NPU 의존성 없이 돕니다. 그리고 공개 SDK 배포판에는 오늘 호스트용 NPU 시뮬레이터가 없습니다. 물리 NPU가 없으면 simulation(호스트 해석) 또는 typecheck(매핑/모양 검증만)를 쓰면 됩니다. 우리 환경에서 NPU 없이 학습할 수 있는 이유가 바로 이것입니다.
 
@@ -171,7 +171,7 @@ vISA 프로그램은 furiosa-opt-std API를 쓰는 Rust 프로그램이고, `car
 
 ## 9. 프로젝트 레이아웃 (base-template)
 
-`cargo generate furiosa-ai/furiosa-opt base-template` 로 스캐폴딩하면 다섯 개 워크드 예제가 함께 옵니다 (introduction.md:48-54). 구조의 핵심(introduction.md:58-79):
+`cargo generate furiosa-ai/furiosa-opt base-template` 로 뼈대 만들기하면 다섯 개 워크드 예제가 함께 옵니다 (introduction.md:48-54). 구조의 핵심(introduction.md:58-79):
 
 - `src/furiosa-opt.tag`: rustc 플러그인이 스캔하는 마커. 반드시 `src/` 바로 아래 있어야 합니다.
 - `src/lib.rs`: `pub mod kernel;` (lib.rs:1-5).
@@ -196,7 +196,7 @@ vISA 프로그램은 furiosa-opt-std API를 쓰는 Rust 프로그램이고, `car
 
 ### (2) Elementwise Multiplication — sub 컨텍스트 + VRF (elementwise_mul_kernel.rs)
 
-같은 모양 두 벡터를 원소별로 곱합니다 (quick-start.md:148). 한 피연산자는 파이프라인을 흐르고, 다른 하나는 VRF(슬라이스별 레지스터 파일, Vector Engine이 매 사이클 읽음)에 둡니다 (quick-start.md:150).
+같은 모양 두 벡터를 원소 단위로 곱합니다 (quick-start.md:148). 한 피연산자는 파이프라인을 흐르고, 다른 하나는 VRF(슬라이스별 레지스터 파일, Vector Engine이 매 사이클 읽음)에 둡니다 (quick-start.md:150).
 
 새 개념은 sub 컨텍스트입니다 (quick-start.md:175). sub가 `rhs_dm` 을 Fetch → Collect → `.to_vrf(0)` 로 VRF에 미리 싣고(elementwise_mul_kernel.rs:20-26), main은 `lhs_dm` 을 스트림하며 `vector_fxp(FxpBinaryOp::MulInt, &rhs_vrf)` 로 VRF 짝과 곱합니다 (elementwise_mul_kernel.rs:37). 하드웨어는 가능한 만큼 두 컨텍스트를 동시에 돌립니다. 겹침 방지를 위해 lhs는 0, rhs는 `1 << 12` 에 둡니다 (elementwise_mul_kernel.rs:16-17, quick-start.md:177).
 
@@ -205,7 +205,7 @@ vISA 프로그램은 furiosa-opt-std API를 쓰는 Rust 프로그램이고, `car
 내적 `I, I → 1` 은 두 피연산자를 같은 축으로 줄이며 Broadcast가 없습니다 (quick-start.md:195). 한쪽은 파이프라인을 흐르고, 다른 하나는 TRF(Contraction Engine이 매 사이클 읽는 슬라이스별 레지스터 파일)에 고정됩니다 (quick-start.md:197). sub가 `rhs` 를 Fetch → Collect → `.to_trf(TrfAddress::Full)` 로 싣습니다(`Full` 은 TRF 전체를 이 텐서에 할당, dot_product_kernel.rs:27, quick-start.md:199).
 
 main 쪽 Contraction 4단계가 핵심입니다 (quick-start.md:201-206, dot_product_kernel.rs:36-40):
-- `.contract_outer::<m![A/32], m![A%32], _, _>(&rhs)`: Stream Adapter가 인접한 32바이트 flit 둘을 Outer 단계의 64바이트 패킷으로 짝짓고(시간 스텝 A/16→A/32로 절반), TRF Sequencer가 고정 RHS를 읽어, 레인별 원소 곱셈기에 먹입니다.
+- `.contract_outer::<m![A/32], m![A%32], _, _>(&rhs)`: Stream Adapter가 인접한 32바이트 flit 둘을 Outer 단계의 64바이트 패킷으로 짝짓고(시간 단계 A/16→A/32로 절반), TRF Sequencer가 고정 RHS를 읽어, 레인별 원소 곱셈기에 먹입니다.
 - `.contract_packet::<m![1]>()`: 그 곱들을 하드웨어 리덕션 트리로 공간적으로 더합니다.
 - `.contract_time::<m![1]>()`: 시간적으로 누산해 슬라이스당 스칼라를 만듭니다.
 - `.contract_lane::<m![1], m![1 # 8]>(LaneMode::Interleaved)`: 8개 레인을 출력으로 접습니다(여기선 Lane=m![1]이라 자명한 fold).
@@ -296,12 +296,12 @@ cd viatest && cargo furiosa-opt --backend typecheck run --release --bin dot_prod
 ```
 **관찰** — typecheck가 통과하면 contract_outer→packet→time→lane→cast→commit의 타입 사슬이 일관적이라는 뜻. 반환 타입이 HbmTensor<bf16, Chip, m![1]>(dot_product_kernel.rs:16)인 이유: contract_packet/time/lane이 A를 전부 reduce해 슬라이스당 스칼라(m![1])만 남기고 cast가 f32→bf16로 되돌린다.
 
-**심화** — dot_product_kernel.rs 주석대로 Slice를 m![1 # 256]에서 m![A / 8 # 256]로 바꾸면 타입 사슬이 깨지는지 typecheck로 확인(의도적 에러 관찰).
+**심화** — dot_product_kernel.rs 주석대로 Slice를 m![1 # 256]에서 m![A / 8 # 256]로 바꾸면 타입 사슬이 깨지는지 typecheck로 확인(의도적 오류 관찰).
 
-### 실험 01.5 — 매핑 에러 만들어 보기: Slice 개수를 일부러 틀리기
+### 실험 01.5 — 매핑 오류 만들어 보기: Slice 개수를 일부러 틀리기
 *난이도 3/5 · 기반: `base-template/src/kernel/elementwise_mul_kernel.rs`*
 
-**목표** — 타입 시스템이 하드웨어 매핑 불일치를 컴파일/타입체크 단계에서 잡아준다는 vISA의 핵심을 에러 메시지로 체험한다.
+**목표** — 타입 시스템이 하드웨어 매핑 불일치를 컴파일/타입체크 단계에서 잡아준다는 vISA의 핵심을 오류 메시지로 체험한다.
 
 ```bash
 cd viatest && sed -i 's/m!\[A \/ 8 # 256\]/m![A \/ 8 # 128]/' src/kernel/elementwise_mul_kernel.rs && cargo furiosa-opt --backend typecheck run --release --bin elementwise_mul; echo EXIT=$?
@@ -340,7 +340,7 @@ cd viatest && sed -i 's/m!\[A \/ 8 # 256\]/m![A \/ 8 # 128]/' src/kernel/element
 
 <details><summary>정답/힌트</summary>
 
-(a) main, (b) sub(prefetch가 sub의 전형 용도), (c) main. sub는 Contraction Engine과 일부 기능을 못 쓰기 때문(computing-tensors/index.md:74). main이 계산하는 동안 sub가 다음 피연산자를 채우는 더블 버퍼링 구조.
+(a) main, (b) sub(prefetch가 sub의 전형 용도), (c) main. sub는 Contraction Engine과 일부 기능을 못 쓰기 때문(computing-tensors/index.md:74). main이 계산하는 동안 sub가 다음 피연산자를 채우는 이중 버퍼링 구조.
 
 </details>
 
@@ -360,7 +360,7 @@ I와 J 두 출력 차원을 동시에 Slice에 매핑해 각 슬라이스가 16�
 
 </details>
 
-**Q7.** spot-the-error: 어떤 학습자가 bf16 두 벡터를 원소별로 곱하려고 vector_fxp(FxpBinaryOp::MulInt, &rhs_vrf)를 bf16 텐서에 그대로 썼다. 무엇이 문제이고 어떻게 고치나?
+**Q7.** spot-the-error: 어떤 학습자가 bf16 두 벡터를 원소 단위로 곱하려고 vector_fxp(FxpBinaryOp::MulInt, &rhs_vrf)를 bf16 텐서에 그대로 썼다. 무엇이 문제이고 어떻게 고치나?
 
 <details><summary>정답/힌트</summary>
 
@@ -380,7 +380,7 @@ vector_fxp는 i32 전용(Vector Engine 입력은 i32/f32만, Way8 요구). eleme
   ↳ 출처 `docs/src/introduction.md:100-102; base-template/src/constant_add.rs:34-39`
 - main과 sub가 같은 평평한 SRAM을 공유하므로 to_dm/commit의 addr를 직접 안 겹치게 줘야 한다. 그래서 lhs는 0, rhs는 1<<12, 결과는 1<<13 식으로 분리한다. 주소를 겹치면 텐서가 서로를 덮어쓴다(충돌 금지, 비연속은 허용).  
   ↳ 출처 `docs/src/quick-start.md:101-102; base-template/src/kernel/elementwise_mul_kernel.rs:16-17`
-- Vector Engine 입력은 i32 또는 f32만 받는다. vector_fxp는 i32 전용이고 Way8 모드를 요구한다. 그래서 constant_add/elementwise_mul은 i32를 쓴다. bf16 원소별 연산을 vector_fxp로 바로 하려 하면 막힌다.  
+- Vector Engine 입력은 i32 또는 f32만 받는다. vector_fxp는 i32 전용이고 Way8 모드를 요구한다. 그래서 constant_add/elementwise_mul은 i32를 쓴다. bf16 원소 단위 연산을 vector_fxp로 바로 하려 하면 막힌다.  
   ↳ 출처 `docs/src/computing-tensors/index.md:45; furiosa-opt-std/src/engine/vector/tensor/vector_tensor.rs:1128-1135`
 - host 프로그램(src/*.rs)을 src/bin/, examples/, tests/ 아래 두면 rustc 플러그인이 조용히 건너뛴다. 반드시 src/ 바로 아래 두고 Cargo.toml에 [[bin]] path="src/<name>.rs"로 명시 등록해야 한다(이 경로가 load-bearing).  
   ↳ 출처 `docs/src/introduction.md:79`
@@ -394,13 +394,13 @@ vector_fxp는 i32 전용(Vector Engine 입력은 i32/f32만, Way8 요구). eleme
 ## 6. 핵심 정리 & 다음
 
 기억할 사실:
-- TCP(Tensor Contraction Processor)는 추론 워크로드를 겨냥한 대규모 병렬 AI 가속기다. PyTorch/XLA처럼 메모리 레이아웃과 스케줄링을 숨기지 않고 직접 제어를 노출하되, 저수준 커널 API의 바이트 단위 reasoning은 요구하지 않는다. (`docs/src/introduction.md:3-4`)
+- TCP(Tensor Contraction Processor)는 추론 작업를 겨냥한 대규모 병렬 AI 가속기다. PyTorch/XLA처럼 메모리 레이아웃과 스케줄링을 숨기지 않고 직접 제어를 노출하되, 저수준 커널 API의 바이트 단위 reasoning은 요구하지 않는다. (`docs/src/introduction.md:3-4`)
 - 하드웨어 4계층(RNGD): Chip은 시스템마다 개수가 다르며 HBM을 가짐 / Cluster는 칩당 2개로 256 슬라이스를 묶음 / Slice는 클러스터당 256개로 각자 하나의 Tensor Unit을 돌림 / Lane은 슬라이스당 8개로 Contraction Engine MAC 배열의 한 행. (칩당 512 슬라이스, 4096 레인) (`docs/src/quick-start.md:47-52`)
 - 메모리 계층(RNGD 용량): HBM 48 GB·1.5 TB/s(on-package, 장기 보관) / DM 총 256 MB·슬라이스당 512 KB(온칩 SRAM, 주 작업 메모리) / SPM 크기 TBD·칩당 2 TB/s(컴파일러 관리) / TRF 레인당 8 KB(Contraction용) / VRF 슬라이스당 8 KB(Vector용). (`docs/src/quick-start.md:65-71`)
 - Tensor Unit은 고정된 8단계 파이프라인이다: Fetch → Switch → Collect → Contraction → Vector → Cast → Transpose → Commit. 데이터는 사이클당 패킷 하나씩 스트림으로 흐른다. 대부분 엔진은 슬라이스 내부에서 독립 동작하고, Switch만 슬라이스들을 연결한다. (`docs/src/quick-start.md:57-59`)
 - Collect 엔진은 들어온 패킷을 정확히 32바이트 flit으로 정규화하며 출력은 flit 하나다. 이 32바이트 flit이 하위 모든 엔진(Contraction/Vector/Cast/Transpose/Commit)이 다루는 단위다. (`docs/src/computing-tensors/index.md:10-11,43`)
 - 엔진별 핵심 제약: Fetch는 패킷 8바이트 정렬·Slice 불변 / Switch는 링 네트워크·Slice 변경 가능 / Vector는 입력이 i32 또는 f32만 / Cast는 출력 flit 하나 / Transpose는 flit 안에서만 / Commit은 flit 정렬 쓰기 / Contraction은 한 피연산자 TRF 상주·다른 하나 스트림. (`docs/src/computing-tensors/index.md:39-48`)
 - 파이프라인 스트림은 5차원 [Chip, Cluster, Slice, Time, Packet]을 가진다. Chip/Cluster/Slice는 공간 차원(슬라이스마다 독립 파이프라인), Time/Packet은 슬라이스별 스트림. 공간 차원은 Switch(Slice 변경)와 Vector의 inter-slice reducer(클러스터 내 256 슬라이스를 가로질러 합쳐 Slice 붕괴)를 제외한 모든 엔진이 보존한다. (`docs/src/computing-tensors/index.md:50-54`)
-- 실행 컨텍스트는 main(주 계산, 모든 TU 엔진 구동) / sub(동시 prefetch, Contraction 엔진과 일부 기능 제외) / DMA(TU 바깥, HBM↔DM·HBM↔SPM·DM↔SPM)의 셋이다. 한 컨텍스트 안은 직렬, 컨텍스트 간은 병렬(더블 버퍼링·오버랩). Vector와 Cast는 한 번에 한 컨텍스트만 쓰는 한 스케줄링 단위를 이룬다. (`docs/src/computing-tensors/index.md:69-82`)
+- 실행 컨텍스트는 main(주 계산, 모든 TU 엔진 구동) / sub(동시 prefetch, Contraction 엔진과 일부 기능 제외) / DMA(TU 바깥, HBM↔DM·HBM↔SPM·DM↔SPM)의 셋이다. 한 컨텍스트 안은 직렬, 컨텍스트 간은 병렬(이중 버퍼링·오버랩). Vector와 Cast는 한 번에 한 컨텍스트만 쓰는 한 스케줄링 단위를 이룬다. (`docs/src/computing-tensors/index.md:69-82`)
 
 ➡️ 다음: [02_mapping.md](./02_mapping.md)

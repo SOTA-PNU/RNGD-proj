@@ -7,7 +7,7 @@
 
 - [ ] Switch 토폴로지(Broadcast01/Broadcast1/Transpose/InterTranspose/CustomBroadcast)를 구분한다
 - [ ] Collect가 만드는 32바이트 flit과 64바이트 packet 관계를 안다
-- [ ] TRF/VRF 뱅킹과 더블버퍼링 구조를 안다
+- [ ] TRF/VRF 뱅킹과 이중 버퍼링 구조를 안다
 - [ ] Contraction 하위 단계(Outer→Packet→Time→Lane)와 2D conv 매핑을 안다
 
 ## 1. 개념
@@ -42,7 +42,7 @@ Contraction 엔진과 Vector 엔진은 **피연산자 두 개 중 하나는 파�
 - **Sub**: 같은 파이프라인의 부분집합을 구동합니다. 보통 **main이 계산하는 동안 다음 피연산자를 TRF/VRF에 미리 적재(prefetch)** 하는 용도입니다. **Sub는 Contraction 엔진을 못 씁니다**(몇 가지 기능도 빠짐) (index.md:74).
 - **DMA**: TU와 별개로 DMA 엔진만 구동합니다(HBM↔DM, HBM↔SPM, DM↔SPM).
 
-한 컨텍스트 안에서는 연산이 직렬화되지만, 컨텍스트가 다르면 병렬로 돕니다. 그래서 흔한 패턴이 **더블 버퍼링**입니다: sub가 다음 배치를 TRF에 채우는 동안 main이 현재 배치를 계산합니다 (index.md:78). 실제 커널 코드에서 `ctx.sub.begin(...).to_trf(...)`로 가중치를 올리고, `ctx.main.begin(...).contract_outer(&trf)...`로 계산하는 모습이 그대로 보입니다 (base-template/src/kernel/gemm_kernel.rs:30-46). 주의: Vector 엔진과 Cast 엔진은 "한 번에 한 컨텍스트만" 쓰는 하나의 스케줄링 단위라서, sub가 Vector를 쓰는 동안 main은 Cast 대신 Commit 엔진의 타입 캐스팅을 써서 직렬화를 피합니다 (index.md:80-82).
+한 컨텍스트 안에서는 연산이 직렬화되지만, 컨텍스트가 다르면 병렬로 돕니다. 그래서 흔한 패턴이 **이중 버퍼링**입니다: sub가 다음 배치를 TRF에 채우는 동안 main이 현재 배치를 계산합니다 (index.md:78). 실제 커널 코드에서 `ctx.sub.begin(...).to_trf(...)`로 가중치를 올리고, `ctx.main.begin(...).contract_outer(&trf)...`로 계산하는 모습이 그대로 보입니다 (base-template/src/kernel/gemm_kernel.rs:30-46). 주의: Vector 엔진과 Cast 엔진은 "한 번에 한 컨텍스트만" 쓰는 하나의 스케줄링 단위라서, sub가 Vector를 쓰는 동안 main은 Cast 대신 Commit 엔진의 타입 캐스팅을 써서 직렬화를 피합니다 (index.md:80-82).
 
 ---
 
@@ -99,7 +99,7 @@ pub fn switch<OutSlice: M, OutTime: M>(self, config: SwitchConfig)
 
 Switch 엔진은 **snoop bitmap**으로 설정됩니다: 256개 엔트리(slice당 하나), 각 엔트리는 "이 출력 slice에 어느 소스 slice들의 데이터가 도착해야 하는가"를 적습니다 (switch-engine.md:335). 정규 설정은 내장 bitmap 생성기를 갖고, `CustomBroadcast`는 컴파일러가 사용자의 입출력 매핑으로부터 임의의 bitmap을 합성합니다 (switch-engine.md:336-337).
 
-각 라우터는 bitmap 엔트리에 따라 들어오는 패킷마다 세 동작의 조합을 결정합니다 (switch-engine.md:340-344): **Output**(로컬 slice의 다운스트림으로 내보내기), **Forward right**(오른쪽 이웃에게), **Forward left**(왼쪽 이웃에게). 각 sub-ring에서 맨 왼쪽 라우터는 자기 데이터를 오른쪽으로, 맨 오른쪽은 왼쪽으로 보냅니다. ring_size>2면 중간 라우터들은 왼쪽 이웃 데이터를 output하면서 오른쪽으로 forward합니다 (switch-engine.md:346-348). 링크 1개 통과에 1사이클이 걸려서, 2-slice sub-ring 트레이스를 보면 맨 왼쪽은 cycle 0에, 맨 오른쪽은 cycle 1에 시작해 cycle 4면 두 slice 모두 4개 패킷을 다 갖습니다(switch-engine.md:356-364). bitmap이 변형을 인코딩하는 방식은 두 가지입니다 (switch-engine.md:366-369): **브로드캐스트 모양**(여러 출력 slice가 동일한 엔트리), **Slice→Time 모양**(한 출력 slice가 여러 소스 slice를 나열 = 여러 시간 스텝에 걸쳐 모음).
+각 라우터는 bitmap 엔트리에 따라 들어오는 패킷마다 세 동작의 조합을 결정합니다 (switch-engine.md:340-344): **Output**(로컬 slice의 다운스트림으로 내보내기), **Forward right**(오른쪽 이웃에게), **Forward left**(왼쪽 이웃에게). 각 sub-ring에서 맨 왼쪽 라우터는 자기 데이터를 오른쪽으로, 맨 오른쪽은 왼쪽으로 보냅니다. ring_size>2면 중간 라우터들은 왼쪽 이웃 데이터를 output하면서 오른쪽으로 forward합니다 (switch-engine.md:346-348). 링크 1개 통과에 1사이클이 걸려서, 2-slice sub-ring 트레이스를 보면 맨 왼쪽은 cycle 0에, 맨 오른쪽은 cycle 1에 시작해 cycle 4면 두 slice 모두 4개 패킷을 다 갖습니다(switch-engine.md:356-364). bitmap이 변형을 인코딩하는 방식은 두 가지입니다 (switch-engine.md:366-369): **브로드캐스트 모양**(여러 출력 slice가 동일한 엔트리), **Slice→Time 모양**(한 출력 slice가 여러 소스 slice를 나열 = 여러 시간 단계에 걸쳐 모음).
 
 ### 성능 공식 (이거 하나는 꼭 외우세요)
 
@@ -107,7 +107,7 @@ Switch 엔진은 **snoop bitmap**으로 설정됩니다: 256개 엔트리(slice�
 >
 > 여기서 **flits_per_packet = sizeof(D) × Packet::SIZE / 32** (switch-engine.md:397).
 
-세 인자의 의미 (switch-engine.md:391-398): `ring_size`는 flit 하나가 sub-ring 한 바퀴 도는 사이클, `Time::SIZE`는 시간 스텝 수(매 스텝마다 순회 반복), `flits_per_packet`는 패킷이 몇 개 flit인지(flit마다 순회 반복). 모든 sub-ring이 병렬로 돌므로 이 ring당 사이클이 곧 칩 전체 지연입니다.
+세 인자의 의미 (switch-engine.md:391-398): `ring_size`는 flit 하나가 sub-ring 한 바퀴 도는 사이클, `Time::SIZE`는 시간 단계 수(매 단계마다 순회 반복), `flits_per_packet`는 패킷이 몇 개 flit인지(flit마다 순회 반복). 모든 sub-ring이 병렬로 돌므로 이 ring당 사이클이 곧 칩 전체 지연입니다.
 
 예를 들어 Broadcast01 예제는 `4 × 64 × 8 = 2048` 사이클입니다 (ring_size=4, Time::SIZE=64, f32라 flits_per_packet = 4×64/32 = 8) (switch-engine.md:115). i8 Broadcast1 예제는 `32 × 64 × 2 = 4096` (flits_per_packet = 1×64/32 = 2) (switch-engine.md:168).
 
@@ -212,9 +212,9 @@ Element = [Time % FlitsPerLane, Packet]
 
 각 읽기는 8 lanes × (1 또는 2) banks × 1 row × bank당 320비트를 커버합니다 (register-files.md:66-67): **narrow read(1 bank) = lane당 320비트, wide read(2 banks) = lane당 640비트**. slice당으로는 narrow 320 B/cycle, wide 640 B/cycle (8 lane 합산). 즉 lane당 320비트 = 40바이트, 8 lane이면 320바이트. wide면 640바이트.
 
-### 더블 버퍼링 + 캐시 + bank 교번
+### 이중 버퍼링 + 캐시 + bank 교번
 
-TRF는 각 bank를 두 반으로 나눠 더블 버퍼링을 합니다: 한 반을 sequencer가 읽는 동안 store가 다른 반을 채우고, 반복 사이에 뒤집습니다 (register-files.md:92). 세 주소 모드는 store 시점에 고정됩니다: `Full`(bank당 128행), `FirstHalf`(0-63행), `SecondHalf`(64-127행). 반 모드는 slice당 용량을 **40 KB로 상한** (register-files.md:93-94).
+TRF는 각 bank를 두 반으로 나눠 이중 버퍼링을 합니다: 한 반을 sequencer가 읽는 동안 store가 다른 반을 채우고, 반복 사이에 뒤집습니다 (register-files.md:92). 세 주소 모드는 store 시점에 고정됩니다: `Full`(bank당 128행), `FirstHalf`(0-63행), `SecondHalf`(64-127행). 반 모드는 slice당 용량을 **40 KB로 상한** (register-files.md:93-94).
 
 두 반이 같은 bank를 공유하므로 행이 달라도 bank 수준에서 읽기/쓰기가 경합합니다. 같은 cycle에 같은 bank를 노리면 **읽기가 우선**입니다(contraction 파이프라인이 이번 cycle에 데이터가 필요하고, store는 기다릴 수 있으니까) (register-files.md:98-99). 이 경합을 두 장치로 완화합니다 (register-files.md:101-111):
 - **read cache**: 8 lanes × 2 banks × 4 rows × 320비트 = **2.5 KB** 직접 사상 캐시. TRF 읽기는 같은 데이터를 여러 cycle 브로드캐스트하는 재사용이 많아서 효과적. hit면 bank를 건너뛰어 store가 그 cycle에 bank를 씀.
@@ -240,7 +240,7 @@ Contraction은 두 텐서를 받아 공유 축을 따라 축약하는 이항 연
 
 ### 4단계 파이프라인 (index.md:15-62)
 
-워크로드를 네 단계로 나누되, **Broadcast/Multiply가 1단계, Reduce가 3단계**입니다. 각 단계는 자기만의 겹치지 않는 차원을 다룹니다.
+작업를 네 단계로 나누되, **Broadcast/Multiply가 1단계, Reduce가 3단계**입니다. 각 단계는 자기만의 겹치지 않는 차원을 다룹니다.
 
 ```
 Collect ─┐
@@ -249,7 +249,7 @@ TRF ─────┘
 ```
 (index.md:18-52)
 
-- **Outer (Broadcast & Multiply)**: 두 피연산자를 `[Chip,Cluster,Slice,Lane,Time,Packet]` 공통 모양으로 브로드캐스트하고 원소별 곱. 세 하위 단계: Stream Adapter(스트리밍 피연산자 브로드캐스트), TRF Sequencer(TRF 피연산자 브로드캐스트), Multiplier(타입 확장 후 곱). (index.md:54-56)
+- **Outer (Broadcast & Multiply)**: 두 피연산자를 `[Chip,Cluster,Slice,Lane,Time,Packet]` 공통 모양으로 브로드캐스트하고 원소 단위 곱. 세 하위 단계: Stream Adapter(스트리밍 피연산자 브로드캐스트), TRF Sequencer(TRF 피연산자 브로드캐스트), Multiplier(타입 확장 후 곱). (index.md:54-56)
 - **Packet Reducer (Packet 안 축약)**: Packet에 사상된 축약 축을 lane당 병렬 트리로 reduce-add. (index.md:57)
 - **Time Reducer (Time 가로질러 축약)**: 매 cycle 결과를 공유 누산기에 누적. (index.md:58)
 - **Lane Folder (Lane 접기)**: `Lane`을 `OutPacket` 또는 `OutTime`으로 흡수해 출력 스트림으로 내보냄(합산 아님). slice/chip 간 축약은 다운스트림 Vector 엔진이 처리. (index.md:59-60)
@@ -258,7 +258,7 @@ TRF ─────┘
 
 ### 4-1. Outer — 외적(outer product)의 하드웨어 구현
 
-이름이 outer product에서 왔습니다: 벡터 u(길이 n), v(길이 m)에 대해 `u v^T`는 u를 열축으로, v를 행축으로 브로드캐스트하고 원소별로 곱한 n×m 행렬입니다 (outer.md:5-7). Outer의 세 하위 단계가 정확히 이 의미를 직렬로 구현합니다.
+이름이 outer product에서 왔습니다: 벡터 u(길이 n), v(길이 m)에 대해 `u v^T`는 u를 열축으로, v를 행축으로 브로드캐스트하고 원소 단위로 곱한 n×m 행렬입니다 (outer.md:5-7). Outer의 세 하위 단계가 정확히 이 의미를 직렬로 구현합니다.
 
 `.contract_outer(&trf)` 시그니처 (outer.md:18-22, contraction/outer/mod.rs:74-76):
 ```rust
@@ -294,7 +294,7 @@ OutPacket = [PacketBroadcast, Element % ReadSize]
 
 #### Multiplier: 타입 확장 후 곱
 
-Stream Adapter와 TRF Sequencer에서 정렬된 두 피연산자를 받아, 누산기 오버플로 방지를 위해 각 원소를 축약 출력 타입으로 확장합니다: **`i4`/`i8` → `i32`, `f8`/`bf16` → `f32`** (outer.md:200, index.md:56). 그리고 원소별로 곱합니다. 출력은 `[Chip,Cluster,Slice,Lane,Time,Packet]` 단일 텐서이고, 매 Time cycle마다 모든 Lane이 패킷 하나 분량의 곱을 병렬로 냅니다 (outer.md:201-202).
+Stream Adapter와 TRF Sequencer에서 정렬된 두 피연산자를 받아, 누산기 오버플로 방지를 위해 각 원소를 축약 출력 타입으로 확장합니다: **`i4`/`i8` → `i32`, `f8`/`bf16` → `f32`** (outer.md:200, index.md:56). 그리고 원소 단위로 곱합니다. 출력은 `[Chip,Cluster,Slice,Lane,Time,Packet]` 단일 텐서이고, 매 Time cycle마다 모든 Lane이 패킷 하나 분량의 곱을 병렬로 냅니다 (outer.md:201-202).
 
 ### 4-2. Packet Reducer — lane당 reduction tree
 
@@ -402,7 +402,7 @@ Stream Adapter가 sliding window를 어떻게 shift하느냐로 갈립니다: **
 | `collect` | `pub fn collect<Time2: M, Packet2: M>(self) -> CollectTensor<...Time2, Packet2...>` | 패킷을 32B flit로 정규화(pad + split). SwitchTensor/FetchTensor 둘 다 노출. verify_collect가 Time2/Packet2 정합성 검증. | `furiosa-opt-std/src/engine/collect.rs:43-47` |
 | `to_trf` | `pub fn to_trf<Lane: M, Element: M>(self, address: TrfAddress) -> TrfTensor<...Lane, Element...>` | Lane::SIZE ∈ {1,2,4,8}, Lane::SIZE가 Time::SIZE를 나눠야 함, 총 바이트가 영역 용량에 맞아야 함(verify_to_trf). | `furiosa-opt-std/src/engine/collect.rs:56-60, 121-139` |
 | `to_vrf` | `pub fn to_vrf<Element: M>(self, address: Address) -> VrfTensor<...Element...>  // D: VeScalar` | Element2 = [Time, Packet] 평탄화. i32/f32만 허용(VeScalar bound). | `furiosa-opt-std/src/engine/collect.rs:66-76` |
-| `TrfAddress` | `enum TrfAddress { Full, FirstHalf, SecondHalf }` | Full=128행/bank, 반 모드는 40KB/slice 상한. 더블 버퍼링용. | `furiosa-opt-std/src/tensor/memory.rs:101-127, register-files.md:93-94` |
+| `TrfAddress` | `enum TrfAddress { Full, FirstHalf, SecondHalf }` | Full=128행/bank, 반 모드는 40KB/slice 상한. 이중 버퍼링용. | `furiosa-opt-std/src/tensor/memory.rs:101-127, register-files.md:93-94` |
 | `contract_outer` | `pub fn contract_outer<OutTime: M, OutPacket: M, Lane: M, TrfElement: M>(self, trf_tensor: &TrfTensor<...Lane, TrfElement...>) -> ContractOuterTensor` | Stream Adapter + TRF Sequencer 브로드캐스트 후 Multiplier가 타입 확장(i4/i8→i32, f8/bf16→f32) 곱. OutPacket::SIZE×D::SIZE ∈ {32,64}. | `furiosa-opt-std/src/engine/contraction/outer/mod.rs:74-99, outer.md:99` |
 | `contract_packet` | `pub fn contract_packet<OutPacket: M>(self) -> ContractPacketTensor` | lane당 reduction tree로 Packet 내 축약. OutPacket 32원소 상한(Time Reducer 누산기 32열). | `furiosa-opt-std/src/engine/contraction/packet.rs:16-45, packet-reducer.md:50` |
 | `contract_time` | `pub fn contract_time<OutTime: M>(self) -> ContractTimeTensor` | OutTime은 Time의 부분집합(상대 순서 보존, verify_contract_time). 없는 차원은 reduce-add. | `furiosa-opt-std/src/engine/contraction/time.rs:22-25, 35-38` |
@@ -590,7 +590,7 @@ InTime::SIZE는 slice1×time0 = 2×2 = 4로 나눠떨어져야 함. slice2×slic
   ↳ 출처 `docs/src/computing-tensors/switch-engine.md:578-596`
 - 2D conv에서 Stream Adapter 출력 매핑이 TRF Sequencer contraction 매핑과 어긋나면, 하드웨어가 고정 기능 MAC 배열이라 우아한 성능 저하가 아니라 '틀린 결과'가 나온다. shift 설정 실수도 마찬가지로 오답을 낸다.  
   ↳ 출처 `docs/src/computing-tensors/contraction-engine/2d-convolution.md:403, 417-418, 424`
-- wide TRF read(64B)는 매 cycle 양 bank를 점유해서, cache miss 때마다 동시 sub-context store를 막는다(더블 버퍼링 효율 저하). narrow read(≤32B)만 bank 교번으로 경합을 회피한다. 큰 ReadSize가 항상 좋은 건 아니다.  
+- wide TRF read(64B)는 매 cycle 양 bank를 점유해서, cache miss 때마다 동시 sub-context store를 막는다(이중 버퍼링 효율 저하). narrow read(≤32B)만 bank 교번으로 경합을 회피한다. 큰 ReadSize가 항상 좋은 건 아니다.  
   ↳ 출처 `docs/src/computing-tensors/register-files.md:108-111`
 - to_vrf는 i32/f32(VeScalar)만 받는다. bf16/i8을 VRF에 넣으려 하면 컴파일 실패. 그런 타입은 TRF(Contraction)용이다.  
   ↳ 출처 `docs/src/computing-tensors/register-files.md:203, furiosa-opt-std/src/engine/vector/scalar.rs:18-27`
