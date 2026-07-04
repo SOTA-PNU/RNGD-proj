@@ -1,0 +1,12 @@
+# [새 서버] faithful + train 전체 데이터셋 실험용. 리눅스 + NVIDIA GPU 가정.
+# ⚠️ torch 는 서버의 CUDA 버전에 맞는 휠을 쓰는 게 안전합니다.
+#    설치 후 torch.cuda.is_available() 가 False 면, 아래 대신
+#    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121  (서버 CUDA에 맞게)
+torch>=2.4
+torchvision
+timm>=1.0.20         # DINOv3 timm 미러(vit_*_dinov3.lvd1689m) 로드에 1.0.20 이상 필요
+datasets>=2.20       # ImageNet 미러 다운로드(prepare_data.py)
+huggingface_hub>=0.24
+pillow>=10.0
+numpy>=1.24
+einops               # ViT-5 공식 rope.py 가 import (없으면 selfcheck/run_vit5 ImportError). DINOv3 는 불필요
