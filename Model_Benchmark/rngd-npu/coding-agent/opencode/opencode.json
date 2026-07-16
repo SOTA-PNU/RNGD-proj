@@ -1,0 +1,86 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "furiosa": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "FuriosaNPU (router)",
+      "options": {
+        "baseURL": "http://localhost:8400/v1"
+      },
+      "models": {
+        "gpt-oss-120b": {
+          "name": "gpt-oss-120b",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "Qwen3-30B-A3B-Instruct-2507-FP8": {
+          "name": "Qwen3-30B-A3B-Instruct-2507-FP8  [tools~weak]",
+          "limit": {
+            "context": 262144,
+            "output": 8192
+          }
+        },
+        "Qwen3-30B-A3B-Thinking-2507-FP8": {
+          "name": "Qwen3-30B-A3B-Thinking-2507-FP8  [tools~weak]",
+          "limit": {
+            "context": 262144,
+            "output": 8192
+          }
+        },
+        "Qwen3-30B-A3B-FP8": {
+          "name": "Qwen3-30B-A3B-FP8  [tools~weak]",
+          "limit": {
+            "context": 40960,
+            "output": 8192
+          }
+        },
+        "Qwen3-Coder-30B-A3B-FP8": {
+          "name": "Qwen3-Coder-30B-A3B-FP8  [chat-only]",
+          "limit": {
+            "context": 262144,
+            "output": 8192
+          }
+        },
+        "Qwen3-VL-32B-Instruct": {
+          "name": "Qwen3-VL-32B-Instruct  [tools~weak]",
+          "limit": {
+            "context": 262144,
+            "output": 8192
+          }
+        },
+        "Solar-Open-100B": {
+          "name": "Solar-Open-100B",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "K-EXAONE-236B-A23B": {
+          "name": "K-EXAONE-236B-A23B  [chat-only]",
+          "limit": {
+            "context": 262144,
+            "output": 8192
+          }
+        },
+        "Qwen3-8B-FP8": {
+          "name": "Qwen3-8B-FP8  [tools~weak]",
+          "limit": {
+            "context": 40960,
+            "output": 8192
+          }
+        },
+        "Qwen3-4B-FP8": {
+          "name": "Qwen3-4B-FP8  [tools~weak]",
+          "limit": {
+            "context": 40960,
+            "output": 8192
+          }
+        }
+      }
+    }
+  },
+  "model": "furiosa/gpt-oss-120b",
+  "small_model": "furiosa/gpt-oss-120b"
+}
