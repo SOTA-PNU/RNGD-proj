@@ -29,4 +29,9 @@ Model_Benchmark/callgraph-analysis/*
 Model_Benchmark/rngd-npu/turtlebot3-llm/*
 Model_Benchmark/rngd-npu/coding-agent/*
 Model_Benchmark/rngd-npu/claude-agent/*
-Model_Benchmark/rngd-npu/chat/*
+# chat service: track source, keep runtime artifacts & secrets out of git
+Model_Benchmark/rngd-npu/chat/serve_logs/
+Model_Benchmark/rngd-npu/chat/gradio.log
+Model_Benchmark/rngd-npu/chat/.gradio/
+Model_Benchmark/rngd-npu/chat/.gradio.pid
+Model_Benchmark/rngd-npu/chat/.share_login.txt
