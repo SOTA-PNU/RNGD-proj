@@ -1,0 +1,9 @@
+# GPU 양자화 평가용. CUDA GPU 서버에서 설치.
+# INT8/FP8 양자화는 torch>=2.4 + torchao 필요. FP16/BF16/FP32는 torch만으로 동작.
+torch>=2.4
+torchvision
+timm>=1.0
+torchao>=0.7          # int8/fp8 양자화 (없으면 fp16/fp32만 측정됨)
+datasets>=2.19        # ImageNet val 다운로드(prepare_imagenet.py)
+pillow
+huggingface_hub
