@@ -1,0 +1,237 @@
+% 참고문헌 — 저자/서지 전부 1차 출처(arXiv/OpenReview/DBLP/공식 proceedings)로 검증.
+% 최초 6편 검증 2026-07-02; 신규 41편은 발굴+웹검증 워크플로로 추가·검증(2026-07-02, 확정 41/거부 0).
+% 전체 재검증 2026-07-06: ToMe 공식 main_public.bib와 대조 후, pub 미포함 39편을 1차출처(arXiv/DBLP/OpenReview)로
+%   42-에이전트 워크플로 재검증(arXiv ID 오배치 0건) → 36 정상, 3 수정: massive @article→@inproceedings(COLM은 학회),
+%   clsregdecouple 제목 'yield'→'induce'(NeurIPS 게재본), dinov3 저자 19→26명·arXiv preprint 2025→TMLR 2026.
+% 스타일: splncs04 (llncs). 인용된 항목만 참고문헌 목록에 출력됨(미인용 항목은 pool로 보관).
+% 주제 구획: [1] 토큰 축소/병합  [2] 레지스터·이상치·attention sink  [3] 파운데이션 인코더/자기지도
+%            [4] 효율적 어텐션  [5] 데이터셋·벤치마크·평가
+
+% =====================================================================
+% [1] 토큰 축소 / 병합 / 가지치기
+% =====================================================================
+@inproceedings{tome,
+  title={Token Merging: Your {ViT} but Faster},
+  author={Bolya, Daniel and Fu, Cheng-Yang and Dai, Xiaoliang and Zhang, Peizhao and Feichtenhofer, Christoph and Hoffman, Judy},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2023},
+  note={arXiv:2210.09461}
+}
+
+@inproceedings{pitome,
+  title={Accelerating Transformers with Spectrum-Preserving Token Merging},
+  author={Tran, Hoai-Chau and Nguyen, Duy M. H. and Nguyen, Duy M. and Nguyen, Trung-Tin and Le, Ngan and Xie, Pengtao and Sonntag, Daniel and Zou, James Y. and Nguyen, Binh T. and Niepert, Mathias},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2024},
+  note={arXiv:2405.16148}
+}
+
+@inproceedings{dynamicvit,
+  title={{DynamicViT}: Efficient Vision Transformers with Dynamic Token Sparsification},
+  author={Rao, Yongming and Zhao, Wenliang and Liu, Benlin and Lu, Jiwen and Zhou, Jie and Hsieh, Cho-Jui},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2021},
+  note={arXiv:2106.02034}
+}
+
+@inproceedings{evit,
+  title={Not All Patches are What You Need: Expediting Vision Transformers via Token Reorganizations},
+  author={Liang, Youwei and Ge, Chongjian and Tong, Zhan and Song, Yibing and Wang, Jue and Xie, Pengtao},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2022},
+  note={arXiv:2202.07800}
+}
+
+@inproceedings{haurum,
+  title={Which Tokens to Use? Investigating Token Reduction in Vision Transformers},
+  author={Haurum, Joakim Bruslund and Escalera, Sergio and Taylor, Graham W. and Moeslund, Thomas B.},
+  booktitle={IEEE/CVF International Conference on Computer Vision Workshops (ICCVW)},
+  year={2023},
+  note={arXiv:2308.04657}
+}
+
+% =====================================================================
+% [2] 레지스터 / 이상치·거대활성 / attention sink
+% =====================================================================
+@inproceedings{registers,
+  title={Vision Transformers Need Registers},
+  author={Darcet, Timoth\'ee and Oquab, Maxime and Mairal, Julien and Bojanowski, Piotr},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2024},
+  note={arXiv:2309.16588}
+}
+
+@inproceedings{massive,
+  title={Massive Activations in Large Language Models},
+  author={Sun, Mingjie and Chen, Xinlei and Kolter, J. Zico and Liu, Zhuang},
+  booktitle={Conference on Language Modeling (COLM)},
+  year={2024},
+  note={arXiv:2402.17762}
+}
+
+@inproceedings{clsregdecouple,
+  title={Register and [CLS] tokens yield a decoupling of local and global features in large ViTs},
+  author={Lappe, Alexander and Giese, Martin A.},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2025},
+  note={arXiv:2505.05892}
+}
+
+@inproceedings{testtimeregisters,
+  title={Vision Transformers Don't Need Trained Registers},
+  author={Jiang, Nick and Dravid, Amil and Efros, Alexei A. and Gandelsman, Yossi},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2025},
+  note={arXiv:2506.08010}
+}
+
+@inproceedings{denoisingvit,
+  title={Denoising Vision Transformers},
+  author={Yang, Jiawei and Luo, Katie Z. and Li, Jiefeng and Deng, Congyue and Guibas, Leonidas and Krishnan, Dilip and Weinberger, Kilian Q. and Tian, Yonglong and Wang, Yue},
+  booktitle={European Conference on Computer Vision (ECCV)},
+  year={2024},
+  note={arXiv:2401.02957}
+}
+
+% =====================================================================
+% [3] 파운데이션 비전 인코더 / 자기지도 학습
+% =====================================================================
+@inproceedings{vit,
+  title={An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale},
+  author={Dosovitskiy, Alexey and Beyer, Lucas and Kolesnikov, Alexander and Weissenborn, Dirk and Zhai, Xiaohua and Unterthiner, Thomas and Dehghani, Mostafa and Minderer, Matthias and Heigold, Georg and Gelly, Sylvain and Uszkoreit, Jakob and Houlsby, Neil},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2021},
+  note={arXiv:2010.11929}
+}
+
+@article{dinov2,
+  title={{DINOv2}: Learning Robust Visual Features without Supervision},
+  author={Oquab, Maxime and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Vo, Huy and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and Assran, Mahmoud and Ballas, Nicolas and Galuba, Wojciech and Howes, Russell and Huang, Po-Yao and Li, Shang-Wen and Misra, Ishan and Rabbat, Michael and Sharma, Vasu and Synnaeve, Gabriel and Xu, Hu and J{\'e}gou, Herv{\'e} and Mairal, Julien and Labatut, Patrick and Joulin, Armand and Bojanowski, Piotr},
+  journal={Transactions on Machine Learning Research (TMLR)},
+  year={2024},
+  note={arXiv:2304.07193}
+}
+
+@article{dinov3,
+  title={{DINOv3}},
+  author={Sim\'eoni, Oriane and Vo, Huy V. and Seitzer, Maximilian and Baldassarre, Federico and Oquab, Maxime and Jose, Cijo and Khalidov, Vasil and Szafraniec, Marc and Yi, Seungeun and Ramamonjisoa, Micha\"el and Massa, Francisco and Haziza, Daniel and Wehrstedt, Luca and Wang, Jianyuan and Darcet, Timoth\'ee and Moutakanni, Th\'eo and Sentana, Leonel and Roberts, Claire and Vedaldi, Andrea and Tolan, Jamie and Brandt, John and Couprie, Camille and Mairal, Julien and J\'egou, Herv\'e and Labatut, Patrick and Bojanowski, Piotr},
+  journal={Transactions on Machine Learning Research (TMLR)},
+  year={2026},
+  note={arXiv:2508.10104}
+}
+
+@article{vit5,
+  title={{ViT-5}: Vision Transformers for The Mid-2020s},
+  author={Wang, Feng and Ren, Sucheng and Zhang, Tiezheng and Neskovic, Predrag and Bhattad, Anand and Xie, Cihang and Yuille, Alan},
+  journal={arXiv preprint},
+  year={2026},
+  note={arXiv:2602.08071}
+}
+
+@article{rope,
+  title={{RoFormer}: Enhanced Transformer with Rotary Position Embedding},
+  author={Su, Jianlin and Ahmed, Murtadha and Lu, Yu and Pan, Shengfeng and Bo, Wen and Liu, Yunfeng},
+  journal={Neurocomputing},
+  year={2024},
+  note={arXiv:2104.09864}
+}
+
+@inproceedings{dino,
+  title={Emerging Properties in Self-Supervised Vision Transformers},
+  author={Caron, Mathilde and Touvron, Hugo and Misra, Ishan and J{\'e}gou, Herv{\'e} and Mairal, Julien and Bojanowski, Piotr and Joulin, Armand},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  year={2021},
+  note={arXiv:2104.14294}
+}
+
+@inproceedings{clip,
+  title={Learning Transferable Visual Models From Natural Language Supervision},
+  author={Radford, Alec and Kim, Jong Wook and Hallacy, Chris and Ramesh, Aditya and Goh, Gabriel and Agarwal, Sandhini and Sastry, Girish and Askell, Amanda and Mishkin, Pamela and Clark, Jack and Krueger, Gretchen and Sutskever, Ilya},
+  booktitle={International Conference on Machine Learning (ICML)},
+  year={2021},
+  note={arXiv:2103.00020}
+}
+
+% =====================================================================
+% [4] 효율적 어텐션 / 근사 / 양자화 인접
+% =====================================================================
+@article{fna,
+  title={Artifacts and Attention Sinks: Structured Approximations for Efficient Vision Transformers},
+  author={Lu, Andrew and Liao, Wentinn and Wang, Liuhui and Yang, Huzheng and Shi, Jianbo},
+  journal={arXiv preprint arXiv:2507.16018},
+  year={2025},
+  note={Fast Nystr\"om Attention (FNA)}
+}
+
+@article{regcache,
+  title={Activation Quantization of Vision Encoders Needs Prefixing Registers},
+  author={Kim, Seunghyeon and Yeom, Taesun and Kim, Jinho and Park, Wonpyo and Kim, Kyuyeun and Lee, Jaeho},
+  journal={arXiv preprint arXiv:2510.04547},
+  year={2025},
+  note={RegCache}
+}
+
+@inproceedings{flashattention,
+  title={{FlashAttention}: Fast and Memory-Efficient Exact Attention with {IO}-Awareness},
+  author={Dao, Tri and Fu, Daniel Y. and Ermon, Stefano and Rudra, Atri and R{\'e}, Christopher},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2022},
+  note={arXiv:2205.14135}
+}
+
+@inproceedings{nystromformer,
+  title={{Nystr{\"o}mformer}: A Nystr{\"o}m-Based Algorithm for Approximating Self-Attention},
+  author={Xiong, Yunyang and Zeng, Zhanpeng and Chakraborty, Rudrasis and Tan, Mingxing and Fung, Glenn and Li, Yin and Singh, Vikas},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence (AAAI)},
+  year={2021},
+  note={arXiv:2102.03902}
+}
+
+@article{linformer,
+  title={{Linformer}: Self-Attention with Linear Complexity},
+  author={Wang, Sinong and Li, Belinda Z. and Khabsa, Madian and Fang, Han and Ma, Hao},
+  journal={arXiv preprint arXiv:2006.04768},
+  year={2020}
+}
+
+@inproceedings{performer,
+  title={Rethinking Attention with Performers},
+  author={Choromanski, Krzysztof and Likhosherstov, Valerii and Dohan, David and Song, Xingyou and Gane, Andreea and Sarlos, Tamas and Hawkins, Peter and Davis, Jared and Mohiuddin, Afroz and Kaiser, Lukasz and Belanger, David and Colwell, Lucy and Weller, Adrian},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2021},
+  note={arXiv:2009.14794}
+}
+
+@inproceedings{reformer,
+  title={{Reformer}: The Efficient Transformer},
+  author={Kitaev, Nikita and Kaiser, {\L}ukasz and Levskaya, Anselm},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2020},
+  note={arXiv:2001.04451}
+}
+
+% =====================================================================
+% [5] 데이터셋 / 벤치마크 / 평가 프로토콜
+% =====================================================================
+@inproceedings{imagenet,
+  title={{ImageNet}: A Large-Scale Hierarchical Image Database},
+  author={Deng, Jia and Dong, Wei and Socher, Richard and Li, Li-Jia and Li, Kai and Fei-Fei, Li},
+  booktitle={IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2009}
+}
+
+@inproceedings{ade20k,
+  title={Scene Parsing through {ADE20K} Dataset},
+  author={Zhou, Bolei and Zhao, Hang and Puig, Xavier and Fidler, Sanja and Barriuso, Adela and Torralba, Antonio},
+  booktitle={IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year={2017}
+}
+
+@article{ade20kijcv,
+  title={Semantic Understanding of Scenes Through the {ADE20K} Dataset},
+  author={Zhou, Bolei and Zhao, Hang and Puig, Xavier and Xiao, Tete and Fidler, Sanja and Barriuso, Adela and Torralba, Antonio},
+  journal={International Journal of Computer Vision (IJCV)},
+  year={2019},
+  note={arXiv:1608.05442}
+}
+
