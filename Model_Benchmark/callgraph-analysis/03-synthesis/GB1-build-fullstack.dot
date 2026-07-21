@@ -1,0 +1,116 @@
+digraph build_fullstack {
+    rankdir=TB;
+    labelloc="t";
+    fontname="Helvetica"; fontsize=12;
+    label="furiosa-llm build — full-stack call graph (driver ⇄ Ray workers ⇄ native compiler; NPU never touched)\nSDK 2026.2.0 · captured live: gdb + py-spy + bpftrace + RUST_LOG · Qwen2.5-Coder-1.5B-Instruct -tp 4";
+    node [shape=box, fontname="Helvetica", fontsize=9, style=filled, fillcolor=white];
+    edge [fontname="Helvetica", fontsize=8];
+
+    // ===================== DRIVER PROCESS =====================
+    subgraph cluster_driver {
+        label="DRIVER process  (furiosa-llm build — 1 process, ~120 threads, parked on ray.get during the build)";
+        style=filled; fillcolor="#eef4ff";
+        d_main      [label="cli.main.main\ncli/main.py:28"];
+        d_convert   [label="cli.convert.convert  (build handler)\ncli/convert.py:124 → builder.build :214"];
+        d_init      [label="ArtifactBuilder.__init__  [load/validate/resolve]\nartifact/builder.py:116"];
+        d_build     [label="ArtifactBuilder.build\nartifact/builder.py:315"];
+        d_modelart  [label="ArtifactBuilder._build_model_artifact\nartifact/builder.py:172 → build_pipeline :268"];
+        d_buildpipe [label="build_pipeline  (spawn actors + ray.get)\nnew_pipeline_builder.py:1474"];
+        d_getcomp   [label="get_compiled_pipeline  (spawn actors + ray.get)\nnew_pipeline_builder.py:1199"];
+        d_save      [label="ArtifactBuilder.__save_artifacts\nartifact/builder.py:481 → artifact.json + binary_bundle.zip"];
+        d_validate  [label="validator.* / resolver.* / presets.find_preset\nvalidator.py:188 · presets/hf_utils.py:189", fillcolor="#f5f5f5"];
+    }
+
+    // ===================== RAY WORKER 1 =====================
+    subgraph cluster_w1 {
+        label="RAY WORKER 1 — ray::LocalPipelineGenerationActor  (@ray.remote num_cpus=24)  — TRACE + PARTITION + PARALLELIZE";
+        style=filled; fillcolor="#eaffea";
+        w1_bucket   [label="build_for_bucket\nnew_pipeline_builder.py:1451"];
+        w1_local    [label="build_local_pipeline\nnew_pipeline_builder.py:580"];
+        w1_part     [label="build_partitioned_graphmodule\nnew_pipeline_builder.py:412"];
+        w1_getaten  [label="trace.get_aten_graph_with_metadata\nnew_pipeline_builder.py:455 → trace.py:1230"];
+        w1_traceaten[label="trace._get_aten_graph_with_metadata\ntrace.py:1180"];
+        w1_marker   [label="block_slicer.enable_marker_op\ntrace.py:943 / block_slicer.py:1258"];
+        w1_tracem   [label="trace.trace_model\ntrace.py:891"];
+        w1_dynamo   [label="torch._dynamo.export\ntrace.py:855", fillcolor="#fff0c0"];
+        w1_makefx   [label="torch.fx make_fx (proxy_tensor)\ntrace.py:828", fillcolor="#fff0c0"];
+        w1_savegm   [label="export.graphmodule.save_gm  (serialize traced GM to cache)\ntrace.py:1087 → export/graphmodule.py:426", fillcolor="#fff0c0"];
+        w1_parpart  [label="parallelize_and_partition_graphmodule\nnew_pipeline_builder.py:486"];
+        w1_kwpart   [label="KernelwisePartitioner.partition_gm\ngraph_partitioner.py:97 (color bitmap :65)"];
+        w1_pargm    [label="parallelize_graphmodule\nnew_pipeline_builder.py:367"];
+        w1_rewrite  [label="ModelRewriter.rewrite → ShardingPropagator.propagate\nmodel_rewriter/api.py:101 · sharding_propagator.py:241"];
+    }
+
+    // ===================== RAY WORKER 2 =====================
+    subgraph cluster_w2 {
+        label="RAY WORKER 2 — ray::TaskCompileActor  (@ray.remote num_cpus=32)  — COMPILE (EDF blobs)";
+        style=filled; fillcolor="#fdeaff";
+        w2_task     [label="compile_task\nnew_pipeline_builder.py:1110"];
+        w2_cfg      [label="CompilerConfigContext.load_config_with_layer_range\ncompiler_config.py:63"];
+        w2_meta     [label="generate_graph_metadata\nconverter.py:1461"];
+        w2_conv     [label="GraphModuleConverter.compile_gm_and_get_preprocessed_gm_hash\nconverter.py"];
+        w2_preproc  [label="furiosa_torch_ext.torch_ext.preprocess\nconverter.py:886", fillcolor="#fff0c0"];
+        w2_serialize[label="CompiledGraph.serialize  (per graph → bytes)\nnew_pipeline_builder.py:1192"];
+    }
+
+    // ===================== NATIVE =====================
+    subgraph cluster_native {
+        label="NATIVE — native_llm_common.cpython-312*.so  (143MB, STRIPPED; PyO3 furiosa.native_common.compiler)  +  furiosa_torch_ext";
+        style=filled; fillcolor="#fff0c0";
+        n_compile   [label="compiler.compile  ★ AOT COMPILE → EDF / precommand blob\nconverter.py:913", shape=box, penwidth=2, fillcolor="#ffd866"];
+        n_cfg       [label="compiler.create_llm_compiler_config_with_layer_range\n/ create_default_compiler_config\ncompiler_config.py:122 / :142"];
+        n_meta      [label="compiler.GraphMetadataBuilder\nconverter.py:1463"];
+        n_serial    [label="compiler.CompiledGraph.serialize / .deserialize\nnew_pipeline_builder.py:1192 / :1343"];
+        n_misc      [label="compiler.compiler_git_short_hash / approx_per_layer_params_b\n/ compute_limits  (driver-side)", fillcolor="#f7f0d8"];
+    }
+
+    // ===================== KERNEL =====================
+    k_none [label="KERNEL (furiosa_rngd / NPU):  NOT TOUCHED\nno /dev/rngd open · 0 doorbell/DMA/ioctl  (build is pure host CPU)\nevidence: build_fds.txt · kernel_trace_build.log", shape=note, style=filled, fillcolor="#ffe0e0"];
+
+    // ---- driver edges ----
+    d_main -> d_convert;
+    d_convert -> d_init [label="builder()  :197"];
+    d_init -> d_validate [style=dashed, label="steps 1-3"];
+    d_convert -> d_build [label="builder.build()  :214"];
+    d_build -> d_modelart [label=":363"];
+    d_build -> d_save [label=":393"];
+    d_modelart -> d_buildpipe [label="next_gen.build_pipeline  :268"];
+    d_buildpipe -> d_getcomp [label="after trace  :1623"];
+    d_validate -> n_misc [style=dashed, label="native (driver)"];
+    d_build -> n_misc [style=dashed, label="git_short_hash :357"];
+    d_save -> n_serial [style=dashed, label="CompiledGraph.serialize :455"];
+
+    // ---- driver -> Ray worker boundary ----
+    d_buildpipe -> w1_bucket [label="① build_for_bucket.remote\nnew_pipeline_builder.py:1576  [ray.get :1586]", color="#1a7f1a", penwidth=2, fontcolor="#1a7f1a"];
+    d_getcomp  -> w2_task   [label="② compile_task.remote\nnew_pipeline_builder.py:1312  [ray.get :1320]", color="#a01aa0", penwidth=2, fontcolor="#a01aa0"];
+    d_getcomp  -> n_serial  [style=dashed, label="CompiledGraph.deserialize :1343"];
+
+    // ---- worker 1 edges ----
+    w1_bucket -> w1_local;
+    w1_local -> w1_part;
+    w1_part -> w1_getaten [label="trace branch :455"];
+    w1_part -> w1_parpart [label="partition branch :486"];
+    w1_getaten -> w1_traceaten;
+    w1_traceaten -> w1_marker;
+    w1_traceaten -> w1_tracem;
+    w1_traceaten -> w1_savegm [label="save :1087"];
+    w1_tracem -> w1_dynamo;
+    w1_tracem -> w1_makefx;
+    w1_parpart -> w1_kwpart [label="partition_gm :343"];
+    w1_parpart -> w1_pargm [label=":367"];
+    w1_pargm -> w1_rewrite [label=":147"];
+
+    // ---- worker 2 edges ----
+    w2_task -> w2_cfg;
+    w2_task -> w2_meta;
+    w2_task -> w2_conv;
+    w2_task -> w2_serialize;
+    w2_conv -> w2_preproc [label="preprocess :886"];
+    w2_conv -> n_compile [label="compile :913", color="#b8860b", penwidth=2];
+    w2_cfg -> n_cfg [style=dashed];
+    w2_meta -> n_meta [style=dashed];
+    w2_serialize -> n_serial [style=dashed];
+
+    // ---- note: no kernel ----
+    n_compile -> k_none [style=dotted, label="(host CPU only — never reaches the NPU)", color=red, fontcolor=red];
+}

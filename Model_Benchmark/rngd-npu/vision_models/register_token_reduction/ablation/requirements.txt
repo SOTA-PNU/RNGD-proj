@@ -1,0 +1,7 @@
+# register keep-prior ablation 실험용. GPU 서버에 설치.
+torch>=2.1
+torchvision
+timm>=1.0
+datasets>=2.19      # ImageNet val 다운로드(prepare_data.py)
+pillow
+matplotlib          # 압축률 sweep 그림(make_sweep_figure.py)
