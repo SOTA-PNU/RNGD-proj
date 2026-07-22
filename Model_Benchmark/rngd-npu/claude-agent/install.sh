@@ -26,7 +26,7 @@ CMD="${FURIO_CMD:-furio}"                               # 명령 이름(리브�
 BRAND="${FURIO_BRAND:-Furio (Furiosa NPU)}"
 MODEL="${FURIO_MODEL:-gpt-oss-120b}"                   # 기본 모델(agent-ready). /v1/models 의 id
 MAXOUT="${FURIO_MAX_OUTPUT:-8192}"                     # ⚠️ openclaude 큰 시스템프롬프트(~17.6k)+출력이 ctx 초과 방지
-AUTODEF="${FURIO_AUTO:-}"                              # 완전 자동(권한 미확인) 기본값. 빈값=확인모드(안전). 1|edits 등(아래 표)
+AUTODEF="${FURIO_AUTO:-}"                              # 자동모드 기본값. 빈값=매번확인(가장 안전) / safe=규칙기반 / edits=편집만 / 1=완전자동
 ORIG_PATH="$PATH"
 HOME_DIR="${FURIO_HOME:-$HOME/.$CMD}"                  # openclaude 격리 설치/설정 위치
 BIN_DIR="${FURIO_BIN_DIR:-$HOME/.local/bin}"
@@ -59,6 +59,105 @@ fi
 # 키는 0600 파일에만(있을 때). 래퍼는 런타임에 읽어 env 로 — 래퍼 텍스트엔 비밀 없음.
 if [ -n "$SDI_API_KEY" ]; then (umask 177; printf '%s' "$SDI_API_KEY" > "$HOME_DIR/key"); else rm -f "$HOME_DIR/key"; fi
 
+# 모델별 '진짜' 컨텍스트 창을 라우터에서 받아 ctx.json 에 저장(단일 출처 = 서버 REGISTRY).
+# ⚠️ 이게 없으면 openclaude 는 처음 보는 우리 모델 id 를 전부 128000 토큰으로 가정한다.
+#    실제론 40960~262144 로 제각각이라, 작은 모델에선 컨텍스트 초과(400)가 나고 큰 모델은 손해다.
+N=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/models" 2>/dev/null | node -e '
+const fs=require("fs"); let s=""; process.stdin.on("data",d=>s+=d).on("end",()=>{
+  try{ const j=JSON.parse(s), m={};
+    for (const x of (j.data||[])) if (x && x.id && x.context) m[x.id]=x.context;
+    const n=Object.keys(m).length;
+    if (n) fs.writeFileSync(process.argv[1], JSON.stringify(m));
+    process.stdout.write(String(n));
+  }catch(e){ process.stdout.write("0") }});' "$HOME_DIR/ctx.json" 2>/dev/null || echo 0)
+case "${N:-0}" in ''|*[!0-9]*) N=0 ;; esac
+if [ "$N" -gt 0 ]; then
+  echo "      [ok] 모델별 컨텍스트 ${N}개 기록 (ctx.json — openclaude 가 우리 ctx 를 정확히 알게 됨)"
+else
+  rm -f "$HOME_DIR/ctx.json"
+  echo "      [warn] /router/models 응답 없음 — 모델별 ctx 미설정(openclaude 가 128000 으로 가정할 수 있음)"
+fi
+
+# 안전 자동모드(FURIO_AUTO=safe)용 규칙 파일. 사용자가 편집할 수 있게 파일로 두고, 이미 있으면 건드리지 않는다.
+#   auto-allow.txt : 물어보지 않고 바로 실행할 것(읽기·조회·테스트 등)
+#   auto-deny.txt  : 아예 막을 것(파괴적·되돌릴 수 없는·외부로 나가는 명령)
+#   둘 다 아닌 명령은 그대로 사람에게 물어본다 ← 이게 'safe' 의 핵심
+if [ ! -f "$HOME_DIR/auto-allow.txt" ]; then
+  cat > "$HOME_DIR/auto-allow.txt" <<'ALLOWEOF'
+# 자동 승인(묻지 않음) — 읽기/조회/테스트처럼 되돌릴 수 있는 것만.
+# 문법: 도구이름 또는 도구이름(명령 접두사:*)   예) Bash(git status:*)
+# 한 줄에 하나. '#' 로 시작하면 주석. 편집 후 바로 반영됩니다(재설치 불필요).
+Read
+Glob
+Grep
+TodoWrite
+Bash(ls:*)
+Bash(pwd:*)
+Bash(cat:*)
+Bash(head:*)
+Bash(tail:*)
+Bash(wc:*)
+Bash(file:*)
+Bash(stat:*)
+Bash(du:*)
+Bash(df:*)
+Bash(tree:*)
+Bash(date:*)
+Bash(echo:*)
+Bash(which:*)
+Bash(find:*)
+Bash(grep:*)
+Bash(rg:*)
+Bash(diff:*)
+Bash(git status:*)
+Bash(git diff:*)
+Bash(git log:*)
+Bash(git show:*)
+Bash(git branch:*)
+Bash(git remote:*)
+Bash(npm test:*)
+Bash(npm run:*)
+Bash(pytest:*)
+Bash(make:*)
+Bash(cargo test:*)
+Bash(cargo build:*)
+Bash(go test:*)
+Bash(go build:*)
+ALLOWEOF
+fi
+if [ ! -f "$HOME_DIR/auto-deny.txt" ]; then
+  cat > "$HOME_DIR/auto-deny.txt" <<'DENYEOF'
+# 차단(묻지도 않고 거부) — 파괴적이거나 되돌릴 수 없거나 밖으로 나가는 것.
+# kill/pkill 은 이 서버의 라우터까지 죽일 수 있어 막아 둡니다.
+Bash(rm -rf:*)
+Bash(rm -fr:*)
+Bash(sudo:*)
+Bash(su:*)
+Bash(dd:*)
+Bash(mkfs:*)
+Bash(fdisk:*)
+Bash(parted:*)
+Bash(shutdown:*)
+Bash(reboot:*)
+Bash(halt:*)
+Bash(poweroff:*)
+Bash(chown:*)
+Bash(chmod 777:*)
+Bash(kill:*)
+Bash(pkill:*)
+Bash(killall:*)
+Bash(curl:*)
+Bash(wget:*)
+Bash(git push:*)
+Bash(git reset --hard:*)
+Bash(git clean:*)
+Bash(crontab:*)
+Bash(npm publish:*)
+Bash(ssh:*)
+Bash(scp:*)
+DENYEOF
+fi
+
 echo "[4/4] '$CMD' 명령 설치: $BIN_DIR/$CMD"
 cat > "$BIN_DIR/$CMD" <<EOF
 #!/usr/bin/env bash
@@ -70,14 +169,44 @@ export OPENAI_MODEL="\${OPENAI_MODEL:-$MODEL}"
 export CLAUDE_CODE_MAX_OUTPUT_TOKENS="\${CLAUDE_CODE_MAX_OUTPUT_TOKENS:-$MAXOUT}"
 export OPENCLAUDE_CONFIG_DIR="\${OPENCLAUDE_CONFIG_DIR:-$HOME_DIR/config}"   # 유저 기존 openclaude 와 격리
 export OPENAI_API_KEY="\$( [ -f "$HOME_DIR/key" ] && cat "$HOME_DIR/key" || echo dummy )"
+# 모델별 실제 컨텍스트 창(설치 때 라우터에서 받아둔 값). 없으면 openclaude 는 128000 으로 잘못 가정한다.
+if [ -z "\${CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS:-}" ] && [ -s "$HOME_DIR/ctx.json" ]; then
+  export CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS="\$(cat "$HOME_DIR/ctx.json")"
+fi
+# 타임아웃: NPU 는 모델을 늦게 올려서(라우터가 최대 480초 대기) openclaude 0.25.0 기본값이 빠듯하다.
+export API_TIMEOUT_MS="\${API_TIMEOUT_MS:-900000}"                                # 응답헤더 마감(0.25.0 기본 600000)
+export CLAUDE_STREAM_IDLE_TIMEOUT_MS="\${CLAUDE_STREAM_IDLE_TIMEOUT_MS:-600000}"  # SSE 유휴(0.25.0서 120s→90s 축소됨)
 # 완전 자동 실행 모드 토글(FURIO_AUTO, 설치시 기본 '$AUTODEF'). 런타임 override 가능. ⚠️신뢰 폴더에서만.
 FURIO_AUTO="\${FURIO_AUTO:-$AUTODEF}"
 AUTO_ARGS=()
 case "\$FURIO_AUTO" in
   1|yes|on|bypass|full) AUTO_ARGS=(--dangerously-skip-permissions) ;;  # 모든 권한 프롬프트 생략(완전자동)
   edits|accept)         AUTO_ARGS=(--permission-mode acceptEdits) ;;   # 파일편집만 자동(Bash 등은 확인)
+  safe|rules)
+    # 규칙 기반 '안전 자동모드': 안전한 건 자동 승인, 위험한 건 차단, 나머지는 사람에게 질문.
+    # openclaude 네이티브 auto 모드는 Anthropic 전용 게이트라 못 쓰므로(=조용히 default 로 강등),
+    # 정식 기능인 --allowed-tools/--disallowed-tools 로 동등한 동작을 만든다.
+    AUTO_ARGS=(--permission-mode acceptEdits)
+    _ALLOW=(); _DENY=()
+    if [ -f "$HOME_DIR/auto-allow.txt" ]; then
+      while IFS= read -r _r || [ -n "\$_r" ]; do
+        case "\$_r" in ''|'#'*) ;; *) _ALLOW+=("\$_r") ;; esac
+      done < "$HOME_DIR/auto-allow.txt"
+    fi
+    if [ -f "$HOME_DIR/auto-deny.txt" ]; then
+      while IFS= read -r _r || [ -n "\$_r" ]; do
+        case "\$_r" in ''|'#'*) ;; *) _DENY+=("\$_r") ;; esac
+      done < "$HOME_DIR/auto-deny.txt"
+    fi
+    [ \${#_ALLOW[@]} -gt 0 ] && AUTO_ARGS+=(--allowed-tools "\${_ALLOW[@]}")
+    [ \${#_DENY[@]}  -gt 0 ] && AUTO_ARGS+=(--disallowed-tools "\${_DENY[@]}")
+    ;;
 esac
-exec "$OC_BIN" \${AUTO_ARGS[@]+"\${AUTO_ARGS[@]}"} "\$@"   # macOS bash3.2 + set -u 빈배열 가드
+# 도구 축소(선택): FURIO_TOOLS="Bash,Edit,Read,Write,Glob,Grep" 처럼 주면 도구정의 토큰(~8.8k)이 줄어
+# 작은 ctx 모델에서 여유가 생긴다. 미지정이면 전체 도구(기본).
+TOOL_ARGS=()
+[ -n "\${FURIO_TOOLS:-}" ] && TOOL_ARGS=(--tools "\$FURIO_TOOLS")
+exec "$OC_BIN" \${AUTO_ARGS[@]+"\${AUTO_ARGS[@]}"} \${TOOL_ARGS[@]+"\${TOOL_ARGS[@]}"} "\$@"   # macOS bash3.2 + set -u 빈배열 가드
 EOF
 chmod 755 "$BIN_DIR/$CMD"
 
