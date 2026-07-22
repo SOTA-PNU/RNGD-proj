@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 1/5] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 1/6] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 2/5] model picker: use backend-supplied model descriptions
+Subject: [PATCH 2/6] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 3/5] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
+Subject: [PATCH 3/6] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
  =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 4/5] model picker: say why the NPU config row is absent
+Subject: [PATCH 4/6] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 5/5] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 5/6] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1058,6 +1058,108 @@ index 6949f79..0f41e51 100644
 +    return {}
 +  }
 +}
+-- 
+2.43.0
+
+
+From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:11:30 +0900
+Subject: [PATCH 6/6] model picker: apply NPU collapsing and descriptions on
+ the cached path
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The previous fix only ran during model discovery, but the picker normally
+renders from the cached option list — it even says so ("Local OpenAI-compatible
+models are up to date"). So a stale cache kept showing one row per dp/pp
+combination with the generic "Discovered from ..." description, and the fix
+looked like it had done nothing.
+
+Collapse variants and apply backend descriptions where the option list is
+assembled, which covers both the fresh and cached paths.
+
+getDiscoveredModelIds() now falls back to the backend description map's keys.
+Discovery may never run in a session, and without that fallback the dp/pp
+selector had no configurations to offer whenever the list came from cache.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/utils/model/modelOptions.ts | 32 ++++++++++++++++++++++++++++----
+ src/utils/npuVariants.ts        |  7 ++++++-
+ 2 files changed, 34 insertions(+), 5 deletions(-)
+
+diff --git a/src/utils/model/modelOptions.ts b/src/utils/model/modelOptions.ts
+index b40f243..a3f1729 100644
+--- a/src/utils/model/modelOptions.ts
++++ b/src/utils/model/modelOptions.ts
+@@ -58,6 +58,10 @@ import { getCachedNvidiaNimModelOptions, isNvidiaNimProvider } from './nvidiaNim
+ import { getCachedMiniMaxModelOptions, isMiniMaxProvider } from './minimaxModels.js'
+ import { getCachedXiaomiMimoModelOptions, isXiaomiMimoProvider } from './xiaomi-mimoModels.js'
+ import { getAntModels } from './antModels.js'
++import {
++  collapseNpuVariants,
++  getBackendModelDescriptions,
++} from '../npuVariants.js'
+ 
+ // @[MODEL LAUNCH]: Update all the available and default model option strings below.
+ 
+@@ -695,12 +699,32 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
+     const sourceOptions = activeOpenAIOptions.length > 0
+       ? activeOpenAIOptions
+       : scopedOptions
++    // Collapse NPU parallelism variants and apply backend descriptions HERE, not
++    // only at discovery: the picker usually renders from the cached option list
++    // ("models are up to date"), so a discovery-time-only fix leaves a stale
++    // cache showing one row per dp/pp combination with generic descriptions.
++    const merged = mergeModelOptionsByNormalizedValue(
++      sourceOptions,
++      activeRouteCatalogOptions,
++    )
++    const npuDescriptions = getBackendModelDescriptions()
++    const keptValues = new Set(
++      collapseNpuVariants(
++        merged
++          .map(o => o.value)
++          .filter((v): v is string => typeof v === 'string'),
++      ),
++    )
++    const npuAdjusted = merged
++      .filter(o => typeof o.value !== 'string' || keptValues.has(o.value))
++      .map(o => {
++        const described =
++          typeof o.value === 'string' ? npuDescriptions[o.value] : undefined
++        return described ? { ...o, description: described } : o
++      })
+     return [
+       getDefaultOptionForUser(fastMode),
+-      ...mergeModelOptionsByNormalizedValue(
+-        sourceOptions,
+-        activeRouteCatalogOptions,
+-      ),
++      ...npuAdjusted,
+       ...inactiveProfileOptions,
+     ]
+   }
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 0f41e51..d6de5f4 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -105,7 +105,12 @@ export function setDiscoveredModelIds(ids: readonly string[]): void {
+ }
+ 
+ export function getDiscoveredModelIds(): readonly string[] {
+-  return discoveredModelIds
++  if (discoveredModelIds.length > 0) return discoveredModelIds
++  // Discovery may not have run this session — the picker often renders straight
++  // from the cached option list. The backend description map is keyed by the
++  // full ids (variants included) and is present from the first render, so it is
++  // a reliable fallback for "which configurations exist".
++  return Object.keys(getBackendModelDescriptions())
+ }
+ 
+ /**
 -- 
 2.43.0
 
