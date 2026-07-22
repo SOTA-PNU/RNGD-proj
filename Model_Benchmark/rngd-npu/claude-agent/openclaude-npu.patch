@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 01/11] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 01/12] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 02/11] model picker: use backend-supplied model descriptions
+Subject: [PATCH 02/12] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 03/11] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
+Subject: [PATCH 03/12] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
  =?UTF-8?q?with=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 04/11] model picker: say why the NPU config row is absent
+Subject: [PATCH 04/12] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 05/11] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 05/12] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 06/11] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 06/12] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 07/11] model picker: apply NPU presentation where every path
+Subject: [PATCH 07/12] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1274,7 +1274,7 @@ index d6de5f4..239767c 100644
 From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:48:44 +0900
-Subject: [PATCH 08/11] model picker: adjust dp and pp as separate axes
+Subject: [PATCH 08/12] model picker: adjust dp and pp as separate axes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1554,7 +1554,7 @@ index 239767c..0f33993 100644
 From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:03:05 +0900
-Subject: [PATCH 09/11] model picker: stop the dp/pp row from reflowing
+Subject: [PATCH 09/12] model picker: stop the dp/pp row from reflowing
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1656,7 +1656,7 @@ index 0f33993..b00fbc3 100644
 From 27c42e3729aab78a816115b3e4c68a03c905cb77 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:51:34 +0900
-Subject: [PATCH 10/11] statusline: separate the current-model marker from the
+Subject: [PATCH 10/12] statusline: separate the current-model marker from the
  LED
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1693,7 +1693,7 @@ index ea77786..f6657b6 100644
 From f473f6cac85eb6191d5847cb17ecabb04e80d7aa Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 02:07:35 +0900
-Subject: [PATCH 11/11] model picker: start loading the model as soon as it is
+Subject: [PATCH 11/12] model picker: start loading the model as soon as it is
  picked
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1771,6 +1771,1006 @@ index 5c7facc..8c5ff49 100644
 +      startNpuStatusPolling(base)
 +    })
 +}
+-- 
+2.43.0
+
+
+From 6ece7115d354facf8412c65797a85ab2bf667c2e Mon Sep 17 00:00:00 2001
+From: Claude <plab2090@gmail.com>
+Date: Thu, 23 Jul 2026 02:51:37 +0900
+Subject: [PATCH 12/12] npu: react to a model pick immediately, and show every
+ loaded model
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Picking a model in /model left the LED red for up to ten seconds. The
+preload request went out and the router accepted it, but the client kept
+the idle poll it had already scheduled, so nothing on screen moved until
+that timer fired. Long enough that the model looked stuck until the user
+sent a message — which then started the load for real, hiding the cause.
+
+Poll immediately after a preload, and show the model as loading until the
+router acknowledges it: the router registers preloads asynchronously, so
+even an immediate poll can still come back empty. A router predating
+/router/preload now falls back to a throwaway completion, which starts the
+same lazy load the first message would — only ever against a confirmed
+Furiosa router, so no one's metered endpoint gets billed for it.
+
+/model paints every model that is on a card, not just the selected one.
+Holding four models across four cards is the point of the setup; without
+this there was no way to see which switches are free and which mean a
+two-minute cold start.
+
+↓ from the prompt now focuses the NPU line as a footer item, where ←/→
+move between the loaded models and ↵ switches. That reuses the pill
+navigation already there for tasks and teammates rather than inventing a
+second focus mechanism.
+
+collapseNpuVariants dropped a variant whose base model was absent — it
+counted each variant's own base as proof the base was present, so a
+router advertising only `X@dp2` would have shown an empty list. It has
+not bitten in production because the router always advertises the base,
+but the contract said otherwise and now the code agrees.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Na71jMPNwVCJecN1VMjJbo
+---
+ src/components/BuiltinStatusLine.test.tsx  |  64 ++++++++
+ src/components/BuiltinStatusLine.tsx       |  60 +++++---
+ src/components/ModelPicker.tsx             |  37 ++++-
+ src/components/PromptInput/PromptInput.tsx |  58 ++++++-
+ src/main.tsx                               |   1 +
+ src/services/npuStatus.test.ts             |  56 +++++++
+ src/services/npuStatus.ts                  | 169 ++++++++++++++++++---
+ src/state/AppStateStore.ts                 |   9 ++
+ src/utils/npuVariants.test.ts              | 120 +++++++++++++++
+ src/utils/npuVariants.ts                   |  55 ++++++-
+ 10 files changed, 576 insertions(+), 53 deletions(-)
+ create mode 100644 src/services/npuStatus.test.ts
+ create mode 100644 src/utils/npuVariants.test.ts
+
+diff --git a/src/components/BuiltinStatusLine.test.tsx b/src/components/BuiltinStatusLine.test.tsx
+index dfe1aae..e1f8798 100644
+--- a/src/components/BuiltinStatusLine.test.tsx
++++ b/src/components/BuiltinStatusLine.test.tsx
+@@ -1,8 +1,10 @@
+ import { describe, expect, it } from 'bun:test'
++import type { NpuModel, NpuStatus } from '../services/npuStatus.js'
+ import { DEFAULT_GLOBAL_CONFIG } from '../utils/config.js'
+ import {
+   type BuiltinStatusData,
+   buildBuiltinStatusSegments,
++  buildNpuSegments,
+   builtinStatusLineShouldDisplay,
+   fitSegments,
+ } from './BuiltinStatusLine.js'
+@@ -212,3 +214,65 @@ describe('builtinStatusLineShouldDisplay', () => {
+     ).toBe(false)
+   })
+ })
++
++describe('buildNpuSegments', () => {
++  const npu = (models: NpuModel[]): NpuStatus => ({
++    models,
++    freeCards: [],
++    phase: 0,
++    available: true,
++  })
++  const m = (id: string, state: NpuModel['state'], cards: number[] = []): NpuModel => ({
++    id,
++    state,
++    cards,
++    dp: 1,
++    pp: 1,
++  })
++
++  it('colours each model by whether it is on a card', () => {
++    const segments = buildNpuSegments(
++      npu([m('A', 'up', [0]), m('B', 'loading', [1]), m('C', 'error')]),
++      null,
++    )
++    expect(segments.map(s => s.color)).toEqual(['success', 'warning', 'error'])
++  })
++
++  it('marks the selected model and lists it first', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up'), m('B', 'up')]), 'B')
++    expect(segments[0]?.text).toContain('▶')
++    expect(segments[0]?.text).toContain('B')
++    expect(segments[1]?.text).not.toContain('▶')
++  })
++
++  it('shows a selected model that is not loaded, in red', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up')]), 'Cold')
++    expect(segments[0]?.color).toBe('error')
++    expect(segments[0]?.text).toContain('Cold')
++  })
++
++  it('brackets the model under the footer cursor so ↵ is unambiguous', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up'), m('B', 'up')]), 'A', 'B')
++    expect(segments.find(s => s.key === 'npu:B')?.text).toBe('[● B]')
++    expect(segments.find(s => s.key === 'npu:A')?.text).not.toContain('[')
++  })
++
++  it('never drops the cursor entry when the terminal narrows', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up'), m('B', 'up')]), 'A', 'B')
++    const cursor = segments.find(s => s.key === 'npu:B')!
++    const current = segments.find(s => s.key === 'npu:A')!
++    expect(cursor.priority).toBeLessThan(current.priority)
++  })
++
++  it('stays silent when the backend is not a Furiosa router', () => {
++    expect(buildNpuSegments({ ...npu([m('A', 'up')]), available: false }, 'A')).toEqual([])
++  })
++
++  it('explains the keys only while the line has focus', () => {
++    const data = { ...fullData, npu: npu([m('A', 'up')]), npuCurrentModelId: 'A' }
++    expect(buildBuiltinStatusSegments(data).map(s => s.key)).not.toContain('npu:hint')
++    expect(
++      buildBuiltinStatusSegments({ ...data, npuCursorModelId: 'A' }).map(s => s.key),
++    ).toContain('npu:hint')
++  })
++})
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index f6657b6..563aa53 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -9,7 +9,7 @@ import { useTerminalSize } from '../hooks/useTerminalSize.js';
+ import { Box, Text } from '../ink.js';
+ import { getRawUtilization } from '../services/claudeAiLimits.js';
+ import { useClaudeAiLimits } from '../services/claudeAiLimitsHook.js';
+-import type { NpuModel, NpuStatus } from '../services/npuStatus.js';
++import { type NpuStatus, npuDisplayModels } from '../services/npuStatus.js';
+ import { useNpuStatus } from '../services/npuStatusHook.js';
+ import { useAppState } from '../state/AppState.js';
+ import type { Message } from '../types/message.js';
+@@ -58,43 +58,40 @@ const LED_OFF = '○';
+  *
+  * `currentModelId` is marked with `▶` so it stays identifiable once several
+  * models share the four cards.
++ *
++ * `cursorModelId` is set while the footer has arrow-key focus here: that entry
++ * is bracketed so the user can see what ↵ would switch to.
+  */
+-export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null): StatusSegment[] {
++export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null, cursorModelId: string | null = null): StatusSegment[] {
+   if (!npu.available) return [];
+   const segments: StatusSegment[] = [];
+-  const seen = new Set<string>();
+   const blinkOn = npu.phase % 2 === 0;
++  const models = npuDisplayModels(npu.models, currentModelId);
+ 
+-  const push = (m: NpuModel, isCurrent: boolean) => {
+-    seen.add(m.id);
++  for (const m of models) {
++    const isCurrent = m.id === currentModelId;
++    const hasCursor = m.id === cursorModelId;
+     const transitioning = m.state === 'loading' || m.state === 'stopping';
+     const glyph = transitioning ? (blinkOn ? LED_ON : LED_OFF) : LED_ON;
+     const color: keyof Theme | undefined =
+-      m.state === 'up' ? 'success'
++      hasCursor ? 'suggestion'
++      : m.state === 'up' ? 'success'
+       : transitioning ? 'warning'
+       : 'error';
+     const where = m.cards.length > 0 ? ` npu${m.cards.join(',')}` : '';
++    // '▶●' 는 두 기호가 붙어 하나처럼 읽힌다 — 현재 선택 표시와 LED 를 띄워 둔다.
++    const body = `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}`;
++    const wrap = (s: string) => (hasCursor ? `[${s}]` : s);
+     segments.push({
+       key: `npu:${m.id}`,
+       // Current model outranks context/cost so it survives a narrow terminal;
+-      // the other cards' models yield first.
+-      priority: isCurrent ? 0.5 : 4,
+-      // '▶●' 는 두 기호가 붙어 하나처럼 읽힌다 — 현재 선택 표시와 LED 를 띄워 둔다.
+-      text: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}${where}`,
+-      shortText: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}`,
++      // the other cards' models yield first. The cursor entry must never be
++      // dropped — it is the one the user is steering.
++      priority: hasCursor ? 0 : isCurrent ? 0.5 : 4,
++      text: wrap(`${body}${where}`),
++      shortText: wrap(body),
+       color,
+     });
+-  };
+-
+-  const current = currentModelId ? npu.models.find(m => m.id === currentModelId) : undefined;
+-  if (current) {
+-    push(current, true);
+-  } else if (currentModelId) {
+-    // Selected but not on any card yet.
+-    push({ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, true);
+-  }
+-  for (const m of npu.models) {
+-    if (!seen.has(m.id)) push(m, false);
+   }
+   return segments;
+ }
+@@ -104,6 +101,8 @@ export type BuiltinStatusData = {
+   npu?: NpuStatus;
+   /** Model id as the router knows it — used to mark the active NPU segment. */
+   npuCurrentModelId?: string | null;
++  /** Model the ←/→ cursor sits on while the footer focuses the NPU line. */
++  npuCursorModelId?: string | null;
+   /** 0–100, or null before the first assistant turn. */
+   contextUsedPercent: number | null;
+   /** Current input token count (including cache), or null. */
+@@ -123,13 +122,23 @@ export function buildBuiltinStatusSegments(data: BuiltinStatusData): StatusSegme
+   // When an NPU router is behind us its per-model LEDs replace the plain model
+   // name — the LED line already names the model, and repeating it wastes width.
+   const npuSegments = data.npu
+-    ? buildNpuSegments(data.npu, data.npuCurrentModelId ?? null)
++    ? buildNpuSegments(data.npu, data.npuCurrentModelId ?? null, data.npuCursorModelId ?? null)
+     : [];
+   const segments: StatusSegment[] = npuSegments.length > 0 ? [...npuSegments] : [{
+     key: 'model',
+     priority: 0,
+     text: data.modelName
+   }];
++  if (npuSegments.length > 0 && data.npuCursorModelId) {
++    // Only while focused — the keys do nothing otherwise, and the row is tight.
++    segments.push({
++      key: 'npu:hint',
++      priority: 1,
++      text: '←→ 모델 · ↵ 적용 · esc 취소',
++      shortText: '←→ ↵ esc',
++      color: 'subtle'
++    });
++  }
+   if (data.contextUsedPercent !== null && data.contextInputTokens !== null && data.contextWindow !== null) {
+     const pct = data.contextUsedPercent;
+     const roundedPct = Math.round(pct);
+@@ -250,6 +259,10 @@ function BuiltinStatusLineInner({
+   // NPU card status (Furiosa router backends only). Each poll re-renders, which
+   // is also what drives the blink of a model that is still loading.
+   const npu = useNpuStatus();
++  // ↓ 로 상태줄에 포커스가 왔을 때만 커서를 그린다. AppState 에서 직접 읽어
++  // PromptInputFooter 를 통한 prop 배선을 피한다(coordinatorTaskIndex 와 같은 이유).
++  const npuFocused = useAppState(s => s.footerSelection === 'npu');
++  const npuFooterModelId = useAppState(s => s.npuFooterModelId);
+   const {
+     columns
+   } = useTerminalSize();
+@@ -285,6 +298,7 @@ function BuiltinStatusLineInner({
+   const segments = fitSegments(buildBuiltinStatusSegments({
+     ...computed,
+     npu,
++    npuCursorModelId: npuFocused ? npuFooterModelId : null,
+     rateLimit: getWorstRateLimit()
+   }),
+   // paddingX from the footer (2 each side) is already outside this Box;
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 77dbe0c..54bd1a1 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -11,7 +11,8 @@ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+ import { preloadNpuModel } from '../services/npuStatus.js';
+-import { applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
++import { useNpuStatus } from '../services/npuStatusHook.js';
++import { applyNpuLoadColors, applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuLoadStatesByBase, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,8 +97,9 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ }
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+-  // (see the ←/→ handler and the config row below).
+-  const $ = _c(94);
++  // (see the ←/→ handler and the config row below), 89–90 for the NPU
++  // presentation, 93–97 for colouring the models that are on the cards.
++  const $ = _c(98);
+   const {
+     initial,
+     sessionModel,
+@@ -126,6 +128,8 @@ export function ModelPicker(t0) {
+   });
+   // ←/→ 가 어느 축을 움직이는지. tab 으로 바꾼다.
+   const [npuAxis, setNpuAxis] = useState<NpuAxis>('dp');
++  // 어느 모델이 카드에 올라가 있는지 — 목록 색칠에 쓴다.
++  const npuStatus = useNpuStatus();
+   const effortValue = useAppState(_temp2);
+   let t1;
+   if ($[0] !== effortValue) {
+@@ -148,13 +152,32 @@ export function ModelPicker(t0) {
+   const t3b = optionsOverride ?? t3;
+   // 모든 픽커 경로가 여기서 합류한다. /model 은 optionsOverride 로 getModelOptions() 를
+   // 우회하므로, NPU 표현(변형 접기·백엔드 설명)은 반드시 이 지점에서 걸어야 한다.
+-  let modelOptionsBase;
++  let t3c;
+   if ($[89] !== t3b) {
+-    modelOptionsBase = applyNpuPresentation(t3b);
++    t3c = applyNpuPresentation(t3b);
+     $[89] = t3b;
+-    $[90] = modelOptionsBase;
++    $[90] = t3c;
++  } else {
++    t3c = $[90];
++  }
++  // 카드에 올라가 있는 모델은 전부 초록으로 칠한다. 선택된 하나만 초록이면
++  // 어느 것이 즉시 전환이고 어느 것이 콜드 스타트인지 구분할 수가 없다.
++  let t3d;
++  if ($[93] !== npuStatus.models) {
++    t3d = npuLoadStatesByBase(npuStatus.models);
++    $[93] = npuStatus.models;
++    $[94] = t3d;
++  } else {
++    t3d = $[94];
++  }
++  let modelOptionsBase;
++  if ($[95] !== t3c || $[96] !== t3d) {
++    modelOptionsBase = applyNpuLoadColors(t3c, t3d);
++    $[95] = t3c;
++    $[96] = t3d;
++    $[97] = modelOptionsBase;
+   } else {
+-    modelOptionsBase = $[90];
++    modelOptionsBase = $[97];
+   }
+   // Cross-profile switch options can only be honored by the /model command's
+   // onSelect, which decodes the value and activates the target profile. Strip
+diff --git a/src/components/PromptInput/PromptInput.tsx b/src/components/PromptInput/PromptInput.tsx
+index 4032ed2..affc76f 100644
+--- a/src/components/PromptInput/PromptInput.tsx
++++ b/src/components/PromptInput/PromptInput.tsx
+@@ -39,6 +39,8 @@ import { useOptionalKeybindingContext } from '../../keybindings/KeybindingContex
+ import { getShortcutDisplay } from '../../keybindings/shortcutFormat.js';
+ import { useKeybinding, useKeybindings } from '../../keybindings/useKeybinding.js';
+ import type { MCPServerConnection } from '../../services/mcp/types.js';
++import { npuDisplayModels, preloadNpuModel } from '../../services/npuStatus.js';
++import { useNpuStatus } from '../../services/npuStatusHook.js';
+ import { abortPromptSuggestion, logSuggestionSuppressed } from '../../services/PromptSuggestion/promptSuggestion.js';
+ import { type ActiveSpeculationState, abortSpeculation } from '../../services/PromptSuggestion/speculation.js';
+ import { getActiveAgentForInput, getViewedTeammateTask } from '../../state/selectors.js';
+@@ -471,13 +473,24 @@ function PromptInput({
+   const backgroundTaskCount = useMemo(() => countVisibleBackgroundTasks(tasks), [tasks]);
+   const tasksFooterVisible = backgroundTaskCount > 0 && !shouldHideTasksFooter(tasks, showSpinnerTree);
+   const teamsFooterVisible = cachedTeams.length > 0;
+-  const footerItems = useMemo(() => [tasksFooterVisible && 'tasks', tmuxFooterVisible && 'tmux', bagelFooterVisible && 'bagel', teamsFooterVisible && 'teams', bridgeFooterVisible && 'bridge', companionFooterVisible && 'companion'].filter(Boolean) as FooterItem[], [tasksFooterVisible, tmuxFooterVisible, bagelFooterVisible, teamsFooterVisible, bridgeFooterVisible, companionFooterVisible]);
++  // NPU 상태줄은 다른 pill 들보다 위(입력창에 더 가까이) 그려진다 — 아래 방향키가
++  // 입력창에서 나올 때 시각적으로 먼저 만나는 것이 여기라 목록에서도 첫 항목이다.
++  const npuStatus = useNpuStatus();
++  // 상태줄이 그리는 것과 같은 순서·같은 목록. 커서가 화면에 없는 항목을 가리키는
++  // 일이 없도록 표시와 조작이 한 함수를 공유한다.
++  const npuCurrentModelId = typeof mainLoopModel === 'string' ? mainLoopModel : null;
++  const npuDisplay = useMemo(() => npuStatus.available ? npuDisplayModels(npuStatus.models, npuCurrentModelId) : [], [npuStatus.available, npuStatus.models, npuCurrentModelId]);
++  // 라우터가 아는 모델이 하나라도 있을 때만 포커스를 받는다. 선택만 되고 아직
++  // 안 올라간 모델 하나뿐이면 고를 것이 없다.
++  const npuFooterVisible = npuStatus.available && npuStatus.models.length > 0;
++  const footerItems = useMemo(() => [npuFooterVisible && 'npu', tasksFooterVisible && 'tasks', tmuxFooterVisible && 'tmux', bagelFooterVisible && 'bagel', teamsFooterVisible && 'teams', bridgeFooterVisible && 'bridge', companionFooterVisible && 'companion'].filter(Boolean) as FooterItem[], [npuFooterVisible, tasksFooterVisible, tmuxFooterVisible, bagelFooterVisible, teamsFooterVisible, bridgeFooterVisible, companionFooterVisible]);
+ 
+   // Effective selection: null if the selected pill stopped rendering (bridge
+   // disconnected, task finished). The derivation makes the UI correct
+   // immediately; the useEffect below clears the raw state so it doesn't
+   // resurrect when the same pill reappears (new task starts → focus stolen).
+   const rawFooterSelection = useAppState(s => s.footerSelection);
++  const npuFooterModelId = useAppState(s => s.npuFooterModelId);
+   const footerItemSelected = rawFooterSelection && footerItems.includes(rawFooterSelection) ? rawFooterSelection : null;
+   useEffect(() => {
+     if (rawFooterSelection && !footerItemSelected) {
+@@ -488,6 +501,7 @@ function PromptInput({
+     }
+   }, [rawFooterSelection, footerItemSelected, setAppState]);
+   const tasksSelected = footerItemSelected === 'tasks';
++  const npuSelected = footerItemSelected === 'npu';
+   const tmuxSelected = footerItemSelected === 'tmux';
+   const bagelSelected = footerItemSelected === 'bagel';
+   const teamsSelected = footerItemSelected === 'teams';
+@@ -495,7 +509,13 @@ function PromptInput({
+   function selectFooterItem(item: FooterItem | null): void {
+     setAppState(prev => prev.footerSelection === item ? prev : {
+       ...prev,
+-      footerSelection: item
++      footerSelection: item,
++      // 포커스가 오면 커서는 지금 쓰고 있는 모델에서 출발한다.
++      ...(item === 'npu' && {
++        npuFooterModelId: npuDisplay.some(m => m.id === npuCurrentModelId)
++          ? npuCurrentModelId
++          : npuDisplay[0]?.id ?? null
++      })
+     });
+     if (item === 'tasks') {
+       setTeammateFooterIndex(0);
+@@ -503,6 +523,20 @@ function PromptInput({
+     }
+   }
+ 
++  // NPU 상태줄 안에서 ←/→ 로 모델 사이를 옮긴다. 여기서는 커서만 움직이고
++  // 실제 전환은 ↵ 에서 한다 — 지나치는 모델마다 전환되면 설정이 요동친다.
++  function stepNpuFooter(delta: 1 | -1): void {
++    if (npuDisplay.length === 0) return;
++    setAppState(prev => {
++      const at = npuDisplay.findIndex(m => m.id === prev.npuFooterModelId);
++      const next = npuDisplay[((at === -1 ? 0 : at) + delta + npuDisplay.length) % npuDisplay.length];
++      return next ? {
++        ...prev,
++        npuFooterModelId: next.id
++      } : prev;
++    });
++  }
++
+   // delta: +1 = down/right, -1 = up/left. Returns true if nav happened
+   // (including deselecting at the start), false if at a boundary.
+   function navigateFooter(delta: 1 | -1, exitAtStart = false): boolean {
+@@ -1826,6 +1860,11 @@ function PromptInput({
+       navigateFooter(1);
+     },
+     'footer:next': () => {
++      // NPU 상태줄: ←/→ 는 올라간 모델 사이를 옮긴다(pill 이동이 아니라).
++      if (npuSelected) {
++        stepNpuFooter(1);
++        return;
++      }
+       // Teammate mode: ←/→ cycles within the team member list
+       if (tasksSelected && isTeammateMode) {
+         const totalAgents = 1 + inProcessTeammates.length;
+@@ -1835,6 +1874,10 @@ function PromptInput({
+       navigateFooter(1);
+     },
+     'footer:previous': () => {
++      if (npuSelected) {
++        stepNpuFooter(-1);
++        return;
++      }
+       if (tasksSelected && isTeammateMode) {
+         const totalAgents = 1 + inProcessTeammates.length;
+         setTeammateFooterIndex(prev => (prev - 1 + totalAgents) % totalAgents);
+@@ -1847,6 +1890,17 @@ function PromptInput({
+         return;
+       }
+       switch (footerItemSelected) {
++        case 'npu': {
++          // 커서가 있는 모델로 전환하고 포커스를 입력창에 돌려준다.
++          const target = npuFooterModelId;
++          selectFooterItem(null);
++          if (target && target !== npuCurrentModelId) {
++            handleModelSelect(target, undefined);
++            // 다른 카드에 있던 모델이라도 내려가 있을 수 있으니 올려 둔다.
++            preloadNpuModel(target);
++          }
++          break;
++        }
+         case 'companion':
+           if (isBuddyEnabled()) {
+             selectFooterItem(null);
+diff --git a/src/main.tsx b/src/main.tsx
+index a7832be..d04a747 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -2912,6 +2912,7 @@ async function run(): Promise<CommanderCommand> {
+       coordinatorTaskIndex: -1,
+       viewSelectionMode: 'none',
+       footerSelection: null,
++      npuFooterModelId: null,
+       toolPermissionContext: effectiveToolPermissionContext,
+       agent: mainThreadAgentDefinition?.agentType,
+       agentDefinitions,
+diff --git a/src/services/npuStatus.test.ts b/src/services/npuStatus.test.ts
+new file mode 100644
+index 0000000..dac0e16
+--- /dev/null
++++ b/src/services/npuStatus.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, test } from 'bun:test'
++import { type NpuModel, npuDisplayModels, parseStatus, routerBaseUrl } from './npuStatus.js'
++
++const model = (id: string, state: NpuModel['state'] = 'up'): NpuModel => ({
++  id,
++  state,
++  cards: [],
++  dp: 1,
++  pp: 1,
++})
++
++describe('routerBaseUrl', () => {
++  test('strips the /v1 suffix so router endpoints resolve', () => {
++    expect(routerBaseUrl({ OPENAI_BASE_URL: 'http://127.0.0.1:8400/v1' })).toBe(
++      'http://127.0.0.1:8400',
++    )
++  })
++
++  test('is null when no OpenAI-compatible backend is configured', () => {
++    expect(routerBaseUrl({})).toBeNull()
++  })
++})
++
++describe('parseStatus', () => {
++  test('treats an unknown server state as up rather than hiding the model', () => {
++    const { models } = parseStatus({ running: { 'A': { state: 'wat', cards: [0] } } })
++    expect(models[0]?.state).toBe('up')
++  })
++
++  test('sorts by id so the status line does not reshuffle between polls', () => {
++    const { models } = parseStatus({ running: { B: {}, A: {}, C: {} } })
++    expect(models.map(m => m.id)).toEqual(['A', 'B', 'C'])
++  })
++})
++
++describe('npuDisplayModels', () => {
++  test('puts the selected model first', () => {
++    const out = npuDisplayModels([model('A'), model('B'), model('C')], 'B')
++    expect(out.map(m => m.id)).toEqual(['B', 'A', 'C'])
++  })
++
++  test('includes a selected model the router has never heard of, as down', () => {
++    const out = npuDisplayModels([model('A')], 'Cold')
++    expect(out.map(m => m.id)).toEqual(['Cold', 'A'])
++    expect(out[0]?.state).toBe('down')
++  })
++
++  test('lists everything when nothing is selected', () => {
++    expect(npuDisplayModels([model('A'), model('B')], null).map(m => m.id)).toEqual(['A', 'B'])
++  })
++
++  test('does not duplicate the selected model', () => {
++    const out = npuDisplayModels([model('A'), model('B')], 'A')
++    expect(out.filter(m => m.id === 'A')).toHaveLength(1)
++  })
++})
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+index 8c5ff49..763f4af 100644
+--- a/src/services/npuStatus.ts
++++ b/src/services/npuStatus.ts
+@@ -104,8 +104,67 @@ export function parseStatus(raw: RawStatus): Pick<NpuStatus, 'models' | 'freeCar
+   return { models, freeCards: Array.isArray(raw.free_cards) ? raw.free_cards : [] }
+ }
+ 
++/**
++ * The models to show, in display order: the selected one first, then the rest
++ * alphabetically.
++ *
++ * A selected model the router has never heard of is included anyway (as
++ * `down`), so picking a cold model shows something rather than nothing.
++ *
++ * Both the status line and the footer's ←/→ cursor read this, so the cursor
++ * always lands on the entry the user is looking at.
++ */
++export function npuDisplayModels(
++  models: readonly NpuModel[],
++  currentModelId: string | null,
++): NpuModel[] {
++  const current = currentModelId ? models.find(m => m.id === currentModelId) : undefined
++  const rest = models.filter(m => m.id !== current?.id)
++  if (current) return [current, ...rest]
++  if (currentModelId) {
++    return [{ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, ...rest]
++  }
++  return rest
++}
++
+ let timer: ReturnType<typeof setTimeout> | null = null
+ let stopped = false
++let pollBase: string | null = null
++
++/**
++ * Models we have asked the router to load, until it acknowledges them.
++ *
++ * The router registers a preload asynchronously, so the poll that follows it
++ * can still report nothing. Without this the status line would show the model
++ * red ("not loaded") for a beat right after the user picked it — the one moment
++ * they are watching it. Each entry expires so a preload the router silently
++ * dropped stops claiming to be loading.
++ */
++const pendingPreload = new Map<string, number>()
++const PENDING_PRELOAD_TTL_MS = 60_000
++
++function expirePending(now: number): void {
++  for (const [id, deadline] of pendingPreload) {
++    if (now >= deadline) pendingPreload.delete(id)
++  }
++}
++
++/** Adds synthetic `loading` entries for preloads the router hasn't reported yet. */
++function withPending(models: NpuModel[], now: number): NpuModel[] {
++  expirePending(now)
++  if (pendingPreload.size === 0) return models
++  const out = [...models]
++  for (const id of pendingPreload.keys()) {
++    // Once the router knows about it, its own state wins — including `error`.
++    if (models.some(m => m.id === id)) {
++      pendingPreload.delete(id)
++      continue
++    }
++    out.push({ id, state: 'loading', cards: [], dp: 1, pp: 1 })
++  }
++  out.sort((a, b) => a.id.localeCompare(b.id))
++  return out
++}
+ 
+ async function pollOnce(base: string): Promise<boolean> {
+   const controller = new AbortController()
+@@ -114,7 +173,7 @@ async function pollOnce(base: string): Promise<boolean> {
+     const res = await fetch(`${base}/router/status`, { signal: controller.signal })
+     if (!res.ok) return false
+     const parsed = parseStatus((await res.json()) as RawStatus)
+-    currentNpuStatus.models = parsed.models
++    currentNpuStatus.models = withPending(parsed.models, Date.now())
+     currentNpuStatus.freeCards = parsed.freeCards
+     currentNpuStatus.phase += 1
+     currentNpuStatus.available = true
+@@ -127,6 +186,19 @@ async function pollOnce(base: string): Promise<boolean> {
+   }
+ }
+ 
++/**
++ * Polls now instead of waiting out the scheduled delay.
++ *
++ * Idle polling runs every 10s, so an action the user just took (picking a
++ * model) would otherwise leave the status line stale for up to that long —
++ * long enough to look broken.
++ */
++export function refreshNpuStatusNow(): void {
++  if (stopped || timer === null) return
++  clearTimeout(timer)
++  timer = setTimeout(scheduledPoll, 0)
++}
++
+ /**
+  * Starts polling. Safe to call repeatedly — only the first call arms the loop.
+  * A failed *first* probe means this backend is not a Furiosa router, so we stop
+@@ -134,24 +206,32 @@ async function pollOnce(base: string): Promise<boolean> {
+  */
+ export function startNpuStatusPolling(base = routerBaseUrl()): void {
+   if (timer !== null || stopped || !base) return
+-  let everSucceeded = false
+-  const loop = async (): Promise<void> => {
+-    const ok = await pollOnce(base)
+-    if (ok) {
+-      everSucceeded = true
+-    } else if (!everSucceeded) {
+-      stopped = true // not a Furiosa router — stay quiet
+-      currentNpuStatus.available = false
+-      notify()
+-      return
+-    }
+-    if (stopped) return
+-    const delay = isTransitioning(currentNpuStatus.models)
++  pollBase = base
++  timer = setTimeout(scheduledPoll, 0)
++}
++
++let everSucceeded = false
++
++async function scheduledPoll(): Promise<void> {
++  const base = pollBase
++  if (base === null) return
++  const ok = await pollOnce(base)
++  if (ok) {
++    everSucceeded = true
++  } else if (!everSucceeded) {
++    stopped = true // not a Furiosa router — stay quiet
++    currentNpuStatus.available = false
++    notify()
++    return
++  }
++  if (stopped) return
++  // A preload the router hasn't acknowledged is as urgent as a visible
++  // transition — that gap is exactly when the user is waiting for the LED.
++  const delay =
++    isTransitioning(currentNpuStatus.models) || pendingPreload.size > 0
+       ? ACTIVE_INTERVAL_MS
+       : IDLE_INTERVAL_MS
+-    timer = setTimeout(loop, delay)
+-  }
+-  timer = setTimeout(loop, 0)
++  timer = setTimeout(scheduledPoll, delay)
+ }
+ 
+ export function stopNpuStatusPolling(): void {
+@@ -167,6 +247,9 @@ export function __resetNpuStatusForTest(): void {
+   stopNpuStatusPolling()
+   stopped = false
+   timer = null
++  pollBase = null
++  everSucceeded = false
++  pendingPreload.clear()
+   currentNpuStatus.models = []
+   currentNpuStatus.freeCards = []
+   currentNpuStatus.phase = 0
+@@ -184,6 +267,17 @@ export function __resetNpuStatusForTest(): void {
+  */
+ export function preloadNpuModel(modelId: string, base = routerBaseUrl()): void {
+   if (!base || !modelId) return
++
++  // Show it as loading immediately. The router acknowledges asynchronously, so
++  // waiting for confirmation would leave the LED red for the first second or
++  // two after the pick — indistinguishable from "nothing happened".
++  pendingPreload.set(modelId, Date.now() + PENDING_PRELOAD_TTL_MS)
++  if (currentNpuStatus.available) {
++    currentNpuStatus.models = withPending(currentNpuStatus.models, Date.now())
++    notify()
++  }
++  startNpuStatusPolling(base)
++
+   const controller = new AbortController()
+   const abort = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+   void fetch(`${base}/router/preload`, {
+@@ -192,12 +286,47 @@ export function preloadNpuModel(modelId: string, base = routerBaseUrl()): void {
+     body: JSON.stringify({ model: modelId }),
+     signal: controller.signal,
+   })
++    .then(res => {
++      // A router predating this endpoint 404s. It still serves lazily, so a
++      // throwaway completion starts the same load the first message would.
++      if (!res.ok) warmUpNpuModel(modelId, base)
++    })
+     .catch(() => {
+-      // Not a Furiosa router, or it declined — the model still loads on first use.
++      // Unreachable or not a router at all — nothing to fall back to.
++      pendingPreload.delete(modelId)
+     })
+     .finally(() => {
+       clearTimeout(abort)
+-      // Poll fast so the LED reacts to the load we just started.
+-      startNpuStatusPolling(base)
++      // Ask now rather than waiting out the idle interval.
++      refreshNpuStatusNow()
+     })
+ }
++
++/**
++ * Starts a load on a router that has no preload endpoint, by sending the
++ * smallest possible completion — the router serves lazily, so any request for
++ * the model brings it up.
++ *
++ * Only ever aimed at a confirmed Furiosa router: firing throwaway completions
++ * at someone's metered OpenAI endpoint would cost them real money.
++ */
++function warmUpNpuModel(modelId: string, base: string): void {
++  if (!currentNpuStatus.available) {
++    pendingPreload.delete(modelId)
++    return
++  }
++  // No timeout: the request stays open for the whole cold start (minutes for a
++  // tp32 model). Nothing reads the response — the status poll reports progress.
++  void fetch(`${base}/v1/chat/completions`, {
++    method: 'POST',
++    headers: { 'Content-Type': 'application/json' },
++    body: JSON.stringify({
++      model: modelId,
++      messages: [{ role: 'user', content: 'hi' }],
++      max_tokens: 1,
++      stream: false,
++    }),
++  }).catch(() => {
++    pendingPreload.delete(modelId)
++  })
++}
+diff --git a/src/state/AppStateStore.ts b/src/state/AppStateStore.ts
+index b819cc5..208aec2 100644
+--- a/src/state/AppStateStore.ts
++++ b/src/state/AppStateStore.ts
+@@ -87,6 +87,8 @@ export type FooterItem =
+   | 'teams'
+   | 'bridge'
+   | 'companion'
++  // The NPU model LEDs in the built-in status line.
++  | 'npu'
+ 
+ export type AppState = DeepImmutable<{
+   settings: SettingsJson
+@@ -108,6 +110,12 @@ export type AppState = DeepImmutable<{
+   // Lives in AppState so pill components rendered outside PromptInput
+   // (CompanionSprite in REPL.tsx) can read their own focused state.
+   footerSelection: FooterItem | null
++  // Which NPU model the ←/→ cursor sits on while the 'npu' pill is focused.
++  // Keyed by model id rather than list position so the status line and the key
++  // handler cannot disagree about what the cursor is on. In AppState so the
++  // status line can read it without prop-drilling through PromptInputFooter
++  // (same rationale as coordinatorTaskIndex).
++  npuFooterModelId: string | null
+   toolPermissionContext: ToolPermissionContext
+   spinnerTip?: string
+   // Active main-thread agent name for this session. Initially sourced from
+@@ -485,6 +493,7 @@ export function getDefaultAppState(): AppState {
+     coordinatorTaskIndex: -1,
+     viewSelectionMode: 'none',
+     footerSelection: null,
++    npuFooterModelId: null,
+     kairosEnabled: false,
+     remoteSessionUrl: undefined,
+     remoteConnectionStatus: 'connecting',
+diff --git a/src/utils/npuVariants.test.ts b/src/utils/npuVariants.test.ts
+new file mode 100644
+index 0000000..6c8bdcc
+--- /dev/null
++++ b/src/utils/npuVariants.test.ts
+@@ -0,0 +1,120 @@
++import { describe, expect, test } from 'bun:test'
++import {
++  applyNpuLoadColors,
++  collapseNpuVariants,
++  npuAxisAllValues,
++  npuAxisValues,
++  npuLoadStatesByBase,
++  parseNpuVariant,
++  stepNpuAxis,
++  variantId,
++} from './npuVariants.js'
++
++describe('parseNpuVariant', () => {
++  test('splits both suffixes off the base id', () => {
++    expect(parseNpuVariant('Llama-3.1-8B-Instruct@dp2@pp2')).toMatchObject({
++      base: 'Llama-3.1-8B-Instruct',
++      dp: 2,
++      pp: 2,
++    })
++  })
++
++  test('leaves a bare model id alone', () => {
++    expect(parseNpuVariant('Qwen3-4B-FP8')).toMatchObject({ base: 'Qwen3-4B-FP8', dp: 1, pp: 1 })
++  })
++
++  test('keeps a malformed suffix in the base rather than routing elsewhere', () => {
++    expect(parseNpuVariant('weird@dp0').base).toBe('weird@dp0')
++  })
++})
++
++describe('variantId', () => {
++  test('dp1·pp1 is the bare model name', () => {
++    expect(variantId('Qwen3-4B-FP8', 1, 1)).toBe('Qwen3-4B-FP8')
++  })
++
++  test('composes only the axes that are above 1', () => {
++    expect(variantId('Qwen3-4B-FP8', 2, 1)).toBe('Qwen3-4B-FP8@dp2')
++    expect(variantId('Qwen3-4B-FP8@dp2', 1, 2)).toBe('Qwen3-4B-FP8@pp2')
++  })
++})
++
++describe('collapseNpuVariants', () => {
++  test('lists one row per model', () => {
++    expect(collapseNpuVariants(['A', 'A@dp2', 'A@dp4', 'B'])).toEqual(['A', 'B'])
++  })
++
++  test('keeps a variant whose base is missing, or it would be unreachable', () => {
++    expect(collapseNpuVariants(['A@dp2'])).toEqual(['A@dp2'])
++  })
++})
++
++describe('npu axis values', () => {
++  // Llama-3.1-8B-Instruct on 1 card: dp x pp <= 4.
++  const ids = ['L', 'L@dp2', 'L@dp4', 'L@pp2', 'L@pp4', 'L@dp2@pp2']
++
++  test('offers only combinations the pair can actually reach', () => {
++    expect(npuAxisValues('L', ids, 'dp', 1)).toEqual([1, 2, 4])
++    // Holding pp=2, dp=4 would need 8 cards.
++    expect(npuAxisValues('L', ids, 'dp', 2)).toEqual([1, 2])
++  })
++
++  test('reports every value of an axis for a stable row width', () => {
++    expect(npuAxisAllValues('L', ids, 'dp')).toEqual([1, 2, 4])
++    expect(npuAxisAllValues('L', ids, 'pp')).toEqual([1, 2, 4])
++  })
++
++  test('repairs the partner axis when a move would strand it', () => {
++    // dp=4 with pp=2 is impossible, so raising pp pulls dp down to a legal value.
++    expect(stepNpuAxis('L', ids, 'pp', { dp: 4, pp: 1 }, 'right')).toEqual({ dp: 2, pp: 2 })
++  })
++
++  test('returns null when the model has a single configuration', () => {
++    expect(stepNpuAxis('X', ['X'], 'dp', { dp: 1, pp: 1 }, 'right')).toBeNull()
++  })
++})
++
++describe('npuLoadStatesByBase', () => {
++  test('a loaded variant lights up its model row', () => {
++    const states = npuLoadStatesByBase([{ id: 'L@dp2', state: 'up' }])
++    expect(states.get('L')).toBe('up')
++  })
++
++  test('up wins over loading — some card is ready now', () => {
++    const states = npuLoadStatesByBase([
++      { id: 'L@dp2', state: 'loading' },
++      { id: 'L', state: 'up' },
++    ])
++    expect(states.get('L')).toBe('up')
++  })
++
++  test('a model in transition reads as busy', () => {
++    expect(npuLoadStatesByBase([{ id: 'L', state: 'stopping' }]).get('L')).toBe('busy')
++  })
++
++  test('ignores states that mean the model is not on a card', () => {
++    expect(npuLoadStatesByBase([{ id: 'L', state: 'down' }]).size).toBe(0)
++  })
++})
++
++describe('applyNpuLoadColors', () => {
++  const options = [{ value: 'L', label: 'L' }, { value: 'Q', label: 'Q' }]
++
++  test('paints every loaded model, not just the selected one', () => {
++    const out = applyNpuLoadColors(options, npuLoadStatesByBase([
++      { id: 'L@dp2', state: 'up' },
++      { id: 'Q', state: 'up' },
++    ]))
++    expect(out.map(o => o.color)).toEqual(['success', 'success'])
++  })
++
++  test('marks a model that is still moving', () => {
++    const out = applyNpuLoadColors(options, npuLoadStatesByBase([{ id: 'L', state: 'loading' }]))
++    expect(out[0]?.color).toBe('warning')
++    expect(out[1]?.color).toBeUndefined()
++  })
++
++  test('leaves options untouched when no NPU router is behind us', () => {
++    expect(applyNpuLoadColors(options, new Map())).toBe(options as never)
++  })
++})
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index b00fbc3..efa22d3 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -119,7 +119,15 @@ export function getDiscoveredModelIds(): readonly string[] {
+  * whose base is missing is kept — otherwise it would become unreachable.
+  */
+ export function collapseNpuVariants(ids: readonly string[]): string[] {
+-  const bases = new Set(ids.map(id => parseNpuVariant(id).base))
++  // Only ids that are themselves bare models count as a base being present.
++  // Deriving this from every id (variants included) would make each variant
++  // vouch for its own base and drop the whole model from the list.
++  const bases = new Set(
++    ids.filter(id => {
++      const v = parseNpuVariant(id)
++      return v.dp === 1 && v.pp === 1
++    }),
++  )
+   return ids.filter(id => {
+     const v = parseNpuVariant(id)
+     const isVariant = v.dp !== 1 || v.pp !== 1
+@@ -179,6 +187,51 @@ export function applyNpuPresentation<
+     })
+ }
+ 
++/**
++ * Which models are on the cards, keyed by base id.
++ *
++ * The picker lists one row per model while the router reports one entry per
++ * parallel configuration, so `Llama-3.1-8B-Instruct@dp2` has to light up the
++ * `Llama-3.1-8B-Instruct` row. A model already serving under *some*
++ * configuration is available to switch to, which is what the row needs to say.
++ *
++ * `up` wins over `loading` when both are present — some card is ready now.
++ */
++export function npuLoadStatesByBase(
++  models: readonly { id: string; state: string }[],
++): Map<string, 'up' | 'busy'> {
++  const out = new Map<string, 'up' | 'busy'>()
++  for (const m of models) {
++    const { base } = parseNpuVariant(m.id)
++    if (m.state === 'up') out.set(base, 'up')
++    else if ((m.state === 'loading' || m.state === 'stopping') && out.get(base) !== 'up') {
++      out.set(base, 'busy')
++    }
++  }
++  return out
++}
++
++/**
++ * Colours each option by whether its model is on the cards: green for loaded,
++ * yellow while it moves. Options the router says nothing about are left alone.
++ *
++ * Without this only the *selected* model reads as green, which hides the whole
++ * point of holding several models across the four cards — you cannot see which
++ * ones are a free switch and which mean a two-minute cold start.
++ */
++export function applyNpuLoadColors<T extends { value?: string | null; color?: string }>(
++  options: readonly T[],
++  loaded: Map<string, 'up' | 'busy'>,
++): T[] {
++  if (loaded.size === 0) return options as T[]
++  return options.map(o => {
++    if (typeof o.value !== 'string') return o
++    const state = loaded.get(parseNpuVariant(o.value).base)
++    if (!state) return o
++    return { ...o, color: state === 'up' ? 'success' : 'warning' }
++  })
++}
++
+ /** Axis of the parallel configuration the user is currently adjusting. */
+ export type NpuAxis = 'dp' | 'pp'
+ 
 -- 
 2.43.0
 
