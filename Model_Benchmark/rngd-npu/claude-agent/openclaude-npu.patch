@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 1/7] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 1/8] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 2/7] model picker: use backend-supplied model descriptions
+Subject: [PATCH 2/8] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 3/7] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
+Subject: [PATCH 3/8] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
  =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 4/7] model picker: say why the NPU config row is absent
+Subject: [PATCH 4/8] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 5/7] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 5/8] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 6/7] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 6/8] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 7/7] model picker: apply NPU presentation where every path
+Subject: [PATCH 7/8] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1266,6 +1266,286 @@ index d6de5f4..239767c 100644
 +        typeof o.value === 'string' ? descriptions[o.value] : undefined
 +      return described ? { ...o, description: described } : o
 +    })
++}
+-- 
+2.43.0
+
+
+From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:48:44 +0900
+Subject: [PATCH 8/8] model picker: adjust dp and pp as separate axes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The row cycled through whole configurations — dp1·pp1, dp2·pp1, dp1·pp2,
+dp2·pp2 — so reaching a particular pp meant walking past unrelated dp values.
+People pick these separately.
+
+Now each axis has its own row of values, ←/→ moves the active one and tab
+switches between them (free in this context; shift+tab is already the global
+permission-mode cycle).
+
+The axes cannot be fully independent: dp x pp is bounded by the card count and
+the backend only advertises servable combinations. Each axis therefore offers
+only the values reachable while the other is held, and a move that would strand
+the partner repairs it — from dp4·pp1, stepping pp lands on dp2·pp2 rather than
+an id that does not exist. FXB artifacts, which cannot do pipeline parallelism
+at all, simply show pp with a single value.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx     | 54 +++++++++++++++-----------
+ src/keybindings/defaultBindings.ts |  1 +
+ src/keybindings/schema.ts          |  1 +
+ src/keybindings/types.ts           |  1 +
+ src/utils/npuVariants.ts           | 61 ++++++++++++++++++++++++++++++
+ 5 files changed, 96 insertions(+), 22 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index f10e054..cf64f27 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { applyNpuPresentation, cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
++import { applyNpuPresentation, getDiscoveredModelIds, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,7 +96,7 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+   // (see the ←/→ handler and the config row below).
+-  const $ = _c(91);
++  const $ = _c(94);
+   const {
+     initial,
+     sessionModel,
+@@ -123,6 +123,8 @@ export function ModelPicker(t0) {
+     dp: 1,
+     pp: 1
+   });
++  // ←/→ 가 어느 축을 움직이는지. tab 으로 바꾼다.
++  const [npuAxis, setNpuAxis] = useState<NpuAxis>('dp');
+   const effortValue = useAppState(_temp2);
+   let t1;
+   if ($[0] !== effortValue) {
+@@ -279,7 +281,7 @@ export function ModelPicker(t0) {
+   }
+   const handleFocus = t10;
+   let t11;
+-  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== npuConfig || $[85] !== focusedValue) {
++  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== npuConfig || $[85] !== focusedValue || $[91] !== npuAxis) {
+     t11 = direction => {
+       if (!focusedSupportsEffort) {
+         // Models served by the NPU router have no effort setting, so ←/→ would
+@@ -287,14 +289,9 @@ export function ModelPicker(t0) {
+         // parallel configurations (dp/pp), which the router publishes as
+         // sibling model ids. Returns null when there is only one config, and
+         // then the keypress stays a no-op as before.
+-        const composed = variantId(focusedValue, npuConfig.dp, npuConfig.pp);
+-        const nextVariant = cycleNpuVariant(composed, getDiscoveredModelIds(), direction);
+-        if (nextVariant !== null) {
+-          const next = parseNpuVariant(nextVariant);
+-          setNpuConfig({
+-            dp: next.dp,
+-            pp: next.pp
+-          });
++        const next = stepNpuAxis(focusedValue, getDiscoveredModelIds(), npuAxis, npuConfig, direction);
++        if (next !== null) {
++          setNpuConfig(next);
+         }
+         return;
+       }
+@@ -307,12 +304,14 @@ export function ModelPicker(t0) {
+     $[31] = focusedAvailableLevels;
+     $[84] = npuConfig;
+     $[85] = focusedValue;
++    $[91] = npuAxis;
+     $[32] = t11;
+   } else {
+     t11 = $[32];
+   }
+   const handleCycleEffort = t11;
+   const t12 = {
++    "modelPicker:toggleParallelAxis": () => setNpuAxis(a => a === "dp" ? "pp" : "dp"),
+     "modelPicker:decreaseEffort": () => handleCycleEffort("left"),
+     "modelPicker:increaseEffort": () => handleCycleEffort("right"),
+     ...(onRefresh ? {
+@@ -452,14 +451,15 @@ export function ModelPicker(t0) {
+     t23 = $[61];
+   }
+   let t24;
+-  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue || $[88] !== npuConfig) {
+-    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} dp={npuConfig.dp} pp={npuConfig.pp} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
++  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue || $[88] !== npuConfig || $[92] !== npuAxis) {
++    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} dp={npuConfig.dp} pp={npuConfig.pp} axis={npuAxis} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+     $[62] = displayEffort;
+     $[63] = focusedDefaultEffort;
+     $[64] = focusedModelName;
+     $[65] = focusedSupportsEffort;
+     $[86] = focusedValue;
+     $[88] = npuConfig;
++    $[92] = npuAxis;
+     $[66] = t24;
+   } else {
+     t24 = $[66];
+@@ -575,11 +575,13 @@ function resolveOptionModel(value?: string): string | undefined {
+ function NpuParallelismRow({
+   modelId,
+   dp,
+-  pp
++  pp,
++  axis
+ }: {
+   modelId: string;
+   dp: number;
+   pp: number;
++  axis: NpuAxis;
+ }): React.ReactNode {
+   // 목록은 모델당 한 줄로 접혀 있으므로, 선택지는 백엔드가 광고한 전체 id 에서 읽는다.
+   const allValues = getDiscoveredModelIds();
+@@ -595,16 +597,24 @@ function NpuParallelismRow({
+         {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
+       </Text>;
+   }
+-  const activeIndex = variants.findIndex(v => v.dp === dp && v.pp === pp);
+-  return <Text dimColor={true}>
+-      {'NPU  '}
+-      {variants.map((v, i) => <Text key={v.value}>
+-          {i > 0 ? '  ' : ''}
+-          <Text color={i === activeIndex ? 'claude' : undefined} dimColor={i !== activeIndex}>
+-            {i === activeIndex ? `[${describeNpuVariant(v)}]` : ` ${describeNpuVariant(v)} `}
++  const dpValues = npuAxisValues(modelId, allValues, 'dp', pp);
++  const ppValues = npuAxisValues(modelId, allValues, 'pp', dp);
++  const renderAxis = (name: NpuAxis, values: number[], active: number) => <Text>
++      <Text color={axis === name ? 'claude' : undefined} dimColor={axis !== name} bold={axis === name}>{name}</Text>
++      {values.map(n => <Text key={`${name}${n}`}>
++          {' '}
++          <Text color={n === active ? 'claude' : undefined} dimColor={n !== active}>
++            {n === active ? `[${n}]` : ` ${n} `}
+           </Text>
+         </Text>)}
+-      {'  '}<Text color="subtle">← → to adjust</Text>
++    </Text>;
++  return <Text dimColor={true}>
++      {'NPU  '}
++      {renderAxis('dp', dpValues, dp)}
++      {'    '}
++      {renderAxis('pp', ppValues, pp)}
++      {'    '}
++      <Text color="subtle">← → to adjust · tab for {axis === 'dp' ? 'pp' : 'dp'}</Text>
+     </Text>;
+ }
+ function EffortLevelIndicator(t0) {
+diff --git a/src/keybindings/defaultBindings.ts b/src/keybindings/defaultBindings.ts
+index 886b1a9..c7fcae1 100644
+--- a/src/keybindings/defaultBindings.ts
++++ b/src/keybindings/defaultBindings.ts
+@@ -313,6 +313,7 @@ export const DEFAULT_BINDINGS: KeybindingBlock[] = [
+       left: 'modelPicker:decreaseEffort',
+       right: 'modelPicker:increaseEffort',
+       r: 'modelPicker:refresh',
++      tab: 'modelPicker:toggleParallelAxis',
+     },
+   },
+   // Select component navigation (used by /model, /resume, permission prompts, etc.)
+diff --git a/src/keybindings/schema.ts b/src/keybindings/schema.ts
+index 120622e..5132c95 100644
+--- a/src/keybindings/schema.ts
++++ b/src/keybindings/schema.ts
+@@ -154,6 +154,7 @@ export const KEYBINDING_ACTIONS = [
+   'modelPicker:decreaseEffort',
+   'modelPicker:increaseEffort',
+   'modelPicker:refresh',
++  'modelPicker:toggleParallelAxis',
+   // Select component actions (distinct from confirm: to avoid collisions)
+   'select:next',
+   'select:previous',
+diff --git a/src/keybindings/types.ts b/src/keybindings/types.ts
+index 69b561a..5d769f6 100644
+--- a/src/keybindings/types.ts
++++ b/src/keybindings/types.ts
+@@ -97,6 +97,7 @@ export type KeybindingAction =
+   | 'modelPicker:decreaseEffort'
+   | 'modelPicker:increaseEffort'
+   | 'modelPicker:refresh'
++  | 'modelPicker:toggleParallelAxis'
+   | 'select:next'
+   | 'select:previous'
+   | 'select:accept'
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 239767c..0f33993 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -178,3 +178,64 @@ export function applyNpuPresentation<
+       return described ? { ...o, description: described } : o
+     })
+ }
++
++/** Axis of the parallel configuration the user is currently adjusting. */
++export type NpuAxis = 'dp' | 'pp'
++
++/**
++ * Values available on one axis while the other is held fixed.
++ *
++ * dp and pp are not independent — dp x pp is bounded by the card count, and the
++ * backend only advertises combinations it can actually serve. Offering a value
++ * the pair cannot reach would produce a model id that does not exist, so the
++ * choices are always derived from the advertised set.
++ */
++export function npuAxisValues(
++  modelId: string,
++  allValues: readonly string[],
++  axis: NpuAxis,
++  other: number,
++): number[] {
++  const variants = npuVariantsOf(modelId, allValues)
++  const vals = variants
++    .filter(v => (axis === 'dp' ? v.pp === other : v.dp === other))
++    .map(v => (axis === 'dp' ? v.dp : v.pp))
++  return [...new Set(vals)].sort((a, b) => a - b)
++}
++
++/**
++ * Moves one axis to its next value, keeping the pair valid: when the partner
++ * value cannot survive the move it falls back to the largest one that can.
++ * Returns null when the axis has nothing else to offer.
++ */
++export function stepNpuAxis(
++  modelId: string,
++  allValues: readonly string[],
++  axis: NpuAxis,
++  current: { dp: number; pp: number },
++  direction: 'left' | 'right',
++): { dp: number; pp: number } | null {
++  const other = axis === 'dp' ? current.pp : current.dp
++  let values = npuAxisValues(modelId, allValues, axis, other)
++  if (values.length < 2) {
++    // Nothing to move to while the partner is held — allow the move anyway by
++    // considering every value this axis can take, then repair the partner.
++    const all = npuVariantsOf(modelId, allValues).map(v => (axis === 'dp' ? v.dp : v.pp))
++    values = [...new Set(all)].sort((a, b) => a - b)
++    if (values.length < 2) return null
++  }
++  const cur = axis === 'dp' ? current.dp : current.pp
++  const i = values.indexOf(cur)
++  const base = i === -1 ? 0 : i
++  const next =
++    direction === 'right'
++      ? values[(base + 1) % values.length]!
++      : values[(base - 1 + values.length) % values.length]!
++  const partnerAxis: NpuAxis = axis === 'dp' ? 'pp' : 'dp'
++  let partner = other
++  const partnerChoices = npuAxisValues(modelId, allValues, partnerAxis, next)
++  if (!partnerChoices.includes(partner)) {
++    partner = partnerChoices.length > 0 ? partnerChoices[partnerChoices.length - 1]! : 1
++  }
++  return axis === 'dp' ? { dp: next, pp: partner } : { dp: partner, pp: next }
 +}
 -- 
 2.43.0
