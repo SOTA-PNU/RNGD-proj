@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 1/9] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 01/10] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 2/9] model picker: use backend-supplied model descriptions
+Subject: [PATCH 02/10] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,8 +465,8 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 3/9] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
- =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
+Subject: [PATCH 03/10] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
+ =?UTF-8?q?with=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 4/9] model picker: say why the NPU config row is absent
+Subject: [PATCH 04/10] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 5/9] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 05/10] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 6/9] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 06/10] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 7/9] model picker: apply NPU presentation where every path
+Subject: [PATCH 07/10] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1274,7 +1274,7 @@ index d6de5f4..239767c 100644
 From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:48:44 +0900
-Subject: [PATCH 8/9] model picker: adjust dp and pp as separate axes
+Subject: [PATCH 08/10] model picker: adjust dp and pp as separate axes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1554,7 +1554,7 @@ index 239767c..0f33993 100644
 From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:03:05 +0900
-Subject: [PATCH 9/9] model picker: stop the dp/pp row from reflowing
+Subject: [PATCH 09/10] model picker: stop the dp/pp row from reflowing
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1649,6 +1649,43 @@ index 0f33993..b00fbc3 100644
 +  )
 +  return [...new Set(vals)].sort((a, b) => a - b)
 +}
+-- 
+2.43.0
+
+
+From 27c42e3729aab78a816115b3e4c68a03c905cb77 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 01:51:34 +0900
+Subject: [PATCH 10/10] statusline: separate the current-model marker from the
+ LED
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+'▶●' ran together and read as one glyph. Space them so the selection marker and
+the state light are distinguishable.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/BuiltinStatusLine.tsx | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index ea77786..f6657b6 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -79,8 +79,9 @@ export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null):
+       // Current model outranks context/cost so it survives a narrow terminal;
+       // the other cards' models yield first.
+       priority: isCurrent ? 0.5 : 4,
+-      text: `${isCurrent ? '▶' : ''}${glyph} ${m.id}${where}`,
+-      shortText: `${isCurrent ? '▶' : ''}${glyph} ${m.id}`,
++      // '▶●' 는 두 기호가 붙어 하나처럼 읽힌다 — 현재 선택 표시와 LED 를 띄워 둔다.
++      text: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}${where}`,
++      shortText: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}`,
+       color,
+     });
+   };
 -- 
 2.43.0
 
