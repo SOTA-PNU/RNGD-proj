@@ -214,6 +214,38 @@ Bash(scp:*)
 DENYEOF
 fi
 
+# Shift+Tab 으로 자동모드(bypassPermissions)에 들어갈 수 있게 한다.
+#
+# ⚠️ 이 설정은 자동모드를 **켜지 않는다**. 모드 순환 목록에 '나타나게만' 한다.
+#    openclaude 는 기본적으로 bypassPermissions 를 목록에서 숨기고, 켜려면 실행할 때마다
+#    --dangerously-skip-permissions 를 붙이게 한다. 그러면 '세션 도중 잠깐만 자동으로'가
+#    불가능해서, 결국 늘 위험한 플래그로 켜 두는 쪽으로 사람을 밀어붙인다.
+#    이 설정을 주면 평소엔 안전한 default 로 쓰다가 필요할 때만 Shift+Tab 으로 올라갔다
+#    내려올 수 있다. 스키마 설명도 정확히 그 용도다:
+#      "Allow bypass permissions mode to appear in the mode list without requiring the CLI flag"
+#
+#    Shift+Tab 순환:  default → acceptEdits → plan → bypassPermissions → fullAccess → default
+#
+#    잠그고 싶으면 FURIO_ALLOW_BYPASS=0 으로 설치하면 된다(그러면 CLI 플래그로만 가능).
+CFG_DIR="$HOME_DIR/config"
+if [ "${FURIO_ALLOW_BYPASS:-1}" = "0" ]; then
+  echo "      [skip] Shift+Tab 자동모드 비활성(FURIO_ALLOW_BYPASS=0)"
+else
+  mkdir -p "$CFG_DIR"
+  # 기존 settings.json 이 있으면 다른 키는 보존하고 이 항목만 병합한다.
+  node -e '
+const fs=require("fs"), p=process.argv[1];
+let j={};
+try{ j=JSON.parse(fs.readFileSync(p,"utf8"))||{} }catch(e){ j={} }
+if (typeof j!=="object"||Array.isArray(j)) j={};
+j.permissions = (j.permissions && typeof j.permissions==="object" && !Array.isArray(j.permissions)) ? j.permissions : {};
+j.permissions.allowBypassPermissionsMode = true;
+fs.writeFileSync(p, JSON.stringify(j,null,2)+"\n");
+' "$CFG_DIR/settings.json" 2>/dev/null \
+    && echo "      [ok] Shift+Tab 으로 자동모드 진입 가능 (기본은 여전히 '매번 확인')" \
+    || echo "      [warn] settings.json 기록 실패 — 자동모드는 FURIO_AUTO=1 로만 가능"
+fi
+
 echo "[4/4] '$CMD' 명령 설치: $BIN_DIR/$CMD"
 cat > "$BIN_DIR/$CMD" <<EOF
 #!/usr/bin/env bash
@@ -244,8 +276,12 @@ case "\$FURIO_AUTO" in
   edits|accept)         AUTO_ARGS=(--permission-mode acceptEdits) ;;   # 파일편집만 자동(Bash 등은 확인)
   safe|rules)
     # 규칙 기반 '안전 자동모드': 안전한 건 자동 승인, 위험한 건 차단, 나머지는 사람에게 질문.
-    # openclaude 네이티브 auto 모드는 Anthropic 전용 게이트라 못 쓰므로(=조용히 default 로 강등),
-    # 정식 기능인 --allowed-tools/--disallowed-tools 로 동등한 동작을 만든다.
+    # openclaude 네이티브 'auto' 모드는 쓰지 않는다 — 그건 Anthropic 서버측 분류기
+    # (feature('TRANSCRIPT_CLASSIFIER'))로 매 행동의 안전성을 판정하는 방식이라, NPU 라우터를
+    # 백엔드로 쓰는 우리 환경에선 분류기가 아예 없다. 게이트만 풀면 있지도 않은 안전판정을
+    # 있다고 속이는 셈이 된다. 그래서 정식 기능인 --allowed-tools/--disallowed-tools 로
+    # 동등한 동작을 만든다(규칙은 auto-allow.txt/auto-deny.txt — 사용자가 직접 편집 가능).
+    # 완전 자동이 필요하면 실행 중 Shift+Tab 으로 bypassPermissions 에 올라가면 된다.
     AUTO_ARGS=(--permission-mode acceptEdits)
     _ALLOW=(); _DENY=()
     if [ -f "$HOME_DIR/auto-allow.txt" ]; then
