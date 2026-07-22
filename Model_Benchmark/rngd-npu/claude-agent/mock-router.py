@@ -248,6 +248,12 @@ class Handler(BaseHTTPRequestHandler):
             payload = json.loads(self.rfile.read(n) or b"{}")
         except Exception:
             return self._send({"error": {"message": "invalid JSON"}}, 400)
+        if self.path == "/router/preload":
+            mid = payload.get("model") or ""
+            if parse_variant(mid)[0] not in REG:
+                return self._send({"error": {"message": f"unknown model '{mid}'"}}, 404)
+            FLEET.request(mid)      # 실제 라우터처럼 즉시 로딩 시작
+            return self._send({"ok": True, "model": mid})
         if not self.path.startswith("/v1/chat/completions"):
             return self._send({"error": {"message": f"not found: {self.path}"}}, 404)
         mid = payload.get("model") or ""

@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 01/10] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 01/11] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 02/10] model picker: use backend-supplied model descriptions
+Subject: [PATCH 02/11] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 03/10] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
+Subject: [PATCH 03/11] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
  =?UTF-8?q?with=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 04/10] model picker: say why the NPU config row is absent
+Subject: [PATCH 04/11] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 05/10] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 05/11] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 06/10] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 06/11] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 07/10] model picker: apply NPU presentation where every path
+Subject: [PATCH 07/11] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1274,7 +1274,7 @@ index d6de5f4..239767c 100644
 From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:48:44 +0900
-Subject: [PATCH 08/10] model picker: adjust dp and pp as separate axes
+Subject: [PATCH 08/11] model picker: adjust dp and pp as separate axes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1554,7 +1554,7 @@ index 239767c..0f33993 100644
 From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:03:05 +0900
-Subject: [PATCH 09/10] model picker: stop the dp/pp row from reflowing
+Subject: [PATCH 09/11] model picker: stop the dp/pp row from reflowing
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1656,7 +1656,7 @@ index 0f33993..b00fbc3 100644
 From 27c42e3729aab78a816115b3e4c68a03c905cb77 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:51:34 +0900
-Subject: [PATCH 10/10] statusline: separate the current-model marker from the
+Subject: [PATCH 10/11] statusline: separate the current-model marker from the
  LED
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1686,6 +1686,91 @@ index ea77786..f6657b6 100644
        color,
      });
    };
+-- 
+2.43.0
+
+
+From f473f6cac85eb6191d5847cb17ecabb04e80d7aa Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 02:07:35 +0900
+Subject: [PATCH 11/11] model picker: start loading the model as soon as it is
+ picked
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The router serves lazily, so picking a model did nothing until the first message
+was sent — and a large model then takes a couple of minutes, with no sign that
+anything had begun. Selecting now fires /router/preload, which returns
+immediately and loads in the background, so the LED starts moving right away.
+
+Fire-and-forget: a backend without the endpoint is unaffected, and the model
+still loads on first use as before.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx |  4 ++++
+ src/services/npuStatus.ts      | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 8dcd48a..77dbe0c 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,6 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
++import { preloadNpuModel } from '../services/npuStatus.js';
+ import { applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+@@ -376,6 +377,9 @@ export function ModelPicker(t0) {
+       // 백엔드가 광고하지 않은 조합이면 조립하지 않는다(있지도 않은 모델로 404 나는 것 방지).
+       const composedValue = variantId(selectedValue, npuConfig.dp, npuConfig.pp);
+       const finalValue = composedValue !== selectedValue && getDiscoveredModelIds().includes(composedValue) ? composedValue : selectedValue;
++      // 고르는 즉시 로딩을 시작시킨다. 라우터는 lazy 라 이게 없으면 첫 메시지를
++      // 보낼 때까지 아무 일도 안 일어난 것처럼 보인다.
++      preloadNpuModel(finalValue);
+       onSelect(finalValue, selectedEffort, selectedSwitchProfileId);
+     };
+     $[35] = effort;
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+index 5c7facc..8c5ff49 100644
+--- a/src/services/npuStatus.ts
++++ b/src/services/npuStatus.ts
+@@ -173,3 +173,31 @@ export function __resetNpuStatusForTest(): void {
+   currentNpuStatus.available = false
+   npuStatusListeners.clear()
+ }
++
++/**
++ * Asks the router to start loading a model now.
++ *
++ * The router serves lazily, so without this a model only starts loading when
++ * the first message is sent — the user picks a model and nothing appears to
++ * happen for a minute or two. Fire-and-forget: the router returns immediately
++ * and progress shows up through /router/status as usual.
++ */
++export function preloadNpuModel(modelId: string, base = routerBaseUrl()): void {
++  if (!base || !modelId) return
++  const controller = new AbortController()
++  const abort = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
++  void fetch(`${base}/router/preload`, {
++    method: 'POST',
++    headers: { 'Content-Type': 'application/json' },
++    body: JSON.stringify({ model: modelId }),
++    signal: controller.signal,
++  })
++    .catch(() => {
++      // Not a Furiosa router, or it declined — the model still loads on first use.
++    })
++    .finally(() => {
++      clearTimeout(abort)
++      // Poll fast so the LED reacts to the load we just started.
++      startNpuStatusPolling(base)
++    })
++}
 -- 
 2.43.0
 

@@ -568,6 +568,31 @@ def build_app():
                                 status_code=503)
         return FileResponse(p, media_type="application/javascript")
 
+    @app.post("/router/preload")
+    async def preload(request: Request):
+        """모델을 미리 올려 둔다(즉시 반환). 클라이언트가 /model 에서 고르는 순간 부르므로,
+        첫 메시지를 보낼 때까지 기다리지 않고 바로 로딩이 시작된다. ensure() 는 준비될
+        때까지 블로킹이라 백그라운드 스레드로 던지고, 진행 상황은 /router/status 로 본다."""
+        try:
+            payload = json.loads(await request.body() or b"{}")
+        except Exception:
+            payload = {}
+        model = payload.get("model") or ""
+        base = parse_variant(model)[0]
+        if base not in REGISTRY:
+            return JSONResponse({"error": {"message": f"unknown model '{model}'"}}, status_code=404)
+        if REGISTRY[base].get("kind", "chat") != "chat":
+            return JSONResponse({"ok": False, "reason": "not a chat model"}, status_code=400)
+
+        def _go():
+            try:
+                ROUTER.ensure(model)
+            except Exception as e:
+                ROUTER._log(f"preload '{model}' failed: {e}")
+
+        threading.Thread(target=_go, daemon=True).start()
+        return {"ok": True, "model": model}
+
     @app.get("/router/status")
     def router_status():
         return {"running": ROUTER.status(), "free_cards": ROUTER._free_cards()}
