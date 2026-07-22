@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 1/8] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 1/9] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 2/8] model picker: use backend-supplied model descriptions
+Subject: [PATCH 2/9] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 3/8] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
+Subject: [PATCH 3/9] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
  =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 4/8] model picker: say why the NPU config row is absent
+Subject: [PATCH 4/9] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 5/8] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 5/9] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 6/8] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 6/9] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 7/8] model picker: apply NPU presentation where every path
+Subject: [PATCH 7/9] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1274,7 +1274,7 @@ index d6de5f4..239767c 100644
 From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:48:44 +0900
-Subject: [PATCH 8/8] model picker: adjust dp and pp as separate axes
+Subject: [PATCH 8/9] model picker: adjust dp and pp as separate axes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1546,6 +1546,108 @@ index 239767c..0f33993 100644
 +    partner = partnerChoices.length > 0 ? partnerChoices[partnerChoices.length - 1]! : 1
 +  }
 +  return axis === 'dp' ? { dp: next, pp: partner } : { dp: partner, pp: next }
++}
+-- 
+2.43.0
+
+
+From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 01:03:05 +0900
+Subject: [PATCH 9/9] model picker: stop the dp/pp row from reflowing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Raising pp makes a high dp unreachable, and the row was dropping those entries
+— so moving pp from 1 to 2 shortened the dp list and dragged the pp values
+sideways under the cursor, which made the digits hard to track while adjusting
+them.
+
+Render every value each axis can take and strike through the ones the current
+partner value rules out. The row keeps a constant width, so only the brackets
+move, and the struck-out entries also make the constraint visible instead of
+silently hiding options.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 18 +++++++++++-------
+ src/utils/npuVariants.ts       | 20 ++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index cf64f27..8dcd48a 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { applyNpuPresentation, getDiscoveredModelIds, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
++import { applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -597,22 +597,26 @@ function NpuParallelismRow({
+         {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
+       </Text>;
+   }
+-  const dpValues = npuAxisValues(modelId, allValues, 'dp', pp);
+-  const ppValues = npuAxisValues(modelId, allValues, 'pp', dp);
+-  const renderAxis = (name: NpuAxis, values: number[], active: number) => <Text>
++  // 두 축을 '전체 값'으로 그리고, 지금 불가능한 값만 표시를 죽인다. 값을 빼버리면
++  // pp 를 올렸을 때 dp 목록이 짧아지면서 옆 축이 통째로 밀려 읽기 어렵다(폭 고정).
++  const dpAll = npuAxisAllValues(modelId, allValues, 'dp');
++  const ppAll = npuAxisAllValues(modelId, allValues, 'pp');
++  const dpOk = new Set(npuAxisValues(modelId, allValues, 'dp', pp));
++  const ppOk = new Set(npuAxisValues(modelId, allValues, 'pp', dp));
++  const renderAxis = (name: NpuAxis, values: number[], active: number, usable: Set<number>) => <Text>
+       <Text color={axis === name ? 'claude' : undefined} dimColor={axis !== name} bold={axis === name}>{name}</Text>
+       {values.map(n => <Text key={`${name}${n}`}>
+           {' '}
+-          <Text color={n === active ? 'claude' : undefined} dimColor={n !== active}>
++          <Text color={n === active ? 'claude' : undefined} dimColor={n !== active} strikethrough={!usable.has(n) && n !== active}>
+             {n === active ? `[${n}]` : ` ${n} `}
+           </Text>
+         </Text>)}
+     </Text>;
+   return <Text dimColor={true}>
+       {'NPU  '}
+-      {renderAxis('dp', dpValues, dp)}
++      {renderAxis('dp', dpAll, dp, dpOk)}
+       {'    '}
+-      {renderAxis('pp', ppValues, pp)}
++      {renderAxis('pp', ppAll, pp, ppOk)}
+       {'    '}
+       <Text color="subtle">← → to adjust · tab for {axis === 'dp' ? 'pp' : 'dp'}</Text>
+     </Text>;
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 0f33993..b00fbc3 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -239,3 +239,23 @@ export function stepNpuAxis(
+   }
+   return axis === 'dp' ? { dp: next, pp: partner } : { dp: partner, pp: next }
+ }
++
++/**
++ * Every value this axis can take for the model, ignoring what the other axis is
++ * currently set to.
++ *
++ * The picker renders this full set and marks the currently unreachable entries,
++ * rather than dropping them: raising pp can make a high dp impossible, and
++ * removing that entry would reflow the row and shift the neighbouring axis
++ * under the user's cursor.
++ */
++export function npuAxisAllValues(
++  modelId: string,
++  allValues: readonly string[],
++  axis: NpuAxis,
++): number[] {
++  const vals = npuVariantsOf(modelId, allValues).map(v =>
++    axis === 'dp' ? v.dp : v.pp,
++  )
++  return [...new Set(vals)].sort((a, b) => a - b)
 +}
 -- 
 2.43.0
