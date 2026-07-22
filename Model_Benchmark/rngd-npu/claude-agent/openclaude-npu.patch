@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 1/4] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 1/5] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 2/4] model picker: use backend-supplied model descriptions
+Subject: [PATCH 2/5] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 3/4] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
+Subject: [PATCH 3/5] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
  =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 4/4] model picker: say why the NPU config row is absent
+Subject: [PATCH 4/5] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -762,6 +762,302 @@ index 336c021..e0f1d18 100644
    const activeIndex = variants.findIndex(v => v.value === modelId);
    return <Text dimColor={true}>
        {'NPU  '}
+-- 
+2.43.0
+
+
+From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:00:52 +0900
+Subject: [PATCH 5/5] model picker: pick the model and its dp/pp separately
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Two defects, both mine.
+
+1. The picker listed one row per parallel configuration, so a handful of models
+   became 25 rows of `Qwen3-4B-FP8@dp2`, `@dp4`, ... That is the shape the
+   variant ids have on the wire, but it is not what a person is choosing: they
+   pick a model, then how it is served. openaiModelDiscovery now collapses
+   variants to one row per model and records the full id list; the picker's
+   dp/pp row reads that list and the choice is composed back into
+   `base@dpN@ppM` at selection time. 25 rows → 11.
+
+2. Descriptions still read "Discovered from OpenAI-compatible endpoint". The
+   backend-description lookup had been added to bootstrap.ts, which is a
+   different discovery path than the one this setup actually uses. Moved the
+   helper into npuVariants and applied it where the options are really built.
+
+dp/pp is now session state rather than part of the focused value, so moving
+between models no longer rewrites the selection, and a configuration the backend
+never advertised is never composed.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx          | 49 +++++++++++++------
+ src/utils/model/openaiModelDiscovery.ts | 18 ++++++-
+ src/utils/npuVariants.ts                | 63 +++++++++++++++++++++++++
+ 3 files changed, 114 insertions(+), 16 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index e0f1d18..691ccba 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { cycleNpuVariant, describeNpuVariant, npuVariantsOf } from '../utils/npuVariants.js';
++import { cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,7 +96,7 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+   // (see the ←/→ handler and the config row below).
+-  const $ = _c(87);
++  const $ = _c(89);
+   const {
+     initial,
+     sessionModel,
+@@ -116,6 +116,13 @@ export function ModelPicker(t0) {
+   const initialValue = initial === null ? NO_PREFERENCE : initial;
+   const isFastMode = useAppState(_temp);
+   const [hasToggledEffort, setHasToggledEffort] = useState(false);
++  // NPU 병렬 구성은 모델과 '따로' 고른다. 모델 목록에는 모델당 한 줄만 두고
++  // (openaiModelDiscovery 가 변형을 접는다) 여기서 dp/pp 를 선택해, 확정할 때
++  // `base@dpN@ppM` 으로 조립해서 넘긴다.
++  const [npuConfig, setNpuConfig] = useState({
++    dp: 1,
++    pp: 1
++  });
+   const effortValue = useAppState(_temp2);
+   let t1;
+   if ($[0] !== effortValue) {
+@@ -262,7 +269,7 @@ export function ModelPicker(t0) {
+   }
+   const handleFocus = t10;
+   let t11;
+-  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== optionsWithInitial || $[85] !== focusedValue) {
++  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== npuConfig || $[85] !== focusedValue) {
+     t11 = direction => {
+       if (!focusedSupportsEffort) {
+         // Models served by the NPU router have no effort setting, so ←/→ would
+@@ -270,9 +277,14 @@ export function ModelPicker(t0) {
+         // parallel configurations (dp/pp), which the router publishes as
+         // sibling model ids. Returns null when there is only one config, and
+         // then the keypress stays a no-op as before.
+-        const nextVariant = cycleNpuVariant(focusedValue, optionsWithInitial.map(_temp5), direction);
++        const composed = variantId(focusedValue, npuConfig.dp, npuConfig.pp);
++        const nextVariant = cycleNpuVariant(composed, getDiscoveredModelIds(), direction);
+         if (nextVariant !== null) {
+-          setFocusedValue(nextVariant);
++          const next = parseNpuVariant(nextVariant);
++          setNpuConfig({
++            dp: next.dp,
++            pp: next.pp
++          });
+         }
+         return;
+       }
+@@ -283,7 +295,7 @@ export function ModelPicker(t0) {
+     $[29] = focusedSupportsEffort;
+     $[30] = focusedSupportsMax;
+     $[31] = focusedAvailableLevels;
+-    $[84] = optionsWithInitial;
++    $[84] = npuConfig;
+     $[85] = focusedValue;
+     $[32] = t11;
+   } else {
+@@ -308,7 +320,7 @@ export function ModelPicker(t0) {
+   }
+   useKeybindings(t12, t13);
+   let t14;
+-  if ($[35] !== effort || $[36] !== hasToggledEffort || $[37] !== onSelect || $[38] !== setAppState || $[39] !== skipSettingsWrite || $[46] !== focusedAvailableLevels || $[47] !== focusedDefaultEffort || $[48] !== selectOptions) {
++  if ($[35] !== effort || $[36] !== hasToggledEffort || $[37] !== onSelect || $[38] !== setAppState || $[39] !== skipSettingsWrite || $[46] !== focusedAvailableLevels || $[47] !== focusedDefaultEffort || $[48] !== selectOptions || $[87] !== npuConfig) {
+     t14 = function handleSelect(value_0) {
+       const selectedValue = resolvePickerOptionValue(selectOptions, value_0) ?? value_0;
+       const selectedModel = resolveOptionModel(selectedValue);
+@@ -351,7 +363,11 @@ export function ModelPicker(t0) {
+       // ambiguous — the Select cannot tell them apart — so treat it as NOT a
+       // switch rather than letting the literal borrow another option's marker.
+       const selectedSwitchProfileId = resolveSelectedSwitchProfileId(selectOptions, selectedValue);
+-      onSelect(selectedValue, selectedEffort, selectedSwitchProfileId);
++      // 고른 dp/pp 를 모델 id 에 실어 보낸다. 라우터가 이 접미사로 병렬 구성을 정한다.
++      // 백엔드가 광고하지 않은 조합이면 조립하지 않는다(있지도 않은 모델로 404 나는 것 방지).
++      const composedValue = variantId(selectedValue, npuConfig.dp, npuConfig.pp);
++      const finalValue = composedValue !== selectedValue && getDiscoveredModelIds().includes(composedValue) ? composedValue : selectedValue;
++      onSelect(finalValue, selectedEffort, selectedSwitchProfileId);
+     };
+     $[35] = effort;
+     $[36] = hasToggledEffort;
+@@ -361,6 +377,7 @@ export function ModelPicker(t0) {
+     $[46] = focusedAvailableLevels;
+     $[47] = focusedDefaultEffort;
+     $[48] = selectOptions;
++    $[87] = npuConfig;
+     $[40] = t14;
+   } else {
+     t14 = $[40];
+@@ -425,13 +442,14 @@ export function ModelPicker(t0) {
+     t23 = $[61];
+   }
+   let t24;
+-  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue) {
+-    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} allOptions={optionsWithInitial} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
++  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue || $[88] !== npuConfig) {
++    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} dp={npuConfig.dp} pp={npuConfig.pp} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+     $[62] = displayEffort;
+     $[63] = focusedDefaultEffort;
+     $[64] = focusedModelName;
+     $[65] = focusedSupportsEffort;
+     $[86] = focusedValue;
++    $[88] = npuConfig;
+     $[66] = t24;
+   } else {
+     t24 = $[66];
+@@ -546,12 +564,15 @@ function resolveOptionModel(value?: string): string | undefined {
+  */
+ function NpuParallelismRow({
+   modelId,
+-  allOptions
++  dp,
++  pp
+ }: {
+   modelId: string;
+-  allOptions: readonly ModelOption[];
++  dp: number;
++  pp: number;
+ }): React.ReactNode {
+-  const allValues = allOptions.map(o => o.value);
++  // 목록은 모델당 한 줄로 접혀 있으므로, 선택지는 백엔드가 광고한 전체 id 에서 읽는다.
++  const allValues = getDiscoveredModelIds();
+   const variants = npuVariantsOf(modelId, allValues);
+   if (variants.length < 2) {
+     // Say why the row is missing instead of vanishing — otherwise a model that
+@@ -564,7 +585,7 @@ function NpuParallelismRow({
+         {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
+       </Text>;
+   }
+-  const activeIndex = variants.findIndex(v => v.value === modelId);
++  const activeIndex = variants.findIndex(v => v.dp === dp && v.pp === pp);
+   return <Text dimColor={true}>
+       {'NPU  '}
+       {variants.map((v, i) => <Text key={v.value}>
+diff --git a/src/utils/model/openaiModelDiscovery.ts b/src/utils/model/openaiModelDiscovery.ts
+index 1801fd5..8d0f991 100644
+--- a/src/utils/model/openaiModelDiscovery.ts
++++ b/src/utils/model/openaiModelDiscovery.ts
+@@ -4,6 +4,11 @@ import { logForDebugging } from '../debug.js'
+ import { isEssentialTrafficOnly } from '../privacyLevel.js'
+ import type { ModelOption } from './modelOptions.js'
+ import { getAPIProvider } from './providers.js'
++import {
++  collapseNpuVariants,
++  getBackendModelDescriptions,
++  setDiscoveredModelIds,
++} from '../npuVariants.js'
+ 
+ const DISCOVERY_TIMEOUT_MS = 5000
+ const DISCOVERED_MODEL_DESCRIPTION =
+@@ -202,9 +207,18 @@ export async function discoverOpenAICompatibleModelOptions(): Promise<
+     }
+   }
+ 
+-  return discoveredModelNames.map(modelName => ({
++  // A Furiosa router publishes one model id per usable parallel configuration
++  // (`Qwen3-4B-FP8@dp2`), because /v1/models has nowhere else to put them.
++  // Listing each as its own row buries the model list, so keep one row per
++  // model here and let the picker's dp/pp selector choose the configuration —
++  // it reads the full list back via getDiscoveredModelIds().
++  setDiscoveredModelIds(discoveredModelNames)
++  const descriptions = getBackendModelDescriptions()
++  return collapseNpuVariants(discoveredModelNames).map(modelName => ({
+     value: modelName,
+     label: modelName,
+-    description: DISCOVERED_MODEL_DESCRIPTION,
++    // Prefer what the backend says about this model (e.g. "tp8·dp1·pp1 · 1장")
++    // over the generic provenance line.
++    description: descriptions[modelName] ?? DISCOVERED_MODEL_DESCRIPTION,
+   }))
+ }
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 6949f79..0f41e51 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -80,7 +80,70 @@ export function cycleNpuVariant(
+   return variants[next]!.value
+ }
+ 
++/** Builds the model id for a configuration. dp1·pp1 is the bare model name. */
++export function variantId(value: string, dp: number, pp: number): string {
++  const { base } = parseNpuVariant(value)
++  return base + (dp > 1 ? `@dp${dp}` : '') + (pp > 1 ? `@pp${pp}` : '')
++}
++
+ /** Short label for the status row, e.g. `dp2·pp1` or `dp1·pp1 (기본)`. */
+ export function describeNpuVariant(v: NpuVariant): string {
+   return `dp${v.dp}·pp${v.pp}`
+ }
++
++/**
++ * Every model id the backend advertised, including parallelism variants.
++ *
++ * The picker shows one row per *model*, so the variants are filtered out of the
++ * option list (see `collapseNpuVariants`) — but the dp/pp selector still needs
++ * to know which configurations exist. Discovery records the full list here.
++ */
++let discoveredModelIds: readonly string[] = []
++
++export function setDiscoveredModelIds(ids: readonly string[]): void {
++  discoveredModelIds = [...ids]
++}
++
++export function getDiscoveredModelIds(): readonly string[] {
++  return discoveredModelIds
++}
++
++/**
++ * Drops parallelism variants whose base model is also present, so the picker
++ * lists `Qwen3-4B-FP8` once instead of once per dp/pp combination. A variant
++ * whose base is missing is kept — otherwise it would become unreachable.
++ */
++export function collapseNpuVariants(ids: readonly string[]): string[] {
++  const bases = new Set(ids.map(id => parseNpuVariant(id).base))
++  return ids.filter(id => {
++    const v = parseNpuVariant(id)
++    const isVariant = v.dp !== 1 || v.pp !== 1
++    return !isVariant || !bases.has(v.base)
++  })
++}
++
++/**
++ * Per-model descriptions supplied by the backend, as `{"<model id>": "<text>"}`.
++ *
++ * The OpenAI `/v1/models` contract has no description field, so a self-hosted
++ * router cannot say how it will serve a model. The Furiosa setup reads the
++ * router's `/router/models` at install time and the `furio` wrapper passes the
++ * map in, which means the text is available on the very first run rather than
++ * after a background refresh. Malformed JSON is ignored — a bad env var must
++ * not break model discovery.
++ */
++export function getBackendModelDescriptions(): Record<string, string> {
++  const raw = process.env.FURIO_MODEL_DESCRIPTIONS
++  if (!raw) return {}
++  try {
++    const parsed = JSON.parse(raw) as unknown
++    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
++    const out: Record<string, string> = {}
++    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
++      if (typeof v === 'string' && v.length > 0) out[k] = v
++    }
++    return out
++  } catch {
++    return {}
++  }
++}
 -- 
 2.43.0
 
