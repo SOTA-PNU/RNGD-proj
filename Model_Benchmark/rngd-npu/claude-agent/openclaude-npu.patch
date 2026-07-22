@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 1/6] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 1/7] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 2/6] model picker: use backend-supplied model descriptions
+Subject: [PATCH 2/7] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 3/6] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
+Subject: [PATCH 3/7] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
  =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 4/6] model picker: say why the NPU config row is absent
+Subject: [PATCH 4/7] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 5/6] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 5/7] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 6/6] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 6/7] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1160,6 +1160,113 @@ index 0f41e51..d6de5f4 100644
  }
  
  /**
+-- 
+2.43.0
+
+
+From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:30:39 +0900
+Subject: [PATCH 7/7] model picker: apply NPU presentation where every path
+ converges
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The last two attempts fixed model discovery and then getModelOptions(), and
+neither changed what /model shows. /model builds its own option list and passes
+it as `optionsOverride`, which the picker uses *instead of* getModelOptions() —
+the source even says so ("The picker renders `optionsOverride ?? getModelOptions()`").
+So both fixes sat on a path this command never takes.
+
+Apply it at `modelOptionsBase`, the single point where the override and the
+default list converge, so every picker entry point is covered: /model, the
+prompt hotkey, and Settings.
+
+25 rows with generic descriptions → 11 rows described by how each model is
+actually served.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 16 +++++++++++++---
+ src/utils/npuVariants.ts       | 26 ++++++++++++++++++++++++++
+ 2 files changed, 39 insertions(+), 3 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 691ccba..f10e054 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
++import { applyNpuPresentation, cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,7 +96,7 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+   // (see the ←/→ handler and the config row below).
+-  const $ = _c(89);
++  const $ = _c(91);
+   const {
+     initial,
+     sessionModel,
+@@ -142,7 +142,17 @@ export function ModelPicker(t0) {
+   } else {
+     t3 = $[3];
+   }
+-  const modelOptionsBase = optionsOverride ?? t3;
++  const t3b = optionsOverride ?? t3;
++  // 모든 픽커 경로가 여기서 합류한다. /model 은 optionsOverride 로 getModelOptions() 를
++  // 우회하므로, NPU 표현(변형 접기·백엔드 설명)은 반드시 이 지점에서 걸어야 한다.
++  let modelOptionsBase;
++  if ($[89] !== t3b) {
++    modelOptionsBase = applyNpuPresentation(t3b);
++    $[89] = t3b;
++    $[90] = modelOptionsBase;
++  } else {
++    modelOptionsBase = $[90];
++  }
+   // Cross-profile switch options can only be honored by the /model command's
+   // onSelect, which decodes the value and activates the target profile. Strip
+   // them for inline pickers (allowProfileSwitch falsy) so a hotkey/Settings
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index d6de5f4..239767c 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -152,3 +152,29 @@ export function getBackendModelDescriptions(): Record<string, string> {
+     return {}
+   }
+ }
++
++/**
++ * Presents a backend option list the way a person chooses: one row per model,
++ * described by how it will actually be served.
++ *
++ * Applied at the single point where every picker path converges, because the
++ * `/model` command supplies its own `optionsOverride` and therefore bypasses
++ * `getModelOptions()` entirely — fixing only the latter leaves the list
++ * untouched.
++ */
++export function applyNpuPresentation<
++  T extends { value?: string | null; description?: string },
++>(options: readonly T[]): T[] {
++  const descriptions = getBackendModelDescriptions()
++  const values = options
++    .map(o => o.value)
++    .filter((v): v is string => typeof v === 'string')
++  const kept = new Set(collapseNpuVariants(values))
++  return options
++    .filter(o => typeof o.value !== 'string' || kept.has(o.value))
++    .map(o => {
++      const described =
++        typeof o.value === 'string' ? descriptions[o.value] : undefined
++      return described ? { ...o, description: described } : o
++    })
++}
 -- 
 2.43.0
 
