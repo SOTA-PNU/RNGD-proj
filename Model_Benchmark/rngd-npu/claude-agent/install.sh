@@ -242,7 +242,9 @@ j.permissions = (j.permissions && typeof j.permissions==="object" && !Array.isAr
 j.permissions.allowBypassPermissionsMode = true;
 fs.writeFileSync(p, JSON.stringify(j,null,2)+"\n");
 ' "$CFG_DIR/settings.json" 2>/dev/null \
-    && echo "      [ok] Shift+Tab 으로 자동모드 진입 가능 (기본은 여전히 '매번 확인')" \
+    && { echo "      [ok] 자동모드 사용 가능 — 실행 후 Shift+Tab 을 눌러 모드를 바꾼다:"
+         echo "           default(매번 확인) → Accept edits → Plan → Bypass Permissions → Full Access"
+         echo "           처음 Bypass 로 올라갈 때만 확인창이 한 번 뜨고, 이후엔 저장돼 안 뜬다."; } \
     || echo "      [warn] settings.json 기록 실패 — 자동모드는 FURIO_AUTO=1 로만 가능"
 fi
 
