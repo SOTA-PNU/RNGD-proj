@@ -1,0 +1,715 @@
+From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 14:11:42 +0900
+Subject: [PATCH 1/3] statusline: show Furiosa NPU model state with per-model
+ LEDs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Furiosa router lazy-serves models onto four NPU cards; a tp32 model takes
+all four and needs ~2 minutes to load. Until now the TUI said nothing during
+that, and it could not show that several small models share the cards.
+
+- services/npuStatus.ts polls the router's /router/status. Interval adapts:
+  1s while any model is loading/stopping, 10s when idle. The first probe that
+  fails disables polling for the session, so pointing openclaude at a non-Furiosa
+  OpenAI endpoint costs exactly one request.
+- BuiltinStatusLine renders one segment per model: green when up, yellow while
+  loading/stopping, red when the selected model is not on a card yet. Terminals
+  have no CSS animation, so transitioning models blink by alternating ●/○ on
+  each poll tick — the poll *is* the animation clock.
+- The selected model is marked ▶ and given a low priority so it survives a
+  narrow terminal; the other cards' models yield first via the existing
+  fitSegments degradation.
+- When the NPU segments are present they replace the plain model-name segment,
+  which would otherwise repeat the same name and waste width.
+
+Verified against the live 4-card server: Qwen3-4B-FP8@dp2 observed through
+loading → up, and this build answered a prompt through the router.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Na71jMPNwVCJecN1VMjJbo
+---
+ src/components/BuiltinStatusLine.tsx |  71 ++++++++++-
+ src/services/npuStatus.ts            | 175 +++++++++++++++++++++++++++
+ src/services/npuStatusHook.ts        |  30 +++++
+ 3 files changed, 275 insertions(+), 1 deletion(-)
+ create mode 100644 src/services/npuStatus.ts
+ create mode 100644 src/services/npuStatusHook.ts
+
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index 4a0a0af..ea77786 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -9,6 +9,8 @@ import { useTerminalSize } from '../hooks/useTerminalSize.js';
+ import { Box, Text } from '../ink.js';
+ import { getRawUtilization } from '../services/claudeAiLimits.js';
+ import { useClaudeAiLimits } from '../services/claudeAiLimitsHook.js';
++import type { NpuModel, NpuStatus } from '../services/npuStatus.js';
++import { useNpuStatus } from '../services/npuStatusHook.js';
+ import { useAppState } from '../state/AppState.js';
+ import type { Message } from '../types/message.js';
+ import { getGlobalConfig } from '../utils/config.js';
+@@ -44,8 +46,63 @@ export type StatusSegment = {
+   color?: keyof Theme;
+ };
+ const SEPARATOR = ' · ';
++/** LED glyphs. Terminals have no CSS animation, so a transitioning model blinks
++ *  by alternating filled/hollow on each poll tick (`NpuStatus.phase`). */
++const LED_ON = '●';
++const LED_OFF = '○';
++
++/**
++ * One status segment per model the NPU router knows about, plus the model the
++ * user has selected even when it is not loaded yet (shown red) — otherwise
++ * picking a cold model would show nothing at all until it finishes loading.
++ *
++ * `currentModelId` is marked with `▶` so it stays identifiable once several
++ * models share the four cards.
++ */
++export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null): StatusSegment[] {
++  if (!npu.available) return [];
++  const segments: StatusSegment[] = [];
++  const seen = new Set<string>();
++  const blinkOn = npu.phase % 2 === 0;
++
++  const push = (m: NpuModel, isCurrent: boolean) => {
++    seen.add(m.id);
++    const transitioning = m.state === 'loading' || m.state === 'stopping';
++    const glyph = transitioning ? (blinkOn ? LED_ON : LED_OFF) : LED_ON;
++    const color: keyof Theme | undefined =
++      m.state === 'up' ? 'success'
++      : transitioning ? 'warning'
++      : 'error';
++    const where = m.cards.length > 0 ? ` npu${m.cards.join(',')}` : '';
++    segments.push({
++      key: `npu:${m.id}`,
++      // Current model outranks context/cost so it survives a narrow terminal;
++      // the other cards' models yield first.
++      priority: isCurrent ? 0.5 : 4,
++      text: `${isCurrent ? '▶' : ''}${glyph} ${m.id}${where}`,
++      shortText: `${isCurrent ? '▶' : ''}${glyph} ${m.id}`,
++      color,
++    });
++  };
++
++  const current = currentModelId ? npu.models.find(m => m.id === currentModelId) : undefined;
++  if (current) {
++    push(current, true);
++  } else if (currentModelId) {
++    // Selected but not on any card yet.
++    push({ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, true);
++  }
++  for (const m of npu.models) {
++    if (!seen.has(m.id)) push(m, false);
++  }
++  return segments;
++}
+ export type BuiltinStatusData = {
+   modelName: string;
++  /** NPU router status; absent when the backend is not a Furiosa router. */
++  npu?: NpuStatus;
++  /** Model id as the router knows it — used to mark the active NPU segment. */
++  npuCurrentModelId?: string | null;
+   /** 0–100, or null before the first assistant turn. */
+   contextUsedPercent: number | null;
+   /** Current input token count (including cache), or null. */
+@@ -62,7 +119,12 @@ export type BuiltinStatusData = {
+   } | null;
+ };
+ export function buildBuiltinStatusSegments(data: BuiltinStatusData): StatusSegment[] {
+-  const segments: StatusSegment[] = [{
++  // When an NPU router is behind us its per-model LEDs replace the plain model
++  // name — the LED line already names the model, and repeating it wastes width.
++  const npuSegments = data.npu
++    ? buildNpuSegments(data.npu, data.npuCurrentModelId ?? null)
++    : [];
++  const segments: StatusSegment[] = npuSegments.length > 0 ? [...npuSegments] : [{
+     key: 'model',
+     priority: 0,
+     text: data.modelName
+@@ -184,6 +246,9 @@ function BuiltinStatusLineInner({
+   const mainLoopModel = useMainLoopModel();
+   // Subscribe to rate-limit header updates so the segment stays fresh.
+   useClaudeAiLimits();
++  // NPU card status (Furiosa router backends only). Each poll re-renders, which
++  // is also what drives the blink of a model that is still loading.
++  const npu = useNpuStatus();
+   const {
+     columns
+   } = useTerminalSize();
+@@ -203,6 +268,9 @@ function BuiltinStatusLineInner({
+       : null;
+     return {
+       modelName: renderModelName(runtimeModel),
++      // Raw id (not the prettified name) — this is what the router keys on,
++      // including any `@dp2`/`@pp2` parallelism suffix.
++      npuCurrentModelId: typeof runtimeModel === 'string' ? runtimeModel : null,
+       contextUsedPercent: contextPercentages.used,
+       contextInputTokens: inputTokens,
+       contextWindow: contextWindowSize,
+@@ -215,6 +283,7 @@ function BuiltinStatusLineInner({
+   }, [lastAssistantMessageId, permissionMode, mainLoopModel, messagesRef]);
+   const segments = fitSegments(buildBuiltinStatusSegments({
+     ...computed,
++    npu,
+     rateLimit: getWorstRateLimit()
+   }),
+   // paddingX from the footer (2 each side) is already outside this Box;
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+new file mode 100644
+index 0000000..5c7facc
+--- /dev/null
++++ b/src/services/npuStatus.ts
+@@ -0,0 +1,175 @@
++/**
++ * NPU status polling for the Furiosa router backend.
++ *
++ * The router (furiosa_router.py) lazy-serves models onto NPU cards and exposes
++ * `/router/status`. A tp32 model takes all 4 cards and needs ~2 minutes to load,
++ * so without this the UI is silent for the whole cold start. We surface each
++ * model's state so the status line can show it.
++ *
++ * Only active when the OpenAI-compatible base URL actually points at a Furiosa
++ * router: the first probe that 404s (or fails) disables polling for the session,
++ * so pointing openclaude at OpenAI/Ollama costs one request and nothing more.
++ */
++
++/** Server-side lifecycle of one model on the NPU cards. */
++export type NpuModelState = 'loading' | 'up' | 'stopping' | 'error' | 'down'
++
++export type NpuModel = {
++  /** Model id as the router knows it, e.g. `Qwen3-4B-FP8@dp2`. */
++  id: string
++  state: NpuModelState
++  /** NPU card indices this model occupies. */
++  cards: number[]
++  /** Data-parallel replicas / pipeline stages the model is served with. */
++  dp: number
++  pp: number
++}
++
++export type NpuStatus = {
++  models: NpuModel[]
++  freeCards: number[]
++  /**
++   * Increments on every successful poll. Consumers use it to drive the
++   * blink of transitioning models — terminals have no CSS animation, so the
++   * poll tick *is* the animation clock.
++   */
++  phase: number
++  /** False until the first successful poll, and after the router is ruled out. */
++  available: boolean
++}
++
++const IDLE_INTERVAL_MS = 10_000
++/** While a model is loading/stopping we poll fast so the LED tracks reality. */
++const ACTIVE_INTERVAL_MS = 1_000
++const REQUEST_TIMEOUT_MS = 2_000
++
++export const currentNpuStatus: NpuStatus = {
++  models: [],
++  freeCards: [],
++  phase: 0,
++  available: false,
++}
++
++export const npuStatusListeners = new Set<(status: NpuStatus) => void>()
++
++/**
++ * `OPENAI_BASE_URL` points at the OpenAI-compatible surface (`.../v1`);
++ * the router's own endpoints sit next to it. Returns null when unset.
++ */
++export function routerBaseUrl(env: NodeJS.ProcessEnv = process.env): string | null {
++  const base = env.OPENAI_BASE_URL ?? env.OPENAI_API_BASE
++  if (!base) return null
++  return base.replace(/\/+$/, '').replace(/\/v1$/, '')
++}
++
++export function isTransitioning(models: NpuModel[]): boolean {
++  return models.some(m => m.state === 'loading' || m.state === 'stopping')
++}
++
++function notify(): void {
++  for (const listener of npuStatusListeners) {
++    try {
++      listener({ ...currentNpuStatus })
++    } catch {
++      // A broken consumer must not kill the poll loop.
++    }
++  }
++}
++
++type RawStatus = {
++  running?: Record<
++    string,
++    { state?: string; cards?: number[]; dp?: number; pp?: number }
++  >
++  free_cards?: number[]
++}
++
++export function parseStatus(raw: RawStatus): Pick<NpuStatus, 'models' | 'freeCards'> {
++  const models: NpuModel[] = []
++  for (const [id, v] of Object.entries(raw.running ?? {})) {
++    const state = v?.state
++    models.push({
++      id,
++      state:
++        state === 'loading' || state === 'stopping' || state === 'error' || state === 'down'
++          ? state
++          : 'up',
++      cards: Array.isArray(v?.cards) ? v.cards : [],
++      dp: typeof v?.dp === 'number' ? v.dp : 1,
++      pp: typeof v?.pp === 'number' ? v.pp : 1,
++    })
++  }
++  // Stable order so the status line doesn't reshuffle between polls.
++  models.sort((a, b) => a.id.localeCompare(b.id))
++  return { models, freeCards: Array.isArray(raw.free_cards) ? raw.free_cards : [] }
++}
++
++let timer: ReturnType<typeof setTimeout> | null = null
++let stopped = false
++
++async function pollOnce(base: string): Promise<boolean> {
++  const controller = new AbortController()
++  const abort = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
++  try {
++    const res = await fetch(`${base}/router/status`, { signal: controller.signal })
++    if (!res.ok) return false
++    const parsed = parseStatus((await res.json()) as RawStatus)
++    currentNpuStatus.models = parsed.models
++    currentNpuStatus.freeCards = parsed.freeCards
++    currentNpuStatus.phase += 1
++    currentNpuStatus.available = true
++    notify()
++    return true
++  } catch {
++    return false
++  } finally {
++    clearTimeout(abort)
++  }
++}
++
++/**
++ * Starts polling. Safe to call repeatedly — only the first call arms the loop.
++ * A failed *first* probe means this backend is not a Furiosa router, so we stop
++ * for good rather than retrying against someone else's OpenAI endpoint.
++ */
++export function startNpuStatusPolling(base = routerBaseUrl()): void {
++  if (timer !== null || stopped || !base) return
++  let everSucceeded = false
++  const loop = async (): Promise<void> => {
++    const ok = await pollOnce(base)
++    if (ok) {
++      everSucceeded = true
++    } else if (!everSucceeded) {
++      stopped = true // not a Furiosa router — stay quiet
++      currentNpuStatus.available = false
++      notify()
++      return
++    }
++    if (stopped) return
++    const delay = isTransitioning(currentNpuStatus.models)
++      ? ACTIVE_INTERVAL_MS
++      : IDLE_INTERVAL_MS
++    timer = setTimeout(loop, delay)
++  }
++  timer = setTimeout(loop, 0)
++}
++
++export function stopNpuStatusPolling(): void {
++  stopped = true
++  if (timer !== null) {
++    clearTimeout(timer)
++    timer = null
++  }
++}
++
++/** Test seam — resets module state between cases. */
++export function __resetNpuStatusForTest(): void {
++  stopNpuStatusPolling()
++  stopped = false
++  timer = null
++  currentNpuStatus.models = []
++  currentNpuStatus.freeCards = []
++  currentNpuStatus.phase = 0
++  currentNpuStatus.available = false
++  npuStatusListeners.clear()
++}
+diff --git a/src/services/npuStatusHook.ts b/src/services/npuStatusHook.ts
+new file mode 100644
+index 0000000..5fb053a
+--- /dev/null
++++ b/src/services/npuStatusHook.ts
+@@ -0,0 +1,30 @@
++import { useEffect, useState } from 'react'
++import {
++  currentNpuStatus,
++  type NpuStatus,
++  npuStatusListeners,
++  startNpuStatusPolling,
++} from './npuStatus.js'
++
++/**
++ * Subscribes to Furiosa NPU status updates and starts the poll loop on first
++ * mount. Re-renders on every poll tick, which is what animates the blink of
++ * models that are still loading — see `NpuStatus.phase`.
++ */
++export function useNpuStatus(): NpuStatus {
++  const [status, setStatus] = useState<NpuStatus>({ ...currentNpuStatus })
++
++  useEffect(() => {
++    const listener = (next: NpuStatus) => {
++      setStatus({ ...next })
++    }
++    npuStatusListeners.add(listener)
++    startNpuStatusPolling()
++
++    return () => {
++      npuStatusListeners.delete(listener)
++    }
++  }, [])
++
++  return status
++}
+-- 
+2.43.0
+
+
+From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 14:19:21 +0900
+Subject: [PATCH 2/3] model picker: use backend-supplied model descriptions
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+openclaude labels every discovered model 'Detected from <route>', which says
+nothing about how a self-hosted backend will actually serve it. The OpenAI
+/v1/models contract has no description field, so the Furiosa setup reads the
+router's /router/models at install time and the furio wrapper passes the map in
+via FURIO_MODEL_DESCRIPTIONS; the picker now shows e.g. 'tp8·dp2·pp1 · 2장 ·
+ctx 40k · fxb'. Falls back to the old text when unset, and ignores malformed
+JSON so a bad env var cannot break discovery.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/services/api/bootstrap.ts | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/src/services/api/bootstrap.ts b/src/services/api/bootstrap.ts
+index e901799..9bfec8b 100644
+--- a/src/services/api/bootstrap.ts
++++ b/src/services/api/bootstrap.ts
+@@ -95,12 +95,40 @@ export function getDiscoveredModelApiNames(
+   return discoveredModels?.length ? discoveredModels : null
+ }
+ 
++/**
++ * Per-model descriptions supplied by the backend, as `{"<model id>": "<text>"}`.
++ *
++ * The OpenAI `/v1/models` contract has no description field, so a self-hosted
++ * router cannot tell us how it will serve a model. The Furiosa setup fills this
++ * in at install time (`install.sh` reads the router's `/router/models`) and the
++ * `furio` wrapper passes it through, which means the text is available on the
++ * very first run rather than after a background refresh.
++ *
++ * Malformed JSON is ignored — a bad env var must not break model discovery.
++ */
++function getBackendModelDescriptions(): Record<string, string> {
++  const raw = process.env.FURIO_MODEL_DESCRIPTIONS
++  if (!raw) return {}
++  try {
++    const parsed = JSON.parse(raw) as unknown
++    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
++    const out: Record<string, string> = {}
++    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
++      if (typeof v === 'string' && v.length > 0) out[k] = v
++    }
++    return out
++  } catch {
++    return {}
++  }
++}
++
+ function buildLocalOpenAIModelOptions(options: {
+   models: string[]
+   routeId: string | null
+   routeLabel: string
+ }): ModelOption[] {
+   const seen = new Set<string>()
++  const backendDescriptions = getBackendModelDescriptions()
+   const catalogEntries = options.routeId
+     ? getCatalogEntriesForRoute(options.routeId)
+     : []
+@@ -125,7 +153,12 @@ function buildLocalOpenAIModelOptions(options: {
+     return [{
+       value,
+       label: catalogEntry?.label ?? model,
+-      description: `Detected from ${options.routeLabel}`,
++      // Prefer what the backend says about this model (e.g. "tp8·dp2·pp1 · 2장")
++      // over the generic provenance line.
++      description:
++        backendDescriptions[value] ??
++        backendDescriptions[model] ??
++        `Detected from ${options.routeLabel}`,
+     }]
+   })
+ }
+-- 
+2.43.0
+
+
+From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 14:29:26 +0900
+Subject: [PATCH 3/3] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20wi?=
+ =?UTF-8?q?th=20=E2=86=90=20=E2=86=92?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Furiosa router publishes each usable parallel configuration as its own model
+id (`Qwen3-4B-FP8@dp2`), so the picker listed five near-identical rows per model
+and gave no sense that they were the same model served differently.
+
+Group them instead: the picker shows one row per configuration as before, but
+the focused model now gets a config row — `NPU [dp1·pp1]  dp2·pp1  dp4·pp1` —
+and ←/→ moves between them.
+
+Those keys were already wired for effort level and returned early for models
+without it, which is every NPU model, so they were dead. Reusing them costs no
+new keybinding. cycleNpuVariant returns null for single-config models (all tp32
+models, and every non-NPU provider), leaving the keypress a no-op exactly as
+before, and the row hides itself in that case.
+
+Only combinations the hardware can serve are ever published — tp is fixed at
+artifact build time, pp is unsupported for FXB artifacts, dp x pp is capped by
+card count — so everything shown is selectable; nothing needs greying out.
+
+The component is hand-written rather than compiler output; the two touched
+memo blocks get their new dependency in freshly allocated slots (_c(84) → 87).
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 60 ++++++++++++++++++++++--
+ src/utils/npuVariants.ts       | 86 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 142 insertions(+), 4 deletions(-)
+ create mode 100644 src/utils/npuVariants.ts
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index fe8d99b..336c021 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,6 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
++import { cycleNpuVariant, describeNpuVariant, npuVariantsOf } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -93,7 +94,9 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+   }
+ }
+ export function ModelPicker(t0) {
+-  const $ = _c(84);
++  // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
++  // (see the ←/→ handler and the config row below).
++  const $ = _c(87);
+   const {
+     initial,
+     sessionModel,
+@@ -259,9 +262,18 @@ export function ModelPicker(t0) {
+   }
+   const handleFocus = t10;
+   let t11;
+-  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels) {
++  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== optionsWithInitial || $[85] !== focusedValue) {
+     t11 = direction => {
+       if (!focusedSupportsEffort) {
++        // Models served by the NPU router have no effort setting, so ←/→ would
++        // otherwise do nothing. Reuse them to move between that model's
++        // parallel configurations (dp/pp), which the router publishes as
++        // sibling model ids. Returns null when there is only one config, and
++        // then the keypress stays a no-op as before.
++        const nextVariant = cycleNpuVariant(focusedValue, optionsWithInitial.map(_temp5), direction);
++        if (nextVariant !== null) {
++          setFocusedValue(nextVariant);
++        }
+         return;
+       }
+       setEffort(prev => cycleEffortLevel(prev ?? focusedDefaultEffort, direction, focusedAvailableLevels));
+@@ -271,6 +283,8 @@ export function ModelPicker(t0) {
+     $[29] = focusedSupportsEffort;
+     $[30] = focusedSupportsMax;
+     $[31] = focusedAvailableLevels;
++    $[84] = optionsWithInitial;
++    $[85] = focusedValue;
+     $[32] = t11;
+   } else {
+     t11 = $[32];
+@@ -411,12 +425,13 @@ export function ModelPicker(t0) {
+     t23 = $[61];
+   }
+   let t24;
+-  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort) {
+-    t24 = <Box marginBottom={1} flexDirection="column">{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
++  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue) {
++    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} allOptions={optionsWithInitial} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+     $[62] = displayEffort;
+     $[63] = focusedDefaultEffort;
+     $[64] = focusedModelName;
+     $[65] = focusedSupportsEffort;
++    $[86] = focusedValue;
+     $[66] = t24;
+   } else {
+     t24 = $[66];
+@@ -473,6 +488,9 @@ export function ModelPicker(t0) {
+   }
+   return t29;
+ }
++function _temp5(opt) {
++  return opt.value;
++}
+ function _temp4() {}
+ function _temp3(opt_0) {
+   return {
+@@ -513,6 +531,40 @@ function resolveOptionModel(value?: string): string | undefined {
+     : null;
+   return parseUserSpecifiedModel(switched ? switched.model : value);
+ }
++/**
++ * Parallel configurations available for the focused NPU model, rendered as a
++ * radio row with the active one highlighted.
++ *
++ * The Furiosa router publishes each usable dp/pp combination as its own model
++ * id, and only the ones the hardware can serve — tensor parallelism is baked
++ * into the artifact, pipeline parallelism is unavailable for FXB artifacts, and
++ * dp x pp cannot exceed the card count. So the set shown here is already
++ * validated by the server; there is nothing to grey out.
++ *
++ * Renders nothing for models with a single configuration, which is every
++ * non-NPU provider and every model that occupies all four cards.
++ */
++function NpuParallelismRow({
++  modelId,
++  allOptions
++}: {
++  modelId: string;
++  allOptions: readonly ModelOption[];
++}): React.ReactNode {
++  const variants = npuVariantsOf(modelId, allOptions.map(o => o.value));
++  if (variants.length < 2) return null;
++  const activeIndex = variants.findIndex(v => v.value === modelId);
++  return <Text dimColor={true}>
++      {'NPU  '}
++      {variants.map((v, i) => <Text key={v.value}>
++          {i > 0 ? '  ' : ''}
++          <Text color={i === activeIndex ? 'claude' : undefined} dimColor={i !== activeIndex}>
++            {i === activeIndex ? `[${describeNpuVariant(v)}]` : ` ${describeNpuVariant(v)} `}
++          </Text>
++        </Text>)}
++      {'  '}<Text color="subtle">← → to adjust</Text>
++    </Text>;
++}
+ function EffortLevelIndicator(t0) {
+   const $ = _c(5);
+   const {
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+new file mode 100644
+index 0000000..6949f79
+--- /dev/null
++++ b/src/utils/npuVariants.ts
+@@ -0,0 +1,86 @@
++/**
++ * NPU parallelism variants.
++ *
++ * The Furiosa router publishes one model id per usable parallel configuration —
++ * `Qwen3-4B-FP8`, `Qwen3-4B-FP8@dp2`, `Llama-3.1-8B-Instruct@dp2@pp2` — because
++ * the OpenAI `/v1/models` contract has nowhere else to put them. It only
++ * publishes combinations the hardware can actually serve: tensor parallelism is
++ * fixed at artifact build time, pipeline parallelism is unsupported for FXB
++ * artifacts, and dp x pp is capped by the card count.
++ *
++ * Grouping them back together lets the model picker present one model with an
++ * adjustable configuration instead of five near-identical rows.
++ */
++
++export type NpuVariant = {
++  /** Full model id including the suffix, e.g. `Qwen3-4B-FP8@dp2`. */
++  value: string
++  /** Model id without any parallelism suffix. */
++  base: string
++  dp: number
++  pp: number
++}
++
++const SUFFIX = /@(dp|pp)(\d+)$/
++
++/** Splits a model id into its base and parallel configuration. */
++export function parseNpuVariant(value: string): NpuVariant {
++  let rest = value
++  let dp = 1
++  let pp = 1
++  for (;;) {
++    const m = SUFFIX.exec(rest)
++    if (!m) break
++    const n = Number(m[2])
++    // A malformed suffix is left as part of the base rather than silently
++    // dropped — better to show an odd name than to route to the wrong model.
++    if (!Number.isFinite(n) || n < 1) break
++    if (m[1] === 'dp') dp = n
++    else pp = n
++    rest = rest.slice(0, m.index)
++  }
++  return { value, base: rest, dp, pp }
++}
++
++/** Cards a configuration occupies, given how many the base model needs. */
++export function variantCards(v: NpuVariant, baseCards: number): number {
++  return baseCards * v.dp * v.pp
++}
++
++/**
++ * All configurations of `value`'s model among `allValues`, ordered by card
++ * usage so cycling moves smoothly from cheapest to widest. Always contains at
++ * least the input value.
++ */
++export function npuVariantsOf(value: string, allValues: readonly string[]): NpuVariant[] {
++  const { base } = parseNpuVariant(value)
++  const found = allValues
++    .map(parseNpuVariant)
++    .filter(v => v.base === base)
++  if (found.length === 0) return [parseNpuVariant(value)]
++  found.sort((a, b) => a.dp * a.pp - b.dp * b.pp || a.value.localeCompare(b.value))
++  return found
++}
++
++/**
++ * Next configuration in the given direction, wrapping around. Returns null when
++ * the model has only one configuration, so callers can leave the keypress
++ * unhandled rather than pretending something changed.
++ */
++export function cycleNpuVariant(
++  value: string,
++  allValues: readonly string[],
++  direction: 'left' | 'right',
++): string | null {
++  const variants = npuVariantsOf(value, allValues)
++  if (variants.length < 2) return null
++  const i = variants.findIndex(v => v.value === value)
++  if (i === -1) return null
++  const next = direction === 'right' ? (i + 1) % variants.length : (i - 1 + variants.length) % variants.length
++  return variants[next]!.value
++}
++
++/** Short label for the status row, e.g. `dp2·pp1` or `dp1·pp1 (기본)`. */
++export function describeNpuVariant(v: NpuVariant): string {
++  return `dp${v.dp}·pp${v.pp}`
++}
+-- 
+2.43.0
+

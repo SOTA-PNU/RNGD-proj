@@ -48,6 +48,45 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 furio
 ```
 
+### 2-C. 서버에 못 붙는 PC — 목(mock) 라우터로 기능만 테스트
+
+NPU 추론 없이 **클라이언트에 넣은 기능만** 확인할 때 쓴다(모델별 LED·dp/pp 위젯·모델
+설명·Shift+Tab 자동모드). `mock-router.py` 가 실제 라우터와 같은 엔드포인트를 같은 모양으로
+내주고, 모델 상태도 시간 기반으로 진짜처럼 움직인다(loading → up, 카드 모자라면 LRU 로 stopping).
+
+**터미널 ①** — 목 라우터(파이썬 표준 라이브러리만, 설치할 것 없음):
+```bash
+python3 mock-router.py                       # :8400, 로딩 8초로 흉내
+python3 mock-router.py --load-seconds 15     # 노랑 LED 를 더 오래 보고 싶으면
+```
+
+**터미널 ②** — 설치 후 실행:
+```bash
+SDI_SERVER=http://127.0.0.1:8400 bash install.sh
+furio
+```
+
+이대로면 업스트림 openclaude 가 깔려 NPU 기능이 **안 보인다**. 기능을 보려면 포크를 직접
+빌드해서 목에 물려야 한다(Node ≥22 + [bun](https://bun.sh) 필요, 인터넷은 npm 만):
+
+```bash
+git clone https://github.com/Gitlawb/openclaude.git && cd openclaude
+git am /경로/claude-agent/openclaude-npu.patch     # 이 저장소의 패치
+bun install && bun run build                      # → dist/cli.mjs
+
+# 목을 이 dist 로 다시 띄우면 install.sh 가 알아서 받아 간다
+python3 mock-router.py --client-dist /경로/openclaude/dist
+```
+
+확인 포인트:
+- 화면 맨 아래 `? for shortcuts` 위에 `● 모델명 npu0,1` — 초록(올라감)/노랑 깜빡임(전환중)/빨강(미로드)
+- `/model` 에서 모델마다 `tp8·dp2·pp1 · 2장 · ctx 40k · fxb` 설명
+- `/model` 에서 소형 모델을 고르면 `NPU [dp1·pp1] dp2·pp1 dp4·pp1` 행 + ←/→ 로 변경
+- 여러 모델을 번갈아 고르면 4장에 나눠 올라가는 모습이 상태줄에 함께 표시
+
+채팅 응답은 고정 문구다(추론 안 함).
+
+
 ## 3. 사용
 
 ```bash
