@@ -28,6 +28,7 @@ import sys
 import threading
 import time
 import atexit
+import hashlib
 import hmac
 
 ART = "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts"
@@ -42,6 +43,9 @@ ALL_CARDS = [0, 1, 2, 3]
 # 필요하면 ROUTER_READY_TIMEOUT 환경변수로 조정.
 READY_TIMEOUT = int(os.environ.get("ROUTER_READY_TIMEOUT", "2400"))
 CARD_FREE_TIMEOUT = 90     # evict 후 카드 메모리 해제 대기(초)
+# openclaude 포크(NPU LED·dp/pp) 빌드 산출물 — install.sh 가 여기서 dist 를 받아 덮어쓴다.
+CLIENT_DIST = os.environ.get("FURIO_CLIENT_DIST", "/home/jun/openclaude-fork/dist")
+CLIENT_PKG = os.environ.get("FURIO_CLIENT_PKG", "/home/jun/openclaude-fork/package.json")
 
 os.makedirs(LOGDIR, exist_ok=True)   # chat/ 은 git 미추적이라 디렉토리가 없을 수 있음
 
@@ -524,6 +528,46 @@ def build_app():
 
     # sync 핸들러(async 아님) — FastAPI 가 threadpool 에서 돌리므로 furiosa-smi 호출·락 대기가
     # 이벤트 루프를 막지 않는다. (async 로 두면 콜드스타트 900s 동안 라우터 전체가 얼어붙음 — 실측)
+    # ── 포크 클라이언트 배포 ────────────────────────────────────────────────
+    # furio 는 openclaude 포크(NPU LED·dp/pp 위젯)를 쓴다. 개인 PC 에 bun/빌드 툴체인을
+    # 깔게 하지 않으려고, 서버가 빌드한 dist 만 내려보내고 나머지(bin·node_modules)는
+    # npm 에서 '포크와 같은 버전'을 고정 설치한다 — install.sh 한 줄이 유지된다.
+    def _client_files():
+        out = {}
+        for name in ("cli.mjs", "sdk.mjs"):
+            p = os.path.join(CLIENT_DIST, name)
+            if os.path.isfile(p):
+                h = hashlib.sha256()
+                with open(p, "rb") as f:
+                    for chunk in iter(lambda: f.read(1 << 20), b""):
+                        h.update(chunk)
+                out[name] = {"sha256": h.hexdigest(), "bytes": os.path.getsize(p)}
+        return out
+
+    @app.get("/router/client/manifest.json")
+    def client_manifest():
+        ver = ""
+        try:
+            with open(CLIENT_PKG) as f:
+                ver = json.load(f).get("version", "")
+        except Exception:
+            pass
+        files = _client_files()
+        return {"version": ver, "files": files,
+                "ok": bool(ver and files),
+                "note": "npm 으로 같은 version 을 설치한 뒤 이 파일들로 dist 를 덮어쓸 것"}
+
+    @app.get("/router/client/{name}")
+    def client_file(name: str):
+        from fastapi.responses import FileResponse
+        if name not in ("cli.mjs", "sdk.mjs"):
+            return JSONResponse({"error": {"message": "not found"}}, status_code=404)
+        p = os.path.join(CLIENT_DIST, name)
+        if not os.path.isfile(p):
+            return JSONResponse({"error": {"message": f"{name} 없음 — 서버에서 포크를 빌드하세요"}},
+                                status_code=503)
+        return FileResponse(p, media_type="application/javascript")
+
     @app.get("/router/status")
     def router_status():
         return {"running": ROUTER.status(), "free_cards": ROUTER._free_cards()}

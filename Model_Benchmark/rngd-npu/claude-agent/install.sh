@@ -39,9 +39,45 @@ command -v npm >/dev/null 2>&1 || { echo "[fail] npm 없음(Node 설치 확인)"
 
 echo "[2/4] openclaude 설치 (격리 prefix: $HOME_DIR — 전역 npm 안 건드림)"
 mkdir -p "$HOME_DIR" "$BIN_DIR"
-npm install -g @gitlawb/openclaude@latest --prefix "$HOME_DIR" >/dev/null 2>&1 || { echo "[fail] openclaude 설치 실패 (npm 로그 확인)"; exit 1; }
+AUTH=(); [ -n "$SDI_API_KEY" ] && AUTH=(-H "Authorization: Bearer $SDI_API_KEY")
+
+# 서버가 NPU 기능(모델별 LED·dp/pp)이 들어간 openclaude 포크를 빌드해 두었는지 확인.
+# 있으면 npm 으로 '포크와 같은 버전'을 고정 설치한 뒤 dist 만 덮어쓴다 —
+# 개인 PC 에 bun/빌드 툴체인을 깔 필요가 없고, install.sh 한 줄이 그대로 유지된다.
+FORK_VER=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/client/manifest.json" 2>/dev/null | node -e '
+let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
+  try{const j=JSON.parse(s);process.stdout.write(j.ok&&j.version?String(j.version):"")}catch(e){process.stdout.write("")}});' 2>/dev/null || echo "")
+
+if [ -n "$FORK_VER" ]; then
+  echo "      서버 포크 감지 — @gitlawb/openclaude@$FORK_VER 고정 설치 후 NPU 기능 dist 적용"
+  NPM_SPEC="@gitlawb/openclaude@$FORK_VER"
+else
+  echo "      서버 포크 없음 — 업스트림 최신으로 설치(NPU LED/위젯 없이 동작)"
+  NPM_SPEC="@gitlawb/openclaude@latest"
+fi
+npm install -g "$NPM_SPEC" --prefix "$HOME_DIR" >/dev/null 2>&1 || { echo "[fail] openclaude 설치 실패 ($NPM_SPEC — npm 로그 확인)"; exit 1; }
 OC_BIN="$HOME_DIR/bin/openclaude"
 [ -x "$OC_BIN" ] || { echo "[fail] openclaude 바이너리 없음: $OC_BIN"; exit 1; }
+
+# 포크 dist 덮어쓰기. 실패하면 업스트림 dist 가 그대로 남아 furio 는 계속 동작한다
+# (NPU LED·dp/pp 위젯만 빠짐) — 설치를 통째로 실패시키지 않는다.
+if [ -n "$FORK_VER" ]; then
+  DIST_DIR="$HOME_DIR/lib/node_modules/@gitlawb/openclaude/dist"
+  [ -d "$DIST_DIR" ] || DIST_DIR=$(dirname "$(readlink -f "$OC_BIN" 2>/dev/null || echo "$OC_BIN")")/../dist
+  OK=1
+  for f in cli.mjs sdk.mjs; do
+    if ! curl -fsS --max-time 300 ${AUTH[@]+"${AUTH[@]}"} -o "$DIST_DIR/$f.new" "$SDI_SERVER/router/client/$f" 2>/dev/null; then
+      OK=0; break
+    fi
+    mv -f "$DIST_DIR/$f.new" "$DIST_DIR/$f" || { OK=0; break; }
+  done
+  rm -f "$DIST_DIR"/*.new 2>/dev/null
+  if [ "$OK" = 1 ]; then
+    echo "      [ok] NPU 기능 적용 (모델별 LED·dp/pp 표시)"
+  else
+    echo "      [warn] 포크 dist 내려받기 실패 — 업스트림 그대로 사용(NPU LED 없음)"
+  fi
+fi
 
 echo "[3/4] 서버 도달 확인: $SDI_SERVER"
 if command -v curl >/dev/null 2>&1; then
@@ -76,6 +112,26 @@ if [ "$N" -gt 0 ]; then
 else
   rm -f "$HOME_DIR/ctx.json"
   echo "      [warn] /router/models 응답 없음 — 모델별 ctx 미설정(openclaude 가 128000 으로 가정할 수 있음)"
+fi
+
+# 모델 선택 목록(/model)에 뜨는 설명을 라우터에서 받아 desc.json 에 저장.
+# openclaude 는 원래 "Detected from Local OpenAI-compatible" 을 하드코딩하는데,
+# 그건 이 모델이 NPU 몇 장을 어떤 병렬 구성으로 쓰는지 전혀 알려주지 않는다.
+# 라우터가 주는 "tp8·dp2·pp1 · 2장 · ctx 40k · fxb" 로 바꿔 고를 때 판단이 되게 한다.
+# (OpenAI /v1/models 규격엔 description 필드가 없어서 설치 때 받아 두는 것이 확실하다.)
+D=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/models" 2>/dev/null | node -e '
+const fs=require("fs"); let s=""; process.stdin.on("data",d=>s+=d).on("end",()=>{
+  try{ const j=JSON.parse(s), m={};
+    for (const x of (j.data||[])) if (x && x.id && x.description) m[x.id]=x.description;
+    const n=Object.keys(m).length;
+    if (n) fs.writeFileSync(process.argv[1], JSON.stringify(m));
+    process.stdout.write(String(n));
+  }catch(e){ process.stdout.write("0") }});' "$HOME_DIR/desc.json" 2>/dev/null || echo 0)
+case "${D:-0}" in ''|*[!0-9]*) D=0 ;; esac
+if [ "$D" -gt 0 ]; then
+  echo "      [ok] 모델 설명 ${D}개 기록 (desc.json — /model 목록에 tp·dp·pp·카드 수 표시)"
+else
+  rm -f "$HOME_DIR/desc.json"
 fi
 
 # 안전 자동모드(FURIO_AUTO=safe)용 규칙 파일. 사용자가 편집할 수 있게 파일로 두고, 이미 있으면 건드리지 않는다.
@@ -172,6 +228,10 @@ export OPENAI_API_KEY="\$( [ -f "$HOME_DIR/key" ] && cat "$HOME_DIR/key" || echo
 # 모델별 실제 컨텍스트 창(설치 때 라우터에서 받아둔 값). 없으면 openclaude 는 128000 으로 잘못 가정한다.
 if [ -z "\${CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS:-}" ] && [ -s "$HOME_DIR/ctx.json" ]; then
   export CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS="\$(cat "$HOME_DIR/ctx.json")"
+fi
+# 모델 선택 목록의 설명(설치 때 라우터에서 받아둔 값). 없으면 openclaude 기본 문구로 표시된다.
+if [ -z "\${FURIO_MODEL_DESCRIPTIONS:-}" ] && [ -s "$HOME_DIR/desc.json" ]; then
+  export FURIO_MODEL_DESCRIPTIONS="\$(cat "$HOME_DIR/desc.json")"
 fi
 # 타임아웃: NPU 는 모델을 늦게 올려서(라우터가 최대 480초 대기) openclaude 0.25.0 기본값이 빠듯하다.
 export API_TIMEOUT_MS="\${API_TIMEOUT_MS:-900000}"                                # 응답헤더 마감(0.25.0 기본 600000)
