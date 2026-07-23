@@ -525,6 +525,175 @@ furiosa-llm serve (한 줄)
   일어남. 다른 serve 가 npu:0 을 잡고 있으면 `ValueError: NPU error: Npu npu0pe0-3: EBUSY`
   로 즉시 실패하고 uvicorn 까지 못 감(실측).
 
+### 2.2.y NPU 에 올리기 전, 호스트 CPU·RAM 을 먹는 것 (2026-07-22 실측)
+
+질문: "serve 해서 NPU 메모리에 올리기 전에 CPU·RAM 을 잡아먹는 건 뭔가."
+측정 머신: 128 코어 / MemTotal 125 GB / venv `/home/jun/furiosa` (furiosa-llm 2026.3.0).
+
+`_init_from_artifact`(`api.py:451-524`) 를 순서대로 따라간 실측:
+
+| # | 단계 | 코드 위치 | CPU | RAM |
+|---|---|---|---|---|
+| 1 | 파이썬 임포트 트리 | `cli/serve.py:443` → `server/app.py:18` → `api.py` | **벽시계 5.0s 인데 CPU 19.8s** (user 19.11 + sys 0.66) | **539 MiB** (maxRSS 551,668 kB) |
+| 2 | CLI 파싱·SchedulerConfig·mm 캐시 | `cli/serve.py` | ~0 | 0 (mm 캐시 4 GiB 는 상한 선언일 뿐 선점 0) |
+| 3 | 아티팩트 경로 resolve | `api.py:476` | 로컬이면 stat 1회 | — |
+| 4 | 토크나이저 로드 | `api.py:477` → `tokenizer/tokenizer.py:82` | 1.69s (user 1.44) | **+299 MiB** |
+| 5 | artifact.json **1차** 파싱 | `api.py:479` `load_without_blob` | **9.39s (그중 sys 7.43s)** @49 MB | +55 MiB |
+| 6 | NPU 디바이스 조회 | `api.py:482` `resolve_devices` | ms 수준 (`/sys/class/rngd_mgmt/…` 파일 읽기) | — |
+| 7 | `override_with` (pp 재분배·cache_dir) | `api.py:484` | 작음 | — |
+| 8 | `pipelines` 파이썬 상주 (주석에 "테스트·디버그용") | `api.py:501` | 0.15s | +9 MiB |
+| 9 | 토크나이저 JSON 재직렬화 | `api.py:516` `to_str()` | 0.19s | 6.32 MB 문자열 |
+| 10 | ← **여기서부터 NPU 접촉** | `api.py:507` `NativeLLMEngine(...)` | artifact.json **2차** 파싱 + EDF 번들 읽기 + 가중치 mmap | — |
+
+**단계별 누적 실측** (Llama-3.3-70B v2 아티팩트, 같은 순서를 파이썬으로 재현. NPU 미접촉 구간 전부)
+
+```
+단계                              RSS(MiB)   ΔRSS  스레드  ΔCPU(s)  벽시계
+0. 인터프리터 시작                       12      0     1     0.00    0.00
+1. import torch                     344   +332    64     9.15    2.04
+2. import transformers              372    +28    64     0.80    3.06
+3. transformers 심볼                 384    +12    64     0.25    3.32
+4. import furiosa_llm.server.app    539   +155   127     8.97    5.11
+5. native_llm_common.so 로드         579    +40   127     0.09    5.21
+6. 토크나이저 로드                      818   +239   127     1.15    6.37
+7. artifact.json 파싱(49MB)          820     +2   127    12.45   18.87
+8. pipelines 파이썬 객체화             984   +164   127     1.77   20.66
+9. 토크나이저 to_str                   984      0   127     0.10   20.76
+10. llm_native.so 로드                984      0   127     0.00   20.76
+                          합계: CPU 34.8s · RSS 984 MiB · 스레드 127
+```
+
+읽는 법 두 가지:
+
+- **7번은 CPU만 먹고 RAM은 안 먹는다**(ΔCPU 12.45s인데 ΔRSS +2 MiB). 바이트당 `read()` 라
+  시간의 대부분이 커널 syscall이고 파싱 결과 구조체는 작다. 반대로 **6·8번은 CPU는 싼데 RAM을 먹는다**.
+- **스레드 127개의 정체**: 이 머신은 Xeon 6530P ×2 = **물리 64코어**(SMT로 128 논리).
+  `import torch` 가 물리코어당 1개씩 **64개 OpenMP 풀**을 띄우고, furiosa 임포트가
+  **또 하나의 63개 풀**을 띄워 총 127개가 된다. 벽시계 5초짜리 임포트가 CPU 20초를 쓰는 이유가 이것.
+
+**네이티브 구간 타임스탬프** (`serve_30b_tc_newpath.log`, 30B FP8 tp8 1장) — 파이썬이 손 뗀 뒤:
+
+| 시각 | 사건 | 구간 |
+|---|---|---|
+| 14:32:45.640 | `Loading artifact from path` (1차 파싱 시작) | — |
+| 14:32:54.391 | `Loading artifact with schema version: 3.0` | **8.75s** (1차 파싱 + override_with + **2차 파싱** 진입) |
+| 14:32:55.079 | `Memory dump thread for Device(...) started` | ← **NPU 최초 접촉. 여기 전까지 전부 호스트** |
+| 14:32:55.416 | `allocation plan: Binary=83.2 MiB, Model weights=29.2 GiB, Reserved IO=4.0 GiB` | HBM 예산 |
+| 14:32:58.398 | `Resolve 1 pipeline ... in 3.32s` / `parameters loaded: 29.2 GiB in 2.98s` | 가중치 mmap |
+| 14:32:59.030 | `KV cache=14.3 GiB` | NPU측 |
+| 14:33:01.027 | XGrammar + LLGuidance 초기화 완료 | 1.97s (호스트) |
+| 14:33:01.232 | Eager scheduler 시작 → uvicorn | — |
+
+즉 **NPU 를 건드리기까지 호스트에서만 파이썬 ~21초(CPU 35초) + 네이티브 ~9.4초**가 흐른다.
+
+- **1번이 CPU 최대 소비원.** 벽시계보다 CPU 시간이 4배 큰 이유는 `import torch` 가
+  스레드를 127개(nproc 128)까지 띄우기 때문. 임포트만으로 sys.modules 4581개이고
+  serve 에 안 쓰는 것도 끌려옴 — 모듈 수 기준 torch 1029 / **openai 778** / sympy 419 /
+  scipy 321 / **torchvision 181**(`transformers.modeling_utils` → loss → image_transforms 경유).
+- **5번은 벤더 구현의 낭비.** `strace -f -c` 로 재면 1,195,226 B 짜리 artifact.json 에
+  `read()` 가 **1,195,327회** = **바이트당 syscall 1회**(syscall 시간의 99.97%). 버퍼 없는
+  스트리밍 파서라 시간의 79% 가 커널에서 탐. 크기 대비는 선형(≈0.19 s/MB):
+  1.2 MB → 0.23s / 20.0 MB → 3.81s / 49.0 MB → 9.39s.
+  벤더 prebuilt artifact.json 실크기(`stat -L`, 심볼릭 링크라 `ls` 로는 76 B 로 보임):
+  EXAONE-4.0-32B-FP8 50,068,930 B · Llama-3.3-70B 49,016,197 B · Llama-3.1-8B 20,040,151 B.
+- **같은 artifact.json 을 두 번 판다.** `api.py:507` 이 파싱 끝난 `artifact` 객체가 아니라
+  `artifact_path` **문자열**을 넘기므로, 네이티브 엔진이 같은 파일을 자기 스키마로 다시 연다.
+- **가중치는 익명 RAM 이 아니라 mmap 페이지캐시.** `llm_native.so` strings 에
+  `furiosa-generator/src/backing_file.rs`, `memmap2-0.9.5/src/unix.rs`, `MmapProxy`,
+  `thp madvise for HUGEPAGE failed with` 존재. 그래서 **Llama-3.3-70B tp32 는 131.5 GiB 를
+  적재하는데 호스트 MemTotal 이 125 GB 인데도 뜬다**(회수 가능한 캐시라서). 실측 적재량:
+  0.5B 950.3 MiB / 1.5B 2.9 GiB / 7B 14.2 / Llama-3.1-8B 15.0 / 14B 27.5 /
+  30B-A3B-FP8 29.2 / EXAONE-32B-FP8 30.8 / Qwen3-32B-FP8 32.0 /
+  30B-bf16 tp8 pp2 57.0 / Llama-3.3-70B tp32 131.5 GiB.
+
+**통설 정정 — 이건 호스트 자원을 안 먹음**
+
+- serve 는 **워커 프로세스를 안 띄움**. `run_server()` 가 uvicorn 에 FastAPI *인스턴스*를
+  넘겨서(workers/reload 인자 없음) fork 자체가 불가. Ray 는 빌드 경로에서만 도달 가능.
+  즉 serve = **단일 프로세스 + 다수 스레드**(빌드의 Ray 2 프로세스와 대조).
+- **호스트에서 양자화·dtype 변환 안 함.** FP8 변환은 빌드(`builder.py`)에서 끝나고
+  런타임은 검증만 함.
+- **tp/pp 샤딩과 DRAM 타일 배치도 호스트 계산이 아님.** EDF 를 CBOR 로 직접 디코드하면
+  placeholder 에 shape·buffer_type 이 이미 박혀 있음 = 빌드 산출물.
+- **KV 캐시는 NPU HBM.** 호스트 기여 0 (30B FP8 1장 기준 NPU 측 14.3 GiB).
+- 가중치용 **pinned/mlock 메모리 안 씀**.
+
+**문서 자체 정정 (2026.3.0 기준)**
+
+- 위 2.2.x 의 `api.py:383` 은 2026.2.0 기준 줄번호. 2026.3.0 에서 `NativeLLMEngine`
+  생성자는 **`api.py:507`**(EBUSY 나는 지점도 여기).
+- Part 3 의 "(3) `native_runtime.so` = 서빙 엔진" 은 2026.3.0 에서 **틀림**.
+  `native_runtime` 참조가 site-packages 전체 .py/.pyi 에 **0건**, `llm_native.so` 의
+  strings 에도 **0건**, DT_NEEDED 에도 없음. 게다가 이 패키지만 홀로
+  `furiosa_native_runtime-2026.2.0` 로 구버전. 서빙 엔진 코드는 `llm_native.so`(170 MB)
+  안에 정적 링크돼 있음(`furiosa_generator::next_gen::flow` 등 strings 로 확인).
+  serve 가 실제로 여는 .so 는 `llm_native.so` 와 `native_llm_common.so`(147 MB) 둘뿐.
+
+### 2.2.z gpt-oss·Solar 가 NPU 올리기 전 호스트에서 OOM 나는 이유 (2026-07-22 라이브 실측)
+
+**결론: 아티팩트 포맷이 v2 냐 v3(FXB) 냐가 갈랐다.** v2 는 가중치를 mmap(회수 가능),
+v3 는 **익명 메모리로 실체화**(회수 불가). 그래서 더 작은 모델이 더 큰 모델보다 먼저 죽는다.
+
+**분기점** — `api.py:313` `is_v2_artifact = fxb is None and (Path(resolved)/"artifact.json").exists()`
+
+| | v2 (`_init_from_artifact` api.py:451) | v3/FXB (`_init_from_v3_engine` api.py:336-355, 430) |
+|---|---|---|
+| 해당 모델 | Llama-3.3-70B, Qwen3-32B-FP8, EXAONE … | **gpt-oss-120b, Solar-Open-100B-NVFP4A16** |
+| 파일 구성 | `artifact.json` + `binary_bundle.zip` + **`params-*.safetensors`(NPU 레이아웃으로 미리 패킹)** | **`.fxb`(ZIP) + 원본 HF `model-0000N-of-*.safetensors`** |
+| 가중치 적재 | `backing_file` **mmap** → RssFile(페이지캐시) | **호스트에서 레이아웃 변환 → RssAnon** |
+| 회수 가능? | 예 (캐시라 커널이 버릴 수 있음) | **아니오** (스왑밖에 못 감) |
+
+**라이브 측정 (`furiosa-llm serve furiosa-ai/Solar-Open-100B-NVFP4A16`, PID 3444674, 로딩 12분 52초 시점)**
+
+```
+VmPeak   164,664,444 kB = 157.0 GiB   ← 호스트 물리 RAM(125 GB)을 이미 초과
+VmSize   100,647,592 kB =  96.0 GiB
+VmRSS     57,873,120 kB =  55.2 GiB
+RssAnon   57,613,732 kB =  54.9 GiB   ← RSS 의 99.6% 가 익명 메모리
+RssFile      259,388 kB =   0.25 GiB  ← 파일 매핑은 사실상 없음
+VmSwap     2,256,520 kB =   2.2 GiB   ← 이미 스왑 중 (스왑 총량 7 GiB뿐)
+Threads          701          CPU 850% (누적 1:49:27)
+```
+
+로드 중 시스템 `buff/cache` 가 93 GB → 41 GB 로 축출됨 = 익명 메모리가 페이지캐시를 밀어냄.
+
+**왜 변환이 필요한가** — 컴파일된 EDF 가 원하는 가중치 레이아웃이 HF 체크포인트와 다르다.
+`gpt-oss` fxb 의 `edfs/mid_tokenwise_moe_tw4.edf` 를 CBOR 디코드하면 placeholder `mlp_up_weight` 가:
+
+- `element_type: 'RawUint8'` — **NPU 는 MXFP4 를 패킹된 채로 받는다**(호스트가 bf16 으로 푸는 게 아님).
+- `buffer_type: 'Dram'`, `DramShape` = inter_chip 축 4(4장 분산) × intra_chip `[128, 768, 96, 16]`
+- 반면 HF 원본은 `[128, 5760, 90, 16]` U8 → **축 분할·스트라이드·패딩(90→96) 이 전부 다름**
+
+v2 는 이 변환을 **빌드 때** 해서 `params-*.safetensors` 로 저장해 두므로 serve 는 mmap 만 하면 된다.
+v3 는 같은 일을 **serve 때 호스트 RAM 에서** 한다. `~/.cache/furiosa/llm/` 에도 v3 변환 결과 캐시는
+없다(`fxb/` 12G, `graphmodules/` 70G, `param_files/` 2.9G — 마지막 것은 무관한 qwen2 1건뿐).
+
+**왜 Llama-70B(131.5 GiB)는 되고 Solar(61.8 GiB)는 죽나** — 크기가 아니라 성질 차이.
+Llama 131.5 GiB 는 전부 RssFile 이라 커널이 필요할 때 버린다. Solar 55 GiB 는 RssAnon 이라 못 버린다.
+
+**악화 요인 (실측)**
+
+- `systemd-oomd` **active**. 사용자 슬라이스에 `ManagedOOMMemoryPressure=kill`,
+  `ManagedOOMMemoryPressureLimit=2147483648`(= UINT32_MAX 의 **50%**),
+  `DefaultMemoryPressureDurationSec=20s`. **RAM 이 다 차기 전에 압력만으로 죽인다.**
+  (README_build.md 에 빌드 때 이 데몬이 291 프로세스를 죽인 실측이 이미 있음.)
+- 스왑이 7 GiB 뿐 (익명 55 GiB 를 못 받아냄).
+- 두 v3 모델을 동시에 띄우면 55 + 55 GiB → 125 GB 머신에서 확정 사망.
+
+**완화책** — serve CLI 에 호스트 스테이징 메모리를 줄이는 옵션은 **없다**
+(`--max-io-memory-mb` 는 NPU I/O 메모리지 호스트가 아님). 그래서 운영으로 푸는 수밖에 없다.
+
+1. v3 모델은 **한 번에 하나만**. 이전 serve 가 완전히 죽고 NPU 가 0.00 GiB 로 돌아온 뒤 띄울 것.
+2. **스왑 증설**(7 GiB → 최소 64 GiB 권장). 익명 메모리라 스왑만이 유일한 완충재.
+3. **systemd-oomd 회피** — serve 를 사용자 슬라이스 밖(예: `systemd-run --scope -p ManagedOOMMemoryPressure=auto`)
+   에서 띄우거나 해당 유닛의 압력 감시를 끈다. README_build.md §swap 함정 3 과 같은 조치.
+4. 로드 직전 페이지캐시 정리(`sync; echo 3 | sudo tee /proc/sys/vm/drop_caches`)로 여유 확보.
+
+**미확정** — 이번에 관측한 프로세스는 포그라운드(`Sl+`)였고 종료 시 journalctl 에 oom-kill 기록이
+없어, 그 종료 자체는 수동 중단으로 보인다. 즉 "RssAnon 55 GiB 로 뜬다"는 확정 사실이고,
+"사용자가 겪은 OOM 의 최종 사인이 커널 OOM killer 인지 systemd-oomd 인지"는 미확정.
+다음에 재현되면 `journalctl -k | grep -i oom` 과 종료 직전 `/proc/<pid>/status` 를 남길 것.
+
 ## 2.3 / 2.4 요청 처리 — HTTP 한 방의 여정
 
 `curl /v1/chat/completions` 가 들어오면:
