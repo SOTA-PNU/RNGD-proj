@@ -248,6 +248,51 @@ fs.writeFileSync(p, JSON.stringify(j,null,2)+"\n");
     || echo "      [warn] settings.json 기록 실패 — 자동모드는 FURIO_AUTO=1 로만 가능"
 fi
 
+# ── NPU 에이전트 라우팅 ──────────────────────────────────────────────────
+# openclaude 의 서브에이전트(/agents, Task 도구)는 기본적으로 부모 모델을 상속하지만,
+# frontmatter model 이 'opus' 로 지정된 에이전트는 OPENAI_MODEL 로 매핑돼 우리 라우터에
+# 없는 모델을 부를 수 있다. 그래서 서브에이전트가 항상 우리 NPU 모델을 쓰도록 라우트를
+# settings.json 에 심는다. agentModels 는 '메뉴', agentRouting 은 '에이전트→모델' 배정이다.
+#   · 이미 agentModels/agentRouting 이 있으면 건드리지 않는다(사용자 배정 보존).
+#   · 기본 배정: default → npu-small(Qwen3-4B, 1장). 서브에이전트만 경량 모델로 돌려
+#     스래싱을 막는다(메인 세션 모델은 /model 로 고른 것 그대로, 여기 영향 없음).
+#   · 역할별로 다른 NPU 모델을 쓰려면 settings.json 의 agentRouting 에 에이전트 이름을
+#     키로 추가한다(이름이 default 보다 우선). 예: "general-purpose":"npu-coder"
+# 끄려면 FURIO_AGENT_ROUTING=0.
+AGENT_KEY="${SDI_API_KEY:-dummy}"
+if [ "${FURIO_AGENT_ROUTING:-1}" = "0" ]; then
+  echo "      [skip] NPU 에이전트 라우팅 비활성(FURIO_AGENT_ROUTING=0)"
+else
+  mkdir -p "$CFG_DIR"
+  node -e '
+const fs=require("fs"), p=process.argv[1], base=process.argv[2], key=process.argv[3];
+let j={};
+try{ j=JSON.parse(fs.readFileSync(p,"utf8"))||{} }catch(e){ j={} }
+if (typeof j!=="object"||Array.isArray(j)) j={};
+const m=(model)=>({base_url:base, api_key:key, model});
+let added=false;
+if (!j.agentModels || typeof j.agentModels!=="object" || Array.isArray(j.agentModels)) {
+  j.agentModels = {
+    "npu-small": m("Qwen3-4B-FP8"),                          // 1장 · 빠름 · 도구/추론 O
+    "npu-8b":    m("Qwen3-8B-FP8"),                          // 1장
+    "npu-coder": m("Qwen3-Coder-30B-A3B-Instruct-FP8"),     // 4장 독점 · 코드 특화
+    "npu-70b":   m("Llama-3.3-70B-Instruct")                // 4장 독점 · 범용 고품질
+  };
+  added=true;
+}
+if (!j.agentRouting || typeof j.agentRouting!=="object" || Array.isArray(j.agentRouting)) {
+  j.agentRouting = { "default": "npu-small" };   // 이름별 배정은 사용자가 추가(이름 > default)
+  added=true;
+}
+fs.writeFileSync(p, JSON.stringify(j,null,2)+"\n");
+process.stdout.write(added?"added":"kept");
+' "$CFG_DIR/settings.json" "$SDI_SERVER/v1" "$AGENT_KEY" 2>/dev/null | grep -q added \
+    && { echo "      [ok] NPU 에이전트 라우팅 기록 — 서브에이전트가 NPU 모델(기본 Qwen3-4B)을 쓴다."
+         echo "           역할별 배정: $CFG_DIR/settings.json 의 agentRouting 에 추가"
+         echo "           예)  \"agentRouting\": { \"general-purpose\": \"npu-coder\", \"default\": \"npu-small\" }"; } \
+    || echo "      [ok] NPU 에이전트 라우팅 — 기존 설정 보존(agentModels/agentRouting 유지)"
+fi
+
 echo "[4/4] '$CMD' 명령 설치: $BIN_DIR/$CMD"
 cat > "$BIN_DIR/$CMD" <<EOF
 #!/usr/bin/env bash
