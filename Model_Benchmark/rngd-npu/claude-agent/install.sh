@@ -254,10 +254,10 @@ fi
 # 없는 모델을 부를 수 있다. 그래서 서브에이전트가 항상 우리 NPU 모델을 쓰도록 라우트를
 # settings.json 에 심는다. agentModels 는 '메뉴', agentRouting 은 '에이전트→모델' 배정이다.
 #   · 이미 agentModels/agentRouting 이 있으면 건드리지 않는다(사용자 배정 보존).
-#   · 기본 배정: default → npu-small(Qwen3-4B, 1장). 서브에이전트만 경량 모델로 돌려
-#     스래싱을 막는다(메인 세션 모델은 /model 로 고른 것 그대로, 여기 영향 없음).
-#   · 역할별로 다른 NPU 모델을 쓰려면 settings.json 의 agentRouting 에 에이전트 이름을
-#     키로 추가한다(이름이 default 보다 우선). 예: "general-purpose":"npu-coder"
+#   · 역할 베이스: orchestrator/code-writer/git-ops 에이전트 템플릿(agents/*.md)과
+#     그 이름→모델 라우팅을 깔아 둔다. 전부 1장 모델이라 동시 상주 안전.
+#   · 나중에 역할·모델을 바꾸려면 agents/*.md 와 settings.json 의 agentModels/agentRouting
+#     을 편집한다(이름이 default 보다 우선). 안내: agents/README.md.
 # 끄려면 FURIO_AGENT_ROUTING=0.
 AGENT_KEY="${SDI_API_KEY:-dummy}"
 if [ "${FURIO_AGENT_ROUTING:-1}" = "0" ]; then
@@ -281,16 +281,94 @@ if (!j.agentModels || typeof j.agentModels!=="object" || Array.isArray(j.agentMo
   added=true;
 }
 if (!j.agentRouting || typeof j.agentRouting!=="object" || Array.isArray(j.agentRouting)) {
-  j.agentRouting = { "default": "npu-small" };   // 이름별 배정은 사용자가 추가(이름 > default)
+  // 역할 골격(베이스). 전부 1장 모델이라 동시 상주 안전. 나중에 원하는 모델로 교체.
+  //   code-writer 를 진짜 코더(Qwen3-Coder-30B, tp8+pp2 재빌드=2장)로 올리려면
+  //   npu-coder 의 model 을 그 변형 id 로 바꾸고 code-writer 를 "npu-coder" 로 라우팅.
+  j.agentRouting = {
+    "orchestrator": "npu-8b",     // 총괄(위임) — 서브에이전트로 쓸 때. 메인 세션 모델은 /model
+    "code-writer":  "npu-8b",     // 코드 생성 — 재빌드 후 "npu-coder" 로 교체 권장
+    "git-ops":      "npu-small",  // git/GitHub
+    "default":      "npu-small"
+  };
   added=true;
 }
 fs.writeFileSync(p, JSON.stringify(j,null,2)+"\n");
 process.stdout.write(added?"added":"kept");
 ' "$CFG_DIR/settings.json" "$SDI_SERVER/v1" "$AGENT_KEY" 2>/dev/null | grep -q added \
-    && { echo "      [ok] NPU 에이전트 라우팅 기록 — 서브에이전트가 NPU 모델(기본 Qwen3-4B)을 쓴다."
-         echo "           역할별 배정: $CFG_DIR/settings.json 의 agentRouting 에 추가"
-         echo "           예)  \"agentRouting\": { \"general-purpose\": \"npu-coder\", \"default\": \"npu-small\" }"; } \
+    && { echo "      [ok] NPU 에이전트 라우팅 기록 — 역할별 서브에이전트가 NPU 모델을 쓴다."
+         echo "           역할↔모델 변경: $CFG_DIR/settings.json 의 agentRouting/agentModels"; } \
     || echo "      [ok] NPU 에이전트 라우팅 — 기존 설정 보존(agentModels/agentRouting 유지)"
+
+  # ── 역할 에이전트 템플릿 scaffold (있으면 보존) ──────────────────────
+  # 사용자가 나중에 채우도록 baseline .md 를 깐다. name=agentRouting 키와 일치.
+  ADIR="$CFG_DIR/agents"; mkdir -p "$ADIR"
+  scaffold_agent() {  # $1=파일 $2=heredoc(stdin)
+    if [ -f "$ADIR/$1" ]; then echo "      [keep] agents/$1 (기존 유지)"; return; fi
+    cat > "$ADIR/$1"; echo "      [new]  agents/$1";
+  }
+  scaffold_agent orchestrator.md <<'AGENTEOF'
+---
+name: orchestrator
+description: 사용자 요청을 받아 전체 작업을 총괄하고, 코드 생성은 code-writer, git/GitHub 작업은 git-ops 서브에이전트에게 위임한다. 여러 단계·역할 분담이 필요한 작업 전반에 사용.
+---
+당신은 총괄(orchestrator)입니다. 사용자 요청을 분석해 계획을 세우고 적절한 역할에게 위임하세요.
+- 코드 작성/수정 → Agent 도구로 subagent_type "code-writer" 호출
+- git add/commit/push/pull·PR → Agent 도구로 subagent_type "git-ops" 호출
+- 간단한 조회·정리는 직접 처리
+각 역할 결과를 종합해 다음 단계를 결정하고, 완료되면 사용자에게 한국어로 요약 보고하세요.
+(이 프롬프트·역할은 자유롭게 편집하세요.)
+AGENTEOF
+  scaffold_agent code-writer.md <<'AGENTEOF'
+---
+name: code-writer
+description: 요청받은 사양대로 코드를 생성·수정한다. 코드 작성이 필요할 때 사용.
+tools: Read, Write, Edit, Grep, Glob, Bash
+---
+당신은 코드 생성 전담입니다. 요청 사양을 받아 코드를 작성/수정하고,
+변경한 파일 경로와 핵심 변경 요약만 반환하세요. git 커밋·푸시는 하지 마세요(git-ops 역할).
+(이 프롬프트·도구 목록은 자유롭게 편집하세요.)
+AGENTEOF
+  scaffold_agent git-ops.md <<'AGENTEOF'
+---
+name: git-ops
+description: git add/commit/push/pull 과 GitHub 작업(PR 등)을 수행한다. 변경사항을 원격에 반영하거나 원격 변화를 가져올 때 사용.
+---
+당신은 git/GitHub 담당입니다. 요청에 따라 git add/commit/push/pull 을 수행하세요.
+GitHub API 작업(PR 생성·조회 등)은 등록된 MCP 도구(mcp__github__*)를 사용하세요(/mcp 로 등록).
+커밋 메시지는 변경 요약을 한국어로 간결히. 코드 내용 자체는 수정하지 마세요(그건 code-writer).
+(도구를 좁히려면 frontmatter 에 tools: 를 추가하세요 — 단 MCP 를 쓰려면 mcp 툴명도 포함.)
+AGENTEOF
+  scaffold_agent README.md <<AGENTEOF
+# furio 역할 에이전트 베이스
+
+이 폴더(\`$ADIR\`)의 \`*.md\` 하나가 역할 에이전트 하나입니다.
+frontmatter \`name\` 이 \`settings.json\` 의 \`agentRouting\` 키와 연결됩니다.
+
+## 채우는 곳 3군데
+1. **역할 정의**: 이 폴더의 \`*.md\` — frontmatter(name·description·tools) + 본문(시스템 프롬프트) 편집.
+   역할 추가는 새 \`.md\` 를 만들면 됩니다(name 을 agentRouting 에도 추가).
+2. **역할↔모델**: \`../settings.json\`
+   - \`agentModels\`: 모델 메뉴(라우트키 → base_url/api_key/model).
+   - \`agentRouting\`: 에이전트 name → 라우트키. 이름이 default 보다 우선.
+3. **모델 자체(새로 빌드/등록)**: 서버의 \`furiosa_router.py\` REGISTRY.
+   - 코더를 2장으로: Qwen3-Coder-30B 를 **v2 아티팩트**로 tp8 재빌드 → REGISTRY 에
+     \`tp=8, cards=1\` 로 등록 → \`agentModels.npu-coder.model\` 을 \`...@pp2\`(2장) 로 → serve-router.sh 재시작.
+   - ⚠️ pp 는 v2 아티팩트에서만(fxb 면 패닉).
+
+## 현재 베이스 배정 (전부 1장, 동시 안전)
+- orchestrator → npu-8b   (총괄; 서브에이전트로 쓸 때. 메인 세션 모델은 /model 로 별도 지정)
+- code-writer  → npu-8b   (재빌드 후 npu-coder 로 교체 권장)
+- git-ops      → npu-small
+- default      → npu-small
+
+## 자동화 켜기(선택)
+- 팀 협업:  \`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 furio\`
+- 코디네이터: \`CLAUDE_CODE_COORDINATOR_MODE=1 furio\`
+- 예약/폴링:  furio 안에서 CronCreate 도구
+- 조건 반복:  \`/goal <조건>\`
+- 외부 동작:  \`/mcp\` 로 github 등 MCP 서버 등록 → git-ops 가 mcp__github__* 사용
+AGENTEOF
+  echo "      [ok] 역할 에이전트 베이스: $ADIR/*.md (편집해서 사용)"
 fi
 
 echo "[4/4] '$CMD' 명령 설치: $BIN_DIR/$CMD"
