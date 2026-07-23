@@ -274,10 +274,18 @@ def _smi_read():
 
 
 def _smi_refresher():
-    """furiosa-smi 를 백그라운드에서만 호출해 캐시를 채운다 — 요청 경로는 절대 블로킹되지 않는다."""
+    """furiosa-smi 를 백그라운드에서만 호출해 캐시를 채운다 — 요청 경로는 절대 블로킹되지 않는다.
+    같은 주기로 죽은 백엔드도 회수한다(자식 serve 가 라우터 몰래 죽는 경우 대비)."""
     while True:
         try:
             _smi_read()
+        except Exception:
+            pass
+        try:
+            r = globals().get("ROUTER")
+            if r is not None:
+                with r.lock:
+                    r._reap_dead()
         except Exception:
             pass
         time.sleep(SMI_REFRESH)
@@ -337,9 +345,29 @@ class Router:
     def _free_cards(self):
         owned = set()
         for b in self.running.values():
-            owned.update(b.cards)
+            # 죽은 백엔드가 든 카드는 곧 회수 대상이므로 점유로 치지 않는다.
+            # 이게 없으면 자식 serve 가 죽어도(외부 pkill·OOM) 그 카드가 계속
+            # owned 로 잡혀 free_cards 가 비고 새 로딩이 막힌다.
+            if b.alive():
+                owned.update(b.cards)
         mem = npu_used_mem()
         return [c for c in ALL_CARDS if c not in owned and mem.get(c, 0.0) < 2.0]
+
+    def _reap_dead(self):
+        """serve 프로세스가 죽은 백엔드를 running/state 에서 제거한다.
+
+        자식 serve 는 라우터와 별개로 죽을 수 있다(OOM, 외부 pkill, serve-router
+        재시작이 furiosa-llm 만 종료). 그때 라우터가 이 백엔드를 계속 들고 있으면
+        /router/status 가 죽은 모델을 'up' 으로 보고하고 카드도 놓지 않는다.
+        smi 갱신 데몬이 5초마다 호출한다. 반드시 락 하에서 부른다."""
+        for mid, b in list(self.running.items()):
+            if not b.alive():
+                self._log(f"reap dead '{mid}' (port {b.port}, cards {b.cards}) — serve 프로세스 종료됨")
+                self.running.pop(mid, None)
+                # up/down 은 running 으로 표현되므로 state 에서도 지운다(→ 'down').
+                # loading/error 전이 중이면 그 표시는 건드리지 않는다.
+                if self.state.get(mid) in ("up", "stopping"):
+                    self.state.pop(mid, None)
 
     def _log(self, msg):
         print(f"[router {time.strftime('%H:%M:%S')}] {msg}", flush=True)
@@ -470,14 +498,18 @@ class Router:
     def status(self):
         # 락 없이 스냅샷(list 복사 후 순회) — ensure() 가 콜드스타트 동안 self.lock 을 잡고 있어도
         # 상태 조회는 블로킹되지 않는다. dict 읽기는 GIL 하에서 안전.
-        out = {mid: dict(port=b.port, cards=b.cards, alive=b.alive(), dp=b.dp, pp=b.pp,
-                         state=self.state.get(mid, "up" if b.alive() else "down"),
+        # 죽은 백엔드는 보고하지 않는다 — _reap_dead 데몬이 곧 치우지만, 그 사이에도
+        # 클라이언트 LED 가 '초록(up)' 으로 보이면 안 되므로 여기서 즉시 걸러낸다.
+        out = {mid: dict(port=b.port, cards=b.cards, alive=True, dp=b.dp, pp=b.pp,
+                         state=self.state.get(mid, "up"),
                          idle_s=round(time.time() - b.last_used, 1))
-               for mid, b in list(self.running.items())}
-        # running 에 아직 없는 전환중/실패 모델(콜드스타트 진행 중이 대표적)도 함께 노출 —
+               for mid, b in list(self.running.items()) if b.alive()}
+        # running 에 아직 없는 전환중 모델(콜드스타트 진행 중이 대표적)도 함께 노출 —
         # 클라이언트 LED 가 '올라가는 중'을 볼 수 있어야 하므로 이쪽이 본질이다.
+        # 단 'up' 은 제외한다 — up 은 살아있는 백엔드가 뒷받침해야만 보여야 하고,
+        # 백엔드 없이 남은 up 은 죽은 것이므로 여기서 되살리면 안 된다.
         for mid, st in list(self.state.items()):
-            if mid not in out:
+            if mid not in out and st in ("loading", "stopping", "error"):
                 base, dp, pp = parse_variant(mid)
                 out[mid] = dict(port=None, cards=[], alive=False, dp=dp, pp=pp,
                                 state=st, idle_s=None)

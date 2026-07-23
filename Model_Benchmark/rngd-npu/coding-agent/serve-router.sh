@@ -19,6 +19,9 @@ stop_router() {
     kill "$(cat "$PIDFILE")" 2>/dev/null && echo "  router stopped (pid $(cat "$PIDFILE"))" || true
     rm -f "$PIDFILE"
   fi
+  # PIDFILE 이 없거나(옛 버전이 안 남겼거나) 다른 방식으로 뜬 라우터도 확실히 정리한다.
+  # char-class 로 pkill 자신·이 스크립트와 self-match 회피(cmdline 은 'bash serve-router.sh').
+  pkill -f 'furiosa_router[.]py serve' 2>/dev/null && echo "  router (pattern) stopped" || true
 }
 
 if [ "${1:-start}" = "stop" ]; then
@@ -40,6 +43,7 @@ echo "[..] 라우터 기동 → :8400  (로그 $LOG)"
 mkdir -p "$(dirname "$LOG")"
 : > "$LOG"
 nohup python3 "$HERE/furiosa_router.py" serve >> "$LOG" 2>&1 &
+echo $! > "$PIDFILE"   # 다음 stop/start 가 이 라우터를 정확히 종료할 수 있게 pid 기록
 sleep 1
 if [ -n "${SDI_API_KEY:-}" ]; then
   echo "[ok] 🔒 인증 ON — 사용자는 이 키(SDI_API_KEY)로 접속해야 합니다."

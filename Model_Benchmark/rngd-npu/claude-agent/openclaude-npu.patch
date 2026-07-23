@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 01/12] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 01/13] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 02/12] model picker: use backend-supplied model descriptions
+Subject: [PATCH 02/13] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 03/12] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
+Subject: [PATCH 03/13] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
  =?UTF-8?q?with=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 04/12] model picker: say why the NPU config row is absent
+Subject: [PATCH 04/13] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 05/12] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 05/13] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 06/12] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 06/13] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 07/12] model picker: apply NPU presentation where every path
+Subject: [PATCH 07/13] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1274,7 +1274,7 @@ index d6de5f4..239767c 100644
 From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:48:44 +0900
-Subject: [PATCH 08/12] model picker: adjust dp and pp as separate axes
+Subject: [PATCH 08/13] model picker: adjust dp and pp as separate axes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1554,7 +1554,7 @@ index 239767c..0f33993 100644
 From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:03:05 +0900
-Subject: [PATCH 09/12] model picker: stop the dp/pp row from reflowing
+Subject: [PATCH 09/13] model picker: stop the dp/pp row from reflowing
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1656,7 +1656,7 @@ index 0f33993..b00fbc3 100644
 From 27c42e3729aab78a816115b3e4c68a03c905cb77 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:51:34 +0900
-Subject: [PATCH 10/12] statusline: separate the current-model marker from the
+Subject: [PATCH 10/13] statusline: separate the current-model marker from the
  LED
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1693,7 +1693,7 @@ index ea77786..f6657b6 100644
 From f473f6cac85eb6191d5847cb17ecabb04e80d7aa Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 02:07:35 +0900
-Subject: [PATCH 11/12] model picker: start loading the model as soon as it is
+Subject: [PATCH 11/13] model picker: start loading the model as soon as it is
  picked
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1778,7 +1778,7 @@ index 5c7facc..8c5ff49 100644
 From 6ece7115d354facf8412c65797a85ab2bf667c2e Mon Sep 17 00:00:00 2001
 From: Claude <plab2090@gmail.com>
 Date: Thu, 23 Jul 2026 02:51:37 +0900
-Subject: [PATCH 12/12] npu: react to a model pick immediately, and show every
+Subject: [PATCH 12/13] npu: react to a model pick immediately, and show every
  loaded model
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -2771,6 +2771,477 @@ index b00fbc3..efa22d3 100644
  /** Axis of the parallel configuration the user is currently adjusting. */
  export type NpuAxis = 'dp' | 'pp'
  
+-- 
+2.43.0
+
+
+From d5a9fb4eed6d1020b8232bf4717e210cd581af97 Mon Sep 17 00:00:00 2001
+From: Claude <plab2090@gmail.com>
+Date: Thu, 23 Jul 2026 13:53:24 +0900
+Subject: [PATCH 13/13] =?UTF-8?q?npu:=20reflect=20real=20server=20state=20?=
+ =?UTF-8?q?=E2=80=94=20drop=20the=20default,=20remember=20what=20was=20loa?=
+ =?UTF-8?q?ded?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Three fixes to the status line, all so it tells the truth about the NPU
+cards after a router restart or an eviction:
+
+- The backend's default model (e.g. gpt-oss-120b from OPENAI_MODEL) no
+  longer sits in the list red on every launch. npuDisplayModels now shows
+  the current model only when it is actually live, transitioning, or
+  remembered — not merely because it is the selected default.
+
+- Models that were loaded before but are gone now show in red instead of
+  vanishing. A new npuRecentModels store persists, per router base URL,
+  which models have been seen `up`; the status line unions those with the
+  live set and colours each by its real current state. So after the server
+  is cleared, the models you were just using reappear red (not green), and
+  you can arrow-key back to one to reload it. Every filesystem touch is
+  guarded — a bad read or full disk must never break polling.
+
+- The footer ←/→ selection and the `/model` colouring both read the same
+  unioned list, so the cursor never lands on an invisible row.
+
+Verified on live 4-card hardware end to end: two models loaded show green
+and are remembered; after killing their serve processes the router reaps
+them and the same two reappear red on the next launch; the default model
+is absent throughout.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Na71jMPNwVCJecN1VMjJbo
+---
+ src/components/BuiltinStatusLine.test.tsx  |  18 +++-
+ src/components/BuiltinStatusLine.tsx       |   2 +-
+ src/components/PromptInput/PromptInput.tsx |   8 +-
+ src/services/npuRecentModels.test.ts       |  68 +++++++++++++
+ src/services/npuRecentModels.ts            | 105 +++++++++++++++++++++
+ src/services/npuStatus.test.ts             |  19 +++-
+ src/services/npuStatus.ts                  |  50 ++++++++--
+ src/utils/npuVariants.test.ts              |   5 +-
+ 8 files changed, 252 insertions(+), 23 deletions(-)
+ create mode 100644 src/services/npuRecentModels.test.ts
+ create mode 100644 src/services/npuRecentModels.ts
+
+diff --git a/src/components/BuiltinStatusLine.test.tsx b/src/components/BuiltinStatusLine.test.tsx
+index e1f8798..fdab5bd 100644
+--- a/src/components/BuiltinStatusLine.test.tsx
++++ b/src/components/BuiltinStatusLine.test.tsx
+@@ -216,11 +216,12 @@ describe('builtinStatusLineShouldDisplay', () => {
+ })
+ 
+ describe('buildNpuSegments', () => {
+-  const npu = (models: NpuModel[]): NpuStatus => ({
++  const npu = (models: NpuModel[], remembered: string[] = []): NpuStatus => ({
+     models,
+     freeCards: [],
+     phase: 0,
+     available: true,
++    remembered,
+   })
+   const m = (id: string, state: NpuModel['state'], cards: number[] = []): NpuModel => ({
+     id,
+@@ -245,10 +246,19 @@ describe('buildNpuSegments', () => {
+     expect(segments[1]?.text).not.toContain('▶')
+   })
+ 
+-  it('shows a selected model that is not loaded, in red', () => {
++  it('does not show the current model when it was never loaded (no default noise)', () => {
++    // 'Cold' is selected but neither live nor remembered — it must not appear,
++    // so the backend's default model does not sit in the list on every launch.
+     const segments = buildNpuSegments(npu([m('A', 'up')]), 'Cold')
+-    expect(segments[0]?.color).toBe('error')
+-    expect(segments[0]?.text).toContain('Cold')
++    expect(segments.map(s => s.key)).toEqual(['npu:A'])
++  })
++
++  it('shows a remembered model that is no longer loaded, in red', () => {
++    // Loaded before, gone from the router now — still visible, but its real state.
++    const segments = buildNpuSegments(npu([m('A', 'up')], ['A', 'B']), 'A')
++    const b = segments.find(s => s.key === 'npu:B')
++    expect(b?.color).toBe('error')
++    expect(b?.text).toContain('B')
+   })
+ 
+   it('brackets the model under the footer cursor so ↵ is unambiguous', () => {
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index 563aa53..ddb603c 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -66,7 +66,7 @@ export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null,
+   if (!npu.available) return [];
+   const segments: StatusSegment[] = [];
+   const blinkOn = npu.phase % 2 === 0;
+-  const models = npuDisplayModels(npu.models, currentModelId);
++  const models = npuDisplayModels(npu.models, currentModelId, npu.remembered);
+ 
+   for (const m of models) {
+     const isCurrent = m.id === currentModelId;
+diff --git a/src/components/PromptInput/PromptInput.tsx b/src/components/PromptInput/PromptInput.tsx
+index affc76f..5376b49 100644
+--- a/src/components/PromptInput/PromptInput.tsx
++++ b/src/components/PromptInput/PromptInput.tsx
+@@ -479,10 +479,10 @@ function PromptInput({
+   // 상태줄이 그리는 것과 같은 순서·같은 목록. 커서가 화면에 없는 항목을 가리키는
+   // 일이 없도록 표시와 조작이 한 함수를 공유한다.
+   const npuCurrentModelId = typeof mainLoopModel === 'string' ? mainLoopModel : null;
+-  const npuDisplay = useMemo(() => npuStatus.available ? npuDisplayModels(npuStatus.models, npuCurrentModelId) : [], [npuStatus.available, npuStatus.models, npuCurrentModelId]);
+-  // 라우터가 아는 모델이 하나라도 있을 때만 포커스를 받는다. 선택만 되고 아직
+-  // 안 올라간 모델 하나뿐이면 고를 것이 없다.
+-  const npuFooterVisible = npuStatus.available && npuStatus.models.length > 0;
++  const npuDisplay = useMemo(() => npuStatus.available ? npuDisplayModels(npuStatus.models, npuCurrentModelId, npuStatus.remembered) : [], [npuStatus.available, npuStatus.models, npuCurrentModelId, npuStatus.remembered]);
++  // 상태줄에 보일 항목(라이브 + 기억)이 하나라도 있을 때만 포커스를 받는다. 순수
++  // 기본 모델 하나뿐(아무것도 안 올림)이면 고를 것이 없다.
++  const npuFooterVisible = npuStatus.available && npuDisplay.length > 0;
+   const footerItems = useMemo(() => [npuFooterVisible && 'npu', tasksFooterVisible && 'tasks', tmuxFooterVisible && 'tmux', bagelFooterVisible && 'bagel', teamsFooterVisible && 'teams', bridgeFooterVisible && 'bridge', companionFooterVisible && 'companion'].filter(Boolean) as FooterItem[], [npuFooterVisible, tasksFooterVisible, tmuxFooterVisible, bagelFooterVisible, teamsFooterVisible, bridgeFooterVisible, companionFooterVisible]);
+ 
+   // Effective selection: null if the selected pill stopped rendering (bridge
+diff --git a/src/services/npuRecentModels.test.ts b/src/services/npuRecentModels.test.ts
+new file mode 100644
+index 0000000..2a99aff
+--- /dev/null
++++ b/src/services/npuRecentModels.test.ts
+@@ -0,0 +1,68 @@
++import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
++import { mkdtempSync, rmSync } from 'node:fs'
++import { tmpdir } from 'node:os'
++import { join } from 'node:path'
++import { setClaudeConfigHomeDirForTesting } from '../utils/envUtils.js'
++import {
++  __resetNpuRecentModelsForTest,
++  getRememberedNpuModels,
++  rememberNpuModels,
++} from './npuRecentModels.js'
++
++const BASE = 'http://127.0.0.1:8400'
++
++let dir: string
++beforeEach(() => {
++  dir = mkdtempSync(join(tmpdir(), 'npu-recent-'))
++  setClaudeConfigHomeDirForTesting(dir)
++  __resetNpuRecentModelsForTest()
++})
++afterEach(() => {
++  setClaudeConfigHomeDirForTesting(undefined)
++  rmSync(dir, { recursive: true, force: true })
++})
++
++describe('npuRecentModels', () => {
++  test('remembers loaded models and survives a fresh read (persistence)', () => {
++    rememberNpuModels(BASE, ['A', 'B'])
++    __resetNpuRecentModelsForTest() // drop in-memory cache → forces a disk read
++    expect(getRememberedNpuModels(BASE)).toEqual(['A', 'B'])
++  })
++
++  test('keeps currently-loaded first, then previously-seen', () => {
++    rememberNpuModels(BASE, ['A', 'B'])
++    // Later poll: only C is up now; A and B were up before.
++    const out = rememberNpuModels(BASE, ['C'])
++    expect(out).toEqual(['C', 'A', 'B'])
++  })
++
++  test('never duplicates a model', () => {
++    rememberNpuModels(BASE, ['A'])
++    const out = rememberNpuModels(BASE, ['A', 'B'])
++    expect(out).toEqual(['A', 'B'])
++  })
++
++  test('caps the list so it cannot grow without bound', () => {
++    for (let i = 0; i < 20; i++) rememberNpuModels(BASE, [`m${i}`])
++    expect(getRememberedNpuModels(BASE).length).toBeLessThanOrEqual(8)
++    // Most-recent survives the cap.
++    expect(getRememberedNpuModels(BASE)[0]).toBe('m19')
++  })
++
++  test('keeps routers separate', () => {
++    rememberNpuModels('http://a:8400', ['A'])
++    rememberNpuModels('http://b:8400', ['B'])
++    expect(getRememberedNpuModels('http://a:8400')).toEqual(['A'])
++    expect(getRememberedNpuModels('http://b:8400')).toEqual(['B'])
++  })
++
++  test('a steady state does not rewrite (returns same order)', () => {
++    rememberNpuModels(BASE, ['A', 'B'])
++    expect(rememberNpuModels(BASE, ['A', 'B'])).toEqual(['A', 'B'])
++  })
++
++  test('ignores an empty base', () => {
++    expect(rememberNpuModels('', ['A'])).toEqual([])
++    expect(getRememberedNpuModels('')).toEqual([])
++  })
++})
+diff --git a/src/services/npuRecentModels.ts b/src/services/npuRecentModels.ts
+new file mode 100644
+index 0000000..b1c3433
+--- /dev/null
++++ b/src/services/npuRecentModels.ts
+@@ -0,0 +1,105 @@
++/**
++ * Remembers which NPU models were actually loaded, per router.
++ *
++ * The status line should keep showing the models you were just using even after
++ * the router forgets them (a restart, an LRU eviction, cards cleared) — but with
++ * their *real* current state, not a stale one. The router is the source of truth
++ * for what is up right now; this is the source of truth for "what was up before"
++ * so those rows can reappear in red instead of silently vanishing.
++ *
++ * Keyed by router base URL so two backends never bleed into each other. Persisted
++ * next to the rest of the config; every filesystem touch is guarded because a
++ * bad read or a full disk must never take down status polling.
++ */
++import { randomBytes } from 'node:crypto'
++import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
++import { join } from 'node:path'
++import { getClaudeConfigHomeDir } from '../utils/envUtils.js'
++
++const FILENAME = 'npu-recent-models.json'
++/** Enough to cover the four cards several times over without an unbounded list. */
++const MAX_PER_BASE = 8
++
++/** base URL → model ids, most-recently-loaded first. */
++type Store = Record<string, string[]>
++
++let cache: Store | null = null
++
++function cachePath(): string {
++  return join(getClaudeConfigHomeDir(), FILENAME)
++}
++
++function sanitize(parsed: unknown): Store {
++  const out: Store = {}
++  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
++    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
++      if (Array.isArray(v)) {
++        out[k] = v.filter((x): x is string => typeof x === 'string' && x.length > 0).slice(0, MAX_PER_BASE)
++      }
++    }
++  }
++  return out
++}
++
++function load(): Store {
++  if (cache) return cache
++  try {
++    cache = sanitize(JSON.parse(readFileSync(cachePath(), 'utf-8')))
++  } catch {
++    cache = {}
++  }
++  return cache
++}
++
++function persist(store: Store): void {
++  try {
++    const dir = getClaudeConfigHomeDir()
++    if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
++    const tmp = join(dir, `${FILENAME}.${randomBytes(6).toString('hex')}.tmp`)
++    writeFileSync(tmp, JSON.stringify(store, null, 2), { encoding: 'utf-8', mode: 0o600 })
++    renameSync(tmp, cachePath())
++  } catch {
++    // Memory-only fallback — a failed write must not break polling.
++  }
++}
++
++function sameOrder(a: readonly string[], b: readonly string[]): boolean {
++  if (a.length !== b.length) return false
++  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false
++  return true
++}
++
++/** Model ids remembered for this router, most-recent first. Empty when none. */
++export function getRememberedNpuModels(base: string): string[] {
++  if (!base) return []
++  return [...(load()[base] ?? [])]
++}
++
++/**
++ * Records that `ids` are loaded right now, and returns the full remembered list
++ * (these first, then previously-seen models), capped and most-recent first.
++ * Only writes to disk when the order actually changes, so a steady state costs
++ * nothing.
++ */
++export function rememberNpuModels(base: string, ids: readonly string[]): string[] {
++  if (!base) return []
++  const store = load()
++  const prev = store[base] ?? []
++  const merged: string[] = []
++  const seen = new Set<string>()
++  for (const id of [...ids, ...prev]) {
++    if (typeof id === 'string' && id && !seen.has(id)) {
++      seen.add(id)
++      merged.push(id)
++    }
++  }
++  const capped = merged.slice(0, MAX_PER_BASE)
++  store[base] = capped
++  if (!sameOrder(prev, capped)) persist(store)
++  return [...capped]
++}
++
++/** Test seam — drops the in-memory cache so a fresh file is read. */
++export function __resetNpuRecentModelsForTest(): void {
++  cache = null
++}
+diff --git a/src/services/npuStatus.test.ts b/src/services/npuStatus.test.ts
+index dac0e16..dd1ae74 100644
+--- a/src/services/npuStatus.test.ts
++++ b/src/services/npuStatus.test.ts
+@@ -39,8 +39,20 @@ describe('npuDisplayModels', () => {
+     expect(out.map(m => m.id)).toEqual(['B', 'A', 'C'])
+   })
+ 
+-  test('includes a selected model the router has never heard of, as down', () => {
++  test('omits a selected model that is neither live nor remembered', () => {
++    // The bare default model (never loaded) must not appear.
+     const out = npuDisplayModels([model('A')], 'Cold')
++    expect(out.map(m => m.id)).toEqual(['A'])
++  })
++
++  test('shows a remembered-but-not-live model as down, after the live ones', () => {
++    const out = npuDisplayModels([model('A')], 'A', ['A', 'B'])
++    expect(out.map(m => m.id)).toEqual(['A', 'B'])
++    expect(out[1]?.state).toBe('down')
++  })
++
++  test('shows the selected model when it is remembered even if not live now', () => {
++    const out = npuDisplayModels([model('A')], 'Cold', ['Cold'])
+     expect(out.map(m => m.id)).toEqual(['Cold', 'A'])
+     expect(out[0]?.state).toBe('down')
+   })
+@@ -49,8 +61,9 @@ describe('npuDisplayModels', () => {
+     expect(npuDisplayModels([model('A'), model('B')], null).map(m => m.id)).toEqual(['A', 'B'])
+   })
+ 
+-  test('does not duplicate the selected model', () => {
+-    const out = npuDisplayModels([model('A'), model('B')], 'A')
++  test('does not duplicate a model that is live, current, and remembered', () => {
++    const out = npuDisplayModels([model('A'), model('B')], 'A', ['A', 'B'])
+     expect(out.filter(m => m.id === 'A')).toHaveLength(1)
++    expect(out.map(m => m.id)).toEqual(['A', 'B'])
+   })
+ })
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+index 763f4af..96d2e40 100644
+--- a/src/services/npuStatus.ts
++++ b/src/services/npuStatus.ts
+@@ -11,6 +11,8 @@
+  * so pointing openclaude at OpenAI/Ollama costs one request and nothing more.
+  */
+ 
++import { getRememberedNpuModels, rememberNpuModels } from './npuRecentModels.js'
++
+ /** Server-side lifecycle of one model on the NPU cards. */
+ export type NpuModelState = 'loading' | 'up' | 'stopping' | 'error' | 'down'
+ 
+@@ -36,6 +38,12 @@ export type NpuStatus = {
+   phase: number
+   /** False until the first successful poll, and after the router is ruled out. */
+   available: boolean
++  /**
++   * Model ids that were loaded at some point on this router, most-recent first —
++   * so a model the router no longer serves still shows (in red) instead of
++   * vanishing. Persisted across restarts; see npuRecentModels.
++   */
++  remembered: string[]
+ }
+ 
+ const IDLE_INTERVAL_MS = 10_000
+@@ -48,6 +56,7 @@ export const currentNpuStatus: NpuStatus = {
+   freeCards: [],
+   phase: 0,
+   available: false,
++  remembered: [],
+ }
+ 
+ export const npuStatusListeners = new Set<(status: NpuStatus) => void>()
+@@ -105,11 +114,18 @@ export function parseStatus(raw: RawStatus): Pick<NpuStatus, 'models' | 'freeCar
+ }
+ 
+ /**
+- * The models to show, in display order: the selected one first, then the rest
+- * alphabetically.
++ * The models to show, in display order: the selected one first, then everything
++ * live now, then models that were loaded before but are not live anymore (shown
++ * `down`, i.e. red).
+  *
+- * A selected model the router has never heard of is included anyway (as
+- * `down`), so picking a cold model shows something rather than nothing.
++ * The current model is included only when it is actually live, transitioning, or
++ * remembered — never merely because it is the selected default. Otherwise the
++ * backend's default model (which the user may never have loaded) would sit in
++ * the list red on every launch.
++ *
++ * A remembered-but-not-live model appears as `down` so you can still see — and
++ * re-select — what you were just using, with its real current state rather than
++ * a stale one.
+  *
+  * Both the status line and the footer's ←/→ cursor read this, so the cursor
+  * always lands on the entry the user is looking at.
+@@ -117,14 +133,22 @@ export function parseStatus(raw: RawStatus): Pick<NpuStatus, 'models' | 'freeCar
+ export function npuDisplayModels(
+   models: readonly NpuModel[],
+   currentModelId: string | null,
++  remembered: readonly string[] = [],
+ ): NpuModel[] {
+-  const current = currentModelId ? models.find(m => m.id === currentModelId) : undefined
+-  const rest = models.filter(m => m.id !== current?.id)
+-  if (current) return [current, ...rest]
+-  if (currentModelId) {
+-    return [{ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, ...rest]
++  const byId = new Map(models.map(m => [m.id, m]))
++  const order: NpuModel[] = []
++  const seen = new Set<string>()
++  const push = (id: string): void => {
++    if (seen.has(id)) return
++    seen.add(id)
++    order.push(byId.get(id) ?? { id, state: 'down', cards: [], dp: 1, pp: 1 })
++  }
++  if (currentModelId && (byId.has(currentModelId) || remembered.includes(currentModelId))) {
++    push(currentModelId)
+   }
+-  return rest
++  for (const m of models) push(m.id)
++  for (const id of remembered) push(id)
++  return order
+ }
+ 
+ let timer: ReturnType<typeof setTimeout> | null = null
+@@ -175,6 +199,11 @@ async function pollOnce(base: string): Promise<boolean> {
+     const parsed = parseStatus((await res.json()) as RawStatus)
+     currentNpuStatus.models = withPending(parsed.models, Date.now())
+     currentNpuStatus.freeCards = parsed.freeCards
++    // Remember models the router reports as fully up, so they keep showing (red)
++    // after an eviction or restart. Only `up` — a load that never finished must
++    // not be remembered as if it had.
++    const upIds = parsed.models.filter(m => m.state === 'up').map(m => m.id)
++    currentNpuStatus.remembered = rememberNpuModels(base, upIds)
+     currentNpuStatus.phase += 1
+     currentNpuStatus.available = true
+     notify()
+@@ -254,6 +283,7 @@ export function __resetNpuStatusForTest(): void {
+   currentNpuStatus.freeCards = []
+   currentNpuStatus.phase = 0
+   currentNpuStatus.available = false
++  currentNpuStatus.remembered = []
+   npuStatusListeners.clear()
+ }
+ 
+diff --git a/src/utils/npuVariants.test.ts b/src/utils/npuVariants.test.ts
+index 6c8bdcc..be3eb5a 100644
+--- a/src/utils/npuVariants.test.ts
++++ b/src/utils/npuVariants.test.ts
+@@ -98,7 +98,10 @@ describe('npuLoadStatesByBase', () => {
+ })
+ 
+ describe('applyNpuLoadColors', () => {
+-  const options = [{ value: 'L', label: 'L' }, { value: 'Q', label: 'Q' }]
++  const options: Array<{ value: string; label: string; color?: string }> = [
++    { value: 'L', label: 'L' },
++    { value: 'Q', label: 'Q' },
++  ]
+ 
+   test('paints every loaded model, not just the selected one', () => {
+     const out = applyNpuLoadColors(options, npuLoadStatesByBase([
 -- 
 2.43.0
 
