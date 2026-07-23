@@ -775,7 +775,125 @@ class ParallelConfig(BaseModel):
 
 ---
 
-## 11. 관련 문서
+## 11. `.fxb` 번들과 `fxb` 명령 — 안에 뭐가 들었고 왜 serve가 또 받나
+
+이 절은 SDK 2026.3.0에서 새로 생긴 `.fxb` 번들이 무엇인지, `fxb download`가 정확히 무엇을 받아오는지, 그리고 그 뒤에 `furiosa-llm serve`가 왜 또 수십 GB를 내려받는지를 실측으로 정리합니다.
+
+> 인용 경로는 앞과 같은 `~/furiosa/lib/python3.12/site-packages/furiosa_llm/` 이지만 **이 절만 SDK 2026.3.0 기준**입니다. `~/furiosa` 는 `2026.3.0-release (rev: a13b5a4)` 로 올라가 있고, `fxb` 명령은 2026.2.0 엔 없었습니다. 로드 2경로(artifact vs fxb) 자체는 §10.5 에 있으니 여기서 되풀이하지 않습니다.
+
+### 11.1 `.fxb` 안에는 컴파일된 커널만 있고 가중치는 없습니다
+
+`.fxb` 는 **Furiosa Executable Bundle** 입니다. 2026.2.0 소스엔 풀이가 없어 §10.5 에 "약자 풀이 없음"으로 적어 뒀는데, 2026.3.0 에서는 `cli/convert.py:138` 이 `"... builds a Furiosa Executable Bundle. Use the `fxb build` command instead"` 로 직접 풀어 씁니다(네이티브 `.so` 문자열에도 `Furiosa Executable Bundle - Build Summary v2026.3.0`).
+
+파일은 **압축하지 않은 ZIP** 이고, 들어 있는 항목은 두 종류뿐입니다.
+
+- `edfs/*.edf` — 버킷별로 컴파일된 커널 그래프 (Qwen3-4B 는 151개, gpt-oss-120b 는 297개)
+- `manifest.json` — 메타데이터 1개 (4B 기준 35,691 B)
+
+받아 둔 번들 10개를 전부 열어 봐도 `safetensors`·`weight`·`param`·`.bin`·`.pt`·`ckpt` 같은 이름의 항목은 **하나도 없습니다**. 가중치는 커널의 **런타임 입력**으로 선언만 돼 있습니다. `fxb inspect` 로 Qwen3-4B 의 `first_tokenwise(tw4)` 커널을 보면 입력 하나(임베딩 `151936x2560` bf16, 777,912,320 B)가 **번들 전체(549,006,175 B)보다 큽니다.** `.edf` 안의 CBOR 도 `attn_Q_proj_weight`·`embedding_table` 같은 이름과 dtype, `buffer_type: Host/Dram` 만 적어 두고 `source: Unknown` 에 실제 바이트열은 빈 채로 둡니다. 즉 **로드할 때 채워 넣을 자리표**입니다.
+
+> 함정 하나. `.edf` 안에 `weight_block` 이라는 큰 덩어리가 있습니다(4B 번들의 54.1%, 296,927,232 B). 이름과 달리 가중치가 아니라 **미리 잡아 두는 NPU DRAM 공간**입니다. 내용의 91.22%가 0 이고, 파라미터가 없는 `full_attention` 커널에도 들어 있고, 배치×KV 버킷에 따라 커지며(b1_a512=16,384 B → b256_a32768=38,010,880 B), 모델이 커져도 그대로입니다(4B 296,927,232 B vs 8B 295,550,976 B).
+
+**실측 크기 대비** (같은 스냅샷 폴더 안 `*.safetensors` 합계 vs `.fxb`, `du -cbL` / `stat -Lc%s`):
+
+| 모델 | safetensors | `.fxb` | 배수 |
+|---|---|---|---|
+| `furiosa-ai/Qwen3-4B-FP8` | 5,190,052,872 B (4.8 GiB) | 549,006,175 B (523.6 MiB) | 9.5배 |
+| `furiosa-ai/Qwen3-Coder-30B-A3B-Instruct-FP8` | 31,175,618,584 B (29.0 GiB) | 717,283,001 B (684.1 MiB) | 43.5배 |
+| `furiosa-ai/gpt-oss-120b` | 65,248,893,184 B (60.8 GiB) | 946,838,734 B (903.0 MiB) | 68.9배 |
+| `furiosa-ai/K-EXAONE-236B-A23B-NVFP4A16` | 147,748,354,560 B (선언값, 137.6 GiB) | 2,121,420,595 B (2.0 GiB) | 69.6배 |
+
+gpt-oss-120b 는 903 MiB 에 1200억 파라미터 → 파라미터당 0.06비트라, 어떤 양자화로도 나올 수 없는 값입니다. 번들 크기는 파라미터 수가 아니라 **버킷 개수**를 따라갑니다. `fxb cache ls` 기준 이 기계의 번들 10개 합계가 11.0 GiB 인데, 대응하는 가중치는 수백 GB 입니다.
+
+가장 확실한 증거는 `furiosa-ai/Qwen3-8B-FP8` 입니다. `.fxb` 545,307,686 B 는 캐시에 있지만 HF 허브 캐시엔 `models--furiosa-ai--Qwen3-8B-FP8` 폴더 자체가 없고, `models--Qwen--Qwen3-8B-FP8/` 에는 `config.json` 896 B 하나뿐입니다(`fxb check` 가 받아 온 것). **가중치 0바이트 = 이 모델은 지금 못 띄웁니다.**
+
+### 11.2 `fxb download` 는 `.fxb` 와 `README.md` 딱 두 개만 받습니다
+
+`fxb` 는 별도 실행파일(`/home/jun/furiosa/bin/fxb`)이고 하위 명령은 `build / download / add / check / cache / show / inspect` 입니다.
+
+파이썬 쪽 `_download`(`cli/fxb.py:141-163`)는 리비전만 정하고 네이티브 `furiosa.llm_native.fxb.download` 를 부르는 껍데기입니다. 실제 다운로드는 스트립된 170 MB 짜리 `furiosa/llm_native.cpython-312-x86_64-linux-gnu.so`(Rust) 안에 있고 파이썬 소스는 없습니다. 파이썬 `huggingface_hub` 도 안 씁니다 — `.so` 문자열에 `snapshot_download`·`hf_hub_download`·`allow_patterns` 가 **0건**이고 Rust `hf-hub` 크레이트 경로(`.../hf-hub-02c52c9662c9c353/4a607f4/src/api/mod.rs`)와 `furiosa-generator/src/fxb/cache/download.rs` 만 박혀 있습니다.
+
+무엇을 받는지는 `HF_ENDPOINT` 를 흉내 낸 허브로 확인했습니다. safetensors·config.json·tokenizer.json 을 전부 광고하는 저장소에 `fxb download` 를 걸었을 때 실제로 나간 요청은 이게 전부입니다.
+
+```
+GET /api/models/probe/repo/revision/main       ← 파일 목록
+GET /probe/repo/resolve/main/README.md
+GET /probe/repo/resolve/main/probe-model.fxb
+```
+
+가중치·config·tokenizer 는 **한 건도 요청하지 않습니다**. 실제 캐시도 같은 모양이라 받아 둔 10개 저장소가 전부 `.fxb` 1개 + `README.md` 1개뿐입니다. README 까지 받는 이유는 앞머리 YAML 의 `base_model:` 을 읽어 `index.json` 에 적기 위해서입니다(센티넬 README 로 확인 — manifest 의 `hub_repo_id` 가 아니라 README 값이 기록됩니다).
+
+- 캐시 위치: `~/.cache/furiosa/llm/fxb` (`constants.py:13` + `cli/fxb.py:17`, `XDG_CACHE_HOME` 따름). **HF 허브 캐시와 완전히 별개입니다.**
+- 리비전 기본값: `furiosa-ai/*` 저장소면 SDK 버전 태그(`v2026.3`), 그 외엔 없음 + main 폴백 (`utils.py:399-430`).
+- 다시 실행하면 목록만 조회하고 `Already cached` 로 끝납니다.
+
+즉 `fxb download` 만으로는 **서빙이 안 됩니다.** 커널만 받은 상태입니다.
+
+### 11.3 그래서 `serve` 가 또 받습니다 (가중치 + `.fxb` 중복)
+
+`furiosa-llm serve` 는 `cli/serve.py:445 run_server` → `server/app.py:456 load_llm_from_args` → `server/models.py:41 LLM(...)` → `api.py:308` 로 들어갑니다. 문제 지점은 `api.py:305-313` 입니다.
+
+```python
+resolved = get_path_or_hf_download(
+    model_id_or_path, effective_revision,
+    fallback_to_main_on_missing=allow_main_fallback,
+)
+is_v2_artifact = fxb is None and (Path(resolved) / "artifact.json").exists()
+```
+
+이 호출에 `fxb` 인자가 **안 들어갑니다.** artifact 냐 fxb 냐를 가르는 분기(`api.py:313`·`:337`)보다 다운로드가 **먼저** 실행되므로, `--fxb` 로 번들 경로를 직접 줘도 저장소 다운로드는 그대로 일어납니다. `huggingface_hub` 를 스텁으로 바꿔 `LLM("some-org/some-model", fxb="/tmp/explicit.fxb")` 를 호출해 보면 `HfApi.repo_info` 와 `snapshot_download` 가 그대로 나갑니다.
+
+받는 범위는 **저장소 통째**입니다(`utils.py:361`). 거르는 목록(`utils.py:287-300`)은 `*.bin`·`*.bin.index.json`·`*.pth`·`*.pt`·`*.h5`·`*.msgpack`·`*.ot`·`original/`·`consolidated*`·`metal/` 뿐이라 **`*.safetensors` 도 `*.fxb` 도 안 걸러집니다.** furiosa-ai 저장소는 `.fxb` 를 가중치 옆에 같이 올려 두므로 결과는 이렇습니다.
+
+- 가중치 전량 — 다운로드 바이트의 90~99% (4B 90.4%, Coder-30B 97.8%, gpt-oss-120b 98.6%)
+- tokenizer·config
+- **이미 갖고 있는 `.fxb` 의 두 번째 사본**
+
+중복은 디스크에서 그대로 보입니다. Qwen3-4B 의 같은 blob(sha `8d9439d7…`)이 두 캐시에 `inode=3014738 links=1`(furiosa) / `inode=106068843 links=1`(HF)로 따로 있습니다 — 하드링크가 아니라 진짜 복사본이고, HF 쪽이 10일 더 새것입니다(7/6 vs 7/16). `du -shL ~/.cache/furiosa/llm/fxb/` = **12G 가 통째로 중복**입니다.
+
+§10.5 의 "모델 폴더에서 `.fxb` 를 찾아 쓴다"(`api.py:101 discover_fxb` → `utils.py:475` 글롭)도 같은 이유입니다. 글롭 대상 `resolved` 가 **다운로드가 끝난 모델 폴더**라, 이 경로는 원리상 저장소를 먼저 받아야 성립합니다.
+
+### 11.4 미리 받아 두고 오프라인으로 띄우는 순서
+
+```bash
+# 1) 가중치·토크나이저·config (용량 대부분이 여기)
+#    furiosa-ai 저장소는 .fxb 도 같이 들어 있어 이 한 방이면 끝납니다
+hf download furiosa-ai/Qwen3-4B-FP8 --local-dir ~/models/Qwen3-4B-FP8
+
+# 2) 로컬 경로로 서빙 — 네트워크 접근 0건
+furiosa-llm serve ~/models/Qwen3-4B-FP8
+```
+
+`/`·`.`·`~` 로 시작하는 경로를 주면 `utils.py:344-349` 에서 바로 반환하고 허브를 아예 안 건드립니다(스텁 계측으로 확인: 네트워크 호출 NONE). 폴더 안의 `.fxb` 는 `discover_fxb` 가 알아서 찾습니다. 번들을 따로 두고 싶으면 `--fxb <경로>` 로 지정하면 됩니다(`cli/serve.py:417-425`).
+
+HF id 를 그대로 쓰고 싶다면 캐시만 읽게 막습니다. `furiosa_llm` 자체엔 오프라인 처리가 없고(`grep HF_HUB_OFFLINE` = serve 경로 0건), `huggingface_hub` 1.24.0 이 env 를 대신 봐 줍니다.
+
+```bash
+HF_HUB_OFFLINE=1 furiosa-llm serve furiosa-ai/Qwen3-4B-FP8
+```
+
+`fxb download` 는 이 순서에 **필수가 아닙니다.** 가중치 없이 커널만 먼저 챙겨 크기·호환성을 확인하거나, 번들이 가중치와 다른 저장소에 있을 때 쓰는 명령입니다.
+
+### 11.5 `fxb check` 의 지문, 그리고 tp 는 빌드 때 굳습니다
+
+`fxb check <repo_id>` 는 그 저장소의 **`config.json` 하나만** 내려받아 지문을 만들고, 캐시에 있는 번들 중 맞는 것을 골라 줍니다(요청 로그: 목록 + `config.json`, 그 외 0건). 지문에 쓰이는 값은 출력에 그대로 찍힙니다 — `head_dim`·`hidden_size`·`intermediate_size`·`max_position_embeddings`·`num_attention_heads`·`num_hidden_layers`·`num_key_value_heads`·`quant_method`·`rms_norm_eps`·`rope_scaling`·`sliding_window`·`vocab_size`. 앞서 `models--Qwen--Qwen3-8B-FP8/` 에 `config.json` 896 B 만 덩그러니 있는 것이 이 명령의 흔적입니다.
+
+지문이 `config.json` 기반이라 **tp 는 지문에 안 들어갑니다.** tp 는 §10.5 대로 빌드 시점에 바이너리에 굳고, 번들에서는 `manifest.json` 의 `parallel_config` (=`fxb show` 의 Parallelism)에 적혀 있습니다. 그러니 `check` 가 match 라고 해도 **몇 장짜리인지는 따로 봐야 합니다.**
+
+받아 둔 10개 번들의 `parallel_config` 를 전부 열어 보면 이렇습니다.
+
+| tp | pp | 번들 |
+|---|---|---|
+| 8 (1장) | 1 | `Qwen3-4B-FP8`, `Qwen3-8B-FP8` |
+| **32 (4장)** | 1 | `Qwen3-30B-A3B-FP8`, `Qwen3-30B-A3B-Instruct-2507-FP8`, `Qwen3-30B-A3B-Thinking-2507-FP8`, `Qwen3-Coder-30B-A3B-Instruct-FP8`, `Qwen3-VL-32B-Instruct`, `K-EXAONE-236B-A23B-NVFP4A16`, `Solar-Open-100B-NVFP4A16`, `gpt-oss-120b` |
+
+우리가 직접 못 만들던 tp32 를(→ [README_tp32_build.md](README_tp32_build.md)) 벤더가 번들로 바로 내려 주는 셈이라, 4장 구성에서 쓸 수 있는 모델이 크게 늘었습니다. 대신 tp32 번들은 4장 전부를 한 덩어리로 쓰므로 dp 복제는 안 됩니다.
+
+`manifest.json` 의 `model.hub_repo_id` 는 **가중치가 있는 원본 저장소**를 가리킵니다(예: `gpt-oss-120b` → `openai/gpt-oss-120b`, `Qwen3-Coder-30B-A3B-Instruct-FP8` → `Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8`). 번들은 이렇게 가중치를 **가리키기만** 하고 담지는 않습니다.
+
+---
+
+## 12. 관련 문서
 
 - [`README.md`](README.md) — 측정 파이프라인·orchestrator 사용법 (서버 자동 띄우기·sweep 등)
 - [`README_build.md`](README_build.md) — 빌드 옵션·OOM 트러블슈팅
