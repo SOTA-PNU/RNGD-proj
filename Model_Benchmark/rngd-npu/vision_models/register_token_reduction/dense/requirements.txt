@@ -1,0 +1,8 @@
+# register-aware 토큰압축 — dense(분할) 평가용. GPU 서버에 설치.
+torch>=2.1
+torchvision
+timm>=1.0
+datasets>=2.19      # ADE20k(scene_parse_150) 스트리밍
+pillow
+numpy
+matplotlib          # sweep 그림
