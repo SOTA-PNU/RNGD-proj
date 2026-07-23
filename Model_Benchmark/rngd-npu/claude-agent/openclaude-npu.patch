@@ -1,0 +1,2776 @@
+From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 14:11:42 +0900
+Subject: [PATCH 01/12] statusline: show Furiosa NPU model state with per-model
+ LEDs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Furiosa router lazy-serves models onto four NPU cards; a tp32 model takes
+all four and needs ~2 minutes to load. Until now the TUI said nothing during
+that, and it could not show that several small models share the cards.
+
+- services/npuStatus.ts polls the router's /router/status. Interval adapts:
+  1s while any model is loading/stopping, 10s when idle. The first probe that
+  fails disables polling for the session, so pointing openclaude at a non-Furiosa
+  OpenAI endpoint costs exactly one request.
+- BuiltinStatusLine renders one segment per model: green when up, yellow while
+  loading/stopping, red when the selected model is not on a card yet. Terminals
+  have no CSS animation, so transitioning models blink by alternating ●/○ on
+  each poll tick — the poll *is* the animation clock.
+- The selected model is marked ▶ and given a low priority so it survives a
+  narrow terminal; the other cards' models yield first via the existing
+  fitSegments degradation.
+- When the NPU segments are present they replace the plain model-name segment,
+  which would otherwise repeat the same name and waste width.
+
+Verified against the live 4-card server: Qwen3-4B-FP8@dp2 observed through
+loading → up, and this build answered a prompt through the router.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Na71jMPNwVCJecN1VMjJbo
+---
+ src/components/BuiltinStatusLine.tsx |  71 ++++++++++-
+ src/services/npuStatus.ts            | 175 +++++++++++++++++++++++++++
+ src/services/npuStatusHook.ts        |  30 +++++
+ 3 files changed, 275 insertions(+), 1 deletion(-)
+ create mode 100644 src/services/npuStatus.ts
+ create mode 100644 src/services/npuStatusHook.ts
+
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index 4a0a0af..ea77786 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -9,6 +9,8 @@ import { useTerminalSize } from '../hooks/useTerminalSize.js';
+ import { Box, Text } from '../ink.js';
+ import { getRawUtilization } from '../services/claudeAiLimits.js';
+ import { useClaudeAiLimits } from '../services/claudeAiLimitsHook.js';
++import type { NpuModel, NpuStatus } from '../services/npuStatus.js';
++import { useNpuStatus } from '../services/npuStatusHook.js';
+ import { useAppState } from '../state/AppState.js';
+ import type { Message } from '../types/message.js';
+ import { getGlobalConfig } from '../utils/config.js';
+@@ -44,8 +46,63 @@ export type StatusSegment = {
+   color?: keyof Theme;
+ };
+ const SEPARATOR = ' · ';
++/** LED glyphs. Terminals have no CSS animation, so a transitioning model blinks
++ *  by alternating filled/hollow on each poll tick (`NpuStatus.phase`). */
++const LED_ON = '●';
++const LED_OFF = '○';
++
++/**
++ * One status segment per model the NPU router knows about, plus the model the
++ * user has selected even when it is not loaded yet (shown red) — otherwise
++ * picking a cold model would show nothing at all until it finishes loading.
++ *
++ * `currentModelId` is marked with `▶` so it stays identifiable once several
++ * models share the four cards.
++ */
++export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null): StatusSegment[] {
++  if (!npu.available) return [];
++  const segments: StatusSegment[] = [];
++  const seen = new Set<string>();
++  const blinkOn = npu.phase % 2 === 0;
++
++  const push = (m: NpuModel, isCurrent: boolean) => {
++    seen.add(m.id);
++    const transitioning = m.state === 'loading' || m.state === 'stopping';
++    const glyph = transitioning ? (blinkOn ? LED_ON : LED_OFF) : LED_ON;
++    const color: keyof Theme | undefined =
++      m.state === 'up' ? 'success'
++      : transitioning ? 'warning'
++      : 'error';
++    const where = m.cards.length > 0 ? ` npu${m.cards.join(',')}` : '';
++    segments.push({
++      key: `npu:${m.id}`,
++      // Current model outranks context/cost so it survives a narrow terminal;
++      // the other cards' models yield first.
++      priority: isCurrent ? 0.5 : 4,
++      text: `${isCurrent ? '▶' : ''}${glyph} ${m.id}${where}`,
++      shortText: `${isCurrent ? '▶' : ''}${glyph} ${m.id}`,
++      color,
++    });
++  };
++
++  const current = currentModelId ? npu.models.find(m => m.id === currentModelId) : undefined;
++  if (current) {
++    push(current, true);
++  } else if (currentModelId) {
++    // Selected but not on any card yet.
++    push({ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, true);
++  }
++  for (const m of npu.models) {
++    if (!seen.has(m.id)) push(m, false);
++  }
++  return segments;
++}
+ export type BuiltinStatusData = {
+   modelName: string;
++  /** NPU router status; absent when the backend is not a Furiosa router. */
++  npu?: NpuStatus;
++  /** Model id as the router knows it — used to mark the active NPU segment. */
++  npuCurrentModelId?: string | null;
+   /** 0–100, or null before the first assistant turn. */
+   contextUsedPercent: number | null;
+   /** Current input token count (including cache), or null. */
+@@ -62,7 +119,12 @@ export type BuiltinStatusData = {
+   } | null;
+ };
+ export function buildBuiltinStatusSegments(data: BuiltinStatusData): StatusSegment[] {
+-  const segments: StatusSegment[] = [{
++  // When an NPU router is behind us its per-model LEDs replace the plain model
++  // name — the LED line already names the model, and repeating it wastes width.
++  const npuSegments = data.npu
++    ? buildNpuSegments(data.npu, data.npuCurrentModelId ?? null)
++    : [];
++  const segments: StatusSegment[] = npuSegments.length > 0 ? [...npuSegments] : [{
+     key: 'model',
+     priority: 0,
+     text: data.modelName
+@@ -184,6 +246,9 @@ function BuiltinStatusLineInner({
+   const mainLoopModel = useMainLoopModel();
+   // Subscribe to rate-limit header updates so the segment stays fresh.
+   useClaudeAiLimits();
++  // NPU card status (Furiosa router backends only). Each poll re-renders, which
++  // is also what drives the blink of a model that is still loading.
++  const npu = useNpuStatus();
+   const {
+     columns
+   } = useTerminalSize();
+@@ -203,6 +268,9 @@ function BuiltinStatusLineInner({
+       : null;
+     return {
+       modelName: renderModelName(runtimeModel),
++      // Raw id (not the prettified name) — this is what the router keys on,
++      // including any `@dp2`/`@pp2` parallelism suffix.
++      npuCurrentModelId: typeof runtimeModel === 'string' ? runtimeModel : null,
+       contextUsedPercent: contextPercentages.used,
+       contextInputTokens: inputTokens,
+       contextWindow: contextWindowSize,
+@@ -215,6 +283,7 @@ function BuiltinStatusLineInner({
+   }, [lastAssistantMessageId, permissionMode, mainLoopModel, messagesRef]);
+   const segments = fitSegments(buildBuiltinStatusSegments({
+     ...computed,
++    npu,
+     rateLimit: getWorstRateLimit()
+   }),
+   // paddingX from the footer (2 each side) is already outside this Box;
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+new file mode 100644
+index 0000000..5c7facc
+--- /dev/null
++++ b/src/services/npuStatus.ts
+@@ -0,0 +1,175 @@
++/**
++ * NPU status polling for the Furiosa router backend.
++ *
++ * The router (furiosa_router.py) lazy-serves models onto NPU cards and exposes
++ * `/router/status`. A tp32 model takes all 4 cards and needs ~2 minutes to load,
++ * so without this the UI is silent for the whole cold start. We surface each
++ * model's state so the status line can show it.
++ *
++ * Only active when the OpenAI-compatible base URL actually points at a Furiosa
++ * router: the first probe that 404s (or fails) disables polling for the session,
++ * so pointing openclaude at OpenAI/Ollama costs one request and nothing more.
++ */
++
++/** Server-side lifecycle of one model on the NPU cards. */
++export type NpuModelState = 'loading' | 'up' | 'stopping' | 'error' | 'down'
++
++export type NpuModel = {
++  /** Model id as the router knows it, e.g. `Qwen3-4B-FP8@dp2`. */
++  id: string
++  state: NpuModelState
++  /** NPU card indices this model occupies. */
++  cards: number[]
++  /** Data-parallel replicas / pipeline stages the model is served with. */
++  dp: number
++  pp: number
++}
++
++export type NpuStatus = {
++  models: NpuModel[]
++  freeCards: number[]
++  /**
++   * Increments on every successful poll. Consumers use it to drive the
++   * blink of transitioning models — terminals have no CSS animation, so the
++   * poll tick *is* the animation clock.
++   */
++  phase: number
++  /** False until the first successful poll, and after the router is ruled out. */
++  available: boolean
++}
++
++const IDLE_INTERVAL_MS = 10_000
++/** While a model is loading/stopping we poll fast so the LED tracks reality. */
++const ACTIVE_INTERVAL_MS = 1_000
++const REQUEST_TIMEOUT_MS = 2_000
++
++export const currentNpuStatus: NpuStatus = {
++  models: [],
++  freeCards: [],
++  phase: 0,
++  available: false,
++}
++
++export const npuStatusListeners = new Set<(status: NpuStatus) => void>()
++
++/**
++ * `OPENAI_BASE_URL` points at the OpenAI-compatible surface (`.../v1`);
++ * the router's own endpoints sit next to it. Returns null when unset.
++ */
++export function routerBaseUrl(env: NodeJS.ProcessEnv = process.env): string | null {
++  const base = env.OPENAI_BASE_URL ?? env.OPENAI_API_BASE
++  if (!base) return null
++  return base.replace(/\/+$/, '').replace(/\/v1$/, '')
++}
++
++export function isTransitioning(models: NpuModel[]): boolean {
++  return models.some(m => m.state === 'loading' || m.state === 'stopping')
++}
++
++function notify(): void {
++  for (const listener of npuStatusListeners) {
++    try {
++      listener({ ...currentNpuStatus })
++    } catch {
++      // A broken consumer must not kill the poll loop.
++    }
++  }
++}
++
++type RawStatus = {
++  running?: Record<
++    string,
++    { state?: string; cards?: number[]; dp?: number; pp?: number }
++  >
++  free_cards?: number[]
++}
++
++export function parseStatus(raw: RawStatus): Pick<NpuStatus, 'models' | 'freeCards'> {
++  const models: NpuModel[] = []
++  for (const [id, v] of Object.entries(raw.running ?? {})) {
++    const state = v?.state
++    models.push({
++      id,
++      state:
++        state === 'loading' || state === 'stopping' || state === 'error' || state === 'down'
++          ? state
++          : 'up',
++      cards: Array.isArray(v?.cards) ? v.cards : [],
++      dp: typeof v?.dp === 'number' ? v.dp : 1,
++      pp: typeof v?.pp === 'number' ? v.pp : 1,
++    })
++  }
++  // Stable order so the status line doesn't reshuffle between polls.
++  models.sort((a, b) => a.id.localeCompare(b.id))
++  return { models, freeCards: Array.isArray(raw.free_cards) ? raw.free_cards : [] }
++}
++
++let timer: ReturnType<typeof setTimeout> | null = null
++let stopped = false
++
++async function pollOnce(base: string): Promise<boolean> {
++  const controller = new AbortController()
++  const abort = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
++  try {
++    const res = await fetch(`${base}/router/status`, { signal: controller.signal })
++    if (!res.ok) return false
++    const parsed = parseStatus((await res.json()) as RawStatus)
++    currentNpuStatus.models = parsed.models
++    currentNpuStatus.freeCards = parsed.freeCards
++    currentNpuStatus.phase += 1
++    currentNpuStatus.available = true
++    notify()
++    return true
++  } catch {
++    return false
++  } finally {
++    clearTimeout(abort)
++  }
++}
++
++/**
++ * Starts polling. Safe to call repeatedly — only the first call arms the loop.
++ * A failed *first* probe means this backend is not a Furiosa router, so we stop
++ * for good rather than retrying against someone else's OpenAI endpoint.
++ */
++export function startNpuStatusPolling(base = routerBaseUrl()): void {
++  if (timer !== null || stopped || !base) return
++  let everSucceeded = false
++  const loop = async (): Promise<void> => {
++    const ok = await pollOnce(base)
++    if (ok) {
++      everSucceeded = true
++    } else if (!everSucceeded) {
++      stopped = true // not a Furiosa router — stay quiet
++      currentNpuStatus.available = false
++      notify()
++      return
++    }
++    if (stopped) return
++    const delay = isTransitioning(currentNpuStatus.models)
++      ? ACTIVE_INTERVAL_MS
++      : IDLE_INTERVAL_MS
++    timer = setTimeout(loop, delay)
++  }
++  timer = setTimeout(loop, 0)
++}
++
++export function stopNpuStatusPolling(): void {
++  stopped = true
++  if (timer !== null) {
++    clearTimeout(timer)
++    timer = null
++  }
++}
++
++/** Test seam — resets module state between cases. */
++export function __resetNpuStatusForTest(): void {
++  stopNpuStatusPolling()
++  stopped = false
++  timer = null
++  currentNpuStatus.models = []
++  currentNpuStatus.freeCards = []
++  currentNpuStatus.phase = 0
++  currentNpuStatus.available = false
++  npuStatusListeners.clear()
++}
+diff --git a/src/services/npuStatusHook.ts b/src/services/npuStatusHook.ts
+new file mode 100644
+index 0000000..5fb053a
+--- /dev/null
++++ b/src/services/npuStatusHook.ts
+@@ -0,0 +1,30 @@
++import { useEffect, useState } from 'react'
++import {
++  currentNpuStatus,
++  type NpuStatus,
++  npuStatusListeners,
++  startNpuStatusPolling,
++} from './npuStatus.js'
++
++/**
++ * Subscribes to Furiosa NPU status updates and starts the poll loop on first
++ * mount. Re-renders on every poll tick, which is what animates the blink of
++ * models that are still loading — see `NpuStatus.phase`.
++ */
++export function useNpuStatus(): NpuStatus {
++  const [status, setStatus] = useState<NpuStatus>({ ...currentNpuStatus })
++
++  useEffect(() => {
++    const listener = (next: NpuStatus) => {
++      setStatus({ ...next })
++    }
++    npuStatusListeners.add(listener)
++    startNpuStatusPolling()
++
++    return () => {
++      npuStatusListeners.delete(listener)
++    }
++  }, [])
++
++  return status
++}
+-- 
+2.43.0
+
+
+From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 14:19:21 +0900
+Subject: [PATCH 02/12] model picker: use backend-supplied model descriptions
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+openclaude labels every discovered model 'Detected from <route>', which says
+nothing about how a self-hosted backend will actually serve it. The OpenAI
+/v1/models contract has no description field, so the Furiosa setup reads the
+router's /router/models at install time and the furio wrapper passes the map in
+via FURIO_MODEL_DESCRIPTIONS; the picker now shows e.g. 'tp8·dp2·pp1 · 2장 ·
+ctx 40k · fxb'. Falls back to the old text when unset, and ignores malformed
+JSON so a bad env var cannot break discovery.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/services/api/bootstrap.ts | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/src/services/api/bootstrap.ts b/src/services/api/bootstrap.ts
+index e901799..9bfec8b 100644
+--- a/src/services/api/bootstrap.ts
++++ b/src/services/api/bootstrap.ts
+@@ -95,12 +95,40 @@ export function getDiscoveredModelApiNames(
+   return discoveredModels?.length ? discoveredModels : null
+ }
+ 
++/**
++ * Per-model descriptions supplied by the backend, as `{"<model id>": "<text>"}`.
++ *
++ * The OpenAI `/v1/models` contract has no description field, so a self-hosted
++ * router cannot tell us how it will serve a model. The Furiosa setup fills this
++ * in at install time (`install.sh` reads the router's `/router/models`) and the
++ * `furio` wrapper passes it through, which means the text is available on the
++ * very first run rather than after a background refresh.
++ *
++ * Malformed JSON is ignored — a bad env var must not break model discovery.
++ */
++function getBackendModelDescriptions(): Record<string, string> {
++  const raw = process.env.FURIO_MODEL_DESCRIPTIONS
++  if (!raw) return {}
++  try {
++    const parsed = JSON.parse(raw) as unknown
++    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
++    const out: Record<string, string> = {}
++    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
++      if (typeof v === 'string' && v.length > 0) out[k] = v
++    }
++    return out
++  } catch {
++    return {}
++  }
++}
++
+ function buildLocalOpenAIModelOptions(options: {
+   models: string[]
+   routeId: string | null
+   routeLabel: string
+ }): ModelOption[] {
+   const seen = new Set<string>()
++  const backendDescriptions = getBackendModelDescriptions()
+   const catalogEntries = options.routeId
+     ? getCatalogEntriesForRoute(options.routeId)
+     : []
+@@ -125,7 +153,12 @@ function buildLocalOpenAIModelOptions(options: {
+     return [{
+       value,
+       label: catalogEntry?.label ?? model,
+-      description: `Detected from ${options.routeLabel}`,
++      // Prefer what the backend says about this model (e.g. "tp8·dp2·pp1 · 2장")
++      // over the generic provenance line.
++      description:
++        backendDescriptions[value] ??
++        backendDescriptions[model] ??
++        `Detected from ${options.routeLabel}`,
+     }]
+   })
+ }
+-- 
+2.43.0
+
+
+From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 14:29:26 +0900
+Subject: [PATCH 03/12] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
+ =?UTF-8?q?with=20=E2=86=90=20=E2=86=92?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Furiosa router publishes each usable parallel configuration as its own model
+id (`Qwen3-4B-FP8@dp2`), so the picker listed five near-identical rows per model
+and gave no sense that they were the same model served differently.
+
+Group them instead: the picker shows one row per configuration as before, but
+the focused model now gets a config row — `NPU [dp1·pp1]  dp2·pp1  dp4·pp1` —
+and ←/→ moves between them.
+
+Those keys were already wired for effort level and returned early for models
+without it, which is every NPU model, so they were dead. Reusing them costs no
+new keybinding. cycleNpuVariant returns null for single-config models (all tp32
+models, and every non-NPU provider), leaving the keypress a no-op exactly as
+before, and the row hides itself in that case.
+
+Only combinations the hardware can serve are ever published — tp is fixed at
+artifact build time, pp is unsupported for FXB artifacts, dp x pp is capped by
+card count — so everything shown is selectable; nothing needs greying out.
+
+The component is hand-written rather than compiler output; the two touched
+memo blocks get their new dependency in freshly allocated slots (_c(84) → 87).
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 60 ++++++++++++++++++++++--
+ src/utils/npuVariants.ts       | 86 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 142 insertions(+), 4 deletions(-)
+ create mode 100644 src/utils/npuVariants.ts
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index fe8d99b..336c021 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,6 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
++import { cycleNpuVariant, describeNpuVariant, npuVariantsOf } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -93,7 +94,9 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+   }
+ }
+ export function ModelPicker(t0) {
+-  const $ = _c(84);
++  // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
++  // (see the ←/→ handler and the config row below).
++  const $ = _c(87);
+   const {
+     initial,
+     sessionModel,
+@@ -259,9 +262,18 @@ export function ModelPicker(t0) {
+   }
+   const handleFocus = t10;
+   let t11;
+-  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels) {
++  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== optionsWithInitial || $[85] !== focusedValue) {
+     t11 = direction => {
+       if (!focusedSupportsEffort) {
++        // Models served by the NPU router have no effort setting, so ←/→ would
++        // otherwise do nothing. Reuse them to move between that model's
++        // parallel configurations (dp/pp), which the router publishes as
++        // sibling model ids. Returns null when there is only one config, and
++        // then the keypress stays a no-op as before.
++        const nextVariant = cycleNpuVariant(focusedValue, optionsWithInitial.map(_temp5), direction);
++        if (nextVariant !== null) {
++          setFocusedValue(nextVariant);
++        }
+         return;
+       }
+       setEffort(prev => cycleEffortLevel(prev ?? focusedDefaultEffort, direction, focusedAvailableLevels));
+@@ -271,6 +283,8 @@ export function ModelPicker(t0) {
+     $[29] = focusedSupportsEffort;
+     $[30] = focusedSupportsMax;
+     $[31] = focusedAvailableLevels;
++    $[84] = optionsWithInitial;
++    $[85] = focusedValue;
+     $[32] = t11;
+   } else {
+     t11 = $[32];
+@@ -411,12 +425,13 @@ export function ModelPicker(t0) {
+     t23 = $[61];
+   }
+   let t24;
+-  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort) {
+-    t24 = <Box marginBottom={1} flexDirection="column">{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
++  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue) {
++    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} allOptions={optionsWithInitial} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+     $[62] = displayEffort;
+     $[63] = focusedDefaultEffort;
+     $[64] = focusedModelName;
+     $[65] = focusedSupportsEffort;
++    $[86] = focusedValue;
+     $[66] = t24;
+   } else {
+     t24 = $[66];
+@@ -473,6 +488,9 @@ export function ModelPicker(t0) {
+   }
+   return t29;
+ }
++function _temp5(opt) {
++  return opt.value;
++}
+ function _temp4() {}
+ function _temp3(opt_0) {
+   return {
+@@ -513,6 +531,40 @@ function resolveOptionModel(value?: string): string | undefined {
+     : null;
+   return parseUserSpecifiedModel(switched ? switched.model : value);
+ }
++/**
++ * Parallel configurations available for the focused NPU model, rendered as a
++ * radio row with the active one highlighted.
++ *
++ * The Furiosa router publishes each usable dp/pp combination as its own model
++ * id, and only the ones the hardware can serve — tensor parallelism is baked
++ * into the artifact, pipeline parallelism is unavailable for FXB artifacts, and
++ * dp x pp cannot exceed the card count. So the set shown here is already
++ * validated by the server; there is nothing to grey out.
++ *
++ * Renders nothing for models with a single configuration, which is every
++ * non-NPU provider and every model that occupies all four cards.
++ */
++function NpuParallelismRow({
++  modelId,
++  allOptions
++}: {
++  modelId: string;
++  allOptions: readonly ModelOption[];
++}): React.ReactNode {
++  const variants = npuVariantsOf(modelId, allOptions.map(o => o.value));
++  if (variants.length < 2) return null;
++  const activeIndex = variants.findIndex(v => v.value === modelId);
++  return <Text dimColor={true}>
++      {'NPU  '}
++      {variants.map((v, i) => <Text key={v.value}>
++          {i > 0 ? '  ' : ''}
++          <Text color={i === activeIndex ? 'claude' : undefined} dimColor={i !== activeIndex}>
++            {i === activeIndex ? `[${describeNpuVariant(v)}]` : ` ${describeNpuVariant(v)} `}
++          </Text>
++        </Text>)}
++      {'  '}<Text color="subtle">← → to adjust</Text>
++    </Text>;
++}
+ function EffortLevelIndicator(t0) {
+   const $ = _c(5);
+   const {
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+new file mode 100644
+index 0000000..6949f79
+--- /dev/null
++++ b/src/utils/npuVariants.ts
+@@ -0,0 +1,86 @@
++/**
++ * NPU parallelism variants.
++ *
++ * The Furiosa router publishes one model id per usable parallel configuration —
++ * `Qwen3-4B-FP8`, `Qwen3-4B-FP8@dp2`, `Llama-3.1-8B-Instruct@dp2@pp2` — because
++ * the OpenAI `/v1/models` contract has nowhere else to put them. It only
++ * publishes combinations the hardware can actually serve: tensor parallelism is
++ * fixed at artifact build time, pipeline parallelism is unsupported for FXB
++ * artifacts, and dp x pp is capped by the card count.
++ *
++ * Grouping them back together lets the model picker present one model with an
++ * adjustable configuration instead of five near-identical rows.
++ */
++
++export type NpuVariant = {
++  /** Full model id including the suffix, e.g. `Qwen3-4B-FP8@dp2`. */
++  value: string
++  /** Model id without any parallelism suffix. */
++  base: string
++  dp: number
++  pp: number
++}
++
++const SUFFIX = /@(dp|pp)(\d+)$/
++
++/** Splits a model id into its base and parallel configuration. */
++export function parseNpuVariant(value: string): NpuVariant {
++  let rest = value
++  let dp = 1
++  let pp = 1
++  for (;;) {
++    const m = SUFFIX.exec(rest)
++    if (!m) break
++    const n = Number(m[2])
++    // A malformed suffix is left as part of the base rather than silently
++    // dropped — better to show an odd name than to route to the wrong model.
++    if (!Number.isFinite(n) || n < 1) break
++    if (m[1] === 'dp') dp = n
++    else pp = n
++    rest = rest.slice(0, m.index)
++  }
++  return { value, base: rest, dp, pp }
++}
++
++/** Cards a configuration occupies, given how many the base model needs. */
++export function variantCards(v: NpuVariant, baseCards: number): number {
++  return baseCards * v.dp * v.pp
++}
++
++/**
++ * All configurations of `value`'s model among `allValues`, ordered by card
++ * usage so cycling moves smoothly from cheapest to widest. Always contains at
++ * least the input value.
++ */
++export function npuVariantsOf(value: string, allValues: readonly string[]): NpuVariant[] {
++  const { base } = parseNpuVariant(value)
++  const found = allValues
++    .map(parseNpuVariant)
++    .filter(v => v.base === base)
++  if (found.length === 0) return [parseNpuVariant(value)]
++  found.sort((a, b) => a.dp * a.pp - b.dp * b.pp || a.value.localeCompare(b.value))
++  return found
++}
++
++/**
++ * Next configuration in the given direction, wrapping around. Returns null when
++ * the model has only one configuration, so callers can leave the keypress
++ * unhandled rather than pretending something changed.
++ */
++export function cycleNpuVariant(
++  value: string,
++  allValues: readonly string[],
++  direction: 'left' | 'right',
++): string | null {
++  const variants = npuVariantsOf(value, allValues)
++  if (variants.length < 2) return null
++  const i = variants.findIndex(v => v.value === value)
++  if (i === -1) return null
++  const next = direction === 'right' ? (i + 1) % variants.length : (i - 1 + variants.length) % variants.length
++  return variants[next]!.value
++}
++
++/** Short label for the status row, e.g. `dp2·pp1` or `dp1·pp1 (기본)`. */
++export function describeNpuVariant(v: NpuVariant): string {
++  return `dp${v.dp}·pp${v.pp}`
++}
+-- 
+2.43.0
+
+
+From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 22 Jul 2026 23:52:39 +0900
+Subject: [PATCH 04/12] model picker: say why the NPU config row is absent
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+A model that occupies every card has exactly one parallel configuration, so the
+row rendered nothing — indistinguishable from a broken feature. The default
+model (gpt-oss-120b, tp32) is one of those, so opening /model showed no row at
+all and looked like nothing had been implemented.
+
+Render a dimmed explanation instead, mirroring the existing 'Effort not
+supported' line. Only when the backend actually publishes @dp/@pp variants, so
+non-NPU providers keep rendering nothing.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 336c021..e0f1d18 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -551,8 +551,19 @@ function NpuParallelismRow({
+   modelId: string;
+   allOptions: readonly ModelOption[];
+ }): React.ReactNode {
+-  const variants = npuVariantsOf(modelId, allOptions.map(o => o.value));
+-  if (variants.length < 2) return null;
++  const allValues = allOptions.map(o => o.value);
++  const variants = npuVariantsOf(modelId, allValues);
++  if (variants.length < 2) {
++    // Say why the row is missing instead of vanishing — otherwise a model that
++    // occupies every card looks identical to a broken feature. Only speak up
++    // when the backend actually publishes parallel variants, so non-NPU
++    // providers stay untouched. Mirrors the "Effort not supported" line above.
++    const backendHasVariants = allValues.some(v => /@(dp|pp)\d+$/.test(v));
++    if (!backendHasVariants) return null;
++    return <Text color="subtle">
++        {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
++      </Text>;
++  }
+   const activeIndex = variants.findIndex(v => v.value === modelId);
+   return <Text dimColor={true}>
+       {'NPU  '}
+-- 
+2.43.0
+
+
+From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:00:52 +0900
+Subject: [PATCH 05/12] model picker: pick the model and its dp/pp separately
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Two defects, both mine.
+
+1. The picker listed one row per parallel configuration, so a handful of models
+   became 25 rows of `Qwen3-4B-FP8@dp2`, `@dp4`, ... That is the shape the
+   variant ids have on the wire, but it is not what a person is choosing: they
+   pick a model, then how it is served. openaiModelDiscovery now collapses
+   variants to one row per model and records the full id list; the picker's
+   dp/pp row reads that list and the choice is composed back into
+   `base@dpN@ppM` at selection time. 25 rows → 11.
+
+2. Descriptions still read "Discovered from OpenAI-compatible endpoint". The
+   backend-description lookup had been added to bootstrap.ts, which is a
+   different discovery path than the one this setup actually uses. Moved the
+   helper into npuVariants and applied it where the options are really built.
+
+dp/pp is now session state rather than part of the focused value, so moving
+between models no longer rewrites the selection, and a configuration the backend
+never advertised is never composed.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx          | 49 +++++++++++++------
+ src/utils/model/openaiModelDiscovery.ts | 18 ++++++-
+ src/utils/npuVariants.ts                | 63 +++++++++++++++++++++++++
+ 3 files changed, 114 insertions(+), 16 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index e0f1d18..691ccba 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { cycleNpuVariant, describeNpuVariant, npuVariantsOf } from '../utils/npuVariants.js';
++import { cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,7 +96,7 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+   // (see the ←/→ handler and the config row below).
+-  const $ = _c(87);
++  const $ = _c(89);
+   const {
+     initial,
+     sessionModel,
+@@ -116,6 +116,13 @@ export function ModelPicker(t0) {
+   const initialValue = initial === null ? NO_PREFERENCE : initial;
+   const isFastMode = useAppState(_temp);
+   const [hasToggledEffort, setHasToggledEffort] = useState(false);
++  // NPU 병렬 구성은 모델과 '따로' 고른다. 모델 목록에는 모델당 한 줄만 두고
++  // (openaiModelDiscovery 가 변형을 접는다) 여기서 dp/pp 를 선택해, 확정할 때
++  // `base@dpN@ppM` 으로 조립해서 넘긴다.
++  const [npuConfig, setNpuConfig] = useState({
++    dp: 1,
++    pp: 1
++  });
+   const effortValue = useAppState(_temp2);
+   let t1;
+   if ($[0] !== effortValue) {
+@@ -262,7 +269,7 @@ export function ModelPicker(t0) {
+   }
+   const handleFocus = t10;
+   let t11;
+-  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== optionsWithInitial || $[85] !== focusedValue) {
++  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== npuConfig || $[85] !== focusedValue) {
+     t11 = direction => {
+       if (!focusedSupportsEffort) {
+         // Models served by the NPU router have no effort setting, so ←/→ would
+@@ -270,9 +277,14 @@ export function ModelPicker(t0) {
+         // parallel configurations (dp/pp), which the router publishes as
+         // sibling model ids. Returns null when there is only one config, and
+         // then the keypress stays a no-op as before.
+-        const nextVariant = cycleNpuVariant(focusedValue, optionsWithInitial.map(_temp5), direction);
++        const composed = variantId(focusedValue, npuConfig.dp, npuConfig.pp);
++        const nextVariant = cycleNpuVariant(composed, getDiscoveredModelIds(), direction);
+         if (nextVariant !== null) {
+-          setFocusedValue(nextVariant);
++          const next = parseNpuVariant(nextVariant);
++          setNpuConfig({
++            dp: next.dp,
++            pp: next.pp
++          });
+         }
+         return;
+       }
+@@ -283,7 +295,7 @@ export function ModelPicker(t0) {
+     $[29] = focusedSupportsEffort;
+     $[30] = focusedSupportsMax;
+     $[31] = focusedAvailableLevels;
+-    $[84] = optionsWithInitial;
++    $[84] = npuConfig;
+     $[85] = focusedValue;
+     $[32] = t11;
+   } else {
+@@ -308,7 +320,7 @@ export function ModelPicker(t0) {
+   }
+   useKeybindings(t12, t13);
+   let t14;
+-  if ($[35] !== effort || $[36] !== hasToggledEffort || $[37] !== onSelect || $[38] !== setAppState || $[39] !== skipSettingsWrite || $[46] !== focusedAvailableLevels || $[47] !== focusedDefaultEffort || $[48] !== selectOptions) {
++  if ($[35] !== effort || $[36] !== hasToggledEffort || $[37] !== onSelect || $[38] !== setAppState || $[39] !== skipSettingsWrite || $[46] !== focusedAvailableLevels || $[47] !== focusedDefaultEffort || $[48] !== selectOptions || $[87] !== npuConfig) {
+     t14 = function handleSelect(value_0) {
+       const selectedValue = resolvePickerOptionValue(selectOptions, value_0) ?? value_0;
+       const selectedModel = resolveOptionModel(selectedValue);
+@@ -351,7 +363,11 @@ export function ModelPicker(t0) {
+       // ambiguous — the Select cannot tell them apart — so treat it as NOT a
+       // switch rather than letting the literal borrow another option's marker.
+       const selectedSwitchProfileId = resolveSelectedSwitchProfileId(selectOptions, selectedValue);
+-      onSelect(selectedValue, selectedEffort, selectedSwitchProfileId);
++      // 고른 dp/pp 를 모델 id 에 실어 보낸다. 라우터가 이 접미사로 병렬 구성을 정한다.
++      // 백엔드가 광고하지 않은 조합이면 조립하지 않는다(있지도 않은 모델로 404 나는 것 방지).
++      const composedValue = variantId(selectedValue, npuConfig.dp, npuConfig.pp);
++      const finalValue = composedValue !== selectedValue && getDiscoveredModelIds().includes(composedValue) ? composedValue : selectedValue;
++      onSelect(finalValue, selectedEffort, selectedSwitchProfileId);
+     };
+     $[35] = effort;
+     $[36] = hasToggledEffort;
+@@ -361,6 +377,7 @@ export function ModelPicker(t0) {
+     $[46] = focusedAvailableLevels;
+     $[47] = focusedDefaultEffort;
+     $[48] = selectOptions;
++    $[87] = npuConfig;
+     $[40] = t14;
+   } else {
+     t14 = $[40];
+@@ -425,13 +442,14 @@ export function ModelPicker(t0) {
+     t23 = $[61];
+   }
+   let t24;
+-  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue) {
+-    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} allOptions={optionsWithInitial} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
++  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue || $[88] !== npuConfig) {
++    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} dp={npuConfig.dp} pp={npuConfig.pp} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+     $[62] = displayEffort;
+     $[63] = focusedDefaultEffort;
+     $[64] = focusedModelName;
+     $[65] = focusedSupportsEffort;
+     $[86] = focusedValue;
++    $[88] = npuConfig;
+     $[66] = t24;
+   } else {
+     t24 = $[66];
+@@ -546,12 +564,15 @@ function resolveOptionModel(value?: string): string | undefined {
+  */
+ function NpuParallelismRow({
+   modelId,
+-  allOptions
++  dp,
++  pp
+ }: {
+   modelId: string;
+-  allOptions: readonly ModelOption[];
++  dp: number;
++  pp: number;
+ }): React.ReactNode {
+-  const allValues = allOptions.map(o => o.value);
++  // 목록은 모델당 한 줄로 접혀 있으므로, 선택지는 백엔드가 광고한 전체 id 에서 읽는다.
++  const allValues = getDiscoveredModelIds();
+   const variants = npuVariantsOf(modelId, allValues);
+   if (variants.length < 2) {
+     // Say why the row is missing instead of vanishing — otherwise a model that
+@@ -564,7 +585,7 @@ function NpuParallelismRow({
+         {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
+       </Text>;
+   }
+-  const activeIndex = variants.findIndex(v => v.value === modelId);
++  const activeIndex = variants.findIndex(v => v.dp === dp && v.pp === pp);
+   return <Text dimColor={true}>
+       {'NPU  '}
+       {variants.map((v, i) => <Text key={v.value}>
+diff --git a/src/utils/model/openaiModelDiscovery.ts b/src/utils/model/openaiModelDiscovery.ts
+index 1801fd5..8d0f991 100644
+--- a/src/utils/model/openaiModelDiscovery.ts
++++ b/src/utils/model/openaiModelDiscovery.ts
+@@ -4,6 +4,11 @@ import { logForDebugging } from '../debug.js'
+ import { isEssentialTrafficOnly } from '../privacyLevel.js'
+ import type { ModelOption } from './modelOptions.js'
+ import { getAPIProvider } from './providers.js'
++import {
++  collapseNpuVariants,
++  getBackendModelDescriptions,
++  setDiscoveredModelIds,
++} from '../npuVariants.js'
+ 
+ const DISCOVERY_TIMEOUT_MS = 5000
+ const DISCOVERED_MODEL_DESCRIPTION =
+@@ -202,9 +207,18 @@ export async function discoverOpenAICompatibleModelOptions(): Promise<
+     }
+   }
+ 
+-  return discoveredModelNames.map(modelName => ({
++  // A Furiosa router publishes one model id per usable parallel configuration
++  // (`Qwen3-4B-FP8@dp2`), because /v1/models has nowhere else to put them.
++  // Listing each as its own row buries the model list, so keep one row per
++  // model here and let the picker's dp/pp selector choose the configuration —
++  // it reads the full list back via getDiscoveredModelIds().
++  setDiscoveredModelIds(discoveredModelNames)
++  const descriptions = getBackendModelDescriptions()
++  return collapseNpuVariants(discoveredModelNames).map(modelName => ({
+     value: modelName,
+     label: modelName,
+-    description: DISCOVERED_MODEL_DESCRIPTION,
++    // Prefer what the backend says about this model (e.g. "tp8·dp1·pp1 · 1장")
++    // over the generic provenance line.
++    description: descriptions[modelName] ?? DISCOVERED_MODEL_DESCRIPTION,
+   }))
+ }
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 6949f79..0f41e51 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -80,7 +80,70 @@ export function cycleNpuVariant(
+   return variants[next]!.value
+ }
+ 
++/** Builds the model id for a configuration. dp1·pp1 is the bare model name. */
++export function variantId(value: string, dp: number, pp: number): string {
++  const { base } = parseNpuVariant(value)
++  return base + (dp > 1 ? `@dp${dp}` : '') + (pp > 1 ? `@pp${pp}` : '')
++}
++
+ /** Short label for the status row, e.g. `dp2·pp1` or `dp1·pp1 (기본)`. */
+ export function describeNpuVariant(v: NpuVariant): string {
+   return `dp${v.dp}·pp${v.pp}`
+ }
++
++/**
++ * Every model id the backend advertised, including parallelism variants.
++ *
++ * The picker shows one row per *model*, so the variants are filtered out of the
++ * option list (see `collapseNpuVariants`) — but the dp/pp selector still needs
++ * to know which configurations exist. Discovery records the full list here.
++ */
++let discoveredModelIds: readonly string[] = []
++
++export function setDiscoveredModelIds(ids: readonly string[]): void {
++  discoveredModelIds = [...ids]
++}
++
++export function getDiscoveredModelIds(): readonly string[] {
++  return discoveredModelIds
++}
++
++/**
++ * Drops parallelism variants whose base model is also present, so the picker
++ * lists `Qwen3-4B-FP8` once instead of once per dp/pp combination. A variant
++ * whose base is missing is kept — otherwise it would become unreachable.
++ */
++export function collapseNpuVariants(ids: readonly string[]): string[] {
++  const bases = new Set(ids.map(id => parseNpuVariant(id).base))
++  return ids.filter(id => {
++    const v = parseNpuVariant(id)
++    const isVariant = v.dp !== 1 || v.pp !== 1
++    return !isVariant || !bases.has(v.base)
++  })
++}
++
++/**
++ * Per-model descriptions supplied by the backend, as `{"<model id>": "<text>"}`.
++ *
++ * The OpenAI `/v1/models` contract has no description field, so a self-hosted
++ * router cannot say how it will serve a model. The Furiosa setup reads the
++ * router's `/router/models` at install time and the `furio` wrapper passes the
++ * map in, which means the text is available on the very first run rather than
++ * after a background refresh. Malformed JSON is ignored — a bad env var must
++ * not break model discovery.
++ */
++export function getBackendModelDescriptions(): Record<string, string> {
++  const raw = process.env.FURIO_MODEL_DESCRIPTIONS
++  if (!raw) return {}
++  try {
++    const parsed = JSON.parse(raw) as unknown
++    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
++    const out: Record<string, string> = {}
++    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
++      if (typeof v === 'string' && v.length > 0) out[k] = v
++    }
++    return out
++  } catch {
++    return {}
++  }
++}
+-- 
+2.43.0
+
+
+From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:11:30 +0900
+Subject: [PATCH 06/12] model picker: apply NPU collapsing and descriptions on
+ the cached path
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The previous fix only ran during model discovery, but the picker normally
+renders from the cached option list — it even says so ("Local OpenAI-compatible
+models are up to date"). So a stale cache kept showing one row per dp/pp
+combination with the generic "Discovered from ..." description, and the fix
+looked like it had done nothing.
+
+Collapse variants and apply backend descriptions where the option list is
+assembled, which covers both the fresh and cached paths.
+
+getDiscoveredModelIds() now falls back to the backend description map's keys.
+Discovery may never run in a session, and without that fallback the dp/pp
+selector had no configurations to offer whenever the list came from cache.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/utils/model/modelOptions.ts | 32 ++++++++++++++++++++++++++++----
+ src/utils/npuVariants.ts        |  7 ++++++-
+ 2 files changed, 34 insertions(+), 5 deletions(-)
+
+diff --git a/src/utils/model/modelOptions.ts b/src/utils/model/modelOptions.ts
+index b40f243..a3f1729 100644
+--- a/src/utils/model/modelOptions.ts
++++ b/src/utils/model/modelOptions.ts
+@@ -58,6 +58,10 @@ import { getCachedNvidiaNimModelOptions, isNvidiaNimProvider } from './nvidiaNim
+ import { getCachedMiniMaxModelOptions, isMiniMaxProvider } from './minimaxModels.js'
+ import { getCachedXiaomiMimoModelOptions, isXiaomiMimoProvider } from './xiaomi-mimoModels.js'
+ import { getAntModels } from './antModels.js'
++import {
++  collapseNpuVariants,
++  getBackendModelDescriptions,
++} from '../npuVariants.js'
+ 
+ // @[MODEL LAUNCH]: Update all the available and default model option strings below.
+ 
+@@ -695,12 +699,32 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
+     const sourceOptions = activeOpenAIOptions.length > 0
+       ? activeOpenAIOptions
+       : scopedOptions
++    // Collapse NPU parallelism variants and apply backend descriptions HERE, not
++    // only at discovery: the picker usually renders from the cached option list
++    // ("models are up to date"), so a discovery-time-only fix leaves a stale
++    // cache showing one row per dp/pp combination with generic descriptions.
++    const merged = mergeModelOptionsByNormalizedValue(
++      sourceOptions,
++      activeRouteCatalogOptions,
++    )
++    const npuDescriptions = getBackendModelDescriptions()
++    const keptValues = new Set(
++      collapseNpuVariants(
++        merged
++          .map(o => o.value)
++          .filter((v): v is string => typeof v === 'string'),
++      ),
++    )
++    const npuAdjusted = merged
++      .filter(o => typeof o.value !== 'string' || keptValues.has(o.value))
++      .map(o => {
++        const described =
++          typeof o.value === 'string' ? npuDescriptions[o.value] : undefined
++        return described ? { ...o, description: described } : o
++      })
+     return [
+       getDefaultOptionForUser(fastMode),
+-      ...mergeModelOptionsByNormalizedValue(
+-        sourceOptions,
+-        activeRouteCatalogOptions,
+-      ),
++      ...npuAdjusted,
+       ...inactiveProfileOptions,
+     ]
+   }
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 0f41e51..d6de5f4 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -105,7 +105,12 @@ export function setDiscoveredModelIds(ids: readonly string[]): void {
+ }
+ 
+ export function getDiscoveredModelIds(): readonly string[] {
+-  return discoveredModelIds
++  if (discoveredModelIds.length > 0) return discoveredModelIds
++  // Discovery may not have run this session — the picker often renders straight
++  // from the cached option list. The backend description map is keyed by the
++  // full ids (variants included) and is present from the first render, so it is
++  // a reliable fallback for "which configurations exist".
++  return Object.keys(getBackendModelDescriptions())
+ }
+ 
+ /**
+-- 
+2.43.0
+
+
+From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:30:39 +0900
+Subject: [PATCH 07/12] model picker: apply NPU presentation where every path
+ converges
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The last two attempts fixed model discovery and then getModelOptions(), and
+neither changed what /model shows. /model builds its own option list and passes
+it as `optionsOverride`, which the picker uses *instead of* getModelOptions() —
+the source even says so ("The picker renders `optionsOverride ?? getModelOptions()`").
+So both fixes sat on a path this command never takes.
+
+Apply it at `modelOptionsBase`, the single point where the override and the
+default list converge, so every picker entry point is covered: /model, the
+prompt hotkey, and Settings.
+
+25 rows with generic descriptions → 11 rows described by how each model is
+actually served.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 16 +++++++++++++---
+ src/utils/npuVariants.ts       | 26 ++++++++++++++++++++++++++
+ 2 files changed, 39 insertions(+), 3 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 691ccba..f10e054 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
++import { applyNpuPresentation, cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,7 +96,7 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+   // (see the ←/→ handler and the config row below).
+-  const $ = _c(89);
++  const $ = _c(91);
+   const {
+     initial,
+     sessionModel,
+@@ -142,7 +142,17 @@ export function ModelPicker(t0) {
+   } else {
+     t3 = $[3];
+   }
+-  const modelOptionsBase = optionsOverride ?? t3;
++  const t3b = optionsOverride ?? t3;
++  // 모든 픽커 경로가 여기서 합류한다. /model 은 optionsOverride 로 getModelOptions() 를
++  // 우회하므로, NPU 표현(변형 접기·백엔드 설명)은 반드시 이 지점에서 걸어야 한다.
++  let modelOptionsBase;
++  if ($[89] !== t3b) {
++    modelOptionsBase = applyNpuPresentation(t3b);
++    $[89] = t3b;
++    $[90] = modelOptionsBase;
++  } else {
++    modelOptionsBase = $[90];
++  }
+   // Cross-profile switch options can only be honored by the /model command's
+   // onSelect, which decodes the value and activates the target profile. Strip
+   // them for inline pickers (allowProfileSwitch falsy) so a hotkey/Settings
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index d6de5f4..239767c 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -152,3 +152,29 @@ export function getBackendModelDescriptions(): Record<string, string> {
+     return {}
+   }
+ }
++
++/**
++ * Presents a backend option list the way a person chooses: one row per model,
++ * described by how it will actually be served.
++ *
++ * Applied at the single point where every picker path converges, because the
++ * `/model` command supplies its own `optionsOverride` and therefore bypasses
++ * `getModelOptions()` entirely — fixing only the latter leaves the list
++ * untouched.
++ */
++export function applyNpuPresentation<
++  T extends { value?: string | null; description?: string },
++>(options: readonly T[]): T[] {
++  const descriptions = getBackendModelDescriptions()
++  const values = options
++    .map(o => o.value)
++    .filter((v): v is string => typeof v === 'string')
++  const kept = new Set(collapseNpuVariants(values))
++  return options
++    .filter(o => typeof o.value !== 'string' || kept.has(o.value))
++    .map(o => {
++      const described =
++        typeof o.value === 'string' ? descriptions[o.value] : undefined
++      return described ? { ...o, description: described } : o
++    })
++}
+-- 
+2.43.0
+
+
+From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 00:48:44 +0900
+Subject: [PATCH 08/12] model picker: adjust dp and pp as separate axes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The row cycled through whole configurations — dp1·pp1, dp2·pp1, dp1·pp2,
+dp2·pp2 — so reaching a particular pp meant walking past unrelated dp values.
+People pick these separately.
+
+Now each axis has its own row of values, ←/→ moves the active one and tab
+switches between them (free in this context; shift+tab is already the global
+permission-mode cycle).
+
+The axes cannot be fully independent: dp x pp is bounded by the card count and
+the backend only advertises servable combinations. Each axis therefore offers
+only the values reachable while the other is held, and a move that would strand
+the partner repairs it — from dp4·pp1, stepping pp lands on dp2·pp2 rather than
+an id that does not exist. FXB artifacts, which cannot do pipeline parallelism
+at all, simply show pp with a single value.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx     | 54 +++++++++++++++-----------
+ src/keybindings/defaultBindings.ts |  1 +
+ src/keybindings/schema.ts          |  1 +
+ src/keybindings/types.ts           |  1 +
+ src/utils/npuVariants.ts           | 61 ++++++++++++++++++++++++++++++
+ 5 files changed, 96 insertions(+), 22 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index f10e054..cf64f27 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { applyNpuPresentation, cycleNpuVariant, describeNpuVariant, getDiscoveredModelIds, npuVariantsOf, parseNpuVariant, variantId } from '../utils/npuVariants.js';
++import { applyNpuPresentation, getDiscoveredModelIds, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,7 +96,7 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+   // (see the ←/→ handler and the config row below).
+-  const $ = _c(91);
++  const $ = _c(94);
+   const {
+     initial,
+     sessionModel,
+@@ -123,6 +123,8 @@ export function ModelPicker(t0) {
+     dp: 1,
+     pp: 1
+   });
++  // ←/→ 가 어느 축을 움직이는지. tab 으로 바꾼다.
++  const [npuAxis, setNpuAxis] = useState<NpuAxis>('dp');
+   const effortValue = useAppState(_temp2);
+   let t1;
+   if ($[0] !== effortValue) {
+@@ -279,7 +281,7 @@ export function ModelPicker(t0) {
+   }
+   const handleFocus = t10;
+   let t11;
+-  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== npuConfig || $[85] !== focusedValue) {
++  if ($[28] !== focusedDefaultEffort || $[29] !== focusedSupportsEffort || $[30] !== focusedSupportsMax || $[31] !== focusedAvailableLevels || $[84] !== npuConfig || $[85] !== focusedValue || $[91] !== npuAxis) {
+     t11 = direction => {
+       if (!focusedSupportsEffort) {
+         // Models served by the NPU router have no effort setting, so ←/→ would
+@@ -287,14 +289,9 @@ export function ModelPicker(t0) {
+         // parallel configurations (dp/pp), which the router publishes as
+         // sibling model ids. Returns null when there is only one config, and
+         // then the keypress stays a no-op as before.
+-        const composed = variantId(focusedValue, npuConfig.dp, npuConfig.pp);
+-        const nextVariant = cycleNpuVariant(composed, getDiscoveredModelIds(), direction);
+-        if (nextVariant !== null) {
+-          const next = parseNpuVariant(nextVariant);
+-          setNpuConfig({
+-            dp: next.dp,
+-            pp: next.pp
+-          });
++        const next = stepNpuAxis(focusedValue, getDiscoveredModelIds(), npuAxis, npuConfig, direction);
++        if (next !== null) {
++          setNpuConfig(next);
+         }
+         return;
+       }
+@@ -307,12 +304,14 @@ export function ModelPicker(t0) {
+     $[31] = focusedAvailableLevels;
+     $[84] = npuConfig;
+     $[85] = focusedValue;
++    $[91] = npuAxis;
+     $[32] = t11;
+   } else {
+     t11 = $[32];
+   }
+   const handleCycleEffort = t11;
+   const t12 = {
++    "modelPicker:toggleParallelAxis": () => setNpuAxis(a => a === "dp" ? "pp" : "dp"),
+     "modelPicker:decreaseEffort": () => handleCycleEffort("left"),
+     "modelPicker:increaseEffort": () => handleCycleEffort("right"),
+     ...(onRefresh ? {
+@@ -452,14 +451,15 @@ export function ModelPicker(t0) {
+     t23 = $[61];
+   }
+   let t24;
+-  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue || $[88] !== npuConfig) {
+-    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} dp={npuConfig.dp} pp={npuConfig.pp} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
++  if ($[62] !== displayEffort || $[63] !== focusedDefaultEffort || $[64] !== focusedModelName || $[65] !== focusedSupportsEffort || $[86] !== focusedValue || $[88] !== npuConfig || $[92] !== npuAxis) {
++    t24 = <Box marginBottom={1} flexDirection="column"><NpuParallelismRow modelId={focusedValue} dp={npuConfig.dp} pp={npuConfig.pp} axis={npuAxis} />{focusedSupportsEffort ? <Text dimColor={true}><EffortLevelIndicator effort={displayEffort} />{" "}{capitalize(displayEffort)} effort{displayEffort === focusedDefaultEffort ? " (default)" : ""}{" "}<Text color="subtle">← → to adjust</Text></Text> : <Text color="subtle"><EffortLevelIndicator effort={undefined} /> Effort not supported{focusedModelName ? ` for ${focusedModelName}` : ""}</Text>}</Box>;
+     $[62] = displayEffort;
+     $[63] = focusedDefaultEffort;
+     $[64] = focusedModelName;
+     $[65] = focusedSupportsEffort;
+     $[86] = focusedValue;
+     $[88] = npuConfig;
++    $[92] = npuAxis;
+     $[66] = t24;
+   } else {
+     t24 = $[66];
+@@ -575,11 +575,13 @@ function resolveOptionModel(value?: string): string | undefined {
+ function NpuParallelismRow({
+   modelId,
+   dp,
+-  pp
++  pp,
++  axis
+ }: {
+   modelId: string;
+   dp: number;
+   pp: number;
++  axis: NpuAxis;
+ }): React.ReactNode {
+   // 목록은 모델당 한 줄로 접혀 있으므로, 선택지는 백엔드가 광고한 전체 id 에서 읽는다.
+   const allValues = getDiscoveredModelIds();
+@@ -595,16 +597,24 @@ function NpuParallelismRow({
+         {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
+       </Text>;
+   }
+-  const activeIndex = variants.findIndex(v => v.dp === dp && v.pp === pp);
+-  return <Text dimColor={true}>
+-      {'NPU  '}
+-      {variants.map((v, i) => <Text key={v.value}>
+-          {i > 0 ? '  ' : ''}
+-          <Text color={i === activeIndex ? 'claude' : undefined} dimColor={i !== activeIndex}>
+-            {i === activeIndex ? `[${describeNpuVariant(v)}]` : ` ${describeNpuVariant(v)} `}
++  const dpValues = npuAxisValues(modelId, allValues, 'dp', pp);
++  const ppValues = npuAxisValues(modelId, allValues, 'pp', dp);
++  const renderAxis = (name: NpuAxis, values: number[], active: number) => <Text>
++      <Text color={axis === name ? 'claude' : undefined} dimColor={axis !== name} bold={axis === name}>{name}</Text>
++      {values.map(n => <Text key={`${name}${n}`}>
++          {' '}
++          <Text color={n === active ? 'claude' : undefined} dimColor={n !== active}>
++            {n === active ? `[${n}]` : ` ${n} `}
+           </Text>
+         </Text>)}
+-      {'  '}<Text color="subtle">← → to adjust</Text>
++    </Text>;
++  return <Text dimColor={true}>
++      {'NPU  '}
++      {renderAxis('dp', dpValues, dp)}
++      {'    '}
++      {renderAxis('pp', ppValues, pp)}
++      {'    '}
++      <Text color="subtle">← → to adjust · tab for {axis === 'dp' ? 'pp' : 'dp'}</Text>
+     </Text>;
+ }
+ function EffortLevelIndicator(t0) {
+diff --git a/src/keybindings/defaultBindings.ts b/src/keybindings/defaultBindings.ts
+index 886b1a9..c7fcae1 100644
+--- a/src/keybindings/defaultBindings.ts
++++ b/src/keybindings/defaultBindings.ts
+@@ -313,6 +313,7 @@ export const DEFAULT_BINDINGS: KeybindingBlock[] = [
+       left: 'modelPicker:decreaseEffort',
+       right: 'modelPicker:increaseEffort',
+       r: 'modelPicker:refresh',
++      tab: 'modelPicker:toggleParallelAxis',
+     },
+   },
+   // Select component navigation (used by /model, /resume, permission prompts, etc.)
+diff --git a/src/keybindings/schema.ts b/src/keybindings/schema.ts
+index 120622e..5132c95 100644
+--- a/src/keybindings/schema.ts
++++ b/src/keybindings/schema.ts
+@@ -154,6 +154,7 @@ export const KEYBINDING_ACTIONS = [
+   'modelPicker:decreaseEffort',
+   'modelPicker:increaseEffort',
+   'modelPicker:refresh',
++  'modelPicker:toggleParallelAxis',
+   // Select component actions (distinct from confirm: to avoid collisions)
+   'select:next',
+   'select:previous',
+diff --git a/src/keybindings/types.ts b/src/keybindings/types.ts
+index 69b561a..5d769f6 100644
+--- a/src/keybindings/types.ts
++++ b/src/keybindings/types.ts
+@@ -97,6 +97,7 @@ export type KeybindingAction =
+   | 'modelPicker:decreaseEffort'
+   | 'modelPicker:increaseEffort'
+   | 'modelPicker:refresh'
++  | 'modelPicker:toggleParallelAxis'
+   | 'select:next'
+   | 'select:previous'
+   | 'select:accept'
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 239767c..0f33993 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -178,3 +178,64 @@ export function applyNpuPresentation<
+       return described ? { ...o, description: described } : o
+     })
+ }
++
++/** Axis of the parallel configuration the user is currently adjusting. */
++export type NpuAxis = 'dp' | 'pp'
++
++/**
++ * Values available on one axis while the other is held fixed.
++ *
++ * dp and pp are not independent — dp x pp is bounded by the card count, and the
++ * backend only advertises combinations it can actually serve. Offering a value
++ * the pair cannot reach would produce a model id that does not exist, so the
++ * choices are always derived from the advertised set.
++ */
++export function npuAxisValues(
++  modelId: string,
++  allValues: readonly string[],
++  axis: NpuAxis,
++  other: number,
++): number[] {
++  const variants = npuVariantsOf(modelId, allValues)
++  const vals = variants
++    .filter(v => (axis === 'dp' ? v.pp === other : v.dp === other))
++    .map(v => (axis === 'dp' ? v.dp : v.pp))
++  return [...new Set(vals)].sort((a, b) => a - b)
++}
++
++/**
++ * Moves one axis to its next value, keeping the pair valid: when the partner
++ * value cannot survive the move it falls back to the largest one that can.
++ * Returns null when the axis has nothing else to offer.
++ */
++export function stepNpuAxis(
++  modelId: string,
++  allValues: readonly string[],
++  axis: NpuAxis,
++  current: { dp: number; pp: number },
++  direction: 'left' | 'right',
++): { dp: number; pp: number } | null {
++  const other = axis === 'dp' ? current.pp : current.dp
++  let values = npuAxisValues(modelId, allValues, axis, other)
++  if (values.length < 2) {
++    // Nothing to move to while the partner is held — allow the move anyway by
++    // considering every value this axis can take, then repair the partner.
++    const all = npuVariantsOf(modelId, allValues).map(v => (axis === 'dp' ? v.dp : v.pp))
++    values = [...new Set(all)].sort((a, b) => a - b)
++    if (values.length < 2) return null
++  }
++  const cur = axis === 'dp' ? current.dp : current.pp
++  const i = values.indexOf(cur)
++  const base = i === -1 ? 0 : i
++  const next =
++    direction === 'right'
++      ? values[(base + 1) % values.length]!
++      : values[(base - 1 + values.length) % values.length]!
++  const partnerAxis: NpuAxis = axis === 'dp' ? 'pp' : 'dp'
++  let partner = other
++  const partnerChoices = npuAxisValues(modelId, allValues, partnerAxis, next)
++  if (!partnerChoices.includes(partner)) {
++    partner = partnerChoices.length > 0 ? partnerChoices[partnerChoices.length - 1]! : 1
++  }
++  return axis === 'dp' ? { dp: next, pp: partner } : { dp: partner, pp: next }
++}
+-- 
+2.43.0
+
+
+From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 01:03:05 +0900
+Subject: [PATCH 09/12] model picker: stop the dp/pp row from reflowing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Raising pp makes a high dp unreachable, and the row was dropping those entries
+— so moving pp from 1 to 2 shortened the dp list and dragged the pp values
+sideways under the cursor, which made the digits hard to track while adjusting
+them.
+
+Render every value each axis can take and strike through the ones the current
+partner value rules out. The row keeps a constant width, so only the brackets
+move, and the struck-out entries also make the constraint visible instead of
+silently hiding options.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx | 18 +++++++++++-------
+ src/utils/npuVariants.ts       | 20 ++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index cf64f27..8dcd48a 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,7 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+-import { applyNpuPresentation, getDiscoveredModelIds, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
++import { applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -597,22 +597,26 @@ function NpuParallelismRow({
+         {'NPU  '}병렬 구성 고정 — 이 모델은 NPU 4장을 모두 사용합니다
+       </Text>;
+   }
+-  const dpValues = npuAxisValues(modelId, allValues, 'dp', pp);
+-  const ppValues = npuAxisValues(modelId, allValues, 'pp', dp);
+-  const renderAxis = (name: NpuAxis, values: number[], active: number) => <Text>
++  // 두 축을 '전체 값'으로 그리고, 지금 불가능한 값만 표시를 죽인다. 값을 빼버리면
++  // pp 를 올렸을 때 dp 목록이 짧아지면서 옆 축이 통째로 밀려 읽기 어렵다(폭 고정).
++  const dpAll = npuAxisAllValues(modelId, allValues, 'dp');
++  const ppAll = npuAxisAllValues(modelId, allValues, 'pp');
++  const dpOk = new Set(npuAxisValues(modelId, allValues, 'dp', pp));
++  const ppOk = new Set(npuAxisValues(modelId, allValues, 'pp', dp));
++  const renderAxis = (name: NpuAxis, values: number[], active: number, usable: Set<number>) => <Text>
+       <Text color={axis === name ? 'claude' : undefined} dimColor={axis !== name} bold={axis === name}>{name}</Text>
+       {values.map(n => <Text key={`${name}${n}`}>
+           {' '}
+-          <Text color={n === active ? 'claude' : undefined} dimColor={n !== active}>
++          <Text color={n === active ? 'claude' : undefined} dimColor={n !== active} strikethrough={!usable.has(n) && n !== active}>
+             {n === active ? `[${n}]` : ` ${n} `}
+           </Text>
+         </Text>)}
+     </Text>;
+   return <Text dimColor={true}>
+       {'NPU  '}
+-      {renderAxis('dp', dpValues, dp)}
++      {renderAxis('dp', dpAll, dp, dpOk)}
+       {'    '}
+-      {renderAxis('pp', ppValues, pp)}
++      {renderAxis('pp', ppAll, pp, ppOk)}
+       {'    '}
+       <Text color="subtle">← → to adjust · tab for {axis === 'dp' ? 'pp' : 'dp'}</Text>
+     </Text>;
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index 0f33993..b00fbc3 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -239,3 +239,23 @@ export function stepNpuAxis(
+   }
+   return axis === 'dp' ? { dp: next, pp: partner } : { dp: partner, pp: next }
+ }
++
++/**
++ * Every value this axis can take for the model, ignoring what the other axis is
++ * currently set to.
++ *
++ * The picker renders this full set and marks the currently unreachable entries,
++ * rather than dropping them: raising pp can make a high dp impossible, and
++ * removing that entry would reflow the row and shift the neighbouring axis
++ * under the user's cursor.
++ */
++export function npuAxisAllValues(
++  modelId: string,
++  allValues: readonly string[],
++  axis: NpuAxis,
++): number[] {
++  const vals = npuVariantsOf(modelId, allValues).map(v =>
++    axis === 'dp' ? v.dp : v.pp,
++  )
++  return [...new Set(vals)].sort((a, b) => a - b)
++}
+-- 
+2.43.0
+
+
+From 27c42e3729aab78a816115b3e4c68a03c905cb77 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 01:51:34 +0900
+Subject: [PATCH 10/12] statusline: separate the current-model marker from the
+ LED
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+'▶●' ran together and read as one glyph. Space them so the selection marker and
+the state light are distinguishable.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/BuiltinStatusLine.tsx | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index ea77786..f6657b6 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -79,8 +79,9 @@ export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null):
+       // Current model outranks context/cost so it survives a narrow terminal;
+       // the other cards' models yield first.
+       priority: isCurrent ? 0.5 : 4,
+-      text: `${isCurrent ? '▶' : ''}${glyph} ${m.id}${where}`,
+-      shortText: `${isCurrent ? '▶' : ''}${glyph} ${m.id}`,
++      // '▶●' 는 두 기호가 붙어 하나처럼 읽힌다 — 현재 선택 표시와 LED 를 띄워 둔다.
++      text: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}${where}`,
++      shortText: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}`,
+       color,
+     });
+   };
+-- 
+2.43.0
+
+
+From f473f6cac85eb6191d5847cb17ecabb04e80d7aa Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 23 Jul 2026 02:07:35 +0900
+Subject: [PATCH 11/12] model picker: start loading the model as soon as it is
+ picked
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The router serves lazily, so picking a model did nothing until the first message
+was sent — and a large model then takes a couple of minutes, with no sign that
+anything had begun. Selecting now fires /router/preload, which returns
+immediately and loads in the background, so the LED starts moving right away.
+
+Fire-and-forget: a backend without the endpoint is unaffected, and the model
+still loads on first use as before.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+---
+ src/components/ModelPicker.tsx |  4 ++++
+ src/services/npuStatus.ts      | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 8dcd48a..77dbe0c 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -10,6 +10,7 @@ import { useKeybindings } from '../keybindings/useKeybinding.js';
+ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
++import { preloadNpuModel } from '../services/npuStatus.js';
+ import { applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+@@ -376,6 +377,9 @@ export function ModelPicker(t0) {
+       // 백엔드가 광고하지 않은 조합이면 조립하지 않는다(있지도 않은 모델로 404 나는 것 방지).
+       const composedValue = variantId(selectedValue, npuConfig.dp, npuConfig.pp);
+       const finalValue = composedValue !== selectedValue && getDiscoveredModelIds().includes(composedValue) ? composedValue : selectedValue;
++      // 고르는 즉시 로딩을 시작시킨다. 라우터는 lazy 라 이게 없으면 첫 메시지를
++      // 보낼 때까지 아무 일도 안 일어난 것처럼 보인다.
++      preloadNpuModel(finalValue);
+       onSelect(finalValue, selectedEffort, selectedSwitchProfileId);
+     };
+     $[35] = effort;
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+index 5c7facc..8c5ff49 100644
+--- a/src/services/npuStatus.ts
++++ b/src/services/npuStatus.ts
+@@ -173,3 +173,31 @@ export function __resetNpuStatusForTest(): void {
+   currentNpuStatus.available = false
+   npuStatusListeners.clear()
+ }
++
++/**
++ * Asks the router to start loading a model now.
++ *
++ * The router serves lazily, so without this a model only starts loading when
++ * the first message is sent — the user picks a model and nothing appears to
++ * happen for a minute or two. Fire-and-forget: the router returns immediately
++ * and progress shows up through /router/status as usual.
++ */
++export function preloadNpuModel(modelId: string, base = routerBaseUrl()): void {
++  if (!base || !modelId) return
++  const controller = new AbortController()
++  const abort = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
++  void fetch(`${base}/router/preload`, {
++    method: 'POST',
++    headers: { 'Content-Type': 'application/json' },
++    body: JSON.stringify({ model: modelId }),
++    signal: controller.signal,
++  })
++    .catch(() => {
++      // Not a Furiosa router, or it declined — the model still loads on first use.
++    })
++    .finally(() => {
++      clearTimeout(abort)
++      // Poll fast so the LED reacts to the load we just started.
++      startNpuStatusPolling(base)
++    })
++}
+-- 
+2.43.0
+
+
+From 6ece7115d354facf8412c65797a85ab2bf667c2e Mon Sep 17 00:00:00 2001
+From: Claude <plab2090@gmail.com>
+Date: Thu, 23 Jul 2026 02:51:37 +0900
+Subject: [PATCH 12/12] npu: react to a model pick immediately, and show every
+ loaded model
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Picking a model in /model left the LED red for up to ten seconds. The
+preload request went out and the router accepted it, but the client kept
+the idle poll it had already scheduled, so nothing on screen moved until
+that timer fired. Long enough that the model looked stuck until the user
+sent a message — which then started the load for real, hiding the cause.
+
+Poll immediately after a preload, and show the model as loading until the
+router acknowledges it: the router registers preloads asynchronously, so
+even an immediate poll can still come back empty. A router predating
+/router/preload now falls back to a throwaway completion, which starts the
+same lazy load the first message would — only ever against a confirmed
+Furiosa router, so no one's metered endpoint gets billed for it.
+
+/model paints every model that is on a card, not just the selected one.
+Holding four models across four cards is the point of the setup; without
+this there was no way to see which switches are free and which mean a
+two-minute cold start.
+
+↓ from the prompt now focuses the NPU line as a footer item, where ←/→
+move between the loaded models and ↵ switches. That reuses the pill
+navigation already there for tasks and teammates rather than inventing a
+second focus mechanism.
+
+collapseNpuVariants dropped a variant whose base model was absent — it
+counted each variant's own base as proof the base was present, so a
+router advertising only `X@dp2` would have shown an empty list. It has
+not bitten in production because the router always advertises the base,
+but the contract said otherwise and now the code agrees.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Na71jMPNwVCJecN1VMjJbo
+---
+ src/components/BuiltinStatusLine.test.tsx  |  64 ++++++++
+ src/components/BuiltinStatusLine.tsx       |  60 +++++---
+ src/components/ModelPicker.tsx             |  37 ++++-
+ src/components/PromptInput/PromptInput.tsx |  58 ++++++-
+ src/main.tsx                               |   1 +
+ src/services/npuStatus.test.ts             |  56 +++++++
+ src/services/npuStatus.ts                  | 169 ++++++++++++++++++---
+ src/state/AppStateStore.ts                 |   9 ++
+ src/utils/npuVariants.test.ts              | 120 +++++++++++++++
+ src/utils/npuVariants.ts                   |  55 ++++++-
+ 10 files changed, 576 insertions(+), 53 deletions(-)
+ create mode 100644 src/services/npuStatus.test.ts
+ create mode 100644 src/utils/npuVariants.test.ts
+
+diff --git a/src/components/BuiltinStatusLine.test.tsx b/src/components/BuiltinStatusLine.test.tsx
+index dfe1aae..e1f8798 100644
+--- a/src/components/BuiltinStatusLine.test.tsx
++++ b/src/components/BuiltinStatusLine.test.tsx
+@@ -1,8 +1,10 @@
+ import { describe, expect, it } from 'bun:test'
++import type { NpuModel, NpuStatus } from '../services/npuStatus.js'
+ import { DEFAULT_GLOBAL_CONFIG } from '../utils/config.js'
+ import {
+   type BuiltinStatusData,
+   buildBuiltinStatusSegments,
++  buildNpuSegments,
+   builtinStatusLineShouldDisplay,
+   fitSegments,
+ } from './BuiltinStatusLine.js'
+@@ -212,3 +214,65 @@ describe('builtinStatusLineShouldDisplay', () => {
+     ).toBe(false)
+   })
+ })
++
++describe('buildNpuSegments', () => {
++  const npu = (models: NpuModel[]): NpuStatus => ({
++    models,
++    freeCards: [],
++    phase: 0,
++    available: true,
++  })
++  const m = (id: string, state: NpuModel['state'], cards: number[] = []): NpuModel => ({
++    id,
++    state,
++    cards,
++    dp: 1,
++    pp: 1,
++  })
++
++  it('colours each model by whether it is on a card', () => {
++    const segments = buildNpuSegments(
++      npu([m('A', 'up', [0]), m('B', 'loading', [1]), m('C', 'error')]),
++      null,
++    )
++    expect(segments.map(s => s.color)).toEqual(['success', 'warning', 'error'])
++  })
++
++  it('marks the selected model and lists it first', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up'), m('B', 'up')]), 'B')
++    expect(segments[0]?.text).toContain('▶')
++    expect(segments[0]?.text).toContain('B')
++    expect(segments[1]?.text).not.toContain('▶')
++  })
++
++  it('shows a selected model that is not loaded, in red', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up')]), 'Cold')
++    expect(segments[0]?.color).toBe('error')
++    expect(segments[0]?.text).toContain('Cold')
++  })
++
++  it('brackets the model under the footer cursor so ↵ is unambiguous', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up'), m('B', 'up')]), 'A', 'B')
++    expect(segments.find(s => s.key === 'npu:B')?.text).toBe('[● B]')
++    expect(segments.find(s => s.key === 'npu:A')?.text).not.toContain('[')
++  })
++
++  it('never drops the cursor entry when the terminal narrows', () => {
++    const segments = buildNpuSegments(npu([m('A', 'up'), m('B', 'up')]), 'A', 'B')
++    const cursor = segments.find(s => s.key === 'npu:B')!
++    const current = segments.find(s => s.key === 'npu:A')!
++    expect(cursor.priority).toBeLessThan(current.priority)
++  })
++
++  it('stays silent when the backend is not a Furiosa router', () => {
++    expect(buildNpuSegments({ ...npu([m('A', 'up')]), available: false }, 'A')).toEqual([])
++  })
++
++  it('explains the keys only while the line has focus', () => {
++    const data = { ...fullData, npu: npu([m('A', 'up')]), npuCurrentModelId: 'A' }
++    expect(buildBuiltinStatusSegments(data).map(s => s.key)).not.toContain('npu:hint')
++    expect(
++      buildBuiltinStatusSegments({ ...data, npuCursorModelId: 'A' }).map(s => s.key),
++    ).toContain('npu:hint')
++  })
++})
+diff --git a/src/components/BuiltinStatusLine.tsx b/src/components/BuiltinStatusLine.tsx
+index f6657b6..563aa53 100644
+--- a/src/components/BuiltinStatusLine.tsx
++++ b/src/components/BuiltinStatusLine.tsx
+@@ -9,7 +9,7 @@ import { useTerminalSize } from '../hooks/useTerminalSize.js';
+ import { Box, Text } from '../ink.js';
+ import { getRawUtilization } from '../services/claudeAiLimits.js';
+ import { useClaudeAiLimits } from '../services/claudeAiLimitsHook.js';
+-import type { NpuModel, NpuStatus } from '../services/npuStatus.js';
++import { type NpuStatus, npuDisplayModels } from '../services/npuStatus.js';
+ import { useNpuStatus } from '../services/npuStatusHook.js';
+ import { useAppState } from '../state/AppState.js';
+ import type { Message } from '../types/message.js';
+@@ -58,43 +58,40 @@ const LED_OFF = '○';
+  *
+  * `currentModelId` is marked with `▶` so it stays identifiable once several
+  * models share the four cards.
++ *
++ * `cursorModelId` is set while the footer has arrow-key focus here: that entry
++ * is bracketed so the user can see what ↵ would switch to.
+  */
+-export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null): StatusSegment[] {
++export function buildNpuSegments(npu: NpuStatus, currentModelId: string | null, cursorModelId: string | null = null): StatusSegment[] {
+   if (!npu.available) return [];
+   const segments: StatusSegment[] = [];
+-  const seen = new Set<string>();
+   const blinkOn = npu.phase % 2 === 0;
++  const models = npuDisplayModels(npu.models, currentModelId);
+ 
+-  const push = (m: NpuModel, isCurrent: boolean) => {
+-    seen.add(m.id);
++  for (const m of models) {
++    const isCurrent = m.id === currentModelId;
++    const hasCursor = m.id === cursorModelId;
+     const transitioning = m.state === 'loading' || m.state === 'stopping';
+     const glyph = transitioning ? (blinkOn ? LED_ON : LED_OFF) : LED_ON;
+     const color: keyof Theme | undefined =
+-      m.state === 'up' ? 'success'
++      hasCursor ? 'suggestion'
++      : m.state === 'up' ? 'success'
+       : transitioning ? 'warning'
+       : 'error';
+     const where = m.cards.length > 0 ? ` npu${m.cards.join(',')}` : '';
++    // '▶●' 는 두 기호가 붙어 하나처럼 읽힌다 — 현재 선택 표시와 LED 를 띄워 둔다.
++    const body = `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}`;
++    const wrap = (s: string) => (hasCursor ? `[${s}]` : s);
+     segments.push({
+       key: `npu:${m.id}`,
+       // Current model outranks context/cost so it survives a narrow terminal;
+-      // the other cards' models yield first.
+-      priority: isCurrent ? 0.5 : 4,
+-      // '▶●' 는 두 기호가 붙어 하나처럼 읽힌다 — 현재 선택 표시와 LED 를 띄워 둔다.
+-      text: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}${where}`,
+-      shortText: `${isCurrent ? '▶ ' : ''}${glyph} ${m.id}`,
++      // the other cards' models yield first. The cursor entry must never be
++      // dropped — it is the one the user is steering.
++      priority: hasCursor ? 0 : isCurrent ? 0.5 : 4,
++      text: wrap(`${body}${where}`),
++      shortText: wrap(body),
+       color,
+     });
+-  };
+-
+-  const current = currentModelId ? npu.models.find(m => m.id === currentModelId) : undefined;
+-  if (current) {
+-    push(current, true);
+-  } else if (currentModelId) {
+-    // Selected but not on any card yet.
+-    push({ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, true);
+-  }
+-  for (const m of npu.models) {
+-    if (!seen.has(m.id)) push(m, false);
+   }
+   return segments;
+ }
+@@ -104,6 +101,8 @@ export type BuiltinStatusData = {
+   npu?: NpuStatus;
+   /** Model id as the router knows it — used to mark the active NPU segment. */
+   npuCurrentModelId?: string | null;
++  /** Model the ←/→ cursor sits on while the footer focuses the NPU line. */
++  npuCursorModelId?: string | null;
+   /** 0–100, or null before the first assistant turn. */
+   contextUsedPercent: number | null;
+   /** Current input token count (including cache), or null. */
+@@ -123,13 +122,23 @@ export function buildBuiltinStatusSegments(data: BuiltinStatusData): StatusSegme
+   // When an NPU router is behind us its per-model LEDs replace the plain model
+   // name — the LED line already names the model, and repeating it wastes width.
+   const npuSegments = data.npu
+-    ? buildNpuSegments(data.npu, data.npuCurrentModelId ?? null)
++    ? buildNpuSegments(data.npu, data.npuCurrentModelId ?? null, data.npuCursorModelId ?? null)
+     : [];
+   const segments: StatusSegment[] = npuSegments.length > 0 ? [...npuSegments] : [{
+     key: 'model',
+     priority: 0,
+     text: data.modelName
+   }];
++  if (npuSegments.length > 0 && data.npuCursorModelId) {
++    // Only while focused — the keys do nothing otherwise, and the row is tight.
++    segments.push({
++      key: 'npu:hint',
++      priority: 1,
++      text: '←→ 모델 · ↵ 적용 · esc 취소',
++      shortText: '←→ ↵ esc',
++      color: 'subtle'
++    });
++  }
+   if (data.contextUsedPercent !== null && data.contextInputTokens !== null && data.contextWindow !== null) {
+     const pct = data.contextUsedPercent;
+     const roundedPct = Math.round(pct);
+@@ -250,6 +259,10 @@ function BuiltinStatusLineInner({
+   // NPU card status (Furiosa router backends only). Each poll re-renders, which
+   // is also what drives the blink of a model that is still loading.
+   const npu = useNpuStatus();
++  // ↓ 로 상태줄에 포커스가 왔을 때만 커서를 그린다. AppState 에서 직접 읽어
++  // PromptInputFooter 를 통한 prop 배선을 피한다(coordinatorTaskIndex 와 같은 이유).
++  const npuFocused = useAppState(s => s.footerSelection === 'npu');
++  const npuFooterModelId = useAppState(s => s.npuFooterModelId);
+   const {
+     columns
+   } = useTerminalSize();
+@@ -285,6 +298,7 @@ function BuiltinStatusLineInner({
+   const segments = fitSegments(buildBuiltinStatusSegments({
+     ...computed,
+     npu,
++    npuCursorModelId: npuFocused ? npuFooterModelId : null,
+     rateLimit: getWorstRateLimit()
+   }),
+   // paddingX from the footer (2 each side) is already outside this Box;
+diff --git a/src/components/ModelPicker.tsx b/src/components/ModelPicker.tsx
+index 77dbe0c..54bd1a1 100644
+--- a/src/components/ModelPicker.tsx
++++ b/src/components/ModelPicker.tsx
+@@ -11,7 +11,8 @@ import { useAppState, useSetAppState } from '../state/AppState.js';
+ import { convertEffortValueToLevel, type EffortLevel, getAvailableEffortLevels, getDefaultEffortForModel, modelSupportsEffort, modelSupportsMaxEffort, resolvePickerEffortPersistence, toPersistableEffort } from '../utils/effort.js';
+ import { isModelAllowed } from '../utils/model/modelAllowlist.js';
+ import { preloadNpuModel } from '../services/npuStatus.js';
+-import { applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
++import { useNpuStatus } from '../services/npuStatusHook.js';
++import { applyNpuLoadColors, applyNpuPresentation, getDiscoveredModelIds, npuAxisAllValues, npuAxisValues, type NpuAxis, npuLoadStatesByBase, npuVariantsOf, stepNpuAxis, variantId } from '../utils/npuVariants.js';
+ import { getDefaultMainLoopModel, type ModelSetting, modelDisplayString, parseUserSpecifiedModel } from '../utils/model/model.js';
+ import { getModelOptions, type ModelOption, parseSwitchProfileValue, resolveSelectedSwitchProfileId } from '../utils/model/modelOptions.js';
+ import { getSettingsForSource, updateSettingsForSource } from '../utils/settings/settings.js';
+@@ -96,8 +97,9 @@ function mapDiscoveryToneToColor(tone: ModelPickerDiscoveryState['tone']): 'erro
+ }
+ export function ModelPicker(t0) {
+   // 84 slots from the compiler; 84–86 are hand-added for the NPU parallelism row
+-  // (see the ←/→ handler and the config row below).
+-  const $ = _c(94);
++  // (see the ←/→ handler and the config row below), 89–90 for the NPU
++  // presentation, 93–97 for colouring the models that are on the cards.
++  const $ = _c(98);
+   const {
+     initial,
+     sessionModel,
+@@ -126,6 +128,8 @@ export function ModelPicker(t0) {
+   });
+   // ←/→ 가 어느 축을 움직이는지. tab 으로 바꾼다.
+   const [npuAxis, setNpuAxis] = useState<NpuAxis>('dp');
++  // 어느 모델이 카드에 올라가 있는지 — 목록 색칠에 쓴다.
++  const npuStatus = useNpuStatus();
+   const effortValue = useAppState(_temp2);
+   let t1;
+   if ($[0] !== effortValue) {
+@@ -148,13 +152,32 @@ export function ModelPicker(t0) {
+   const t3b = optionsOverride ?? t3;
+   // 모든 픽커 경로가 여기서 합류한다. /model 은 optionsOverride 로 getModelOptions() 를
+   // 우회하므로, NPU 표현(변형 접기·백엔드 설명)은 반드시 이 지점에서 걸어야 한다.
+-  let modelOptionsBase;
++  let t3c;
+   if ($[89] !== t3b) {
+-    modelOptionsBase = applyNpuPresentation(t3b);
++    t3c = applyNpuPresentation(t3b);
+     $[89] = t3b;
+-    $[90] = modelOptionsBase;
++    $[90] = t3c;
++  } else {
++    t3c = $[90];
++  }
++  // 카드에 올라가 있는 모델은 전부 초록으로 칠한다. 선택된 하나만 초록이면
++  // 어느 것이 즉시 전환이고 어느 것이 콜드 스타트인지 구분할 수가 없다.
++  let t3d;
++  if ($[93] !== npuStatus.models) {
++    t3d = npuLoadStatesByBase(npuStatus.models);
++    $[93] = npuStatus.models;
++    $[94] = t3d;
++  } else {
++    t3d = $[94];
++  }
++  let modelOptionsBase;
++  if ($[95] !== t3c || $[96] !== t3d) {
++    modelOptionsBase = applyNpuLoadColors(t3c, t3d);
++    $[95] = t3c;
++    $[96] = t3d;
++    $[97] = modelOptionsBase;
+   } else {
+-    modelOptionsBase = $[90];
++    modelOptionsBase = $[97];
+   }
+   // Cross-profile switch options can only be honored by the /model command's
+   // onSelect, which decodes the value and activates the target profile. Strip
+diff --git a/src/components/PromptInput/PromptInput.tsx b/src/components/PromptInput/PromptInput.tsx
+index 4032ed2..affc76f 100644
+--- a/src/components/PromptInput/PromptInput.tsx
++++ b/src/components/PromptInput/PromptInput.tsx
+@@ -39,6 +39,8 @@ import { useOptionalKeybindingContext } from '../../keybindings/KeybindingContex
+ import { getShortcutDisplay } from '../../keybindings/shortcutFormat.js';
+ import { useKeybinding, useKeybindings } from '../../keybindings/useKeybinding.js';
+ import type { MCPServerConnection } from '../../services/mcp/types.js';
++import { npuDisplayModels, preloadNpuModel } from '../../services/npuStatus.js';
++import { useNpuStatus } from '../../services/npuStatusHook.js';
+ import { abortPromptSuggestion, logSuggestionSuppressed } from '../../services/PromptSuggestion/promptSuggestion.js';
+ import { type ActiveSpeculationState, abortSpeculation } from '../../services/PromptSuggestion/speculation.js';
+ import { getActiveAgentForInput, getViewedTeammateTask } from '../../state/selectors.js';
+@@ -471,13 +473,24 @@ function PromptInput({
+   const backgroundTaskCount = useMemo(() => countVisibleBackgroundTasks(tasks), [tasks]);
+   const tasksFooterVisible = backgroundTaskCount > 0 && !shouldHideTasksFooter(tasks, showSpinnerTree);
+   const teamsFooterVisible = cachedTeams.length > 0;
+-  const footerItems = useMemo(() => [tasksFooterVisible && 'tasks', tmuxFooterVisible && 'tmux', bagelFooterVisible && 'bagel', teamsFooterVisible && 'teams', bridgeFooterVisible && 'bridge', companionFooterVisible && 'companion'].filter(Boolean) as FooterItem[], [tasksFooterVisible, tmuxFooterVisible, bagelFooterVisible, teamsFooterVisible, bridgeFooterVisible, companionFooterVisible]);
++  // NPU 상태줄은 다른 pill 들보다 위(입력창에 더 가까이) 그려진다 — 아래 방향키가
++  // 입력창에서 나올 때 시각적으로 먼저 만나는 것이 여기라 목록에서도 첫 항목이다.
++  const npuStatus = useNpuStatus();
++  // 상태줄이 그리는 것과 같은 순서·같은 목록. 커서가 화면에 없는 항목을 가리키는
++  // 일이 없도록 표시와 조작이 한 함수를 공유한다.
++  const npuCurrentModelId = typeof mainLoopModel === 'string' ? mainLoopModel : null;
++  const npuDisplay = useMemo(() => npuStatus.available ? npuDisplayModels(npuStatus.models, npuCurrentModelId) : [], [npuStatus.available, npuStatus.models, npuCurrentModelId]);
++  // 라우터가 아는 모델이 하나라도 있을 때만 포커스를 받는다. 선택만 되고 아직
++  // 안 올라간 모델 하나뿐이면 고를 것이 없다.
++  const npuFooterVisible = npuStatus.available && npuStatus.models.length > 0;
++  const footerItems = useMemo(() => [npuFooterVisible && 'npu', tasksFooterVisible && 'tasks', tmuxFooterVisible && 'tmux', bagelFooterVisible && 'bagel', teamsFooterVisible && 'teams', bridgeFooterVisible && 'bridge', companionFooterVisible && 'companion'].filter(Boolean) as FooterItem[], [npuFooterVisible, tasksFooterVisible, tmuxFooterVisible, bagelFooterVisible, teamsFooterVisible, bridgeFooterVisible, companionFooterVisible]);
+ 
+   // Effective selection: null if the selected pill stopped rendering (bridge
+   // disconnected, task finished). The derivation makes the UI correct
+   // immediately; the useEffect below clears the raw state so it doesn't
+   // resurrect when the same pill reappears (new task starts → focus stolen).
+   const rawFooterSelection = useAppState(s => s.footerSelection);
++  const npuFooterModelId = useAppState(s => s.npuFooterModelId);
+   const footerItemSelected = rawFooterSelection && footerItems.includes(rawFooterSelection) ? rawFooterSelection : null;
+   useEffect(() => {
+     if (rawFooterSelection && !footerItemSelected) {
+@@ -488,6 +501,7 @@ function PromptInput({
+     }
+   }, [rawFooterSelection, footerItemSelected, setAppState]);
+   const tasksSelected = footerItemSelected === 'tasks';
++  const npuSelected = footerItemSelected === 'npu';
+   const tmuxSelected = footerItemSelected === 'tmux';
+   const bagelSelected = footerItemSelected === 'bagel';
+   const teamsSelected = footerItemSelected === 'teams';
+@@ -495,7 +509,13 @@ function PromptInput({
+   function selectFooterItem(item: FooterItem | null): void {
+     setAppState(prev => prev.footerSelection === item ? prev : {
+       ...prev,
+-      footerSelection: item
++      footerSelection: item,
++      // 포커스가 오면 커서는 지금 쓰고 있는 모델에서 출발한다.
++      ...(item === 'npu' && {
++        npuFooterModelId: npuDisplay.some(m => m.id === npuCurrentModelId)
++          ? npuCurrentModelId
++          : npuDisplay[0]?.id ?? null
++      })
+     });
+     if (item === 'tasks') {
+       setTeammateFooterIndex(0);
+@@ -503,6 +523,20 @@ function PromptInput({
+     }
+   }
+ 
++  // NPU 상태줄 안에서 ←/→ 로 모델 사이를 옮긴다. 여기서는 커서만 움직이고
++  // 실제 전환은 ↵ 에서 한다 — 지나치는 모델마다 전환되면 설정이 요동친다.
++  function stepNpuFooter(delta: 1 | -1): void {
++    if (npuDisplay.length === 0) return;
++    setAppState(prev => {
++      const at = npuDisplay.findIndex(m => m.id === prev.npuFooterModelId);
++      const next = npuDisplay[((at === -1 ? 0 : at) + delta + npuDisplay.length) % npuDisplay.length];
++      return next ? {
++        ...prev,
++        npuFooterModelId: next.id
++      } : prev;
++    });
++  }
++
+   // delta: +1 = down/right, -1 = up/left. Returns true if nav happened
+   // (including deselecting at the start), false if at a boundary.
+   function navigateFooter(delta: 1 | -1, exitAtStart = false): boolean {
+@@ -1826,6 +1860,11 @@ function PromptInput({
+       navigateFooter(1);
+     },
+     'footer:next': () => {
++      // NPU 상태줄: ←/→ 는 올라간 모델 사이를 옮긴다(pill 이동이 아니라).
++      if (npuSelected) {
++        stepNpuFooter(1);
++        return;
++      }
+       // Teammate mode: ←/→ cycles within the team member list
+       if (tasksSelected && isTeammateMode) {
+         const totalAgents = 1 + inProcessTeammates.length;
+@@ -1835,6 +1874,10 @@ function PromptInput({
+       navigateFooter(1);
+     },
+     'footer:previous': () => {
++      if (npuSelected) {
++        stepNpuFooter(-1);
++        return;
++      }
+       if (tasksSelected && isTeammateMode) {
+         const totalAgents = 1 + inProcessTeammates.length;
+         setTeammateFooterIndex(prev => (prev - 1 + totalAgents) % totalAgents);
+@@ -1847,6 +1890,17 @@ function PromptInput({
+         return;
+       }
+       switch (footerItemSelected) {
++        case 'npu': {
++          // 커서가 있는 모델로 전환하고 포커스를 입력창에 돌려준다.
++          const target = npuFooterModelId;
++          selectFooterItem(null);
++          if (target && target !== npuCurrentModelId) {
++            handleModelSelect(target, undefined);
++            // 다른 카드에 있던 모델이라도 내려가 있을 수 있으니 올려 둔다.
++            preloadNpuModel(target);
++          }
++          break;
++        }
+         case 'companion':
+           if (isBuddyEnabled()) {
+             selectFooterItem(null);
+diff --git a/src/main.tsx b/src/main.tsx
+index a7832be..d04a747 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -2912,6 +2912,7 @@ async function run(): Promise<CommanderCommand> {
+       coordinatorTaskIndex: -1,
+       viewSelectionMode: 'none',
+       footerSelection: null,
++      npuFooterModelId: null,
+       toolPermissionContext: effectiveToolPermissionContext,
+       agent: mainThreadAgentDefinition?.agentType,
+       agentDefinitions,
+diff --git a/src/services/npuStatus.test.ts b/src/services/npuStatus.test.ts
+new file mode 100644
+index 0000000..dac0e16
+--- /dev/null
++++ b/src/services/npuStatus.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, test } from 'bun:test'
++import { type NpuModel, npuDisplayModels, parseStatus, routerBaseUrl } from './npuStatus.js'
++
++const model = (id: string, state: NpuModel['state'] = 'up'): NpuModel => ({
++  id,
++  state,
++  cards: [],
++  dp: 1,
++  pp: 1,
++})
++
++describe('routerBaseUrl', () => {
++  test('strips the /v1 suffix so router endpoints resolve', () => {
++    expect(routerBaseUrl({ OPENAI_BASE_URL: 'http://127.0.0.1:8400/v1' })).toBe(
++      'http://127.0.0.1:8400',
++    )
++  })
++
++  test('is null when no OpenAI-compatible backend is configured', () => {
++    expect(routerBaseUrl({})).toBeNull()
++  })
++})
++
++describe('parseStatus', () => {
++  test('treats an unknown server state as up rather than hiding the model', () => {
++    const { models } = parseStatus({ running: { 'A': { state: 'wat', cards: [0] } } })
++    expect(models[0]?.state).toBe('up')
++  })
++
++  test('sorts by id so the status line does not reshuffle between polls', () => {
++    const { models } = parseStatus({ running: { B: {}, A: {}, C: {} } })
++    expect(models.map(m => m.id)).toEqual(['A', 'B', 'C'])
++  })
++})
++
++describe('npuDisplayModels', () => {
++  test('puts the selected model first', () => {
++    const out = npuDisplayModels([model('A'), model('B'), model('C')], 'B')
++    expect(out.map(m => m.id)).toEqual(['B', 'A', 'C'])
++  })
++
++  test('includes a selected model the router has never heard of, as down', () => {
++    const out = npuDisplayModels([model('A')], 'Cold')
++    expect(out.map(m => m.id)).toEqual(['Cold', 'A'])
++    expect(out[0]?.state).toBe('down')
++  })
++
++  test('lists everything when nothing is selected', () => {
++    expect(npuDisplayModels([model('A'), model('B')], null).map(m => m.id)).toEqual(['A', 'B'])
++  })
++
++  test('does not duplicate the selected model', () => {
++    const out = npuDisplayModels([model('A'), model('B')], 'A')
++    expect(out.filter(m => m.id === 'A')).toHaveLength(1)
++  })
++})
+diff --git a/src/services/npuStatus.ts b/src/services/npuStatus.ts
+index 8c5ff49..763f4af 100644
+--- a/src/services/npuStatus.ts
++++ b/src/services/npuStatus.ts
+@@ -104,8 +104,67 @@ export function parseStatus(raw: RawStatus): Pick<NpuStatus, 'models' | 'freeCar
+   return { models, freeCards: Array.isArray(raw.free_cards) ? raw.free_cards : [] }
+ }
+ 
++/**
++ * The models to show, in display order: the selected one first, then the rest
++ * alphabetically.
++ *
++ * A selected model the router has never heard of is included anyway (as
++ * `down`), so picking a cold model shows something rather than nothing.
++ *
++ * Both the status line and the footer's ←/→ cursor read this, so the cursor
++ * always lands on the entry the user is looking at.
++ */
++export function npuDisplayModels(
++  models: readonly NpuModel[],
++  currentModelId: string | null,
++): NpuModel[] {
++  const current = currentModelId ? models.find(m => m.id === currentModelId) : undefined
++  const rest = models.filter(m => m.id !== current?.id)
++  if (current) return [current, ...rest]
++  if (currentModelId) {
++    return [{ id: currentModelId, state: 'down', cards: [], dp: 1, pp: 1 }, ...rest]
++  }
++  return rest
++}
++
+ let timer: ReturnType<typeof setTimeout> | null = null
+ let stopped = false
++let pollBase: string | null = null
++
++/**
++ * Models we have asked the router to load, until it acknowledges them.
++ *
++ * The router registers a preload asynchronously, so the poll that follows it
++ * can still report nothing. Without this the status line would show the model
++ * red ("not loaded") for a beat right after the user picked it — the one moment
++ * they are watching it. Each entry expires so a preload the router silently
++ * dropped stops claiming to be loading.
++ */
++const pendingPreload = new Map<string, number>()
++const PENDING_PRELOAD_TTL_MS = 60_000
++
++function expirePending(now: number): void {
++  for (const [id, deadline] of pendingPreload) {
++    if (now >= deadline) pendingPreload.delete(id)
++  }
++}
++
++/** Adds synthetic `loading` entries for preloads the router hasn't reported yet. */
++function withPending(models: NpuModel[], now: number): NpuModel[] {
++  expirePending(now)
++  if (pendingPreload.size === 0) return models
++  const out = [...models]
++  for (const id of pendingPreload.keys()) {
++    // Once the router knows about it, its own state wins — including `error`.
++    if (models.some(m => m.id === id)) {
++      pendingPreload.delete(id)
++      continue
++    }
++    out.push({ id, state: 'loading', cards: [], dp: 1, pp: 1 })
++  }
++  out.sort((a, b) => a.id.localeCompare(b.id))
++  return out
++}
+ 
+ async function pollOnce(base: string): Promise<boolean> {
+   const controller = new AbortController()
+@@ -114,7 +173,7 @@ async function pollOnce(base: string): Promise<boolean> {
+     const res = await fetch(`${base}/router/status`, { signal: controller.signal })
+     if (!res.ok) return false
+     const parsed = parseStatus((await res.json()) as RawStatus)
+-    currentNpuStatus.models = parsed.models
++    currentNpuStatus.models = withPending(parsed.models, Date.now())
+     currentNpuStatus.freeCards = parsed.freeCards
+     currentNpuStatus.phase += 1
+     currentNpuStatus.available = true
+@@ -127,6 +186,19 @@ async function pollOnce(base: string): Promise<boolean> {
+   }
+ }
+ 
++/**
++ * Polls now instead of waiting out the scheduled delay.
++ *
++ * Idle polling runs every 10s, so an action the user just took (picking a
++ * model) would otherwise leave the status line stale for up to that long —
++ * long enough to look broken.
++ */
++export function refreshNpuStatusNow(): void {
++  if (stopped || timer === null) return
++  clearTimeout(timer)
++  timer = setTimeout(scheduledPoll, 0)
++}
++
+ /**
+  * Starts polling. Safe to call repeatedly — only the first call arms the loop.
+  * A failed *first* probe means this backend is not a Furiosa router, so we stop
+@@ -134,24 +206,32 @@ async function pollOnce(base: string): Promise<boolean> {
+  */
+ export function startNpuStatusPolling(base = routerBaseUrl()): void {
+   if (timer !== null || stopped || !base) return
+-  let everSucceeded = false
+-  const loop = async (): Promise<void> => {
+-    const ok = await pollOnce(base)
+-    if (ok) {
+-      everSucceeded = true
+-    } else if (!everSucceeded) {
+-      stopped = true // not a Furiosa router — stay quiet
+-      currentNpuStatus.available = false
+-      notify()
+-      return
+-    }
+-    if (stopped) return
+-    const delay = isTransitioning(currentNpuStatus.models)
++  pollBase = base
++  timer = setTimeout(scheduledPoll, 0)
++}
++
++let everSucceeded = false
++
++async function scheduledPoll(): Promise<void> {
++  const base = pollBase
++  if (base === null) return
++  const ok = await pollOnce(base)
++  if (ok) {
++    everSucceeded = true
++  } else if (!everSucceeded) {
++    stopped = true // not a Furiosa router — stay quiet
++    currentNpuStatus.available = false
++    notify()
++    return
++  }
++  if (stopped) return
++  // A preload the router hasn't acknowledged is as urgent as a visible
++  // transition — that gap is exactly when the user is waiting for the LED.
++  const delay =
++    isTransitioning(currentNpuStatus.models) || pendingPreload.size > 0
+       ? ACTIVE_INTERVAL_MS
+       : IDLE_INTERVAL_MS
+-    timer = setTimeout(loop, delay)
+-  }
+-  timer = setTimeout(loop, 0)
++  timer = setTimeout(scheduledPoll, delay)
+ }
+ 
+ export function stopNpuStatusPolling(): void {
+@@ -167,6 +247,9 @@ export function __resetNpuStatusForTest(): void {
+   stopNpuStatusPolling()
+   stopped = false
+   timer = null
++  pollBase = null
++  everSucceeded = false
++  pendingPreload.clear()
+   currentNpuStatus.models = []
+   currentNpuStatus.freeCards = []
+   currentNpuStatus.phase = 0
+@@ -184,6 +267,17 @@ export function __resetNpuStatusForTest(): void {
+  */
+ export function preloadNpuModel(modelId: string, base = routerBaseUrl()): void {
+   if (!base || !modelId) return
++
++  // Show it as loading immediately. The router acknowledges asynchronously, so
++  // waiting for confirmation would leave the LED red for the first second or
++  // two after the pick — indistinguishable from "nothing happened".
++  pendingPreload.set(modelId, Date.now() + PENDING_PRELOAD_TTL_MS)
++  if (currentNpuStatus.available) {
++    currentNpuStatus.models = withPending(currentNpuStatus.models, Date.now())
++    notify()
++  }
++  startNpuStatusPolling(base)
++
+   const controller = new AbortController()
+   const abort = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+   void fetch(`${base}/router/preload`, {
+@@ -192,12 +286,47 @@ export function preloadNpuModel(modelId: string, base = routerBaseUrl()): void {
+     body: JSON.stringify({ model: modelId }),
+     signal: controller.signal,
+   })
++    .then(res => {
++      // A router predating this endpoint 404s. It still serves lazily, so a
++      // throwaway completion starts the same load the first message would.
++      if (!res.ok) warmUpNpuModel(modelId, base)
++    })
+     .catch(() => {
+-      // Not a Furiosa router, or it declined — the model still loads on first use.
++      // Unreachable or not a router at all — nothing to fall back to.
++      pendingPreload.delete(modelId)
+     })
+     .finally(() => {
+       clearTimeout(abort)
+-      // Poll fast so the LED reacts to the load we just started.
+-      startNpuStatusPolling(base)
++      // Ask now rather than waiting out the idle interval.
++      refreshNpuStatusNow()
+     })
+ }
++
++/**
++ * Starts a load on a router that has no preload endpoint, by sending the
++ * smallest possible completion — the router serves lazily, so any request for
++ * the model brings it up.
++ *
++ * Only ever aimed at a confirmed Furiosa router: firing throwaway completions
++ * at someone's metered OpenAI endpoint would cost them real money.
++ */
++function warmUpNpuModel(modelId: string, base: string): void {
++  if (!currentNpuStatus.available) {
++    pendingPreload.delete(modelId)
++    return
++  }
++  // No timeout: the request stays open for the whole cold start (minutes for a
++  // tp32 model). Nothing reads the response — the status poll reports progress.
++  void fetch(`${base}/v1/chat/completions`, {
++    method: 'POST',
++    headers: { 'Content-Type': 'application/json' },
++    body: JSON.stringify({
++      model: modelId,
++      messages: [{ role: 'user', content: 'hi' }],
++      max_tokens: 1,
++      stream: false,
++    }),
++  }).catch(() => {
++    pendingPreload.delete(modelId)
++  })
++}
+diff --git a/src/state/AppStateStore.ts b/src/state/AppStateStore.ts
+index b819cc5..208aec2 100644
+--- a/src/state/AppStateStore.ts
++++ b/src/state/AppStateStore.ts
+@@ -87,6 +87,8 @@ export type FooterItem =
+   | 'teams'
+   | 'bridge'
+   | 'companion'
++  // The NPU model LEDs in the built-in status line.
++  | 'npu'
+ 
+ export type AppState = DeepImmutable<{
+   settings: SettingsJson
+@@ -108,6 +110,12 @@ export type AppState = DeepImmutable<{
+   // Lives in AppState so pill components rendered outside PromptInput
+   // (CompanionSprite in REPL.tsx) can read their own focused state.
+   footerSelection: FooterItem | null
++  // Which NPU model the ←/→ cursor sits on while the 'npu' pill is focused.
++  // Keyed by model id rather than list position so the status line and the key
++  // handler cannot disagree about what the cursor is on. In AppState so the
++  // status line can read it without prop-drilling through PromptInputFooter
++  // (same rationale as coordinatorTaskIndex).
++  npuFooterModelId: string | null
+   toolPermissionContext: ToolPermissionContext
+   spinnerTip?: string
+   // Active main-thread agent name for this session. Initially sourced from
+@@ -485,6 +493,7 @@ export function getDefaultAppState(): AppState {
+     coordinatorTaskIndex: -1,
+     viewSelectionMode: 'none',
+     footerSelection: null,
++    npuFooterModelId: null,
+     kairosEnabled: false,
+     remoteSessionUrl: undefined,
+     remoteConnectionStatus: 'connecting',
+diff --git a/src/utils/npuVariants.test.ts b/src/utils/npuVariants.test.ts
+new file mode 100644
+index 0000000..6c8bdcc
+--- /dev/null
++++ b/src/utils/npuVariants.test.ts
+@@ -0,0 +1,120 @@
++import { describe, expect, test } from 'bun:test'
++import {
++  applyNpuLoadColors,
++  collapseNpuVariants,
++  npuAxisAllValues,
++  npuAxisValues,
++  npuLoadStatesByBase,
++  parseNpuVariant,
++  stepNpuAxis,
++  variantId,
++} from './npuVariants.js'
++
++describe('parseNpuVariant', () => {
++  test('splits both suffixes off the base id', () => {
++    expect(parseNpuVariant('Llama-3.1-8B-Instruct@dp2@pp2')).toMatchObject({
++      base: 'Llama-3.1-8B-Instruct',
++      dp: 2,
++      pp: 2,
++    })
++  })
++
++  test('leaves a bare model id alone', () => {
++    expect(parseNpuVariant('Qwen3-4B-FP8')).toMatchObject({ base: 'Qwen3-4B-FP8', dp: 1, pp: 1 })
++  })
++
++  test('keeps a malformed suffix in the base rather than routing elsewhere', () => {
++    expect(parseNpuVariant('weird@dp0').base).toBe('weird@dp0')
++  })
++})
++
++describe('variantId', () => {
++  test('dp1·pp1 is the bare model name', () => {
++    expect(variantId('Qwen3-4B-FP8', 1, 1)).toBe('Qwen3-4B-FP8')
++  })
++
++  test('composes only the axes that are above 1', () => {
++    expect(variantId('Qwen3-4B-FP8', 2, 1)).toBe('Qwen3-4B-FP8@dp2')
++    expect(variantId('Qwen3-4B-FP8@dp2', 1, 2)).toBe('Qwen3-4B-FP8@pp2')
++  })
++})
++
++describe('collapseNpuVariants', () => {
++  test('lists one row per model', () => {
++    expect(collapseNpuVariants(['A', 'A@dp2', 'A@dp4', 'B'])).toEqual(['A', 'B'])
++  })
++
++  test('keeps a variant whose base is missing, or it would be unreachable', () => {
++    expect(collapseNpuVariants(['A@dp2'])).toEqual(['A@dp2'])
++  })
++})
++
++describe('npu axis values', () => {
++  // Llama-3.1-8B-Instruct on 1 card: dp x pp <= 4.
++  const ids = ['L', 'L@dp2', 'L@dp4', 'L@pp2', 'L@pp4', 'L@dp2@pp2']
++
++  test('offers only combinations the pair can actually reach', () => {
++    expect(npuAxisValues('L', ids, 'dp', 1)).toEqual([1, 2, 4])
++    // Holding pp=2, dp=4 would need 8 cards.
++    expect(npuAxisValues('L', ids, 'dp', 2)).toEqual([1, 2])
++  })
++
++  test('reports every value of an axis for a stable row width', () => {
++    expect(npuAxisAllValues('L', ids, 'dp')).toEqual([1, 2, 4])
++    expect(npuAxisAllValues('L', ids, 'pp')).toEqual([1, 2, 4])
++  })
++
++  test('repairs the partner axis when a move would strand it', () => {
++    // dp=4 with pp=2 is impossible, so raising pp pulls dp down to a legal value.
++    expect(stepNpuAxis('L', ids, 'pp', { dp: 4, pp: 1 }, 'right')).toEqual({ dp: 2, pp: 2 })
++  })
++
++  test('returns null when the model has a single configuration', () => {
++    expect(stepNpuAxis('X', ['X'], 'dp', { dp: 1, pp: 1 }, 'right')).toBeNull()
++  })
++})
++
++describe('npuLoadStatesByBase', () => {
++  test('a loaded variant lights up its model row', () => {
++    const states = npuLoadStatesByBase([{ id: 'L@dp2', state: 'up' }])
++    expect(states.get('L')).toBe('up')
++  })
++
++  test('up wins over loading — some card is ready now', () => {
++    const states = npuLoadStatesByBase([
++      { id: 'L@dp2', state: 'loading' },
++      { id: 'L', state: 'up' },
++    ])
++    expect(states.get('L')).toBe('up')
++  })
++
++  test('a model in transition reads as busy', () => {
++    expect(npuLoadStatesByBase([{ id: 'L', state: 'stopping' }]).get('L')).toBe('busy')
++  })
++
++  test('ignores states that mean the model is not on a card', () => {
++    expect(npuLoadStatesByBase([{ id: 'L', state: 'down' }]).size).toBe(0)
++  })
++})
++
++describe('applyNpuLoadColors', () => {
++  const options = [{ value: 'L', label: 'L' }, { value: 'Q', label: 'Q' }]
++
++  test('paints every loaded model, not just the selected one', () => {
++    const out = applyNpuLoadColors(options, npuLoadStatesByBase([
++      { id: 'L@dp2', state: 'up' },
++      { id: 'Q', state: 'up' },
++    ]))
++    expect(out.map(o => o.color)).toEqual(['success', 'success'])
++  })
++
++  test('marks a model that is still moving', () => {
++    const out = applyNpuLoadColors(options, npuLoadStatesByBase([{ id: 'L', state: 'loading' }]))
++    expect(out[0]?.color).toBe('warning')
++    expect(out[1]?.color).toBeUndefined()
++  })
++
++  test('leaves options untouched when no NPU router is behind us', () => {
++    expect(applyNpuLoadColors(options, new Map())).toBe(options as never)
++  })
++})
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index b00fbc3..efa22d3 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -119,7 +119,15 @@ export function getDiscoveredModelIds(): readonly string[] {
+  * whose base is missing is kept — otherwise it would become unreachable.
+  */
+ export function collapseNpuVariants(ids: readonly string[]): string[] {
+-  const bases = new Set(ids.map(id => parseNpuVariant(id).base))
++  // Only ids that are themselves bare models count as a base being present.
++  // Deriving this from every id (variants included) would make each variant
++  // vouch for its own base and drop the whole model from the list.
++  const bases = new Set(
++    ids.filter(id => {
++      const v = parseNpuVariant(id)
++      return v.dp === 1 && v.pp === 1
++    }),
++  )
+   return ids.filter(id => {
+     const v = parseNpuVariant(id)
+     const isVariant = v.dp !== 1 || v.pp !== 1
+@@ -179,6 +187,51 @@ export function applyNpuPresentation<
+     })
+ }
+ 
++/**
++ * Which models are on the cards, keyed by base id.
++ *
++ * The picker lists one row per model while the router reports one entry per
++ * parallel configuration, so `Llama-3.1-8B-Instruct@dp2` has to light up the
++ * `Llama-3.1-8B-Instruct` row. A model already serving under *some*
++ * configuration is available to switch to, which is what the row needs to say.
++ *
++ * `up` wins over `loading` when both are present — some card is ready now.
++ */
++export function npuLoadStatesByBase(
++  models: readonly { id: string; state: string }[],
++): Map<string, 'up' | 'busy'> {
++  const out = new Map<string, 'up' | 'busy'>()
++  for (const m of models) {
++    const { base } = parseNpuVariant(m.id)
++    if (m.state === 'up') out.set(base, 'up')
++    else if ((m.state === 'loading' || m.state === 'stopping') && out.get(base) !== 'up') {
++      out.set(base, 'busy')
++    }
++  }
++  return out
++}
++
++/**
++ * Colours each option by whether its model is on the cards: green for loaded,
++ * yellow while it moves. Options the router says nothing about are left alone.
++ *
++ * Without this only the *selected* model reads as green, which hides the whole
++ * point of holding several models across the four cards — you cannot see which
++ * ones are a free switch and which mean a two-minute cold start.
++ */
++export function applyNpuLoadColors<T extends { value?: string | null; color?: string }>(
++  options: readonly T[],
++  loaded: Map<string, 'up' | 'busy'>,
++): T[] {
++  if (loaded.size === 0) return options as T[]
++  return options.map(o => {
++    if (typeof o.value !== 'string') return o
++    const state = loaded.get(parseNpuVariant(o.value).base)
++    if (!state) return o
++    return { ...o, color: state === 'up' ? 'success' : 'warning' }
++  })
++}
++
+ /** Axis of the parallel configuration the user is currently adjusting. */
+ export type NpuAxis = 'dp' | 'pp'
+ 
+-- 
+2.43.0
+
