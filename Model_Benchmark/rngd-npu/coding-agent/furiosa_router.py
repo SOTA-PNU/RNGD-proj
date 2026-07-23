@@ -28,6 +28,7 @@ import sys
 import threading
 import time
 import atexit
+import hashlib
 import hmac
 
 ART = "/home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts"
@@ -42,55 +43,82 @@ ALL_CARDS = [0, 1, 2, 3]
 # 필요하면 ROUTER_READY_TIMEOUT 환경변수로 조정.
 READY_TIMEOUT = int(os.environ.get("ROUTER_READY_TIMEOUT", "2400"))
 CARD_FREE_TIMEOUT = 90     # evict 후 카드 메모리 해제 대기(초)
+# openclaude 포크(NPU LED·dp/pp) 빌드 산출물 — install.sh 가 여기서 dist 를 받아 덮어쓴다.
+CLIENT_DIST = os.environ.get("FURIO_CLIENT_DIST", "/home/jun/openclaude-fork/dist")
+CLIENT_PKG = os.environ.get("FURIO_CLIENT_PKG", "/home/jun/openclaude-fork/package.json")
 
 os.makedirs(LOGDIR, exist_ok=True)   # chat/ 은 git 미추적이라 디렉토리가 없을 수 있음
 
 # ── 모델 레지스트리 ────────────────────────────────────────────────────────
-# model_id(picker 표시/API model 값) -> serve 설정
-#   path      : fxb 허브 ID(furiosa-ai/...; ~/.cache/furiosa/llm/fxb 에서 해석) 또는
-#               아티팩트 디렉터리(ART 상대/절대 — artifacts/ 시절 호환)
-#   cards     : 필요한 NPU 칩 수 = fxb tensor_parallel_size/8 (tp8=1장, tp32=4장)
-#   pp        : pipeline-parallel 차수 (>1 이면 -pp 추가)
-#   tool      : --tool-call-parser 값. None 이면 tool calling 미지원(파서 없음) → 채팅 전용
+# 공식 모델 17종 전부 (claude-agent/available_model.md — huggingface.co/furiosa-ai, 2026.3).
+# model_id = HF 저장소 basename. 두 종류의 아티팩트가 섞여 있다:
+#   · prebuilt FXB 저장소  → ~/.cache/furiosa/llm/fxb 에서 해석 (fxb show 로 실측)
+#   · v2 아티팩트 저장소   → 저장소에 artifact.json (serve 가 v2026.3 태그를 기본 revision 으로 받음)
+# 필드:
+#   path      : furiosa-ai/... HF ID (또는 ART 상대/절대 경로 — artifacts/ 시절 호환)
+#   tp        : 아티팩트의 tensor_parallel_size(PE 수). cards = ceil(tp/8). tp<8 이면 카드 일부만
+#               사용(예: tp4 → npu:X:0-3) — devices 는 _start 가 tp 로 계산.
+#   cards     : 점유 NPU 칩 수 (스케줄링 단위 — 부분 점유도 1장으로 계산)
+#   tool      : --tool-call-parser 값. None = 파서 없음(tool calling 비활성)
 #   reasoning : --reasoning-parser 값 또는 None (thinking 모델만; 아니면 None — 주면 400)
-#   ctx       : 클라이언트 컨텍스트 한도 힌트 = fxb 빌드 max_position. serve 엔 전달 안 됨.
-#               ⚠️ 값↑ = 긴 요청 시 NPU KV캐시 사용↑ — OOM 나면 줄이세요.
-# 근거: fxb show 실측(2026-07-16) + furiosa-llm 2026.3.0 파서 목록
-#       tool={hermes,llama3_json,llama4_json,openai,solar_open}
-#       reasoning={deepseek_r1,deepseek_v3,exaone4,qwen3,solar_open}
+#   extra     : 모델별 추가 serve 인자 (예: K-EXAONE 의 enable_thinking)
+#   kind      : "chat"(기본) | "embedding" | "reranker" — chat 이 아니면 opencode/furio 목록에서 제외
+#   ctx       : 클라이언트 컨텍스트 한도 힌트 = 아티팩트 max_position_embeddings (serve 엔 전달 안 됨)
+# 파서 매핑 근거: available_model.md (2026.3 공식) / tp·ctx 근거: fxb show + artifact.json 실측(2026-07-16)
 REGISTRY = {
-    "gpt-oss-120b":                    dict(path="furiosa-ai/gpt-oss-120b",                     cards=4, pp=1, tool="openai",     reasoning=None,         ctx=131072),
-    "Qwen3-30B-A3B-Instruct-2507-FP8": dict(path="furiosa-ai/Qwen3-30B-A3B-Instruct-2507-FP8",  cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144),
-    "Qwen3-30B-A3B-Thinking-2507-FP8": dict(path="furiosa-ai/Qwen3-30B-A3B-Thinking-2507-FP8",  cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=262144),
-    "Qwen3-30B-A3B-FP8":               dict(path="furiosa-ai/Qwen3-30B-A3B-FP8",                cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
-    "Qwen3-Coder-30B-A3B-FP8":         dict(path="furiosa-ai/Qwen3-Coder-30B-A3B-Instruct-FP8", cards=4, pp=1, tool=None,         reasoning=None,         ctx=262144),
-    "Qwen3-VL-32B-Instruct":           dict(path="furiosa-ai/Qwen3-VL-32B-Instruct",            cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144),
-    "Solar-Open-100B":                 dict(path="furiosa-ai/Solar-Open-100B-NVFP4A16",         cards=4, pp=1, tool="solar_open", reasoning="solar_open", ctx=131072),
-    "K-EXAONE-236B-A23B":              dict(path="furiosa-ai/K-EXAONE-236B-A23B-NVFP4A16",      cards=4, pp=1, tool=None,         reasoning="exaone4",    ctx=262144),
-    "Qwen3-8B-FP8":                    dict(path="furiosa-ai/Qwen3-8B-FP8",                     cards=1, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
-    "Qwen3-4B-FP8":                    dict(path="furiosa-ai/Qwen3-4B-FP8",                     cards=1, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
+    # ── agent-ready (tool calling 검증/신뢰 순) ──
+    "gpt-oss-120b":                     dict(path="furiosa-ai/gpt-oss-120b",                     tp=32, cards=4, pp=1, tool="openai",     reasoning=None,         ctx=131072),
+    "Solar-Open-100B-NVFP4A16":         dict(path="furiosa-ai/Solar-Open-100B-NVFP4A16",         tp=32, cards=4, pp=1, tool="solar_open", reasoning="solar_open", ctx=131072),
+    "Qwen3-32B-FP8":                    dict(path="furiosa-ai/Qwen3-32B-FP8",                    tp=32, cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
+    "Llama-3.3-70B-Instruct":           dict(path="furiosa-ai/Llama-3.3-70B-Instruct",           tp=32, cards=4, pp=1, tool="llama3_json", reasoning=None,        ctx=131072),
+    # ── chat (파서는 있으나 신뢰도 낮거나 미실측) ──
+    "EXAONE-4.0-32B-FP8":               dict(path="furiosa-ai/EXAONE-4.0-32B-FP8",               tp=32, cards=4, pp=1, tool="hermes",     reasoning="exaone4",    ctx=131072),
+    "K-EXAONE-236B-A23B-NVFP4A16":      dict(path="furiosa-ai/K-EXAONE-236B-A23B-NVFP4A16",      tp=32, cards=4, pp=1, tool="hermes",     reasoning="deepseek_v3", ctx=262144,
+                                             extra=["--default-chat-template-kwargs", '{"enable_thinking": true}']),
+    "Qwen3-30B-A3B-Instruct-2507-FP8":  dict(path="furiosa-ai/Qwen3-30B-A3B-Instruct-2507-FP8",  tp=32, cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144),
+    "Qwen3-30B-A3B-Thinking-2507-FP8":  dict(path="furiosa-ai/Qwen3-30B-A3B-Thinking-2507-FP8",  tp=32, cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=262144),
+    "Qwen3-30B-A3B-FP8":                dict(path="furiosa-ai/Qwen3-30B-A3B-FP8",                tp=32, cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
+    "Qwen3-Coder-30B-A3B-Instruct-FP8": dict(path="furiosa-ai/Qwen3-Coder-30B-A3B-Instruct-FP8", tp=32, cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144),
+    "Qwen3-VL-32B-Instruct":            dict(path="furiosa-ai/Qwen3-VL-32B-Instruct",            tp=32, cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144),
+    "Llama-3.1-8B-Instruct":            dict(path="furiosa-ai/Llama-3.1-8B-Instruct",            tp=8,  cards=1, pp=1, tool="llama3_json", reasoning=None,        ctx=131072),
+    "Qwen3-8B-FP8":                     dict(path="furiosa-ai/Qwen3-8B-FP8",                     tp=8,  cards=1, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
+    "Qwen3-4B-FP8":                     dict(path="furiosa-ai/Qwen3-4B-FP8",                     tp=8,  cards=1, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
+    "Qwen2.5-0.5B-Instruct":            dict(path="furiosa-ai/Qwen2.5-0.5B-Instruct",            tp=4,  cards=1, pp=1, tool="hermes",     reasoning=None,         ctx=32768),
+    # ── 비-chat (furio/opencode 목록에서 제외 — /v1/embeddings·/v1/rerank 로 사용) ──
+    "Qwen3-Embedding-8B":               dict(path="furiosa-ai/Qwen3-Embedding-8B",               tp=8,  cards=1, pp=1, tool=None,         reasoning=None,         ctx=40960, kind="embedding"),
+    "Qwen3-Reranker-8B":                dict(path="furiosa-ai/Qwen3-Reranker-8B",                tp=8,  cards=1, pp=1, tool=None,         reasoning=None,         ctx=40960, kind="reranker"),
 }
 # 참고:
-#   Qwen3-Coder-30B-A3B : qwen3_coder tool 파서가 2026.3.0 에 없음(furiosa_patches 는 2026.2.0 용)
-#                         → tool=None(채팅 전용). 파서 재이식 전까지 에이전트 도구호출 불가.
-#   K-EXAONE-236B-A23B  : EXAONE 계열 tool 파서 없음 → 채팅 전용. reasoning=exaone4 는 동일 계열 추정.
-#   대부분 tp32(4장) — 한 번에 한 모델만 서빙되고, 다른 모델 요청 시 LRU evict 후 교체된다.
+#   · reasoning 파서: available_model.md 매핑 그대로. gpt-oss 는 목록에 없음(harmony 가 serve 내부에서
+#     reasoning 을 직접 처리 — 파서 불필요, 실측으로 reasoning 필드 출력 확인).
+#   · K-EXAONE: enable_thinking 템플릿 kwargs 없이는 추론 불가(available_model.md 비고).
+#   · Qwen3-Coder-30B-A3B: 파서는 available_model.md 대로 hermes 이나, 2026.3.0 에 전용 qwen3_coder
+#     파서가 없어 tool calling 이 깨진다(실측: 모델의 XML tool 포맷을 hermes 가 파싱 못함 → tool_calls
+#     빈 채로 원문이 content 로 누출). 에이전트 도구용 아님 — 코딩 채팅 전용. 도구호출은 gpt-oss-120b·
+#     Solar-Open-100B·Qwen3-32B-FP8·Llama-3.3-70B 를 쓸 것.
+#   · tp32 모델은 4장 전체 점유 — 한 번에 한 개만 서빙되고 요청 시 LRU 교체.
+#   · v2 아티팩트 모델의 첫 사용은 HF 다운로드(수십~백GB) 포함 — READY_TIMEOUT 참고.
 
 # 모델별 tool calling(에이전트) 지원 —
-#   ok   : tool calling 잘 됨(에이전트 OK)
-#   weak : 파서는 맞지만 신뢰도 낮음(a3b MoE 3B-active·소형 모델 — 큰 system prompt 에서 불안정)
-#   no   : 모델 tool 포맷을 파싱할 파서가 furiosa-llm 에 없음 → 에이전트 도구호출 불가(채팅만)
+#   ok   : tool calling 실측 OK (gpt-oss·Solar 2026-07 실측, Qwen3-32B·Llama-70B 2026-06 실측)
+#   weak : 파서 지정은 있으나 미실측이거나 신뢰도 낮음(a3b MoE 3B-active·소형 모델)
+#   no   : 파서 없음 → 채팅 전용
 TOOL_SUPPORT = {
     "gpt-oss-120b": "ok",
-    "Solar-Open-100B": "ok",
+    "Solar-Open-100B-NVFP4A16": "ok",
+    "Qwen3-32B-FP8": "ok",
+    "Llama-3.3-70B-Instruct": "ok",
+    "EXAONE-4.0-32B-FP8": "weak",
+    "K-EXAONE-236B-A23B-NVFP4A16": "weak",
     "Qwen3-30B-A3B-Instruct-2507-FP8": "weak",
     "Qwen3-30B-A3B-Thinking-2507-FP8": "weak",
     "Qwen3-30B-A3B-FP8": "weak",
+    "Qwen3-Coder-30B-A3B-Instruct-FP8": "no",   # 실측(2026-07-16): hermes 파서가 Qwen3-Coder XML tool 포맷을 못 읽음 → tool_calls 비고 content 로 원문 누출. 채팅 전용.
     "Qwen3-VL-32B-Instruct": "weak",
+    "Llama-3.1-8B-Instruct": "weak",
     "Qwen3-8B-FP8": "weak",
     "Qwen3-4B-FP8": "weak",
-    "Qwen3-Coder-30B-A3B-FP8": "no",
-    "K-EXAONE-236B-A23B": "no",
+    "Qwen2.5-0.5B-Instruct": "weak",
 }
 
 DEFAULT_MODEL = "gpt-oss-120b"   # 기본 — tool calling OK + 가중치가 이미 서버에 캐시됨
@@ -98,7 +126,11 @@ DEFAULT_MODEL = "gpt-oss-120b"   # 기본 — tool calling OK + 가중치가 이
 # 모델 표시명(picker)·컨텍스트 단일 출처 — 서버 opencode.json(gen_config)·/router/models·맥 install.sh 가 공유
 NAME_HINT = {"ok": "", "weak": "  [tools~weak]", "no": "  [chat-only]"}
 def model_display_name(m):
-    return m + NAME_HINT.get(TOOL_SUPPORT.get(m, "ok"), "")
+    base = m.split("@", 1)[0]
+    kind = REGISTRY.get(base, {}).get("kind", "chat")
+    if kind != "chat":
+        return f"{m}  [{kind}]"
+    return m + NAME_HINT.get(TOOL_SUPPORT.get(base, "ok"), "")
 
 
 def artifact_path(reg):
@@ -110,9 +142,123 @@ def artifact_path(reg):
     return local if os.path.isdir(local) else p
 
 
+# ── 병렬화(dp/pp) 변형 ─────────────────────────────────────────────────────
+# 2026-07-22 실측으로 확정된 규칙 — 추측 금지, 아래 근거대로만 노출한다:
+#   · -tp 는 아티팩트 로드 시 무시된다("given -tp value will be ignored") → tp 선택 불가.
+#   · pp 는 FXB 아티팩트에서 패닉("FXB-based artifacts currently does not support
+#     pipeline parallelism") → fxb 모델엔 pp 변형을 만들지 않는다.
+#   · dp 는 --devices 카드 수로 자동 결정된다(1/2/4장 → 1/2/4 DP group 실측).
+#     따라서 dp 변형은 "카드를 몇 장 줄까"와 동의어이고 -dp 플래그는 불필요.
+#   · dp × pp ≤ 4 (카드 4장), tp32 는 4장 독점이라 변형 없음.
+FXB_CACHE = os.path.expanduser("~/.cache/furiosa/llm/fxb")
+
+
+def is_fxb(reg):
+    """이 모델이 FXB 번들로 서빙되는지. fxb 캐시에 저장소 디렉토리가 있으면 FXB.
+    (수동 표기 대신 실제 캐시를 보므로 아티팩트가 바뀌어도 자동으로 맞다.)"""
+    repo = reg["path"]
+    if repo.startswith("/"):
+        return False
+    return os.path.isdir(os.path.join(FXB_CACHE, "models--" + repo.replace("/", "--")))
+
+
+def par_choices(model_id):
+    """(dp 선택지, pp 선택지). tp32 는 4장 독점이라 선택 불가 → ([1],[1])."""
+    reg = REGISTRY[model_id]
+    cards1 = reg["cards"]          # 기본 구성이 쓰는 카드 수
+    if cards1 >= len(ALL_CARDS):   # tp32 = 4장 독점
+        return [1], [1]
+    dp = [n for n in (1, 2, 4) if n * cards1 <= len(ALL_CARDS)]
+    pp = [1] if is_fxb(reg) else [n for n in (1, 2, 4) if n * cards1 <= len(ALL_CARDS)]
+    return dp, pp
+
+
+def variant_id(model_id, dp=1, pp=1):
+    """표시·요청용 모델 ID. 기본 구성(dp1·pp1)은 접미사 없이 원래 이름 그대로."""
+    sfx = ""
+    if dp > 1:
+        sfx += f"@dp{dp}"
+    if pp > 1:
+        sfx += f"@pp{pp}"
+    return model_id + sfx
+
+
+def parse_variant(mid):
+    """'Qwen3-4B-FP8@dp2@pp2' → ('Qwen3-4B-FP8', 2, 2). 모르는 접미사는 무시하지 않고
+    실패시켜서(base 가 REGISTRY 에 없음) 조용한 오작동을 막는다."""
+    base, dp, pp = mid, 1, 1
+    while "@" in base:
+        base, _, tag = base.rpartition("@")
+        m = re.fullmatch(r"(dp|pp)(\d+)", tag)
+        if not m:
+            return mid, 1, 1          # 접미사 아님 → 원본 그대로(=미등록으로 404)
+        if m.group(1) == "dp":
+            dp = int(m.group(2))
+        else:
+            pp = int(m.group(2))
+    return base, dp, pp
+
+
+def all_model_ids():
+    """/v1/models 에 노출할 전체 ID(기본 + 유효한 dp/pp 변형)."""
+    out = []
+    for m, reg in REGISTRY.items():
+        out.append(m)
+        if reg.get("kind", "chat") != "chat":
+            continue                  # embedding/reranker 는 변형 없음
+        dps, pps = par_choices(m)
+        for dp in dps:
+            for pp in pps:
+                if dp == 1 and pp == 1:
+                    continue
+                if dp * pp * reg["cards"] > len(ALL_CARDS):
+                    continue
+                out.append(variant_id(m, dp, pp))
+    return out
+
+
+def par_flags(reg, dp, pp):
+    """serve 에 넣을 병렬화 플래그. chat/chat_app.py 의 _par_flags 와 같은 규칙:
+    pp=1 이면 플래그 없음(dp 는 --devices 카드 수로 자동 추론), pp>1 이면 -pp 명시."""
+    if reg["cards"] >= len(ALL_CARDS) or pp <= 1:
+        return []
+    flags = ["-pp", str(pp)]
+    if dp > 1:
+        flags += ["-dp", str(dp)]
+    return flags
+
+
+def model_desc(model_id):
+    """모델 선택 목록에 띄울 한 줄 설명 — 어떤 병렬 구성으로 서빙되는지."""
+    base, dp, pp = parse_variant(model_id)
+    reg = REGISTRY[base]
+    cards = reg["cards"] * dp * pp
+    art = "fxb" if is_fxb(reg) else "v2"
+    ctx = reg["ctx"]
+    ctxs = f"{ctx // 1024}k" if ctx >= 1024 else str(ctx)
+    return f"tp{reg['tp']}·dp{dp}·pp{pp} · {cards}장 · ctx {ctxs} · {art}"
+
+
 # ── NPU 카드 상태 ──────────────────────────────────────────────────────────
-def npu_used_mem():
-    """furiosa-smi status 파싱 → {npu_id: used_GiB}."""
+_SMI_CACHE = {"t": 0.0, "v": {}}
+_SMI_LOCK = threading.Lock()
+SMI_REFRESH = 5.0   # 백그라운드 갱신 주기(초)
+
+
+def npu_used_mem(fresh=False):
+    """카드별 사용 메모리 {npu_id: used_GiB}.
+
+    기본은 **캐시 즉시 반환(블로킹 없음)**. furiosa-smi 는 모델 로딩 중 매우 느려져서
+    (2026-07-22 실측: /router/status 가 17.5초 → 클라이언트 LED 폴링 전멸) 요청 경로에서
+    직접 호출하면 안 된다. 갱신은 _smi_refresher 데몬이 백그라운드로 돌린다.
+    fresh=True 는 축출 직후처럼 최신값이 꼭 필요한 경로(요청 경로 아님)에서만."""
+    if not fresh:
+        with _SMI_LOCK:
+            return dict(_SMI_CACHE["v"])
+    return _smi_read()
+
+
+def _smi_read():
     try:
         out = subprocess.run(["furiosa-smi", "status"], capture_output=True, text=True, timeout=15).stdout
     except Exception:
@@ -122,13 +268,39 @@ def npu_used_mem():
         m = re.search(r"npu(\d+)\b.*?(\d+\.\d+)\s*/\s*\d+\.\d+\s*GiB", line)
         if m:
             mem[int(m.group(1))] = float(m.group(2))
+    with _SMI_LOCK:
+        _SMI_CACHE["t"], _SMI_CACHE["v"] = time.time(), dict(mem)
     return mem
+
+
+def _smi_refresher():
+    """furiosa-smi 를 백그라운드에서만 호출해 캐시를 채운다 — 요청 경로는 절대 블로킹되지 않는다.
+    같은 주기로 죽은 백엔드도 회수한다(자식 serve 가 라우터 몰래 죽는 경우 대비)."""
+    while True:
+        try:
+            _smi_read()
+        except Exception:
+            pass
+        try:
+            r = globals().get("ROUTER")
+            if r is not None:
+                with r.lock:
+                    r._reap_dead()
+        except Exception:
+            pass
+        time.sleep(SMI_REFRESH)
+
+
+def start_smi_refresher():
+    t = threading.Thread(target=_smi_refresher, daemon=True)
+    t.start()
+    return t
 
 
 def wait_cards_free(cards, timeout=CARD_FREE_TIMEOUT):
     deadline = time.time() + timeout
     while time.time() < deadline:
-        mem = npu_used_mem()
+        mem = npu_used_mem(fresh=True)   # 축출 직후 — 캐시된 옛값을 믿으면 안 됨
         if all(mem.get(c, 0.0) < 2.0 for c in cards):
             return True
         time.sleep(2)
@@ -150,6 +322,8 @@ class Backend:
         self.port = port
         self.proc = proc
         self.cards = cards           # 점유 중인 npu id 리스트
+        self.dp = 1
+        self.pp = 1
         self.last_used = time.time()
 
     def alive(self):
@@ -159,6 +333,10 @@ class Backend:
 class Router:
     def __init__(self):
         self.running = {}            # model_id -> Backend
+        # model_id -> "loading" | "up" | "stopping" | "error".  없으면 "down".
+        # 클라이언트 LED 의 단일 출처 — "지금 올라가는 중"을 표현하려고 도입했다
+        # (기존엔 running 에 들어간 뒤에야 보여서 콜드스타트 2분이 침묵이었다).
+        self.state = {}
         self.lock = threading.RLock()
         atexit.register(self.shutdown_all)
 
@@ -167,15 +345,38 @@ class Router:
     def _free_cards(self):
         owned = set()
         for b in self.running.values():
-            owned.update(b.cards)
+            # 죽은 백엔드가 든 카드는 곧 회수 대상이므로 점유로 치지 않는다.
+            # 이게 없으면 자식 serve 가 죽어도(외부 pkill·OOM) 그 카드가 계속
+            # owned 로 잡혀 free_cards 가 비고 새 로딩이 막힌다.
+            if b.alive():
+                owned.update(b.cards)
         mem = npu_used_mem()
         return [c for c in ALL_CARDS if c not in owned and mem.get(c, 0.0) < 2.0]
+
+    def _reap_dead(self):
+        """serve 프로세스가 죽은 백엔드를 running/state 에서 제거한다.
+
+        자식 serve 는 라우터와 별개로 죽을 수 있다(OOM, 외부 pkill, serve-router
+        재시작이 furiosa-llm 만 종료). 그때 라우터가 이 백엔드를 계속 들고 있으면
+        /router/status 가 죽은 모델을 'up' 으로 보고하고 카드도 놓지 않는다.
+        smi 갱신 데몬이 5초마다 호출한다. 반드시 락 하에서 부른다."""
+        for mid, b in list(self.running.items()):
+            if not b.alive():
+                self._log(f"reap dead '{mid}' (port {b.port}, cards {b.cards}) — serve 프로세스 종료됨")
+                self.running.pop(mid, None)
+                # up/down 은 running 으로 표현되므로 state 에서도 지운다(→ 'down').
+                # loading/error 전이 중이면 그 표시는 건드리지 않는다.
+                if self.state.get(mid) in ("up", "stopping"):
+                    self.state.pop(mid, None)
 
     def _log(self, msg):
         print(f"[router {time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
     def _stop(self, b):
         self._log(f"evict '{b.model_id}' (port {b.port}, cards {b.cards})")
+        # 내려가는 동안에도 LED 가 '전환중'(노랑)으로 보이도록 먼저 표시한다.
+        if self.state.get(b.model_id) != "error":
+            self.state[b.model_id] = "stopping"
         try:
             b.proc.terminate()
             try:
@@ -187,6 +388,8 @@ class Router:
             self._log(f"  terminate error: {e}")
         self.running.pop(b.model_id, None)
         wait_cards_free(b.cards)
+        if self.state.get(b.model_id) == "stopping":
+            self.state.pop(b.model_id, None)   # → "down"
 
     def _evict_until(self, need):
         # LRU 부터 내려서 need 장 확보
@@ -195,14 +398,25 @@ class Router:
             self._stop(victim)
 
     def _start(self, model_id):
-        reg = REGISTRY[model_id]
-        need = reg["cards"]
+        base, dp, pp = parse_variant(model_id)
+        reg = REGISTRY[base]
+        # 카드 수 = 기본구성 카드 × dp × pp. (dp 는 --devices 카드 수로 자동 추론되므로
+        # '카드를 몇 장 주느냐'가 곧 dp 다 — 2026-07-22 mesh 실측.)
+        need = reg["cards"] * dp * pp
+        if need > len(ALL_CARDS):
+            raise RuntimeError(f"{need}장 필요 — 카드는 {len(ALL_CARDS)}장뿐")
+        self.state[model_id] = "loading"
         self._evict_until(need)
         free = self._free_cards()
         if len(free) < need:
+            self.state[model_id] = "error"
             raise RuntimeError(f"need {need} cards, only {len(free)} free")
         cards = free[:need]
-        devices = ",".join(f"npu:{c}" for c in cards)
+        tp = reg.get("tp", 8 * reg["cards"])
+        if tp < 8:   # 카드 일부만 쓰는 아티팩트(예: tp4) — 코어 범위 표기
+            devices = ",".join(f"npu:{c}:0-{tp - 1}" for c in cards)
+        else:
+            devices = ",".join(f"npu:{c}" for c in cards)
         port = free_port()
         safe = re.sub(r"[^A-Za-z0-9._-]", "_", model_id)
         logpath = os.path.join(LOGDIR, f"router-{safe}.log")
@@ -214,20 +428,27 @@ class Router:
         ]
         if reg["tool"]:
             cmd += ["--enable-auto-tool-choice", "--tool-call-parser", reg["tool"]]
-        if reg["pp"] > 1:
-            cmd += ["-pp", str(reg["pp"])]
+        cmd += par_flags(reg, dp, pp)
         if reg["reasoning"]:
             cmd += ["--reasoning-parser", reg["reasoning"]]
-        self._log(f"start '{model_id}' devices={devices} pp={reg['pp']} tool={reg['tool']} reasoning={reg['reasoning']} → :{port}")
+        if reg.get("extra"):
+            cmd += reg["extra"]
+        self._log(f"start '{model_id}' devices={devices} dp={dp} pp={pp} tool={reg['tool']} reasoning={reg['reasoning']} → :{port}")
         logf = open(logpath, "w")
-        proc = subprocess.Popen(cmd, stdout=logf, stderr=subprocess.STDOUT)
+        # start_new_session=True — 라우터를 띄운 셸/프로세스그룹이 정리돼도 백엔드가
+        # 딸려 죽지 않게 세션을 분리한다(chat/chat_app.py 와 동일).
+        proc = subprocess.Popen(cmd, stdout=logf, stderr=subprocess.STDOUT,
+                                start_new_session=True)
         b = Backend(model_id, port, proc, cards)
+        b.dp, b.pp = dp, pp
         self.running[model_id] = b
         try:
             self._wait_ready(b, logpath)
         except Exception:
+            self.state[model_id] = "error"
             self._stop(b)
             raise
+        self.state[model_id] = "up"
         self._log(f"ready '{model_id}' on :{port}")
         return b
 
@@ -255,8 +476,9 @@ class Router:
             f"있습니다. 재시도하면 다운로드를 이어받습니다(또는 ROUTER_READY_TIMEOUT 을 늘려 재기동).")
 
     def ensure(self, model_id):
-        """model_id 가 서빙되도록 보장하고 백엔드 포트 반환(블로킹)."""
-        if model_id not in REGISTRY:
+        """model_id('Qwen3-4B-FP8@dp2' 같은 변형 포함)가 서빙되도록 보장하고 포트 반환(블로킹)."""
+        base, dp, pp = parse_variant(model_id)
+        if base not in REGISTRY:
             raise KeyError(model_id)
         # fast-path: 이미 떠 있고 살아있으면 락 없이 즉시 반환. 다른 모델의 콜드스타트가
         # self.lock 을 (최대 READY_TIMEOUT) 잡고 있어도 warm 모델 요청은 막히지 않는다.
@@ -276,9 +498,22 @@ class Router:
     def status(self):
         # 락 없이 스냅샷(list 복사 후 순회) — ensure() 가 콜드스타트 동안 self.lock 을 잡고 있어도
         # 상태 조회는 블로킹되지 않는다. dict 읽기는 GIL 하에서 안전.
-        return {mid: dict(port=b.port, cards=b.cards, alive=b.alive(),
-                          idle_s=round(time.time() - b.last_used, 1))
-                for mid, b in list(self.running.items())}
+        # 죽은 백엔드는 보고하지 않는다 — _reap_dead 데몬이 곧 치우지만, 그 사이에도
+        # 클라이언트 LED 가 '초록(up)' 으로 보이면 안 되므로 여기서 즉시 걸러낸다.
+        out = {mid: dict(port=b.port, cards=b.cards, alive=True, dp=b.dp, pp=b.pp,
+                         state=self.state.get(mid, "up"),
+                         idle_s=round(time.time() - b.last_used, 1))
+               for mid, b in list(self.running.items()) if b.alive()}
+        # running 에 아직 없는 전환중 모델(콜드스타트 진행 중이 대표적)도 함께 노출 —
+        # 클라이언트 LED 가 '올라가는 중'을 볼 수 있어야 하므로 이쪽이 본질이다.
+        # 단 'up' 은 제외한다 — up 은 살아있는 백엔드가 뒷받침해야만 보여야 하고,
+        # 백엔드 없이 남은 up 은 죽은 것이므로 여기서 되살리면 안 된다.
+        for mid, st in list(self.state.items()):
+            if mid not in out and st in ("loading", "stopping", "error"):
+                base, dp, pp = parse_variant(mid)
+                out[mid] = dict(port=None, cards=[], alive=False, dp=dp, pp=pp,
+                                state=st, idle_s=None)
+        return out
 
     def shutdown_all(self):
         for b in list(self.running.values()):
@@ -317,20 +552,104 @@ def build_app():
 
     @app.get("/v1/models")
     async def list_models():
+        # 기본 모델 + dp/pp 변형을 함께 노출한다. 변형을 별도 필드가 아니라 모델 ID 로 싣는 이유는
+        # OpenAI 호환 API 를 벗어나지 않기 위해서다(어떤 클라이언트든 그냥 고르면 동작).
         return {"object": "list",
-                "data": [{"id": m, "object": "model", "owned_by": "furiosa-npu"} for m in REGISTRY]}
+                "data": [{"id": m, "object": "model", "owned_by": "furiosa-npu"}
+                         for m in all_model_ids()]}
 
     # sync 핸들러(async 아님) — FastAPI 가 threadpool 에서 돌리므로 furiosa-smi 호출·락 대기가
     # 이벤트 루프를 막지 않는다. (async 로 두면 콜드스타트 900s 동안 라우터 전체가 얼어붙음 — 실측)
+    # ── 포크 클라이언트 배포 ────────────────────────────────────────────────
+    # furio 는 openclaude 포크(NPU LED·dp/pp 위젯)를 쓴다. 개인 PC 에 bun/빌드 툴체인을
+    # 깔게 하지 않으려고, 서버가 빌드한 dist 만 내려보내고 나머지(bin·node_modules)는
+    # npm 에서 '포크와 같은 버전'을 고정 설치한다 — install.sh 한 줄이 유지된다.
+    def _client_files():
+        out = {}
+        for name in ("cli.mjs", "sdk.mjs"):
+            p = os.path.join(CLIENT_DIST, name)
+            if os.path.isfile(p):
+                h = hashlib.sha256()
+                with open(p, "rb") as f:
+                    for chunk in iter(lambda: f.read(1 << 20), b""):
+                        h.update(chunk)
+                out[name] = {"sha256": h.hexdigest(), "bytes": os.path.getsize(p)}
+        return out
+
+    @app.get("/router/client/manifest.json")
+    def client_manifest():
+        ver = ""
+        try:
+            with open(CLIENT_PKG) as f:
+                ver = json.load(f).get("version", "")
+        except Exception:
+            pass
+        files = _client_files()
+        return {"version": ver, "files": files,
+                "ok": bool(ver and files),
+                "note": "npm 으로 같은 version 을 설치한 뒤 이 파일들로 dist 를 덮어쓸 것"}
+
+    @app.get("/router/client/{name}")
+    def client_file(name: str):
+        from fastapi.responses import FileResponse
+        if name not in ("cli.mjs", "sdk.mjs"):
+            return JSONResponse({"error": {"message": "not found"}}, status_code=404)
+        p = os.path.join(CLIENT_DIST, name)
+        if not os.path.isfile(p):
+            return JSONResponse({"error": {"message": f"{name} 없음 — 서버에서 포크를 빌드하세요"}},
+                                status_code=503)
+        return FileResponse(p, media_type="application/javascript")
+
+    @app.post("/router/preload")
+    async def preload(request: Request):
+        """모델을 미리 올려 둔다(즉시 반환). 클라이언트가 /model 에서 고르는 순간 부르므로,
+        첫 메시지를 보낼 때까지 기다리지 않고 바로 로딩이 시작된다. ensure() 는 준비될
+        때까지 블로킹이라 백그라운드 스레드로 던지고, 진행 상황은 /router/status 로 본다."""
+        try:
+            payload = json.loads(await request.body() or b"{}")
+        except Exception:
+            payload = {}
+        model = payload.get("model") or ""
+        base = parse_variant(model)[0]
+        if base not in REGISTRY:
+            return JSONResponse({"error": {"message": f"unknown model '{model}'"}}, status_code=404)
+        if REGISTRY[base].get("kind", "chat") != "chat":
+            return JSONResponse({"ok": False, "reason": "not a chat model"}, status_code=400)
+
+        def _go():
+            try:
+                ROUTER.ensure(model)
+            except Exception as e:
+                ROUTER._log(f"preload '{model}' failed: {e}")
+
+        threading.Thread(target=_go, daemon=True).start()
+        return {"ok": True, "model": model}
+
     @app.get("/router/status")
     def router_status():
         return {"running": ROUTER.status(), "free_cards": ROUTER._free_cards()}
 
     @app.get("/router/models")
     async def router_models():
-        # 표시명(힌트 포함)·컨텍스트 단일 출처 → 맥 install.sh 가 서버와 동일하게 설정
-        return {"data": [{"id": m, "name": model_display_name(m), "context": reg["ctx"]}
-                         for m, reg in REGISTRY.items()]}
+        # 표시명·컨텍스트·병렬구성 단일 출처 → 클라이언트(install.sh·모델 선택 UI)가 그대로 쓴다.
+        # description 은 openclaude 가 "Detected from ..." 로 하드코딩하므로 클라이언트가
+        # 이 값으로 덮어쓴다.
+        out = []
+        for mid in all_model_ids():
+            base, dp, pp = parse_variant(mid)
+            reg = REGISTRY[base]
+            dps, pps = par_choices(base)
+            out.append({
+                "id": mid, "base": base, "name": model_display_name(mid),
+                "description": model_desc(mid),
+                "context": reg["ctx"], "kind": reg.get("kind", "chat"),
+                "tp": reg["tp"], "dp": dp, "pp": pp,
+                "cards": reg["cards"] * dp * pp,
+                "dp_choices": dps, "pp_choices": pps,
+                "artifact": "fxb" if is_fxb(reg) else "v2",
+                "tools": TOOL_SUPPORT.get(base, "ok"),
+            })
+        return {"data": out}
 
     def _sse_from_completion(data):
         # 비스트리밍 chat.completion → OpenAI 스트리밍(SSE) 청크로 변환
@@ -369,7 +688,7 @@ def build_app():
             model = payload.get("model")
         except Exception:
             return JSONResponse({"error": {"message": "invalid JSON body"}}, status_code=400)
-        if model not in REGISTRY:
+        if parse_variant(model or "")[0] not in REGISTRY:
             return JSONResponse({"error": {"message": f"unknown model '{model}'. /v1/models 참고."}}, status_code=404)
         try:
             port = await run_in_threadpool(ROUTER.ensure, model)
@@ -377,12 +696,14 @@ def build_app():
             return JSONResponse({"error": {"message": f"failed to serve '{model}': {e}"}}, status_code=503)
         url = f"http://127.0.0.1:{port}/v1/{subpath}"
 
-        # de-stream: qwen3_coder 모델은 스트리밍 tool 파싱이 까다로워, 백엔드를 비스트리밍으로
-        # 호출해 견고한 extract_tool_calls 를 태운 뒤 결과를 SSE 로 재구성해 보낸다.
+        # de-stream(옵션): 특정 모델이 스트리밍 tool 파싱이 취약하면 REGISTRY 에 destream=True 를 주어,
+        # 백엔드를 비스트리밍으로 호출→견고한 extract_tool_calls→결과를 SSE 로 재구성해 보낸다.
+        # 2026.3.0 기준 현재 쓰는 파서(hermes·llama3_json·openai·solar_open)는 모두 스트리밍 tool 파싱을
+        # 내장(extract_tool_calls_streaming)하므로 기본은 어떤 모델도 destream 을 켜지 않는다(전량 raw 패스스루).
         needs_destream = (
             subpath == "chat/completions"
             and bool(payload.get("stream"))
-            and REGISTRY.get(model, {}).get("tool") == "qwen3_coder"
+            and bool(REGISTRY.get(parse_variant(model)[0], {}).get("destream"))
         )
         if needs_destream:
             body2 = dict(payload)
@@ -414,14 +735,27 @@ def build_app():
     async def completions(request: Request):
         return await _proxy(request, "completions")
 
+    @app.post("/v1/embeddings")
+    async def embeddings(request: Request):
+        return await _proxy(request, "embeddings")
+
+    @app.post("/v1/rerank")
+    async def rerank(request: Request):
+        return await _proxy(request, "rerank")
+
     return app
 
 
 # ── opencode.json 생성 ─────────────────────────────────────────────────────
 def gen_opencode_json(path):
-    models = {m: {"name": model_display_name(m),
-                  "limit": {"context": reg["ctx"], "output": 8192}}
-              for m, reg in REGISTRY.items()}
+    models = {}
+    for m in all_model_ids():
+        reg = REGISTRY[parse_variant(m)[0]]
+        if reg.get("kind", "chat") != "chat":
+            continue
+        models[m] = {"name": model_display_name(m),
+                     "description": model_desc(m),
+                     "limit": {"context": reg["ctx"], "output": 8192}}
     cfg = {
         "$schema": "https://opencode.ai/config.json",
         "provider": {
@@ -445,12 +779,15 @@ def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "serve"
     if cmd == "list":
         for m, reg in REGISTRY.items():
+            kind = reg.get("kind", "chat")
+            agent = TOOL_SUPPORT.get(m, "ok") if kind == "chat" else f"-({kind})"
             print(f"  {m:32s} cards={reg['cards']} pp={reg['pp']} tool={str(reg['tool']):11s} "
-                  f"reasoning={str(reg['reasoning']):6s} agent={TOOL_SUPPORT.get(m,'ok')}")
+                  f"reasoning={str(reg['reasoning']):11s} agent={agent}")
     elif cmd == "gen-config":
         gen_opencode_json(sys.argv[2])
     elif cmd == "serve":
         import uvicorn
+        start_smi_refresher()   # furiosa-smi 를 백그라운드로만 호출 → /router/status 가 항상 즉답
         api_key = os.environ.get("SDI_API_KEY") or os.environ.get("FURIOSA_API_KEY")
         # 인증 on/off 는 SDI_API_KEY 설정 여부로 결정:
         #   키 있음 → 네트워크 개방 + Bearer 인증(사용자도 같은 키 필요)
@@ -465,7 +802,9 @@ def main():
             f.write(str(os.getpid()))
         atexit.register(lambda: os.path.exists(pidfile) and os.remove(pidfile))
         authmode = "on" if api_key else ("off(loopback)" if host == "127.0.0.1" else "OFF(open)")
-        ROUTER._log(f"furiosa-router up on {host}:{ROUTER_PORT}  ({len(REGISTRY)} models, auth={authmode})  pid={os.getpid()}")
+        nvar = len(all_model_ids()) - len(REGISTRY)
+        ROUTER._log(f"furiosa-router up on {host}:{ROUTER_PORT}  ({len(REGISTRY)} models + {nvar} dp/pp variants, "
+                    f"auth={authmode})  pid={os.getpid()}")
         uvicorn.run(build_app(), host=host, port=ROUTER_PORT, log_level="warning")
     else:
         print(__doc__)

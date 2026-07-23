@@ -15,6 +15,41 @@
             "output": 8192
           }
         },
+        "Solar-Open-100B-NVFP4A16": {
+          "name": "Solar-Open-100B-NVFP4A16",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "Qwen3-32B-FP8": {
+          "name": "Qwen3-32B-FP8",
+          "limit": {
+            "context": 40960,
+            "output": 8192
+          }
+        },
+        "Llama-3.3-70B-Instruct": {
+          "name": "Llama-3.3-70B-Instruct",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "EXAONE-4.0-32B-FP8": {
+          "name": "EXAONE-4.0-32B-FP8  [tools~weak]",
+          "limit": {
+            "context": 131072,
+            "output": 8192
+          }
+        },
+        "K-EXAONE-236B-A23B-NVFP4A16": {
+          "name": "K-EXAONE-236B-A23B-NVFP4A16  [tools~weak]",
+          "limit": {
+            "context": 262144,
+            "output": 8192
+          }
+        },
         "Qwen3-30B-A3B-Instruct-2507-FP8": {
           "name": "Qwen3-30B-A3B-Instruct-2507-FP8  [tools~weak]",
           "limit": {
@@ -36,8 +71,8 @@
             "output": 8192
           }
         },
-        "Qwen3-Coder-30B-A3B-FP8": {
-          "name": "Qwen3-Coder-30B-A3B-FP8  [chat-only]",
+        "Qwen3-Coder-30B-A3B-Instruct-FP8": {
+          "name": "Qwen3-Coder-30B-A3B-Instruct-FP8  [chat-only]",
           "limit": {
             "context": 262144,
             "output": 8192
@@ -50,17 +85,10 @@
             "output": 8192
           }
         },
-        "Solar-Open-100B": {
-          "name": "Solar-Open-100B",
+        "Llama-3.1-8B-Instruct": {
+          "name": "Llama-3.1-8B-Instruct  [tools~weak]",
           "limit": {
             "context": 131072,
-            "output": 8192
-          }
-        },
-        "K-EXAONE-236B-A23B": {
-          "name": "K-EXAONE-236B-A23B  [chat-only]",
-          "limit": {
-            "context": 262144,
             "output": 8192
           }
         },
@@ -75,6 +103,13 @@
           "name": "Qwen3-4B-FP8  [tools~weak]",
           "limit": {
             "context": 40960,
+            "output": 8192
+          }
+        },
+        "Qwen2.5-0.5B-Instruct": {
+          "name": "Qwen2.5-0.5B-Instruct  [tools~weak]",
+          "limit": {
+            "context": 32768,
             "output": 8192
           }
         }
