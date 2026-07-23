@@ -255,9 +255,14 @@ cat > "$BIN_DIR/$CMD" <<EOF
 set -euo pipefail
 export CLAUDE_CODE_USE_OPENAI=1
 export OPENAI_BASE_URL="$SDI_SERVER/v1"
-export OPENAI_MODEL="\${OPENAI_MODEL:-$MODEL}"
-export CLAUDE_CODE_MAX_OUTPUT_TOKENS="\${CLAUDE_CODE_MAX_OUTPUT_TOKENS:-$MAXOUT}"
 export OPENCLAUDE_CONFIG_DIR="\${OPENCLAUDE_CONFIG_DIR:-$HOME_DIR/config}"   # 유저 기존 openclaude 와 격리
+# 기본 모델 = 직전에 쓰던 모델. openclaude 는 /model 로 바꿀 때마다 그 값을 config 의
+# settings.json 에 저장한다(동기). 그걸 읽어 OPENAI_MODEL 기본값으로 쓰면, furio 를 다시
+# 켜도 마지막 모델이 그대로 뜬다. 우선순위: 명시적 OPENAI_MODEL > 직전 모델 > 설치 기본값($MODEL).
+# (furio --model 은 이와 무관하게 최우선으로 그 실행만 덮어쓴다.)
+_LAST_MODEL="\$(node -e 'try{var fs=require("fs");var s=JSON.parse(fs.readFileSync(process.env.OPENCLAUDE_CONFIG_DIR+"/settings.json","utf8"));if(s&&typeof s.model==="string"&&s.model)process.stdout.write(s.model)}catch(e){}' 2>/dev/null || true)"
+export OPENAI_MODEL="\${OPENAI_MODEL:-\${_LAST_MODEL:-$MODEL}}"
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS="\${CLAUDE_CODE_MAX_OUTPUT_TOKENS:-$MAXOUT}"
 export OPENAI_API_KEY="\$( [ -f "$HOME_DIR/key" ] && cat "$HOME_DIR/key" || echo dummy )"
 # 모델별 실제 컨텍스트 창(설치 때 라우터에서 받아둔 값). 없으면 openclaude 는 128000 으로 잘못 가정한다.
 if [ -z "\${CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS:-}" ] && [ -s "$HOME_DIR/ctx.json" ]; then
