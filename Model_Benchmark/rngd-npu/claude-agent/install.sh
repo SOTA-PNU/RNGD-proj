@@ -16,7 +16,16 @@
 #           furio -p "..."   # 비대화형 한 줄(print 모드)
 # ───────────────────────────────────────────────────────────────────────────
 set -euo pipefail
-: "${SDI_SERVER:?SDI_SERVER 를 지정하세요 (예: http://127.0.0.1:8400  ← SSH 터널 권장)}"
+# 오프라인 설치(서버에 접속이 안 되는 PC): FURIO_OFFLINE=1
+#   · SDI_SERVER 를 안 줘도 되고(기본 127.0.0.1:8400 — 나중에 터널/목 라우터를 붙일 주소),
+#   · 서버 도달 실패가 설치를 죽이지 않는다(경고만).
+#   · NPU 기능이 든 dist 는 서버에서 못 받으므로 FURIO_CLIENT_DIST=<cli.mjs 있는 폴더> 로 준다.
+#     (미리 복사해 둔 dist. 없으면 업스트림으로 설치되어 NPU LED/위젯이 빠진다.)
+if [ "${FURIO_OFFLINE:-0}" = "1" ]; then
+  SDI_SERVER="${SDI_SERVER:-http://127.0.0.1:8400}"
+else
+  : "${SDI_SERVER:?SDI_SERVER 를 지정하세요 (예: http://127.0.0.1:8400  ← SSH 터널 권장)  |  서버가 없으면 FURIO_OFFLINE=1}"
+fi
 SDI_SERVER="${SDI_SERVER%/}"
 SDI_API_KEY="${SDI_API_KEY:-}"                       # 키는 선택 — 서버 인증 OFF 면 비워도 됨
 if [ -n "$SDI_API_KEY" ]; then
@@ -44,11 +53,28 @@ AUTH=(); [ -n "$SDI_API_KEY" ] && AUTH=(-H "Authorization: Bearer $SDI_API_KEY")
 # 서버가 NPU 기능(모델별 LED·dp/pp)이 들어간 openclaude 포크를 빌드해 두었는지 확인.
 # 있으면 npm 으로 '포크와 같은 버전'을 고정 설치한 뒤 dist 만 덮어쓴다 —
 # 개인 PC 에 bun/빌드 툴체인을 깔 필요가 없고, install.sh 한 줄이 그대로 유지된다.
-FORK_VER=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/client/manifest.json" 2>/dev/null | node -e '
+# 로컬 dist 우선: FURIO_CLIENT_DIST 로 미리 복사해 둔 포크 dist 를 주면 서버 없이도 NPU 기능이 적용된다.
+LOCAL_DIST=""
+if [ -n "${FURIO_CLIENT_DIST:-}" ]; then
+  _LD="${FURIO_CLIENT_DIST%/}"
+  if [ -f "$_LD/cli.mjs" ]; then
+    LOCAL_DIST="$_LD"
+  else
+    echo "      [warn] FURIO_CLIENT_DIST 에 cli.mjs 가 없습니다: $_LD — 무시하고 진행"
+  fi
+fi
+
+FORK_VER=""
+if [ -z "$LOCAL_DIST" ]; then
+  FORK_VER=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/client/manifest.json" 2>/dev/null | node -e '
 let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
   try{const j=JSON.parse(s);process.stdout.write(j.ok&&j.version?String(j.version):"")}catch(e){process.stdout.write("")}});' 2>/dev/null || echo "")
+fi
 
-if [ -n "$FORK_VER" ]; then
+if [ -n "$LOCAL_DIST" ]; then
+  echo "      로컬 dist 사용: $LOCAL_DIST (서버 없이 NPU 기능 적용)"
+  NPM_SPEC="@gitlawb/openclaude@${FURIO_CLIENT_VER:-latest}"
+elif [ -n "$FORK_VER" ]; then
   echo "      서버 포크 감지 — @gitlawb/openclaude@$FORK_VER 고정 설치 후 NPU 기능 dist 적용"
   NPM_SPEC="@gitlawb/openclaude@$FORK_VER"
 else
@@ -61,13 +87,23 @@ OC_BIN="$HOME_DIR/bin/openclaude"
 
 # 포크 dist 덮어쓰기. 실패하면 업스트림 dist 가 그대로 남아 furio 는 계속 동작한다
 # (NPU LED·dp/pp 위젯만 빠짐) — 설치를 통째로 실패시키지 않는다.
-if [ -n "$FORK_VER" ]; then
+if [ -n "$LOCAL_DIST" ] || [ -n "$FORK_VER" ]; then
   DIST_DIR="$HOME_DIR/lib/node_modules/@gitlawb/openclaude/dist"
   [ -d "$DIST_DIR" ] || DIST_DIR=$(dirname "$(readlink -f "$OC_BIN" 2>/dev/null || echo "$OC_BIN")")/../dist
   OK=1
   for f in cli.mjs sdk.mjs; do
-    if ! curl -fsS --max-time 300 ${AUTH[@]+"${AUTH[@]}"} -o "$DIST_DIR/$f.new" "$SDI_SERVER/router/client/$f" 2>/dev/null; then
-      OK=0; break
+    if [ -n "$LOCAL_DIST" ]; then
+      # sdk.mjs 는 없을 수도 있다(cli.mjs 만 복사한 경우) — cli.mjs 만 필수.
+      if [ ! -f "$LOCAL_DIST/$f" ]; then
+        [ "$f" = "cli.mjs" ] && { OK=0; break; }
+        echo "      [warn] $f 없음 — 건너뜀(cli.mjs 만 적용)"
+        continue
+      fi
+      cp -f "$LOCAL_DIST/$f" "$DIST_DIR/$f.new" || { OK=0; break; }
+    else
+      if ! curl -fsS --max-time 300 ${AUTH[@]+"${AUTH[@]}"} -o "$DIST_DIR/$f.new" "$SDI_SERVER/router/client/$f" 2>/dev/null; then
+        OK=0; break
+      fi
     fi
     mv -f "$DIST_DIR/$f.new" "$DIST_DIR/$f" || { OK=0; break; }
   done
@@ -75,7 +111,7 @@ if [ -n "$FORK_VER" ]; then
   if [ "$OK" = 1 ]; then
     echo "      [ok] NPU 기능 적용 (모델별 LED·dp/pp 표시)"
   else
-    echo "      [warn] 포크 dist 내려받기 실패 — 업스트림 그대로 사용(NPU LED 없음)"
+    echo "      [warn] 포크 dist 적용 실패 — 업스트림 그대로 사용(NPU LED 없음)"
   fi
 fi
 
@@ -84,12 +120,19 @@ if command -v curl >/dev/null 2>&1; then
   AUTH=(); [ -n "$SDI_API_KEY" ] && AUTH=(-H "Authorization: Bearer $SDI_API_KEY")
   # macOS 기본 bash 3.2 + set -u 에선 빈 배열 "${AUTH[@]}" 가 unbound 오류 → ${arr[@]+...} 가드로 안전 확장
   if ! curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/v1/models" >/dev/null 2>&1; then
-    echo "[fail] 서버 도달 실패 $SDI_SERVER/v1/models"
-    echo "       └ 원격이면 SSH 터널이 떠 있나요?  bash furio-connect.sh  (그 후 SDI_SERVER=http://127.0.0.1:8400)"
-    echo "       └ 서버 인증 ON 이면 SDI_API_KEY=<키> 를 같이 주세요."
-    exit 1
+    if [ "${FURIO_OFFLINE:-0}" = "1" ]; then
+      echo "      [offline] 서버 미도달 — 설치는 계속합니다($SDI_SERVER)."
+      echo "                나중에 터널을 띄우거나 mock-router.py 를 이 주소로 실행하면 그대로 동작합니다."
+    else
+      echo "[fail] 서버 도달 실패 $SDI_SERVER/v1/models"
+      echo "       └ 원격이면 SSH 터널이 떠 있나요?  bash furio-connect.sh  (그 후 SDI_SERVER=http://127.0.0.1:8400)"
+      echo "       └ 서버 인증 ON 이면 SDI_API_KEY=<키> 를 같이 주세요."
+      echo "       └ 서버 없이 설치하려면:  FURIO_OFFLINE=1 FURIO_CLIENT_DIST=<dist경로> bash install.sh"
+      exit 1
+    fi
+  else
+    echo "      [ok] /v1/models 응답"
   fi
-  echo "      [ok] /v1/models 응답"
 fi
 
 # 키는 0600 파일에만(있을 때). 래퍼는 런타임에 읽어 env 로 — 래퍼 텍스트엔 비밀 없음.
