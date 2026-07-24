@@ -400,9 +400,15 @@ class Router:
     def _start(self, model_id):
         base, dp, pp = parse_variant(model_id)
         reg = REGISTRY[base]
-        # 카드 수 = 기본구성 카드 × dp × pp. (dp 는 --devices 카드 수로 자동 추론되므로
-        # '카드를 몇 장 주느냐'가 곧 dp 다 — 2026-07-22 mesh 실측.)
-        need = reg["cards"] * dp * pp
+        tp = reg.get("tp", 8 * reg["cards"])
+        # PE 기반 배치. 한 카드 = 8 PE. 모델 인스턴스 하나는 tp*pp PE, dp 개면 tp*pp*dp PE.
+        #   · tp<8 이면 한 카드에 여러 인스턴스가 들어간다(예: tp4 → 카드당 2개).
+        #     그래서 tp4·dp2 는 두 장이 아니라 한 장(npu:0:0-3,npu:0:4-7)에 패킹된다.
+        #   · tp>=8 이면 카드당 1개(기존과 동일).
+        PES = 8
+        slots = dp * pp                       # tp 짜리 PE 그룹 개수
+        per_card = max(1, PES // tp)          # 카드당 들어가는 그룹 수 (tp8→1, tp4→2)
+        need = (slots + per_card - 1) // per_card   # ceil — 필요한 카드 수
         if need > len(ALL_CARDS):
             raise RuntimeError(f"{need}장 필요 — 카드는 {len(ALL_CARDS)}장뿐")
         self.state[model_id] = "loading"
@@ -412,9 +418,15 @@ class Router:
             self.state[model_id] = "error"
             raise RuntimeError(f"need {need} cards, only {len(free)} free")
         cards = free[:need]
-        tp = reg.get("tp", 8 * reg["cards"])
-        if tp < 8:   # 카드 일부만 쓰는 아티팩트(예: tp4) — 코어 범위 표기
-            devices = ",".join(f"npu:{c}:0-{tp - 1}" for c in cards)
+        if tp < 8:
+            # 각 그룹을 카드 안의 tp-크기 PE 구간에 순서대로 채운다.
+            # slot i → 카드 cards[i//per_card], 그 카드 안 (i%per_card) 번째 tp 구간.
+            devs = []
+            for i in range(slots):
+                c = cards[i // per_card]
+                s = (i % per_card) * tp
+                devs.append(f"npu:{c}:{s}-{s + tp - 1}")
+            devices = ",".join(devs)
         else:
             devices = ",".join(f"npu:{c}" for c in cards)
         port = free_port()
