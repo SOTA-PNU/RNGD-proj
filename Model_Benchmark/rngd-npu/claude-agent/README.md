@@ -48,7 +48,37 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 furio
 ```
 
-### 2-C. 서버에 못 붙는 PC — 목(mock) 라우터로 기능만 테스트
+### 2-C. 서버에 못 붙는 PC — 설치하는 두 가지 방법
+
+NPU 기능이 든 dist 는 우리 포크라 npm 에 없다. 그래서 **dist 를 어디서 가져오느냐**가 갈린다.
+어느 쪽이든 미리 `cli.mjs`(+`sdk.mjs`)를 그 PC 로 옮겨 둬야 한다
+(서버 접속 되는 다른 PC 에서 `curl -O $SDI_SERVER/router/client/cli.mjs`, 또는 USB/scp, 또는 아래 2-D 처럼 직접 빌드).
+
+**방법 ①(가장 간단) — 라우터 없이 그냥 설치**
+
+```bash
+FURIO_OFFLINE=1 \
+FURIO_CLIENT_DIST=~/furio-dist \        # cli.mjs 가 있는 폴더
+SDI_SERVER=http://127.0.0.1:8400 \      # 나중에 터널/목을 붙일 주소(생략하면 이 값이 기본)
+bash install.sh
+```
+- 서버 도달 실패해도 설치가 **안 죽는다**(경고만).
+- dist 는 로컬 폴더에서 가져오므로 **NPU 기능이 그대로 들어간다**.
+- 모델별 ctx/설명(`ctx.json`·`desc.json`)만 못 받아온다 → 나중에 서버·목에 붙은 뒤 재설치하면 채워진다.
+- 이후 그 주소에 SSH 터널을 띄우거나(2-A) 목 라우터를 띄우면 그대로 동작한다.
+
+**방법 ② — 목 라우터를 먼저 띄우고 설치**(ctx/설명까지 완전)
+
+```bash
+python3 mock-router.py --client-dist ~/furio-dist    # :8400 (dist 도 같이 배포)
+SDI_SERVER=http://127.0.0.1:8400 bash install.sh     # FURIO_OFFLINE 불필요
+```
+목이 실제 라우터와 같은 엔드포인트를 내주므로 dist·ctx·설명·LED 까지 전부 채워진다.
+
+> 실측: 죽은 주소(`:19999`)로 방법 ① 설치 → dist sha 가 서버 빌드본과 일치, 이후 그 주소에 목을
+> 띄우니 `▶ ● Qwen3-4B-FP8 npu0 · ● Qwen3-8B-FP8 npu1` 정상 표시.
+
+### 2-D. 목(mock) 라우터로 기능만 테스트
 
 NPU 추론 없이 **클라이언트에 넣은 기능만** 확인할 때 쓴다(모델별 LED·dp/pp 위젯·모델
 설명·Shift+Tab 자동모드). `mock-router.py` 가 실제 라우터와 같은 엔드포인트를 같은 모양으로
