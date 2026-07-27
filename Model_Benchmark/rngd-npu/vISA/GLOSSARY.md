@@ -49,7 +49,7 @@
 - **VCG (Valid Count Generator)** — 유효 원소 개수로 분기/태그를 만드는 유닛.
 
 ## 백엔드·산출물
-- **backend** — `simulation`(호스트 실값, 기본)·`typecheck`(모양만)·`emulation`·`npu`(실하드웨어).
+- **backend** — `typecheck`(매핑·모양만 검증, 값 계산 없음)·`emulation`(호스트 CPU 에서 NPU 버퍼 경로로 실행, **기본값**)·`npu`(컴파일된 커널을 실하드웨어에서 실행). ⚠️ 공식 책 부록(`appendix/cargo-furiosa-opt`)과 v0.2 커리큘럼은 `simulation` 을 기본값으로 적지만 **설치본(0.4.0)에는 그 백엔드가 없다** — `cargo furiosa-opt --help` 로 확인. 배경은 [`book_ko/README.md`](./book_ko/README.md) §5.
 - **EDF / `.bin`** — vISA 컴파일러의 최종 산출물(`MIR→VISA→LIR→EDF`). 실제 파일은 `.bin`(pert-ipc 명령어 스트림). `libdevice_runtime.so`가 로드.
 - **`.edf` (furiosa-llm)** — ⚠️ 이름은 같지만 **다른 것**. furiosa-llm의 `.edf`는 CBOR 그래프 IR. vISA `.bin`과 포맷 호환 안 됨.
 - **DPE** — Dot-Product Engine. Contraction의 핵심(우리 측정상 matmul에 ~0.23% 정밀도 지문).
