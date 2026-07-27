@@ -1,0 +1,2566 @@
+{
+ "kernels": [
+  {
+   "kernel": "at_primitives::vrf::multi_vrf_at",
+   "file": "at_primitives__vrf__multi_vrf_at",
+   "span": 10845036,
+   "n_inst": 12,
+   "engines": {
+    "DmaEngine": 10841896,
+    "SubContext": 782,
+    "PeCore": 1200,
+    "MainContext": 537,
+    "VectorEngine": 537
+   },
+   "n_tensors": 6,
+   "sram_bytes": 3145728,
+   "types": {
+    "DmaLoad": 3,
+    "Sub": 2,
+    "DmaDtod": 1,
+    "Core": 4,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_multi_vrf",
+   "file": "vector_engine__normal__ve_elementwise_multi_vrf",
+   "span": 10845036,
+   "n_inst": 12,
+   "engines": {
+    "DmaEngine": 10841896,
+    "SubContext": 782,
+    "PeCore": 1200,
+    "MainContext": 537,
+    "VectorEngine": 537
+   },
+   "n_tensors": 6,
+   "sram_bytes": 3145728,
+   "types": {
+    "DmaLoad": 3,
+    "Sub": 2,
+    "DmaDtod": 1,
+    "Core": 4,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_vrf",
+   "file": "vector_engine__normal__ve_elementwise_vrf",
+   "span": 10842104,
+   "n_inst": 10,
+   "engines": {
+    "DmaEngine": 10838967,
+    "PeCore": 1200,
+    "SubContext": 391,
+    "MainContext": 537,
+    "VectorEngine": 537
+   },
+   "n_tensors": 4,
+   "sram_bytes": 2621440,
+   "types": {
+    "DmaDtod": 1,
+    "DmaLoad": 2,
+    "Core": 4,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "cluster_chip_shuffle_slice::chip_shuffle",
+   "file": "cluster_chip_shuffle_slice__chip_shuffle",
+   "span": 6946088,
+   "n_inst": 16,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 6938288,
+    "PeCore": 2298679,
+    "InterChipTransfer": 38018
+   },
+   "n_tensors": 8,
+   "sram_bytes": 33554432,
+   "types": {
+    "Sub": 4,
+    "DmaDtod": 1,
+    "Core": 8,
+    "DmaLoad": 1,
+    "DmaInterChip": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "tile::tile_simple",
+   "file": "tile__tile_simple",
+   "span": 6840200,
+   "n_inst": 258,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 39576,
+    "DmaEngine": 6671008
+   },
+   "n_tensors": 32,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 225,
+    "DmaDtod": 32
+   }
+  },
+  {
+   "kernel": "tile::tile_view_in_loop",
+   "file": "tile__tile_view_in_loop",
+   "span": 6840200,
+   "n_inst": 258,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 39576,
+    "DmaEngine": 6671008
+   },
+   "n_tensors": 32,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 225,
+    "DmaDtod": 32
+   }
+  },
+  {
+   "kernel": "typelevel_const::typelevel_const",
+   "file": "typelevel_const__typelevel_const",
+   "span": 6840200,
+   "n_inst": 258,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 39576,
+    "DmaEngine": 6671008
+   },
+   "n_tensors": 32,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 225,
+    "DmaDtod": 32
+   }
+  },
+  {
+   "kernel": "unevaluated_const::unevaluated_const",
+   "file": "unevaluated_const__unevaluated_const",
+   "span": 6840200,
+   "n_inst": 258,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 39576,
+    "DmaEngine": 6671008
+   },
+   "n_tensors": 32,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 225,
+    "DmaDtod": 32
+   }
+  },
+  {
+   "kernel": "reshape::different_axes::reshape_different_num_axes",
+   "file": "reshape__different_axes__reshape_different_num_axes",
+   "span": 2305587,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 2300384,
+    "PeCore": 1200,
+    "Noop": 0
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8388608,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Sub": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "reshape::reshape",
+   "file": "reshape__reshape",
+   "span": 2305587,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 2300384,
+    "PeCore": 1200,
+    "Noop": 0
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8388608,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Sub": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_split_time_packet",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_split_time_packet",
+   "span": 1057443,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 1051951,
+    "PeCore": 1200,
+    "MainContext": 289,
+    "VectorEngine": 289
+   },
+   "n_tensors": 2,
+   "sram_bytes": 98304,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "tile::tile_view_in_nested_loop",
+   "file": "tile__tile_view_in_nested_loop",
+   "span": 651572,
+   "n_inst": 392,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 39972,
+    "DmaEngine": 482176
+   },
+   "n_tensors": 34,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 67,
+    "Core": 293,
+    "DmaDtod": 32
+   }
+  },
+  {
+   "kernel": "transpose::transpose_simple",
+   "file": "transpose__transpose_simple",
+   "span": 354758,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 349558,
+    "PeCore": 1200
+   },
+   "n_tensors": 0,
+   "sram_bytes": 0,
+   "types": {
+    "DmaDtod": 2,
+    "Core": 4
+   }
+  },
+  {
+   "kernel": "at_primitives::dma_commit::fetch_commit_at",
+   "file": "at_primitives__dma_commit__fetch_commit_at",
+   "span": 302513,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 299630,
+    "MainContext": 280,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 327680,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "fetch_commit::fetch_commit_simple",
+   "file": "fetch_commit__fetch_commit_simple",
+   "span": 302513,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 299630,
+    "MainContext": 280,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 327680,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_add_f32",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_add_f32",
+   "span": 218504,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 213016,
+    "PeCore": 1200,
+    "MainContext": 285,
+    "VectorEngine": 285
+   },
+   "n_tensors": 2,
+   "sram_bytes": 20480,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_add_fxp_sat",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_add_fxp_sat",
+   "span": 218504,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 213016,
+    "PeCore": 1200,
+    "MainContext": 285,
+    "VectorEngine": 285
+   },
+   "n_tensors": 2,
+   "sram_bytes": 20480,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_max_f32",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_max_f32",
+   "span": 218504,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 213016,
+    "PeCore": 1200,
+    "MainContext": 285,
+    "VectorEngine": 285
+   },
+   "n_tensors": 2,
+   "sram_bytes": 20480,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_max_i32",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_max_i32",
+   "span": 218504,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 213016,
+    "PeCore": 1200,
+    "MainContext": 285,
+    "VectorEngine": 285
+   },
+   "n_tensors": 2,
+   "sram_bytes": 20480,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_min_f32",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_min_f32",
+   "span": 218504,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 213016,
+    "PeCore": 1200,
+    "MainContext": 285,
+    "VectorEngine": 285
+   },
+   "n_tensors": 2,
+   "sram_bytes": 20480,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_intra_slice_reduce_min_i32",
+   "file": "vector_engine__reduce__ve_intra_slice_reduce_min_i32",
+   "span": 218504,
+   "n_inst": 8,
+   "engines": {
+    "DmaEngine": 213016,
+    "PeCore": 1200,
+    "MainContext": 285,
+    "VectorEngine": 285
+   },
+   "n_tensors": 2,
+   "sram_bytes": 20480,
+   "types": {
+    "DmaDtod": 1,
+    "Core": 4,
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "at_primitives::relayout::dm_relayout_at",
+   "file": "at_primitives__relayout__dm_relayout_at",
+   "span": 41757,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 39151,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 25165824,
+   "types": {
+    "DmaLoad": 1,
+    "DmaStos": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "memory_op::dm_relayout",
+   "file": "memory_op__dm_relayout",
+   "span": 41757,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 39151,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 25165824,
+   "types": {
+    "DmaLoad": 1,
+    "DmaStos": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "tile::tile_chunked_output",
+   "file": "tile__tile_chunked_output",
+   "span": 37480,
+   "n_inst": 46,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 5472,
+    "DmaEngine": 14056
+   },
+   "n_tensors": 4,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 13,
+    "Core": 29,
+    "DmaDtod": 4
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::invalid_out_time",
+   "file": "switch_assertions__broadcast01__invalid_out_time",
+   "span": 36555,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 31634,
+    "MainContext": 2312,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 33685504,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_fp_multi_packet",
+   "file": "vector_engine__zip__ve_group_pair_fp_multi_packet",
+   "span": 32032,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 29140,
+    "MainContext": 289,
+    "VectorEngine": 289,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 24576,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast1::valid_degenerate",
+   "file": "switch_assertions__broadcast1__valid_degenerate",
+   "span": 27096,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 21670,
+    "MainContext": 2823,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_group_pair_fp_zip_with_mode",
+   "file": "vector_engine__normal__ve_group_pair_fp_zip_with_mode",
+   "span": 23505,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 285,
+    "VectorEngine": 285,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_ternary_selective",
+   "file": "vector_engine__zip__ve_group_pair_ternary_selective",
+   "span": 23505,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 285,
+    "VectorEngine": 285,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_unary_selective",
+   "file": "vector_engine__zip__ve_group_pair_unary_selective",
+   "span": 23505,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 285,
+    "VectorEngine": 285,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_add",
+   "file": "vector_engine__zip__ve_group_pair_add",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_chain",
+   "file": "vector_engine__zip__ve_group_pair_chain",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_fxp",
+   "file": "vector_engine__zip__ve_group_pair_fxp",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_logic",
+   "file": "vector_engine__zip__ve_group_pair_logic",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_preprocess_both",
+   "file": "vector_engine__zip__ve_group_pair_preprocess_both",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_preprocess_g0",
+   "file": "vector_engine__zip__ve_group_pair_preprocess_g0",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_group_pair_preprocess_g1",
+   "file": "vector_engine__zip__ve_group_pair_preprocess_g1",
+   "span": 23503,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 20617,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 12288,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_clip_with_mode",
+   "file": "vector_engine__normal__ve_elementwise_clip_with_mode",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_fp_binary_with_mode",
+   "file": "vector_engine__normal__ve_elementwise_fp_binary_with_mode",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_fp_div_with_mode",
+   "file": "vector_engine__normal__ve_elementwise_fp_div_with_mode",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_fp_ternary_with_mode",
+   "file": "vector_engine__normal__ve_elementwise_fp_ternary_with_mode",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_fp_unary",
+   "file": "vector_engine__normal__ve_elementwise_fp_unary",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_full_pipeline",
+   "file": "vector_engine__normal__ve_elementwise_full_pipeline",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_fxp_const",
+   "file": "vector_engine__normal__ve_elementwise_fxp_const",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_fxp_with_mode",
+   "file": "vector_engine__normal__ve_elementwise_fxp_with_mode",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_logic_with_mode",
+   "file": "vector_engine__normal__ve_elementwise_logic_with_mode",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_neg_offset_f32",
+   "file": "vector_engine__normal__ve_elementwise_neg_offset_f32",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_stash_f32",
+   "file": "vector_engine__normal__ve_elementwise_stash_f32",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_elementwise_stash_i32",
+   "file": "vector_engine__normal__ve_elementwise_stash_i32",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_stash_fp_fp",
+   "file": "vector_engine__normal__ve_stash_fp_fp",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_stash_fp_fxp",
+   "file": "vector_engine__normal__ve_stash_fp_fxp",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_stash_fxp_fp",
+   "file": "vector_engine__normal__ve_stash_fxp_fp",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::normal::ve_stash_fxp_fxp",
+   "file": "vector_engine__normal__ve_stash_fxp_fxp",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::zip::ve_elementwise_ternary_stash",
+   "file": "vector_engine__zip__ve_elementwise_ternary_stash",
+   "span": 22664,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 19779,
+    "MainContext": 282,
+    "VectorEngine": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 8192,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "mnist::forward",
+   "file": "mnist__forward",
+   "span": 17953,
+   "n_inst": 22,
+   "engines": {
+    "DmaEngine": 12365,
+    "MainContext": 7682,
+    "Noop": 0,
+    "SubContext": 790,
+    "VectorEngine": 1162,
+    "PeCore": 600
+   },
+   "n_tensors": 21,
+   "sram_bytes": 2453504,
+   "types": {
+    "DmaLoad": 5,
+    "Main": 8,
+    "Sub": 6,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vrf_add_segmented::vrf_add_segmented",
+   "file": "vrf_add_segmented__vrf_add_segmented",
+   "span": 13629,
+   "n_inst": 16,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 10920,
+    "SubContext": 327,
+    "PeCore": 36,
+    "MainContext": 306,
+    "VectorEngine": 306
+   },
+   "n_tensors": 10,
+   "sram_bytes": 1703936,
+   "types": {
+    "Sub": 2,
+    "DmaLoad": 2,
+    "Core": 9,
+    "Main": 2,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "scatter_gather::gather_aligned_unscaled",
+   "file": "scatter_gather__gather_aligned_unscaled",
+   "span": 12425,
+   "n_inst": 16,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 7522,
+    "PeCore": 900
+   },
+   "n_tensors": 11,
+   "sram_bytes": 1318912,
+   "types": {
+    "Sub": 3,
+    "DmaLoad": 1,
+    "DmaOther": 1,
+    "Core": 6,
+    "DmaGather": 4,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "scatter_gather::gather_placed_unscaled",
+   "file": "scatter_gather__gather_placed_unscaled",
+   "span": 12425,
+   "n_inst": 16,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 7522,
+    "PeCore": 900
+   },
+   "n_tensors": 11,
+   "sram_bytes": 1318912,
+   "types": {
+    "Sub": 3,
+    "DmaLoad": 1,
+    "DmaOther": 1,
+    "Core": 6,
+    "DmaGather": 4,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "tile::tile_size_gt1_chunk_swap",
+   "file": "tile__tile_size_gt1_chunk_swap",
+   "span": 10865,
+   "n_inst": 25,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 1914,
+    "DmaEngine": 3003
+   },
+   "n_tensors": 6,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 21,
+    "DmaDtod": 3
+   }
+  },
+  {
+   "kernel": "tile::tile_with_larger_than_one_1",
+   "file": "tile__tile_with_larger_than_one_1",
+   "span": 10865,
+   "n_inst": 25,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 1914,
+    "DmaEngine": 3003
+   },
+   "n_tensors": 6,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 21,
+    "DmaDtod": 3
+   }
+  },
+  {
+   "kernel": "switch_assertions::inter_transpose::invalid_slice0_mismatch",
+   "file": "switch_assertions__inter_transpose__invalid_slice0_mismatch",
+   "span": 10861,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3771,
+    "MainContext": 4487,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 2113536,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::valid_only_slice1",
+   "file": "switch_assertions__broadcast01__valid_only_slice1",
+   "span": 10796,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 7161,
+    "MainContext": 1032,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 4210688,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "binary_add::binary_add_2048",
+   "file": "binary_add__binary_add_2048",
+   "span": 10692,
+   "n_inst": 7,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 7806,
+    "MainContext": 283,
+    "VectorEngine": 283,
+    "PeCore": 600
+   },
+   "n_tensors": 5,
+   "sram_bytes": 40960,
+   "types": {
+    "Sub": 1,
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast1::invalid_slice0_mismatch",
+   "file": "switch_assertions__broadcast1__invalid_slice0_mismatch",
+   "span": 10671,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 5245,
+    "MainContext": 2823,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::inter_transpose::invalid_time0_size",
+   "file": "switch_assertions__inter_transpose__invalid_time0_size",
+   "span": 10532,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 5106,
+    "MainContext": 2823,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_inter_slice_reduce_promote_f32",
+   "file": "vector_engine__reduce__ve_inter_slice_reduce_promote_f32",
+   "span": 9732,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 6832,
+    "MainContext": 297,
+    "VectorEngine": 297,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 81920,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "scatter_gather::gather_unaligned",
+   "file": "scatter_gather__gather_unaligned",
+   "span": 9579,
+   "n_inst": 6,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 6976,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 786432,
+   "types": {
+    "Sub": 2,
+    "DmaGather": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "dma::padded_tail_alignment",
+   "file": "dma__padded_tail_alignment",
+   "span": 9486,
+   "n_inst": 4,
+   "engines": {
+    "DmaEngine": 6883,
+    "PeCore": 600
+   },
+   "n_tensors": 1,
+   "sram_bytes": 16384,
+   "types": {
+    "DmaLoad": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::inter_transpose::valid_degenerate",
+   "file": "switch_assertions__inter_transpose__valid_degenerate",
+   "span": 9283,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 2823,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::transpose::invalid_time_size",
+   "file": "switch_assertions__transpose__invalid_time_size",
+   "span": 8206,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4828,
+    "MainContext": 775,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 1179648,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::transpose::valid_three_axes",
+   "file": "switch_assertions__transpose__valid_three_axes",
+   "span": 7875,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 1415,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "scatter_gather::gather_minimal",
+   "file": "scatter_gather__gather_minimal",
+   "span": 7738,
+   "n_inst": 6,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 5135,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 524288,
+   "types": {
+    "Sub": 2,
+    "DmaGather": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast1::invalid_slice2_mismatch",
+   "file": "switch_assertions__broadcast1__invalid_slice2_mismatch",
+   "span": 7699,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 775,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::transpose::invalid_transpose_placement",
+   "file": "switch_assertions__transpose__invalid_transpose_placement",
+   "span": 7617,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3599,
+    "MainContext": 1415,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::inter_transpose::invalid_slice1_mismatch",
+   "file": "switch_assertions__inter_transpose__invalid_slice1_mismatch",
+   "span": 7454,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4332,
+    "MainContext": 519,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_vru_then_vau_i32",
+   "file": "vector_engine__reduce__ve_vru_then_vau_i32",
+   "span": 7325,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4411,
+    "MainContext": 311,
+    "VectorEngine": 311,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 32768,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_inter_slice_reduce_add_f32",
+   "file": "vector_engine__reduce__ve_inter_slice_reduce_add_f32",
+   "span": 7308,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4411,
+    "MainContext": 294,
+    "VectorEngine": 294,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 32768,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_inter_slice_reduce_add_sat_i32",
+   "file": "vector_engine__reduce__ve_inter_slice_reduce_add_sat_i32",
+   "span": 7308,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4411,
+    "MainContext": 294,
+    "VectorEngine": 294,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 32768,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "vector_engine::reduce::ve_inter_slice_reduce_max_i32",
+   "file": "vector_engine__reduce__ve_inter_slice_reduce_max_i32",
+   "span": 7308,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4411,
+    "MainContext": 294,
+    "VectorEngine": 294,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 32768,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::invalid_slice_size",
+   "file": "switch_assertions__broadcast01__invalid_slice_size",
+   "span": 7235,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 311,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::transpose::invalid_time_mapping",
+   "file": "switch_assertions__transpose__invalid_time_mapping",
+   "span": 7235,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 775,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::transpose::valid_single_axis",
+   "file": "switch_assertions__transpose__valid_single_axis",
+   "span": 7235,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 775,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::invalid_slice2_mismatch",
+   "file": "switch_assertions__broadcast01__invalid_slice2_mismatch",
+   "span": 7220,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 296,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::invalid_slice_axes_in_broadcast",
+   "file": "switch_assertions__broadcast01__invalid_slice_axes_in_broadcast",
+   "span": 7220,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 296,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::invalid_time_size",
+   "file": "switch_assertions__broadcast01__invalid_time_size",
+   "span": 7220,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 296,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::valid_with_time0",
+   "file": "switch_assertions__broadcast01__valid_with_time0",
+   "span": 7220,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 296,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast1::invalid_slice_size",
+   "file": "switch_assertions__broadcast1__invalid_slice_size",
+   "span": 7220,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 4321,
+    "MainContext": 296,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::inter_transpose::invalid_time1_mismatch",
+   "file": "switch_assertions__inter_transpose__invalid_time1_mismatch",
+   "span": 7085,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3963,
+    "MainContext": 519,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast1::valid_basic",
+   "file": "switch_assertions__broadcast1__valid_basic",
+   "span": 6851,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 391,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::transpose::valid_split_inner",
+   "file": "switch_assertions__transpose__valid_split_inner",
+   "span": 6851,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 391,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::broadcast01::valid_broadcast_with_padding",
+   "file": "switch_assertions__broadcast01__valid_broadcast_with_padding",
+   "span": 6756,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 3857,
+    "MainContext": 296,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "scatter_gather::gather_paged_kv",
+   "file": "scatter_gather__gather_paged_kv",
+   "span": 6729,
+   "n_inst": 6,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 4126,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 2097152,
+   "types": {
+    "Sub": 2,
+    "DmaGather": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "param::struct_passthrough",
+   "file": "param__struct_passthrough",
+   "span": 6643,
+   "n_inst": 4,
+   "engines": {
+    "DmaEngine": 4040,
+    "PeCore": 600
+   },
+   "n_tensors": 1,
+   "sram_bytes": 65536,
+   "types": {
+    "DmaLoad": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "param::tuple_passthrough",
+   "file": "param__tuple_passthrough",
+   "span": 6643,
+   "n_inst": 4,
+   "engines": {
+    "DmaEngine": 4040,
+    "PeCore": 600
+   },
+   "n_tensors": 1,
+   "sram_bytes": 65536,
+   "types": {
+    "DmaLoad": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "scatter_gather::scatter_minimal",
+   "file": "scatter_gather__scatter_minimal",
+   "span": 6202,
+   "n_inst": 6,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 3599,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 524288,
+   "types": {
+    "Sub": 3,
+    "DmaLoad": 1,
+    "DmaScatter": 1,
+    "Core": 1
+   }
+  },
+  {
+   "kernel": "memory_op::commit_view_bottom_pad",
+   "file": "memory_op__commit_view_bottom_pad",
+   "span": 4897,
+   "n_inst": 9,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 1998,
+    "PeCore": 622,
+    "MainContext": 296
+   },
+   "n_tensors": 4,
+   "sram_bytes": 7864320,
+   "types": {
+    "Sub": 1,
+    "DmaLoad": 1,
+    "Core": 5,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "switch_engine::custom_broadcast",
+   "file": "switch_engine__custom_broadcast",
+   "span": 4796,
+   "n_inst": 6,
+   "engines": {
+    "DmaEngine": 1898,
+    "MainContext": 295,
+    "PeCore": 600
+   },
+   "n_tensors": 3,
+   "sram_bytes": 278528,
+   "types": {
+    "DmaLoad": 2,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::time_broadcast::valid_double_tiling",
+   "file": "contract_outer_assertions__time_broadcast__valid_double_tiling",
+   "span": 4612,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1326,
+    "SubContext": 743,
+    "MainContext": 387,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 4063232,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::time_broadcast::valid_transposed_tiling",
+   "file": "contract_outer_assertions__time_broadcast__valid_transposed_tiling",
+   "span": 4378,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1292,
+    "SubContext": 583,
+    "MainContext": 347,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 2752512,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::time_broadcast::valid_single_tiling",
+   "file": "contract_outer_assertions__time_broadcast__valid_single_tiling",
+   "span": 4168,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1258,
+    "SubContext": 423,
+    "MainContext": 307,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 1441792,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::time_broadcast::valid_tiling_not_in_trf",
+   "file": "contract_outer_assertions__time_broadcast__valid_tiling_not_in_trf",
+   "span": 4153,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1243,
+    "SubContext": 295,
+    "MainContext": 307,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 917504,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::cpacket_mapping::valid_two_collect_flits",
+   "file": "contract_outer_assertions__cpacket_mapping__valid_two_collect_flits",
+   "span": 4119,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1234,
+    "SubContext": 327,
+    "MainContext": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::cpacket_size::valid_size_64",
+   "file": "contract_outer_assertions__cpacket_size__valid_size_64",
+   "span": 4119,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1234,
+    "SubContext": 327,
+    "MainContext": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::lane_size::valid_size_8",
+   "file": "contract_outer_assertions__lane_size__valid_size_8",
+   "span": 4119,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1234,
+    "SubContext": 327,
+    "MainContext": 282,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 655360,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_element_types::bf16_contract",
+   "file": "contract_element_types__bf16_contract",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_element_types::f8e4m3_contract",
+   "file": "contract_element_types__f8e4m3_contract",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_element_types::f8e5m2_contract",
+   "file": "contract_element_types__f8e5m2_contract",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_element_types::i8_contract",
+   "file": "contract_element_types__i8_contract",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_element_types::zero_point_sub_contract",
+   "file": "contract_element_types__zero_point_sub_contract",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::cpacket_mapping::valid_one_collect_flit",
+   "file": "contract_outer_assertions__cpacket_mapping__valid_one_collect_flit",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::cpacket_size::valid_size_32",
+   "file": "contract_outer_assertions__cpacket_size__valid_size_32",
+   "span": 4106,
+   "n_inst": 7,
+   "engines": {
+    "DmaEngine": 1228,
+    "SubContext": 295,
+    "MainContext": 275,
+    "PeCore": 600
+   },
+   "n_tensors": 4,
+   "sram_bytes": 393216,
+   "types": {
+    "DmaLoad": 2,
+    "Sub": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::packet::packet_restructuring",
+   "file": "switch_assertions__packet__packet_restructuring",
+   "span": 3762,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 831,
+    "MainContext": 328,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 2097152,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "tile::tile_window_commit",
+   "file": "tile__tile_window_commit",
+   "span": 3731,
+   "n_inst": 11,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 781,
+    "PeCore": 638,
+    "MainContext": 268
+   },
+   "n_tensors": 5,
+   "sram_bytes": 196608,
+   "types": {
+    "Sub": 1,
+    "DmaLoad": 1,
+    "Core": 7,
+    "Main": 1,
+    "DmaStore": 1
+   }
+  },
+  {
+   "kernel": "switch_assertions::inter_transpose::invalid_dims",
+   "file": "switch_assertions__inter_transpose__invalid_dims",
+   "span": 3695,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 311,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::alignment::aligned_fetch_packet_bf16",
+   "file": "switch_assertions__alignment__aligned_fetch_packet_bf16",
+   "span": 3670,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 787,
+    "MainContext": 280,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 524288,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "fetch_assertions::cluster_size::valid_cluster_size",
+   "file": "fetch_assertions__cluster_size__valid_cluster_size",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "fetch_assertions::slice_size::valid_slice_size",
+   "file": "fetch_assertions__slice_size__valid_slice_size",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::alignment::aligned_fetch_packet_i8",
+   "file": "switch_assertions__alignment__aligned_fetch_packet_i8",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::packet::packet_nested_padding",
+   "file": "switch_assertions__packet__packet_nested_padding",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::packet::packet_padding_added_in_switch",
+   "file": "switch_assertions__packet__packet_padding_added_in_switch",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::packet::packet_padding_unchanged",
+   "file": "switch_assertions__packet__packet_padding_unchanged",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::packet::valid_padding",
+   "file": "switch_assertions__packet__valid_padding",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "switch_assertions::slice::valid_matching_slice_sizes",
+   "file": "switch_assertions__slice__valid_matching_slice_sizes",
+   "span": 3656,
+   "n_inst": 5,
+   "engines": {
+    "DmaEngine": 781,
+    "MainContext": 272,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Main": 1,
+    "DmaStore": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "tile::tile_unit_axis",
+   "file": "tile__tile_unit_axis",
+   "span": 3178,
+   "n_inst": 4,
+   "engines": {
+    "Noop": 0,
+    "DmaEngine": 578,
+    "PeCore": 600
+   },
+   "n_tensors": 0,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "DmaDtod": 1,
+    "Core": 2
+   }
+  },
+  {
+   "kernel": "at_primitives::trf::to_trf_at",
+   "file": "at_primitives__trf__to_trf_at",
+   "span": 3053,
+   "n_inst": 3,
+   "engines": {
+    "DmaEngine": 450,
+    "SubContext": 327,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Sub": 1,
+    "Core": 1
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::trf_mapping::valid_mapping",
+   "file": "contract_outer_assertions__trf_mapping__valid_mapping",
+   "span": 3053,
+   "n_inst": 3,
+   "engines": {
+    "DmaEngine": 450,
+    "SubContext": 327,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Sub": 1,
+    "Core": 1
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::trf_size::valid_to_trf_full",
+   "file": "contract_outer_assertions__trf_size__valid_to_trf_full",
+   "span": 3053,
+   "n_inst": 3,
+   "engines": {
+    "DmaEngine": 450,
+    "SubContext": 327,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Sub": 1,
+    "Core": 1
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::trf_size::valid_to_trf_half",
+   "file": "contract_outer_assertions__trf_size__valid_to_trf_half",
+   "span": 3053,
+   "n_inst": 3,
+   "engines": {
+    "DmaEngine": 450,
+    "SubContext": 327,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 262144,
+   "types": {
+    "DmaLoad": 1,
+    "Sub": 1,
+    "Core": 1
+   }
+  },
+  {
+   "kernel": "contract_outer_assertions::trf_mapping::valid_unit_time_lane",
+   "file": "contract_outer_assertions__trf_mapping__valid_unit_time_lane",
+   "span": 3050,
+   "n_inst": 3,
+   "engines": {
+    "DmaEngine": 447,
+    "SubContext": 267,
+    "PeCore": 600
+   },
+   "n_tensors": 2,
+   "sram_bytes": 16384,
+   "types": {
+    "DmaLoad": 1,
+    "Sub": 1,
+    "Core": 1
+   }
+  },
+  {
+   "kernel": "tile::tile_with_larger_than_one_2",
+   "file": "tile__tile_with_larger_than_one_2",
+   "span": 16,
+   "n_inst": 3,
+   "engines": {
+    "Noop": 0,
+    "PeCore": 16
+   },
+   "n_tensors": 1,
+   "sram_bytes": 0,
+   "types": {
+    "Sub": 1,
+    "Core": 2
+   }
+  }
+ ],
+ "engine_cycles": {
+  "DmaEngine": 75464336,
+  "MainContext": 58883,
+  "PeCore": 2586167,
+  "SubContext": 9737,
+  "VectorEngine": 14770,
+  "Noop": 0,
+  "InterChipTransfer": 38018
+ }
+}
