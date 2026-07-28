@@ -41,10 +41,17 @@ FURIOSA_OPT_NPUS=0,1 cargo furiosa-opt --backend npu run --release --bin NAME
 | `% n` | Modulo | n으로 나눈 **안쪽 위치** (크기=n) | `m![A % 8]` |
 | `# n` | Padding | 하드웨어 단위 수 n으로 패딩(남는 칸=임의값) | `m![A / 8 # 256]` |
 | `= n` | Resize | 논리 크기를 n으로 자름(축소) | `m![D = 2]` |
-| `1` | Identity | 1칸짜리, Pair의 항등원 | `m![1]` |
+| `1` | Identity | 1칸짜리, Pair의 항등원 (0.3·0.4 에서는 `Broadcast{size:1}`) | `m![1]` |
 | `{ X }` | Escape | 타입 별칭 X를 매핑에 끼움 | `m![{ L }, { R }]` |
-| `B' = B - A` | Skew | 대각 접근(wavefront) | `m![A, B' = 4]` |
-| `$(e1:n1,...)` | Sliding | 겹치는 블록(conv) 선형결합 | — |
+| `B' = B - A` | Skew | 대각 접근(wavefront) — **책에만 있음, 크레이트 미구현** | `m![A, B' = 4]` |
+| `$(e1:n1,...)` | Sliding | 겹치는 블록(conv) 선형결합 — **책에만 있음, 크레이트 미구현** | — |
+
+> ⚠ **Skew·Sliding 은 배포된 크레이트에 없다.** 벤더 책(`reference/book/mapping-tensors/mapping-expressions.md:379-438`)에는
+> 설명이 있지만 `furiosa-mapping-types`·`furiosa-mapping-macro` **0.2.0·0.3.0·0.4.0 소스 전체에서 식별자 0건**이다(실측).
+>
+> `Mapping` 변종도 버전마다 다르다 — **0.2.0**(이 저장소 `experiments/Cargo.toml` 이 거는 버전)은
+> `Identity, Symbol, Stride, Modulo, Resize, Padding, Pair`, **0.3.0·0.4.0** 은
+> `Symbol, Stride, Modulo, Resize, Padding, Pair, Broadcast` 다.
 
 - `m![A / 8, A % 8]` ≡ `m![A]` (stride·modulo 분해, A가 8로 나눠떨어질 때).
 - 디바이스 텐서 매핑 순서: `<dtype, Chip, Cluster, Slice, (Lane), (Time), Packet/Element>`.
