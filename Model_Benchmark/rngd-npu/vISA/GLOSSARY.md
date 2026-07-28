@@ -35,7 +35,14 @@
 - **axes!** — 축 이름·크기 선언. `axes![A = 2048]`.
 - **m![]** — 매핑 표현식. 연산자: `,`(Pair) `/`(Stride) `%`(Modulo) `#`(Padding) `=`(Resize) `1`(Identity) `{ }`(Escape).
 - **Symbol** — 축 하나(`m![A]`). **Pair** — 축 합침(`m![A,B]`, 왼쪽 상위, 우결합). **Stride `/n`** — 바깥(블록) 인덱스. **Modulo `%n`** — 안쪽 위치. **Padding `#n`** — 하드웨어 단위로 패딩(남는 칸은 임의값). **Resize `=n`** — 논리 크기 축소(절단). **Identity `m![1]`** — 1칸, Pair 항등원. **Escape `{X}`** — 별칭 끼우기.
+- **Broadcast** — stride 0 축을 `size` 번 반복. **0.3.0·0.4.0 에서 `Identity` 는 별도 변종이 아니라 `Broadcast { size: 1 }` 이다**
+  (`furiosa-mapping-types-0.4.0/src/lib.rs:199-201`). `Mapping` 변종 구성은 버전마다 다르므로 주의한다.
+  - **0.2.0** — 이 저장소 `experiments/Cargo.toml` 이 거는 버전: `Identity, Symbol, Stride, Modulo, Resize, Padding, Pair` (Broadcast 없음)
+  - **0.3.0 · 0.4.0** — `Symbol, Stride, Modulo, Resize, Padding, Pair, Broadcast` (Identity 유닛 변종 없음. 두 버전의 enum 정의는 문자 단위로 동일)
 - **Skew (`B' = B - A`)** — 대각 접근(wavefront). **Sliding (`$(...)`)** — 겹치는 블록(conv) 선형결합.
+  ⚠ **둘 다 벤더 책(`reference/book/mapping-tensors/mapping-expressions.md:379-438`)에만 있고 배포된 크레이트에는 구현이 없다.**
+  0.2.0·0.3.0·0.4.0 의 `furiosa-mapping-types`·`furiosa-mapping-macro` 전체에서 `Skew`/`Sliding` 식별자 **0건**(실측).
+  설계나 논문에서 이 기능을 전제로 삼지 마라.
 - **Spatial dimension(공간 차원)** — Chip/Cluster/Slice/Lane처럼 **하드웨어 유닛에 펼쳐지는** 축.
 - **Temporal dimension(시간 차원)** — `Time`(파이프라인 반복 회차), `Packet`(한 회차 안 원소). 시간에 걸쳐 처리.
 
