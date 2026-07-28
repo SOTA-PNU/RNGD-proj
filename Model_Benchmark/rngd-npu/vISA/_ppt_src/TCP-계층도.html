@@ -1,0 +1,731 @@
+<meta charset="utf-8">
+<title>TCP 하드웨어 5계층과 소프트웨어 2용어</title>
+<style>
+  @page { size: 297mm 210mm; margin: 12mm 14mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans CJK KR", "Noto Sans KR", sans-serif;
+    color: #16202c; margin: 0; font-size: 11pt; line-height: 1.45;
+  }
+  .page { page-break-after: always; height: 186mm; display: flex; flex-direction: column; }
+  .page:last-child { page-break-after: auto; }
+  h1 { font-size: 21pt; margin: 0 0 1mm; color: #16202c; }
+  h1 .num {
+    display: inline-block; background: #0b5fc0; color: #fff; border-radius: 5px;
+    padding: 0 3.4mm; margin-right: 3mm; font-size: 17pt; vertical-align: 2px;
+  }
+  .sub { color: #5b6b7b; font-size: 11.5pt; margin: 0 0 3mm; }
+  .rule { height: 1.4px; background: #d6dee7; margin-bottom: 4mm; }
+  .art { flex: 0 0 auto; height: 104mm; display: flex; align-items: center; justify-content: center; }
+  .art svg { max-width: 100%; max-height: 104mm; }
+  .note { margin-top: 3mm; font-size: 10.2pt; line-height: 1.38; }
+  .quote {
+    border-left: 3.5px solid #0b5fc0; background: #f4f8fd; padding: 1.8mm 3.4mm;
+    font-size: 9.8pt; margin: 0 0 2mm;
+  }
+  .quote b { color: #083f80; }
+  .cols { display: flex; gap: 5mm; }
+  .cols > div { flex: 1; }
+  ul { margin: 0; padding-left: 5mm; }
+  li { margin-bottom: 0.8mm; }
+  .key {
+    background: #fff7e6; border: 1px solid #f0d29b; border-left: 5px solid #b45409;
+    padding: 1.8mm 3.4mm; font-size: 9.8pt; margin-top: 2mm;
+  }
+  .key b { color: #b45409; }
+  code { font-family: "Noto Sans Mono CJK KR", monospace; font-size: 10pt; background: #eef2f7; padding: 0 1mm; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.3pt; }
+  th { background: #0b5fc0; color: #fff; padding: 1.1mm 2.4mm; text-align: left; font-weight: 600; }
+  td { border-bottom: 1px solid #e2e8f0; padding: 1.0mm 2.4mm; }
+  tr:nth-child(even) td { background: #f7fafd; }
+  .cover { justify-content: center; align-items: center; text-align: center; }
+  .cover h1 { font-size: 30pt; margin-bottom: 4mm; }
+  .cover .sub { font-size: 13pt; }
+  .tag { color: #5b6b7b; font-size: 10pt; }
+</style>
+
+<!-- ══════════════════════════ 표지 ══════════════════════════ -->
+<div class="page cover">
+  <h1>TCP 하드웨어 5계층과 소프트웨어 2용어</h1>
+  <p class="sub">
+    개념 하나에 그림 하나. 각 층이 <b>무엇을 담고 있고</b>, <b>몇 개씩 있으며</b>, <b>무엇을 하는지</b>를 그린다.<br>
+    출처: TCP: A Tensor Contraction Processor for AI Workloads (ISCA 2024) 본문·그림
+  </p>
+  <svg viewBox="0 0 900 300" width="820">
+    <g font-family="Noto Sans CJK KR" text-anchor="middle">
+      <rect x="10" y="30" width="860" height="240" rx="10" fill="#eef4fc" stroke="#0b5fc0" stroke-width="2"/>
+      <text x="440" y="56" font-size="15" font-weight="700" fill="#083f80">① Chip / SoC — 칩 한 장</text>
+      <rect x="34" y="70" width="812" height="182" rx="8" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.6"/>
+      <text x="440" y="92" font-size="14" font-weight="700" fill="#083f80">② PE × 8</text>
+      <rect x="58" y="106" width="764" height="132" rx="7" fill="#cbe0f7" stroke="#0b5fc0" stroke-width="1.4"/>
+      <text x="440" y="127" font-size="13.5" font-weight="700" fill="#083f80">③ TU — PE 하나에 1개</text>
+      <rect x="82" y="140" width="716" height="84" rx="6" fill="#b8d4f3" stroke="#0b5fc0" stroke-width="1.2"/>
+      <text x="440" y="160" font-size="13" font-weight="700" fill="#083f80">④ slice × (64+1) — TU 하나 안</text>
+      <rect x="108" y="172" width="664" height="42" rx="5" fill="#a4c8f0" stroke="#0b5fc0" stroke-width="1.1"/>
+      <text x="440" y="198" font-size="12.5" font-weight="700" fill="#083f80">⑤ operation unit — CE(DPE) · VE · TE</text>
+    </g>
+  </svg>
+  <p class="tag" style="margin-top:5mm">
+    바깥이 안을 담는다. 오른쪽으로 갈수록 작아지고, 개수는 늘어난다.
+  </p>
+</div>
+
+<!-- ══════════════════════════ ① Chip ══════════════════════════ -->
+<div class="page">
+  <h1><span class="num">①</span>Chip / SoC — 칩 한 장</h1>
+  <p class="sub">system-on-chip, 시스템 온 칩</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 330" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <rect x="8" y="8" width="964" height="314" rx="12" fill="#f7fafd" stroke="#083f80" stroke-width="2.5"/>
+        <text x="26" y="34" font-size="15" font-weight="700" fill="#083f80">TCP 칩 (TSMC 5nm · 24.59 × 25.71 mm = 632.1 mm² · 1 GHz · TDP 150 W)</text>
+
+        <!-- HBM 왼쪽 -->
+        <rect x="26" y="52" width="86" height="240" rx="8" fill="#fdebd3" stroke="#b45409" stroke-width="1.8"/>
+        <text x="69" y="164" font-size="13" font-weight="700" fill="#b45409" text-anchor="middle">HBM3</text>
+        <text x="69" y="184" font-size="11" fill="#b45409" text-anchor="middle">stack 1</text>
+        <!-- HBM 오른쪽 -->
+        <rect x="868" y="52" width="86" height="240" rx="8" fill="#fdebd3" stroke="#b45409" stroke-width="1.8"/>
+        <text x="911" y="164" font-size="13" font-weight="700" fill="#b45409" text-anchor="middle">HBM3</text>
+        <text x="911" y="184" font-size="11" fill="#b45409" text-anchor="middle">stack 2</text>
+        <text x="490" y="308" font-size="11.5" fill="#b45409" text-anchor="middle">HBM3 2스택 = 48 GB · 1.5 TB/s</text>
+
+        <!-- PE 8개 -->
+        <g>
+          <text x="490" y="70" font-size="13" font-weight="700" fill="#083f80" text-anchor="middle">PE × 8</text>
+        </g>
+        <g fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.6">
+          <rect x="128" y="80" width="172" height="72" rx="7"/>
+          <rect x="308" y="80" width="172" height="72" rx="7"/>
+          <rect x="488" y="80" width="172" height="72" rx="7"/>
+          <rect x="668" y="80" width="172" height="72" rx="7"/>
+          <rect x="128" y="212" width="172" height="72" rx="7"/>
+          <rect x="308" y="212" width="172" height="72" rx="7"/>
+          <rect x="488" y="212" width="172" height="72" rx="7"/>
+          <rect x="668" y="212" width="172" height="72" rx="7"/>
+        </g>
+        <g font-size="12.5" font-weight="700" fill="#083f80" text-anchor="middle">
+          <text x="214" y="112">PE 0</text><text x="394" y="112">PE 1</text>
+          <text x="574" y="112">PE 2</text><text x="754" y="112">PE 3</text>
+          <text x="214" y="244">PE 4</text><text x="394" y="244">PE 5</text>
+          <text x="574" y="244">PE 6</text><text x="754" y="244">PE 7</text>
+        </g>
+        <g font-size="10" fill="#5b6b7b" text-anchor="middle">
+          <text x="214" y="132">TU 32 MB · 64 TOPS</text><text x="394" y="132">TU 32 MB · 64 TOPS</text>
+          <text x="574" y="132">TU 32 MB · 64 TOPS</text><text x="754" y="132">TU 32 MB · 64 TOPS</text>
+          <text x="214" y="264">TU 32 MB · 64 TOPS</text><text x="394" y="264">TU 32 MB · 64 TOPS</text>
+          <text x="574" y="264">TU 32 MB · 64 TOPS</text><text x="754" y="264">TU 32 MB · 64 TOPS</text>
+        </g>
+
+        <!-- NoC -->
+        <rect x="128" y="164" width="712" height="36" rx="6" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.8"/>
+        <text x="484" y="187" font-size="12.5" font-weight="700" fill="#1a7f37" text-anchor="middle">
+          NoC — PE 사이 데이터 전송 (경합 없음). PE ↔ HBM, PE ↔ PE 최대 256 GB/s
+        </text>
+        <!-- 연결선 -->
+        <g stroke="#1a7f37" stroke-width="1.4">
+          <line x1="214" y1="152" x2="214" y2="164"/><line x1="394" y1="152" x2="394" y2="164"/>
+          <line x1="574" y1="152" x2="574" y2="164"/><line x1="754" y1="152" x2="754" y2="164"/>
+          <line x1="214" y1="200" x2="214" y2="212"/><line x1="394" y1="200" x2="394" y2="212"/>
+          <line x1="574" y1="200" x2="574" y2="212"/><line x1="754" y1="200" x2="754" y2="212"/>
+        </g>
+        <g stroke="#b45409" stroke-width="1.6">
+          <line x1="112" y1="182" x2="128" y2="182"/><line x1="840" y1="182" x2="868" y2="182"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “1. Chip / SoC (system-on-chip, 시스템 온 칩) — TCP 칩 한 장”</p>
+    <div class="cols">
+      <div><ul>
+        <li>칩 하나가 <b>PE 8개</b>와 <b>NoC</b>, <b>HBM3 2스택</b>, PCIe Gen5 ×16 을 담는다.</li>
+        <li>온칩 SRAM 합계 <b>256 MB</b> = PE당 32 MB × 8. 대역 384 TB/s.</li>
+        <li>연산 성능 512 TOPS (INT8) / 1024 TOPS (INT4) / 256 TFLOPS (BF16) / 512 TFLOPS (FP8).</li>
+      </ul></div>
+      <div><ul>
+        <li>NoC 는 PE 사이 전송을 <b>경합 없이</b> 처리한다. PE 하나가 HBM 또는 다른 PE 로 최대 256 GB/s.</li>
+        <li>PE 8개가 합쳐 HBM 대역 1.5 TB/s 를 다 쓸 수 있다.</li>
+        <li>PCIe Gen5 로 칩 사이 P2P 통신도 지원해 여러 칩에 모델을 나눠 올릴 수 있다.</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ ② PE ══════════════════════════ -->
+<div class="page">
+  <h1><span class="num">②</span>PE — 처리 요소, 칩 하나에 8개</h1>
+  <p class="sub">processing element · 호스트에서 독립 디바이스로 보일 수 있다</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 320" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <rect x="180" y="10" width="620" height="300" rx="12" fill="#f7fafd" stroke="#0b5fc0" stroke-width="2.5"/>
+        <text x="490" y="36" font-size="15" font-weight="700" fill="#083f80" text-anchor="middle">PE 하나의 내부</text>
+
+        <rect x="206" y="52" width="150" height="72" rx="7" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.8"/>
+        <text x="281" y="80" font-size="13" font-weight="700" fill="#1a7f37" text-anchor="middle">CPU Core</text>
+        <text x="281" y="99" font-size="9.5" fill="#1a7f37" text-anchor="middle">스칼라·제어 흐름</text>
+        <text x="281" y="113" font-size="9.5" fill="#1a7f37" text-anchor="middle">TU 를 보조프로세서로 지휘</text>
+
+        <rect x="206" y="140" width="150" height="72" rx="7" fill="#fdebd3" stroke="#b45409" stroke-width="1.8"/>
+        <text x="281" y="168" font-size="13" font-weight="700" fill="#b45409" text-anchor="middle">Tensor DMA</text>
+        <text x="281" y="187" font-size="9.5" fill="#b45409" text-anchor="middle">텐서 전송 전담</text>
+        <text x="281" y="201" font-size="9.5" fill="#b45409" text-anchor="middle">TU 연산과 겹쳐 돈다</text>
+
+        <rect x="206" y="228" width="150" height="60" rx="7" fill="#eef2f7" stroke="#5b6b7b" stroke-width="1.6"/>
+        <text x="281" y="253" font-size="12.5" font-weight="700" fill="#5b6b7b" text-anchor="middle">Scratch Pad</text>
+        <text x="281" y="271" font-size="9.5" fill="#5b6b7b" text-anchor="middle">Memory</text>
+
+        <rect x="386" y="52" width="388" height="236" rx="8" fill="#dcebf9" stroke="#0b5fc0" stroke-width="2"/>
+        <text x="580" y="78" font-size="14" font-weight="700" fill="#083f80" text-anchor="middle">③ TU (Tensor Unit)</text>
+        <text x="580" y="98" font-size="11" fill="#083f80" text-anchor="middle">SRAM 32 MB · 64 TOPS · slice 64+1개</text>
+        <g fill="#b8d4f3" stroke="#0b5fc0" stroke-width="1">
+          <rect x="404" y="114" width="40" height="150" rx="4"/><rect x="450" y="114" width="40" height="150" rx="4"/>
+          <rect x="496" y="114" width="40" height="150" rx="4"/><rect x="542" y="114" width="40" height="150" rx="4"/>
+          <rect x="634" y="114" width="40" height="150" rx="4"/><rect x="680" y="114" width="40" height="150" rx="4"/>
+          <rect x="726" y="114" width="40" height="150" rx="4"/>
+        </g>
+        <text x="606" y="196" font-size="20" font-weight="700" fill="#5b6b7b" text-anchor="middle">···</text>
+        <text x="580" y="282" font-size="10.5" fill="#5b6b7b" text-anchor="middle">slice 들 (다음 장에서 확대)</text>
+
+        <!-- 커맨드 큐 화살표 -->
+        <line x1="356" y1="88" x2="386" y2="120" stroke="#1a7f37" stroke-width="1.8"/>
+        <polygon points="380,113 388,122 378,122" fill="#1a7f37"/>
+        <text x="330" y="130" font-size="9.5" fill="#1a7f37">command queue</text>
+
+        <!-- 호스트 -->
+        <rect x="16" y="120" width="130" height="80" rx="8" fill="#fff" stroke="#16202c" stroke-width="1.8"/>
+        <text x="81" y="152" font-size="12.5" font-weight="700" text-anchor="middle">호스트</text>
+        <text x="81" y="172" font-size="9.5" fill="#5b6b7b" text-anchor="middle">PE 를 독립 디바이스로</text>
+        <text x="81" y="186" font-size="9.5" fill="#5b6b7b" text-anchor="middle">따로따로 본다</text>
+        <line x1="146" y1="160" x2="176" y2="160" stroke="#16202c" stroke-width="1.8"/>
+        <polygon points="170,154 180,160 170,166" fill="#16202c"/>
+
+        <!-- 우측: 독립성 -->
+        <rect x="820" y="96" width="150" height="128" rx="8" fill="#fff7e6" stroke="#b45409" stroke-width="1.6"/>
+        <text x="895" y="120" font-size="11.5" font-weight="700" fill="#b45409" text-anchor="middle">PE 는 독립적이다</text>
+        <text x="895" y="142" font-size="9.5" fill="#16202c" text-anchor="middle">독립 주소 공간</text>
+        <text x="895" y="160" font-size="9.5" fill="#16202c" text-anchor="middle">주소 변환 유닛이</text>
+        <text x="895" y="174" font-size="9.5" fill="#16202c" text-anchor="middle">권한을 막는다</text>
+        <text x="895" y="196" font-size="9.5" fill="#16202c" text-anchor="middle">최대 4개까지 융합해</text>
+        <text x="895" y="210" font-size="9.5" fill="#16202c" text-anchor="middle">큰 PE 로 쓸 수 있다</text>
+        <line x1="800" y1="160" x2="820" y2="160" stroke="#b45409" stroke-width="1.6"/>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “2. PE (processing element, 처리 요소) — 칩 하나에 8개. 호스트에서 독립 디바이스로 보일 수 있다”</p>
+    <div class="cols">
+      <div><ul>
+        <li>PE = <b>CPU 코어 + TU + TDMA 엔진</b>(+ Scratch Pad Memory) 한 벌.</li>
+        <li>CPU 코어가 스칼라 연산·제어 흐름을 맡고, TU 를 <b>보조프로세서처럼 커맨드 큐로</b> 지휘한다.</li>
+        <li>이전 텐서 연산이 도는 동안 다음 명령을 큐에 넣어 두므로 연산과 전송이 겹친다.</li>
+      </ul></div>
+      <div><ul>
+        <li>PE 마다 <b>독립 주소 공간</b>을 갖고 독립적으로 동작한다. GPU 의 multi-instance 와 비슷하다.</li>
+        <li>최대 <b>4개까지 융합</b>해 하나의 큰 PE 로 쓸 수 있다. SR-IOV 로 가상머신에 나눠 줄 수도 있다.</li>
+        <li>그래서 “작게 여러 개”와 “크게 하나”를 상황에 맞춰 고를 수 있다.</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ ③ TU ══════════════════════════ -->
+<div class="page">
+  <h1><span class="num">③</span>TU — Tensor Unit, PE 안의 텐서 연산 본체</h1>
+  <p class="sub">PE 하나에 1개 · SRAM 32 MB · 64 TOPS · <b>slice 64+1개</b></p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 320" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <rect x="10" y="10" width="960" height="300" rx="12" fill="#f7fafd" stroke="#0b5fc0" stroke-width="2.5"/>
+        <text x="30" y="36" font-size="15" font-weight="700" fill="#083f80">TU (Tensor Unit)</text>
+
+        <rect x="30" y="52" width="150" height="60" rx="7" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.6"/>
+        <text x="105" y="76" font-size="12" font-weight="700" fill="#1a7f37" text-anchor="middle">TU Controller</text>
+        <text x="105" y="95" font-size="9.5" fill="#1a7f37" text-anchor="middle">제어·상태 레지스터</text>
+
+        <text x="30" y="140" font-size="11.5" fill="#16202c">SRAM 을 하나의 큰 덩어리로 두지 않고</text>
+        <text x="30" y="158" font-size="11.5" fill="#16202c"><tspan font-weight="700" fill="#083f80">연산 파이프라인째로 slice 로 쪼갠다</tspan></text>
+        <text x="30" y="182" font-size="10.5" fill="#5b6b7b">→ 큰 행렬 유닛 하나보다</text>
+        <text x="30" y="198" font-size="10.5" fill="#5b6b7b">   다양한 텐서 모양에 잘 맞는다</text>
+
+        <!-- slice 배열 -->
+        <rect x="212" y="52" width="620" height="212" rx="8" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.8"/>
+        <text x="522" y="74" font-size="12.5" font-weight="700" fill="#083f80" text-anchor="middle">slice 64개 (+ 예비 1개)</text>
+        <g fill="#b8d4f3" stroke="#0b5fc0" stroke-width="0.9">
+          <rect x="228" y="86" width="26" height="120" rx="3"/><rect x="258" y="86" width="26" height="120" rx="3"/>
+          <rect x="288" y="86" width="26" height="120" rx="3"/><rect x="318" y="86" width="26" height="120" rx="3"/>
+          <rect x="348" y="86" width="26" height="120" rx="3"/><rect x="378" y="86" width="26" height="120" rx="3"/>
+          <rect x="408" y="86" width="26" height="120" rx="3"/><rect x="438" y="86" width="26" height="120" rx="3"/>
+          <rect x="558" y="86" width="26" height="120" rx="3"/><rect x="588" y="86" width="26" height="120" rx="3"/>
+          <rect x="618" y="86" width="26" height="120" rx="3"/><rect x="648" y="86" width="26" height="120" rx="3"/>
+          <rect x="678" y="86" width="26" height="120" rx="3"/><rect x="708" y="86" width="26" height="120" rx="3"/>
+          <rect x="738" y="86" width="26" height="120" rx="3"/>
+        </g>
+        <rect x="768" y="86" width="26" height="120" rx="3" fill="#fdebd3" stroke="#b45409" stroke-width="1.2"/>
+        <text x="781" y="80" font-size="9.5" font-weight="700" fill="#b45409" text-anchor="middle">예비</text>
+        <text x="510" y="152" font-size="22" font-weight="700" fill="#5b6b7b" text-anchor="middle">···</text>
+
+        <!-- fetch network -->
+        <rect x="228" y="222" width="566" height="30" rx="5" fill="#fff7e6" stroke="#b45409" stroke-width="1.6"/>
+        <text x="511" y="242" font-size="11.5" font-weight="700" fill="#b45409" text-anchor="middle">
+          fetch network — slice 사이로 텐서를 멀티캐스트한다
+        </text>
+
+        <rect x="852" y="86" width="106" height="120" rx="7" fill="#fff" stroke="#16202c" stroke-width="1.4"/>
+        <text x="905" y="112" font-size="11" font-weight="700" text-anchor="middle">예비 1개의 뜻</text>
+        <text x="905" y="136" font-size="9.5" fill="#5b6b7b" text-anchor="middle">slice 하나가</text>
+        <text x="905" y="150" font-size="9.5" fill="#5b6b7b" text-anchor="middle">불량이어도</text>
+        <text x="905" y="164" font-size="9.5" fill="#5b6b7b" text-anchor="middle">칩을 살린다</text>
+        <text x="905" y="186" font-size="9.5" fill="#5b6b7b" text-anchor="middle">(수율 개선)</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “3. TU (Tensor Unit, 텐서 유닛) — PE 안에서 대규모 텐서 연산을 수행하는 단위”</p>
+    <div class="cols">
+      <div><ul>
+        <li>TU 는 SRAM 에서 입력 텐서를 계속 끌어와 연산하고 결과를 다시 SRAM 에 쓴다.</li>
+        <li>큰 SRAM 하나 + 거대한 행렬곱 유닛이라는 통상적 설계를 <b>버렸다.</b> 대신 SRAM 을 포함한 파이프라인 전체를 slice 로 쪼갰다.</li>
+      </ul></div>
+      <div><ul>
+        <li>논문 본문: <b>“The TU includes 64+1 slices, with one reserved as spare to improve chip yields.”</b></li>
+        <li>Fig. 3 은 읽기 쉬우라고 slice 를 <b>8개만 그렸을 뿐</b>이다. 실제 수는 64+1 이다.</li>
+      </ul></div>
+    </div>
+    <div class="key"><b>수 맞춰보기</b> — 칩당 slice = 8 PE × 64 = <b>512개</b>. vISA 문서가 말하는 “칩당 2 클러스터 × 256 slice = 512” 와 <b>수가 일치한다</b>. 다만 PE 와 클러스터의 정확한 대응 관계는 논문에 적혀 있지 않다.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ ④ slice ══════════════════════════ -->
+<div class="page">
+  <h1><span class="num">④</span>slice — 기본 연산 단위</h1>
+  <p class="sub">SRAM + fetch unit + operation unit + commit unit 을 <b>한 벌씩</b> 가진다</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 330" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <rect x="120" y="10" width="740" height="240" rx="12" fill="#f7fafd" stroke="#0b5fc0" stroke-width="2.5"/>
+        <text x="490" y="36" font-size="15" font-weight="700" fill="#083f80" text-anchor="middle">slice 하나</text>
+
+        <rect x="146" y="54" width="150" height="170" rx="8" fill="#eef2f7" stroke="#5b6b7b" stroke-width="1.8"/>
+        <text x="221" y="80" font-size="12.5" font-weight="700" fill="#5b6b7b" text-anchor="middle">SRAM (DM)</text>
+        <text x="221" y="102" font-size="9.5" fill="#5b6b7b" text-anchor="middle">이 slice 몫의</text>
+        <text x="221" y="116" font-size="9.5" fill="#5b6b7b" text-anchor="middle">데이터 메모리</text>
+        <text x="221" y="142" font-size="10" font-weight="700" fill="#16202c" text-anchor="middle">최대 128 GB/s</text>
+        <text x="221" y="158" font-size="9.5" fill="#5b6b7b" text-anchor="middle">(slice 당 SRAM 대역)</text>
+
+        <rect x="316" y="54" width="130" height="170" rx="8" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.8"/>
+        <text x="381" y="80" font-size="12.5" font-weight="700" fill="#083f80" text-anchor="middle">Fetch Unit</text>
+        <text x="381" y="104" font-size="9.5" fill="#16202c" text-anchor="middle">SRAM 에서</text>
+        <text x="381" y="118" font-size="9.5" fill="#16202c" text-anchor="middle">데이터를 끌어와</text>
+        <text x="381" y="132" font-size="9.5" fill="#16202c" text-anchor="middle">스트림으로 만든다</text>
+        <text x="381" y="158" font-size="9.5" fill="#0b5fc0" text-anchor="middle">fetch network 에</text>
+        <text x="381" y="172" font-size="9.5" fill="#0b5fc0" text-anchor="middle">연결돼 있다</text>
+
+        <rect x="466" y="54" width="220" height="170" rx="8" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.8"/>
+        <text x="576" y="80" font-size="12.5" font-weight="700" fill="#1a7f37" text-anchor="middle">Operation Unit</text>
+        <g fill="#fff" stroke="#1a7f37" stroke-width="1.2">
+          <rect x="482" y="96" width="188" height="34" rx="4"/>
+          <rect x="482" y="136" width="188" height="34" rx="4"/>
+          <rect x="482" y="176" width="188" height="34" rx="4"/>
+        </g>
+        <text x="576" y="118" font-size="11" font-weight="700" fill="#16202c" text-anchor="middle">CE — Contraction Engine</text>
+        <text x="576" y="158" font-size="11" font-weight="700" fill="#16202c" text-anchor="middle">VE — Vector Engine</text>
+        <text x="576" y="198" font-size="11" font-weight="700" fill="#16202c" text-anchor="middle">TE — Transpose Engine</text>
+
+        <rect x="706" y="54" width="130" height="170" rx="8" fill="#fdebd3" stroke="#b45409" stroke-width="1.8"/>
+        <text x="771" y="80" font-size="12.5" font-weight="700" fill="#b45409" text-anchor="middle">Commit Unit</text>
+        <text x="771" y="106" font-size="9.5" fill="#16202c" text-anchor="middle">결과를 다시</text>
+        <text x="771" y="120" font-size="9.5" fill="#16202c" text-anchor="middle">SRAM 에 쓴다</text>
+
+        <g stroke="#16202c" stroke-width="1.8">
+          <line x1="296" y1="139" x2="312" y2="139"/><polygon points="306,133 316,139 306,145" fill="#16202c"/>
+          <line x1="446" y1="139" x2="462" y2="139"/><polygon points="456,133 466,139 456,145" fill="#16202c"/>
+          <line x1="686" y1="139" x2="702" y2="139"/><polygon points="696,133 706,139 696,145" fill="#16202c"/>
+        </g>
+
+        <!-- 두 컨텍스트 -->
+        <rect x="146" y="266" width="690" height="52" rx="8" fill="#fff" stroke="#0b5fc0" stroke-width="1.6"/>
+        <text x="166" y="288" font-size="11.5" font-weight="700" fill="#083f80">slice 마다 실행 컨텍스트가 2개다</text>
+        <rect x="430" y="276" width="180" height="30" rx="5" fill="#fde8e8" stroke="#b4222a" stroke-width="1.4"/>
+        <text x="520" y="296" font-size="11" font-weight="700" fill="#b4222a" text-anchor="middle">main context</text>
+        <rect x="630" y="276" width="180" height="30" rx="5" fill="#e3eefb" stroke="#0b5fc0" stroke-width="1.4"/>
+        <text x="720" y="296" font-size="11" font-weight="700" fill="#0b5fc0" text-anchor="middle">sub context</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “4. slice (슬라이스) — TU 를 쪼갠 기본 연산 단위. SRAM + fetch unit + operation unit + commit unit 을 한 벌씩 가진다”</p>
+    <div class="cols">
+      <div><ul>
+        <li>논문 본문: <b>“each slice comprises of SRAM, fetch, operation, and commit units.”</b></li>
+        <li>slice 는 제어 레지스터로 설정되며 <b>독립적으로 (부분)텐서를 처리</b>할 수 있다.</li>
+      </ul></div>
+      <div><ul>
+        <li>fetch network 가 slice 들을 이어 <b>여러 slice 로 텐서를 멀티캐스트</b>한다. N개 slice 에서 읽어 퍼뜨리면 큰 SRAM 의 N개 뱅크를 읽는 것과 같아진다.</li>
+        <li>slice 마다 실행 컨텍스트가 둘(main / sub)이라 연산과 준비를 겹칠 수 있다(Fig. 4).</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ ⑤ operation unit ══════════════════════════ -->
+<div class="page">
+  <h1><span class="num">⑤</span>operation unit — slice 안의 연산기 3종</h1>
+  <p class="sub">CE (그 안에 DPE) · VE · TE</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 330" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <!-- CE -->
+        <rect x="14" y="14" width="380" height="300" rx="10" fill="#f4f8fd" stroke="#0b5fc0" stroke-width="2.2"/>
+        <text x="204" y="42" font-size="14.5" font-weight="700" fill="#083f80" text-anchor="middle">CE — Contraction Engine</text>
+        <text x="204" y="62" font-size="10.5" fill="#5b6b7b" text-anchor="middle">축약 엔진 — 곱해서 더한다</text>
+        <rect x="38" y="78" width="332" height="46" rx="6" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.4"/>
+        <text x="204" y="106" font-size="11.5" font-weight="700" fill="#083f80" text-anchor="middle">Feed Unit · Register File</text>
+        <rect x="38" y="134" width="332" height="96" rx="6" fill="#b8d4f3" stroke="#0b5fc0" stroke-width="1.8"/>
+        <text x="204" y="160" font-size="12.5" font-weight="700" fill="#083f80" text-anchor="middle">DPE — dot-product engine</text>
+        <text x="204" y="180" font-size="10" fill="#16202c" text-anchor="middle">내적 엔진. 곱셈-누산(MAC) 배열이 여기 있다</text>
+        <g fill="#083f80">
+          <rect x="70" y="192" width="16" height="16" rx="2"/><rect x="94" y="192" width="16" height="16" rx="2"/>
+          <rect x="118" y="192" width="16" height="16" rx="2"/><rect x="142" y="192" width="16" height="16" rx="2"/>
+          <rect x="166" y="192" width="16" height="16" rx="2"/><rect x="190" y="192" width="16" height="16" rx="2"/>
+          <rect x="214" y="192" width="16" height="16" rx="2"/><rect x="238" y="192" width="16" height="16" rx="2"/>
+          <rect x="262" y="192" width="16" height="16" rx="2"/><rect x="286" y="192" width="16" height="16" rx="2"/>
+          <rect x="310" y="192" width="16" height="16" rx="2"/>
+        </g>
+        <rect x="38" y="240" width="332" height="46" rx="6" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.4"/>
+        <text x="204" y="268" font-size="11.5" font-weight="700" fill="#083f80" text-anchor="middle">Accumulation Unit — 부분합 누적</text>
+        <text x="204" y="302" font-size="10" fill="#5b6b7b" text-anchor="middle">행렬곱·컨볼루션 등 축약 연산 담당</text>
+
+        <!-- VE -->
+        <rect x="406" y="14" width="284" height="300" rx="10" fill="#f3faf5" stroke="#1a7f37" stroke-width="2.2"/>
+        <text x="548" y="42" font-size="14.5" font-weight="700" fill="#1a7f37" text-anchor="middle">VE — Vector Engine</text>
+        <text x="548" y="62" font-size="10.5" fill="#5b6b7b" text-anchor="middle">벡터 엔진 — 원소 단위 연산</text>
+        <rect x="426" y="78" width="244" height="40" rx="6" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.4"/>
+        <text x="548" y="103" font-size="11.5" font-weight="700" fill="#1a7f37" text-anchor="middle">Router</text>
+        <rect x="426" y="128" width="116" height="94" rx="6" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.4"/>
+        <text x="484" y="152" font-size="11" font-weight="700" fill="#1a7f37" text-anchor="middle">ReduceUnit</text>
+        <text x="484" y="174" font-size="9.5" fill="#16202c" text-anchor="middle">Add · Min/Max</text>
+        <rect x="554" y="128" width="116" height="94" rx="6" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.4"/>
+        <text x="612" y="152" font-size="11" font-weight="700" fill="#1a7f37" text-anchor="middle">ArithmeticUnit</text>
+        <text x="612" y="174" font-size="9.5" fill="#16202c" text-anchor="middle">Int / Fp 클러스터</text>
+        <text x="612" y="190" font-size="9.5" fill="#16202c" text-anchor="middle">exp · cos · tanh</text>
+        <rect x="426" y="232" width="244" height="36" rx="6" fill="#fff" stroke="#1a7f37" stroke-width="1.2"/>
+        <text x="548" y="255" font-size="10.5" fill="#16202c" text-anchor="middle">VRF · 공간/시간 축약 · 타입 변환</text>
+        <text x="548" y="290" font-size="10" fill="#5b6b7b" text-anchor="middle">활성함수·정규화 등 비축약 연산</text>
+        <text x="548" y="306" font-size="10" font-weight="700" fill="#1a7f37" text-anchor="middle">PE 당 512 ways</text>
+
+        <!-- TE -->
+        <rect x="702" y="14" width="264" height="300" rx="10" fill="#fdf7f0" stroke="#b45409" stroke-width="2.2"/>
+        <text x="834" y="42" font-size="14.5" font-weight="700" fill="#b45409" text-anchor="middle">TE — Transpose Engine</text>
+        <text x="834" y="62" font-size="10.5" fill="#5b6b7b" text-anchor="middle">전치 엔진 — 축 순서를 바꾼다</text>
+        <g>
+          <rect x="740" y="92" width="80" height="80" rx="4" fill="#fdebd3" stroke="#b45409" stroke-width="1.4"/>
+          <text x="780" y="138" font-size="12" font-weight="700" fill="#b45409" text-anchor="middle">A</text>
+          <line x1="830" y1="132" x2="866" y2="132" stroke="#b45409" stroke-width="2"/>
+          <polygon points="860,126 872,132 860,138" fill="#b45409"/>
+          <rect x="880" y="92" width="80" height="80" rx="4" fill="#fdebd3" stroke="#b45409" stroke-width="1.4"/>
+          <text x="920" y="138" font-size="12" font-weight="700" fill="#b45409" text-anchor="middle">Aᵀ</text>
+        </g>
+        <text x="834" y="206" font-size="10.5" fill="#16202c" text-anchor="middle">행 우선 ↔ 열 우선 전환</text>
+        <text x="834" y="226" font-size="10.5" fill="#16202c" text-anchor="middle">축약 전후 데이터 배치를 맞춘다</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “5. operation unit (연산 유닛) — slice 안의 CE / VE / TE · CE = Contraction Engine (축약 엔진), 그 안에 DPE = dot-product engine (내적 엔진) · VE = Vector Engine (벡터 엔진), TE = Transpose Engine (전치 엔진)”</p>
+    <div class="key">논문 본문: <b>“the operation units, each of which consists of contraction (CE), vector (VE), and transpose (TE) engines.”</b> — 즉 operation unit 은 이 셋을 묶어 부르는 이름이지 별개의 부품이 아니다.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ 종합 ══════════════════════════ -->
+<div class="page">
+  <h1>5계층 한 장 정리 — 개수와 용량</h1>
+  <p class="sub">바깥에서 안으로 · 논문에 적힌 값만</p>
+  <div class="rule"></div>
+  <div class="art" style="height:78mm">
+    <svg viewBox="0 0 980 250" width="880">
+      <g font-family="Noto Sans CJK KR" text-anchor="middle">
+        <g>
+          <rect x="8" y="30" width="180" height="190" rx="9" fill="#eef4fc" stroke="#0b5fc0" stroke-width="2"/>
+          <text x="98" y="58" font-size="13.5" font-weight="700" fill="#083f80">① Chip / SoC</text>
+          <text x="98" y="86" font-size="11" fill="#16202c">1장</text>
+          <text x="98" y="112" font-size="10" fill="#5b6b7b">SRAM 256 MB</text>
+          <text x="98" y="130" font-size="10" fill="#5b6b7b">HBM3 48 GB</text>
+          <text x="98" y="148" font-size="10" fill="#5b6b7b">1.5 TB/s</text>
+          <text x="98" y="166" font-size="10" fill="#5b6b7b">150 W</text>
+          <text x="98" y="192" font-size="10" fill="#5b6b7b">512 TOPS(INT8)</text>
+        </g>
+        <g>
+          <rect x="204" y="30" width="180" height="190" rx="9" fill="#dcebf9" stroke="#0b5fc0" stroke-width="2"/>
+          <text x="294" y="58" font-size="13.5" font-weight="700" fill="#083f80">② PE</text>
+          <text x="294" y="86" font-size="11" fill="#16202c">칩당 <tspan font-weight="700">8개</tspan></text>
+          <text x="294" y="112" font-size="10" fill="#5b6b7b">CPU 코어 1</text>
+          <text x="294" y="130" font-size="10" fill="#5b6b7b">TU 1</text>
+          <text x="294" y="148" font-size="10" fill="#5b6b7b">TDMA 엔진</text>
+          <text x="294" y="166" font-size="10" fill="#5b6b7b">독립 주소 공간</text>
+          <text x="294" y="192" font-size="10" fill="#5b6b7b">↔ 256 GB/s</text>
+        </g>
+        <g>
+          <rect x="400" y="30" width="180" height="190" rx="9" fill="#cbe0f7" stroke="#0b5fc0" stroke-width="2"/>
+          <text x="490" y="58" font-size="13.5" font-weight="700" fill="#083f80">③ TU</text>
+          <text x="490" y="86" font-size="11" fill="#16202c">PE당 <tspan font-weight="700">1개</tspan></text>
+          <text x="490" y="112" font-size="10" fill="#5b6b7b">SRAM 32 MB</text>
+          <text x="490" y="130" font-size="10" fill="#5b6b7b">64 TOPS</text>
+          <text x="490" y="148" font-size="10" fill="#5b6b7b">slice 64+1</text>
+          <text x="490" y="166" font-size="10" fill="#5b6b7b">TU 컨트롤러</text>
+          <text x="490" y="192" font-size="10" fill="#5b6b7b">fetch network</text>
+        </g>
+        <g>
+          <rect x="596" y="30" width="180" height="190" rx="9" fill="#b8d4f3" stroke="#0b5fc0" stroke-width="2"/>
+          <text x="686" y="58" font-size="13.5" font-weight="700" fill="#083f80">④ slice</text>
+          <text x="686" y="86" font-size="11" fill="#16202c">TU당 <tspan font-weight="700">64+1개</tspan></text>
+          <text x="686" y="112" font-size="10" fill="#5b6b7b">SRAM(DM)</text>
+          <text x="686" y="130" font-size="10" fill="#5b6b7b">fetch unit</text>
+          <text x="686" y="148" font-size="10" fill="#5b6b7b">operation unit</text>
+          <text x="686" y="166" font-size="10" fill="#5b6b7b">commit unit</text>
+          <text x="686" y="192" font-size="10" fill="#5b6b7b">컨텍스트 2개</text>
+        </g>
+        <g>
+          <rect x="792" y="30" width="180" height="190" rx="9" fill="#a4c8f0" stroke="#0b5fc0" stroke-width="2"/>
+          <text x="882" y="58" font-size="13.5" font-weight="700" fill="#083f80">⑤ operation unit</text>
+          <text x="882" y="86" font-size="11" fill="#16202c">slice당 <tspan font-weight="700">1벌</tspan></text>
+          <text x="882" y="114" font-size="10.5" fill="#16202c">CE (안에 DPE)</text>
+          <text x="882" y="140" font-size="10.5" fill="#16202c">VE</text>
+          <text x="882" y="166" font-size="10.5" fill="#16202c">TE</text>
+        </g>
+        <g stroke="#0b5fc0" stroke-width="2" fill="#0b5fc0">
+          <line x1="188" y1="125" x2="200" y2="125"/><polygon points="196,119 206,125 196,131"/>
+          <line x1="384" y1="125" x2="396" y2="125"/><polygon points="392,119 402,125 392,131"/>
+          <line x1="580" y1="125" x2="592" y2="125"/><polygon points="588,119 598,125 588,131"/>
+          <line x1="776" y1="125" x2="788" y2="125"/><polygon points="784,119 794,125 784,131"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <table>
+      <tr><th>층</th><th>개수</th><th>담는 것</th><th>논문 근거</th></tr>
+      <tr><td>① Chip / SoC</td><td>—</td><td>PE 8 · NoC · HBM3 2스택 · PCIe Gen5</td><td>III 절, TABLE I, Fig. 2</td></tr>
+      <tr><td>② PE</td><td>칩당 8</td><td>CPU 코어 + TU + TDMA(+ Scratch Pad)</td><td>III-A, Fig. 3</td></tr>
+      <tr><td>③ TU</td><td>PE당 1</td><td>SRAM 32 MB · 64 TOPS · slice 64+1</td><td>III-B (“The TU includes 64+1 slices…”)</td></tr>
+      <tr><td>④ slice</td><td>TU당 64+1</td><td>SRAM + fetch + operation + commit</td><td>III-B, Fig. 4</td></tr>
+      <tr><td>⑤ operation unit</td><td>slice당 1벌</td><td>CE(DPE) · VE · TE</td><td>III-B, IV 절</td></tr>
+    </table>
+    <div class="key"><b>주의</b> — Fig. 3 캡션은 “…with eight slices” 라서 그림만 보면 slice 가 8개로 보인다. 본문이 말하는 실제 수는 <b>64+1</b> 이며, 그림은 가독성을 위해 줄여 그린 것이다.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ lowered shape ══════════════════════════ -->
+<div class="page">
+  <h1>소프트웨어 용어 ① — lowered shape (내려앉힌 형태)</h1>
+  <p class="sub">텐서를 <b>어느 축으로 어떻게 잘라 어느 slice 에 올릴지</b>를 적은 것</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 300" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <!-- 원본 텐서 -->
+        <text x="120" y="28" font-size="12.5" font-weight="700" fill="#16202c" text-anchor="middle">원본 텐서</text>
+        <g>
+          <polygon points="60,60 170,60 200,40 90,40" fill="#cbe0f7" stroke="#0b5fc0" stroke-width="1.5"/>
+          <polygon points="60,60 60,180 170,180 170,60" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.5"/>
+          <polygon points="170,60 200,40 200,160 170,180" fill="#b8d4f3" stroke="#0b5fc0" stroke-width="1.5"/>
+          <text x="115" y="126" font-size="13" font-weight="700" fill="#083f80" text-anchor="middle">b × l × e</text>
+        </g>
+        <text x="120" y="208" font-size="10.5" fill="#5b6b7b" text-anchor="middle">축이 3개인 큰 텐서</text>
+        <text x="120" y="224" font-size="10.5" fill="#5b6b7b" text-anchor="middle">한 slice 에 안 들어간다</text>
+
+        <line x1="220" y1="115" x2="278" y2="115" stroke="#16202c" stroke-width="2.2"/>
+        <polygon points="272,108 286,115 272,122" fill="#16202c"/>
+        <text x="253" y="102" font-size="10.5" fill="#16202c" text-anchor="middle">자른다</text>
+
+        <!-- slice 4개 -->
+        <text x="480" y="28" font-size="12.5" font-weight="700" fill="#16202c" text-anchor="middle">slice 4개에 나눠 올린 모습</text>
+        <g>
+          <rect x="300" y="44" width="82" height="150" rx="6" fill="#e3eefb" stroke="#0b5fc0" stroke-width="1.6"/>
+          <rect x="392" y="44" width="82" height="150" rx="6" fill="#fdebd3" stroke="#b45409" stroke-width="1.6"/>
+          <rect x="484" y="44" width="82" height="150" rx="6" fill="#e2f4e8" stroke="#1a7f37" stroke-width="1.6"/>
+          <rect x="576" y="44" width="82" height="150" rx="6" fill="#f3e8f6" stroke="#7a3d8c" stroke-width="1.6"/>
+        </g>
+        <g font-size="11" font-weight="700" text-anchor="middle">
+          <text x="341" y="66" fill="#083f80">slice 0</text><text x="433" y="66" fill="#b45409">slice 1</text>
+          <text x="525" y="66" fill="#1a7f37">slice 2</text><text x="617" y="66" fill="#7a3d8c">slice 3</text>
+        </g>
+        <g font-size="10" fill="#16202c" text-anchor="middle">
+          <text x="341" y="96">b 의 0..1</text><text x="433" y="96">b 의 0..1</text>
+          <text x="525" y="96">b 의 2..3</text><text x="617" y="96">b 의 2..3</text>
+          <text x="341" y="118">e 의 앞 절반</text><text x="433" y="118">e 의 뒤 절반</text>
+          <text x="525" y="118">e 의 앞 절반</text><text x="617" y="118">e 의 뒤 절반</text>
+        </g>
+        <g font-size="9.5" fill="#5b6b7b" text-anchor="middle">
+          <text x="341" y="150">l 은 통째로</text><text x="433" y="150">l 은 통째로</text>
+          <text x="525" y="150">l 은 통째로</text><text x="617" y="150">l 은 통째로</text>
+        </g>
+        <text x="480" y="214" font-size="10.5" fill="#5b6b7b" text-anchor="middle">
+          이것이 Fig. 1 (a) 의 예 — b 축을 2칸씩, e 축을 절반씩 나눈 배치
+        </text>
+
+        <!-- 표기 -->
+        <rect x="690" y="44" width="278" height="150" rx="8" fill="#0f1b2a"/>
+        <text x="829" y="70" font-size="11.5" font-weight="700" fill="#e6edf3" text-anchor="middle" font-family="Noto Sans Mono CJK KR">
+          논문의 표기법
+        </text>
+        <text x="829" y="104" font-size="14" fill="#e6edf3" text-anchor="middle" font-family="Noto Sans Mono CJK KR">
+          b²[2] e^(E/2)[2] │ b¹[2] l¹[4] e¹[E/2]
+        </text>
+        <line x1="710" y1="118" x2="948" y2="118" stroke="#5b6b7b" stroke-width="1"/>
+        <text x="829" y="140" font-size="10" fill="#9fb3c8" text-anchor="middle" font-family="Noto Sans CJK KR">
+          세로줄 │ 왼쪽 = slice 사이 분할
+        </text>
+        <text x="829" y="158" font-size="10" fill="#9fb3c8" text-anchor="middle" font-family="Noto Sans CJK KR">
+          오른쪽 = slice 안의 모양
+        </text>
+        <text x="829" y="180" font-size="10" fill="#9fb3c8" text-anchor="middle" font-family="Noto Sans CJK KR">
+          위첨자 = 보폭(stride), [ ] = 칸 수
+        </text>
+        <text x="829" y="214" font-size="10.5" fill="#5b6b7b" text-anchor="middle">정의는 논문 II-A 절에 있다</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “lowered shape (내려앉힌 형태) — 텐서를 어느 축으로 어떻게 잘라 어느 slice 에 올릴지를 적은 것”</p>
+    <div class="cols">
+      <div><ul>
+        <li>논문 용어로는 <b>“inter-slice partitioning shape │ intra-slice shape”</b>. 세로줄을 사이에 두고 왼쪽이 slice 사이 분할, 오른쪽이 slice 안 모양이다.</li>
+        <li>같은 텐서라도 <b>자르는 방법이 여러 가지</b>다. Fig. 1 은 같은 <code>b × l × e</code> 텐서의 세 가지 lowered shape 을 나란히 보여준다.</li>
+      </ul></div>
+      <div><ul>
+        <li>어떻게 자르냐에 따라 재사용 가능한 데이터와 필요한 전송량이 달라진다. 그래서 <b>성능이 여기서 갈린다.</b></li>
+        <li>컴파일러가 후보들을 탐색해 요구 성능·전력을 만족하는 것을 고른다.</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ tactic ══════════════════════════ -->
+<div class="page">
+  <h1>소프트웨어 용어 ② — tactic (택틱, 전술)</h1>
+  <p class="sub">축을 <b>바깥에서 안쪽으로 어떤 순서로 도는지</b>, 즉 루프 순서를 적은 것</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 300" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <!-- 중첩 루프 -->
+        <text x="250" y="26" font-size="12.5" font-weight="700" fill="#16202c" text-anchor="middle">tactic = 중첩 루프의 순서</text>
+        <rect x="40" y="40" width="420" height="230" rx="9" fill="#e3eefb" stroke="#0b5fc0" stroke-width="2"/>
+        <text x="250" y="64" font-size="12" font-weight="700" fill="#083f80" text-anchor="middle">가장 바깥 — e 축 (slice 4개에 병렬 배치)</text>
+        <rect x="70" y="76" width="360" height="182" rx="8" fill="#dcebf9" stroke="#0b5fc0" stroke-width="1.7"/>
+        <text x="250" y="100" font-size="11.5" font-weight="700" fill="#083f80" text-anchor="middle">b 축 반복</text>
+        <rect x="100" y="112" width="300" height="134" rx="7" fill="#cbe0f7" stroke="#0b5fc0" stroke-width="1.5"/>
+        <text x="250" y="136" font-size="11.5" font-weight="700" fill="#083f80" text-anchor="middle">l 축 반복</text>
+        <rect x="130" y="148" width="240" height="86" rx="6" fill="#b8d4f3" stroke="#0b5fc0" stroke-width="1.4"/>
+        <text x="250" y="172" font-size="11.5" font-weight="700" fill="#083f80" text-anchor="middle">f 축 반복</text>
+        <rect x="160" y="184" width="180" height="38" rx="5" fill="#fdebd3" stroke="#b45409" stroke-width="1.6"/>
+        <text x="250" y="208" font-size="11.5" font-weight="700" fill="#b45409" text-anchor="middle">가장 안쪽 — e 축 축약</text>
+
+        <!-- 화살표: 바깥→안쪽 -->
+        <line x1="486" y1="70" x2="486" y2="200" stroke="#16202c" stroke-width="2.2"/>
+        <polygon points="480,196 486,212 492,196" fill="#16202c"/>
+        <text x="524" y="86" font-size="10.5" fill="#16202c">바깥</text>
+        <text x="524" y="206" font-size="10.5" fill="#16202c">안쪽</text>
+
+        <!-- 표기 -->
+        <rect x="576" y="40" width="392" height="120" rx="8" fill="#0f1b2a"/>
+        <text x="772" y="66" font-size="11.5" font-weight="700" fill="#e6edf3" text-anchor="middle" font-family="Noto Sans Mono CJK KR">tactic 표기</text>
+        <text x="772" y="98" font-size="13" fill="#e6edf3" text-anchor="middle" font-family="Noto Sans Mono CJK KR">
+          e^(E/s)[s] │ b¹[B] l¹[L] f¹[F] e¹[E/s]
+        </text>
+        <text x="772" y="128" font-size="10" fill="#9fb3c8" text-anchor="middle">
+          왼쪽 첫 항 = 가장 바깥 루프 (slice 에 펼침)
+        </text>
+        <text x="772" y="146" font-size="10" fill="#9fb3c8" text-anchor="middle">
+          오른쪽 = 각 slice 가 도는 순서 (slice tactic)
+        </text>
+
+        <!-- 왜 중요한가 -->
+        <rect x="576" y="176" width="392" height="94" rx="8" fill="#fff7e6" stroke="#b45409" stroke-width="1.6"/>
+        <text x="772" y="200" font-size="11.5" font-weight="700" fill="#b45409" text-anchor="middle">순서가 곧 재사용이다</text>
+        <text x="772" y="224" font-size="10.5" fill="#16202c" text-anchor="middle">f 축이 안쪽에 있으면, 그 안에서</text>
+        <text x="772" y="242" font-size="10.5" fill="#16202c" text-anchor="middle">한 번 가져온 데이터를 F 번 다시 쓴다</text>
+        <text x="772" y="262" font-size="10.5" fill="#16202c" text-anchor="middle">→ 같은 계산인데 전송량이 달라진다</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “tactic (택틱, 전술) — 축을 바깥에서 안쪽으로 어떤 순서로 도는지, 즉 루프 순서를 적은 것”</p>
+    <div class="cols">
+      <div><ul>
+        <li>논문 정의: <b>“A tactic for contraction describes the order of computing axes, from the outermost to the innermost.”</b></li>
+        <li>가장 바깥 항은 <b>slice 에 공간적으로 펼치는</b> 축이고, 나머지는 각 slice 안에서 시간적으로 도는 순서다.</li>
+      </ul></div>
+      <div><ul>
+        <li>lowered shape 이 같아도 tactic 이 다르면 성능이 달라진다. Fig. 8 이 같은 축약 <code>ble,ef</code> 에 대해 세 가지 조합을 비교한다.</li>
+        <li>컴파일러가 이 설계 공간을 탐색한다. 그래서 tactic 은 <b>사람이 고르거나 컴파일러가 고르는 선택지</b>다.</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ 둘의 관계 ══════════════════════════ -->
+<div class="page">
+  <h1>lowered shape 과 tactic 은 짝이다</h1>
+  <p class="sub">하나는 <b>어디에 놓을지</b>, 다른 하나는 <b>어떤 순서로 돌지</b>를 정한다</p>
+  <div class="rule"></div>
+  <div class="art">
+    <svg viewBox="0 0 980 280" width="960">
+      <g font-family="Noto Sans CJK KR">
+        <rect x="30" y="20" width="380" height="110" rx="9" fill="#e3eefb" stroke="#0b5fc0" stroke-width="2"/>
+        <text x="220" y="48" font-size="14" font-weight="700" fill="#083f80" text-anchor="middle">lowered shape</text>
+        <text x="220" y="72" font-size="11" fill="#16202c" text-anchor="middle">공간 — 어느 축을 어떻게 잘라</text>
+        <text x="220" y="92" font-size="11" fill="#16202c" text-anchor="middle">어느 slice 에 올릴 것인가</text>
+        <text x="220" y="116" font-size="10" fill="#5b6b7b" text-anchor="middle">데이터의 배치를 정한다</text>
+
+        <rect x="30" y="150" width="380" height="110" rx="9" fill="#fdebd3" stroke="#b45409" stroke-width="2"/>
+        <text x="220" y="178" font-size="14" font-weight="700" fill="#b45409" text-anchor="middle">tactic</text>
+        <text x="220" y="202" font-size="11" fill="#16202c" text-anchor="middle">시간 — 그 배치 위에서</text>
+        <text x="220" y="222" font-size="11" fill="#16202c" text-anchor="middle">축을 어떤 순서로 돌 것인가</text>
+        <text x="220" y="246" font-size="10" fill="#5b6b7b" text-anchor="middle">계산의 순서를 정한다</text>
+
+        <g stroke="#16202c" stroke-width="2.2" fill="#16202c">
+          <line x1="416" y1="75" x2="470" y2="118"/><polygon points="464,111 478,124 466,124"/>
+          <line x1="416" y1="205" x2="470" y2="162"/><polygon points="464,169 478,156 466,156"/>
+        </g>
+
+        <rect x="486" y="76" width="230" height="128" rx="9" fill="#e2f4e8" stroke="#1a7f37" stroke-width="2"/>
+        <text x="601" y="104" font-size="13.5" font-weight="700" fill="#1a7f37" text-anchor="middle">둘이 합쳐져야</text>
+        <text x="601" y="128" font-size="13.5" font-weight="700" fill="#1a7f37" text-anchor="middle">실행 계획이 된다</text>
+        <text x="601" y="158" font-size="10.5" fill="#16202c" text-anchor="middle">같은 연산이라도 조합에 따라</text>
+        <text x="601" y="176" font-size="10.5" fill="#16202c" text-anchor="middle">전송량·재사용·활용률이 달라진다</text>
+
+        <line x1="722" y1="140" x2="770" y2="140" stroke="#1a7f37" stroke-width="2.2"/>
+        <polygon points="764,133 778,140 764,147" fill="#1a7f37"/>
+
+        <rect x="786" y="60" width="164" height="160" rx="9" fill="#fff" stroke="#083f80" stroke-width="2"/>
+        <text x="868" y="88" font-size="12.5" font-weight="700" fill="#083f80" text-anchor="middle">컴파일러가</text>
+        <text x="868" y="110" font-size="12.5" font-weight="700" fill="#083f80" text-anchor="middle">이 공간을 탐색</text>
+        <text x="868" y="140" font-size="10" fill="#5b6b7b" text-anchor="middle">텐서 모양 + 루프 순서</text>
+        <text x="868" y="158" font-size="10" fill="#5b6b7b" text-anchor="middle">+ 하드웨어 구조를</text>
+        <text x="868" y="176" font-size="10" fill="#5b6b7b" text-anchor="middle">함께 고려한다</text>
+        <text x="868" y="202" font-size="10" fill="#5b6b7b" text-anchor="middle">(초록·V 절)</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <p class="quote"><b>슬라이드 원문</b> — “서론에는 이 용어들이 정의 없이 먼저 등장한다. 정의는 II절에 있다”</p>
+    <div class="cols">
+      <div><ul>
+        <li>서론(I 절)은 <code>lowered shape</code>·<code>tactic</code> 을 설명 없이 쓴다. 처음 읽으면 여기서 막힌다.</li>
+        <li><b>정의는 II. PRELIMINARIES 에 있다</b> — II-A 가 lowered shape, II-B 가 tactic 이다.</li>
+      </ul></div>
+      <div><ul>
+        <li>그래서 이 논문은 <b>II 절을 먼저 읽고 I 절로 돌아오는</b> 편이 빠르다.</li>
+        <li>V 절(프로그래밍 인터페이스)과 VI 절(LLaMA-2 사례)은 이 두 용어 위에서만 읽힌다.</li>
+      </ul></div>
+    </div>
+  </div>
+</div>
