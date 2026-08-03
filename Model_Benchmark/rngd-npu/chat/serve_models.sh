@@ -1,60 +1,92 @@
 #!/usr/bin/env bash
-# RNGD NPU 채팅용 모델 서버 — 벤치한 9개 모델을 카드 예산(npu:0~3, 4장) 안에서 serve.
-# chat_app.py 의 MODELS 포트와 일치해야 한다.
+# RNGD NPU 채팅용 모델 서버 — chat_app.py 의 CATALOG 와 같은 키·포트·파서를 쓴다.
+# (chat UI 를 안 띄우고 백엔드만 손으로 올릴 때 쓰는 헬퍼. UI 는 스스로 serve 를 띄운다.)
 #
-# 카드 예산: 모델 1개 = tp8이면 카드 1장, tp32면 카드 4장 전부. 그래서 동시에는
-#   - tp8 모델 최대 4개 (npu:0~3에 하나씩)
-#   - 또는 tp32 모델 1개 (4장 독점 — tp8과 같이 못 띄움)
+# 2026-08-04 갱신: 옛 카탈로그가 가리키던 rngd-npu/artifacts 는 비어 있어 전부 死경로였다.
+# 지금은 실재하는 두 갈래를 쓴다.
+#   · 로컬 legacy(v2) tp8 아티팩트 = /mnt/nvme2n1p1/models/artifacts   (2026-07-29 빌드, 8종)
+#     tp8 이라 serve 때 `-pp` 로 층을 쪼갤 수 있다 = pp 커스텀 가능.
+#   · furiosa-ai 프리빌트 저장소   = HF_HUB_CACHE(/mnt/nvme2n1p1/models/hf/hub)  (15종)
+#     대부분 tp32(4장 독점). FXB 번들은 `-pp` 를 런타임이 거부하므로 여기선 안 준다.
+#
+# 카드 예산(4장): 한 모델이 쓰는 카드 수 = tp32 면 4, tp8 이면 dp×pp.
+#   - tp8 모델은 합쳐서 4장까지 동시에
+#   - tp32 모델은 1개만(4장 독점)
 #
 # 사용:
-#   ./serve_models.sh                    # 기본: 3종(coder7·coder14·qwen3-32b, tp8)을 빈 카드에 동시 serve
-#   ./serve_models.sh 2                  # 기본 세트에서 가벼운 N개만
-#   ./serve_models.sh coder7 coder14     # 고른 tp8 모델만 (빈 카드에 자동 배정)
-#   ./serve_models.sh exaone-32b         # tp32 대형 모델 1개 (4장 전부)
-#   ./serve_models.sh list               # 등록된 모델 키 보기
-#   ./serve_models.sh stop               # 전부 종료
+#   ./serve_models.sh                  # 기본 세트(가벼운 tp8 3종)를 빈 카드에 동시 serve
+#   ./serve_models.sh 2                # 기본 세트에서 앞 N개만
+#   ./serve_models.sh a3b qwen3-32b    # 고른 모델만 (빈 카드에 자동 배정)
+#   ./serve_models.sh hub-gpt-oss-120b # tp32 프리빌트 1개 (4장 전부)
+#   ./serve_models.sh list             # 등록된 모델 키 보기
+#   ./serve_models.sh stop             # 전부 종료
 #
 # 로그: chat/serve_logs/<port>.log  ·  서버 준비되면 "Uvicorn running" 출력됨.
 set -u
-A=~/RNGD-proj/Model_Benchmark/rngd-npu/artifacts
+ART="${CHAT_ARTIFACTS:-/mnt/nvme2n1p1/models/artifacts}"
+export HF_HUB_CACHE="${HF_HUB_CACHE:-/mnt/nvme2n1p1/models/hf/hub}"
 LOGDIR=~/RNGD-proj/Model_Benchmark/rngd-npu/chat/serve_logs
 mkdir -p "$LOGDIR"
+# serve 바이너리(venv 가 깨졌을 때 FURIOSA_LLM_BIN 으로 다른 venv 를 쓸 수 있게).
 source ~/furiosa/bin/activate 2>/dev/null
+FURIOSA_LLM="${FURIOSA_LLM_BIN:-furiosa-llm}"
 
-# 모델 카탈로그:  키 = "포트|tp|아티팩트경로|추가 serve 인자"
-#   tp = 8(카드 1장) 또는 32(카드 4장 전부). 포트는 chat_app.py 의 MODELS 와 일치해야 함.
-# coder1.5(Qwen2.5-Coder-1.5B)는 furiosa-llm 2026.2.0이 출력 깨지게 컴파일해 제외(info/README_build.md 8.2).
+# 모델 카탈로그:  키 = "포트|카드수|아티팩트|추가 serve 인자"
+#   카드수 = 이 구성이 점유할 NPU 카드 수(tp32=4, tp8 은 pp 값).
+#   아티팩트 = 로컬 절대경로 또는 furiosa-ai/... HF 저장소 ID(캐시에서 해석, 없으면 다운로드).
+#   추가 인자 = 파서 + 필요한 -pp. 파서 근거는 legacy_moe_build/README.md §0.5 와 라우터 REGISTRY.
+#
+# ⚠️ 2026.3.0 이 받는 tool 파서는 constants.py:TOOL_PARSER_NAMES 에 하드코딩된
+#    {hermes, llama3_json, llama4_json, openai, solar_open} 뿐이다(2026-08-04 실측).
+#    Qwen3-Coder 전용 qwen3_coder 는 목록에 없어서 주면 serve 가 즉시 죽는다 →
+#    coder·coder-bf16·hub-coder 는 파서 없이(채팅 전용) 띄운다.
 declare -A CAT=(
-  [coder7]="8002|8|$A/qwen2.5-coder-7b-inst-tp8|"
-  [coder14]="8003|8|$A/qwen2.5-coder-14b-inst-tp8|"
-  [coder14-base]="8007|8|$A/qwen2.5-coder-14b-tp8|"
-  # Coder-32B(bf16 62G)은 1장에 안 들어가 pp2(2장 레이어분할)로 띄운다. tp 필드 16 = "카드 2장".
-  # 실측(2026-06-18): pp2 면 per-card 29.7/31.4G(벽 ~32G 아래) → 정상. chat UI 는 pp_fixed=2 로 자동 2장.
-  [coder32]="8001|16|$A/qwen2.5-coder-32b-inst-tp8|-pp 2"
-  [qwen3-32b]="8004|8|$A/qwen3-32b-fp8-tp8|--reasoning-parser qwen3"
-  [qwen3-32b-16k]="8005|8|$A/qwen3-32b-fp8-tp8-16k|--reasoning-parser qwen3"
-  # Qwen3-Coder-30B-A3B (MoE, max-model-len 65536). a3b-fp8 은 masquerade 로 FP8 MoE serve 부활(30G, 1장 OK).
-  # a3b(bf16)은 58G > 1장 47.5G → 1장이면 OOM. 2장 레이어분할로 띄우려면 serve 때 -pp 2 를 직접 추가.
-  [a3b-fp8]="8000|8|$A/qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc|"
-  [a3b]="8006|8|$A/qwen3-coder-30b-a3b-inst-tp8-65k-tc|"
-  # Qwen2.5-72B-Instruct (bf16 136G) — ❌ 2026.2.0서 serve 불가(비활성, 2026-06-17 실측).
-  # pp4(4칩)+큰 per-stage 가중치 바인딩이 NPU 드라이버 raw 에러(-1803550720)로 실패. OOM/KV 아님.
-  # 진짜 벽=per-card 가중치 ~32G 초과. 살리려면 FP8 양자화 후 -pp 4(18G/장). (해제 전 README §3·info/README_build.md)
-  # [qwen72b]="8008|32|$A/qwen2.5-72b-inst-tp8|-pp 4"
-  [exaone-32b]="8011|32|$A/exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31|--reasoning-parser exaone4"
-  [llama-70b]="8012|32|$A/llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440|--tool-call-parser llama3_json"
-  [qwen3-32b-tp32]="8013|32|$A/qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2|--reasoning-parser qwen3"
-)
+  # ── 로컬 tp8 아티팩트 (pp 커스텀 가능) ────────────────────────────────
+  # 총 컨텍스트 262144 여도 kv_heads=4 계열은 프롬프트가 65,408 까지만 된다(README §0.8).
+  [coder]="8000|2|$ART/coder-tp8|-pp 2"
+  # bf16 56.9G — pp2 는 장당 28.5G 로 검증 상한(29.7G) 턱밑이라 README §4.1 권고대로 pp4.
+  [coder-bf16]="8001|4|$ART/coder-bf16-tp8|-pp 4"
+  [a3b-inst-2507]="8002|2|$ART/a3b-inst-2507-tp8|--enable-auto-tool-choice --tool-call-parser hermes -pp 2"
+  [a3b-think-2507]="8003|2|$ART/a3b-think-2507-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3 -pp 2"
+  [a3b]="8004|1|$ART/a3b-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  [qwen3-32b]="8005|1|$ART/qwen3-32b-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  # 가중치 30.8G + KV 256KiB/token — 131072 를 다 쓰면 1장을 넘어 pp2.
+  [exaone4]="8006|2|$ART/exaone4-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser exaone4 -pp 2"
+  [llama31-8b]="8007|1|$ART/llama31-8b-tp8|--enable-auto-tool-choice --tool-call-parser llama3_json"
 
-DEFAULT_SET=(coder7 coder14 qwen3-32b)   # 기본 3종(tp8, 가벼운 것부터)
+  # ── furiosa-ai 프리빌트 (tp32 = 4장 독점) ─────────────────────────────
+  [hub-gpt-oss-120b]="8010|4|furiosa-ai/gpt-oss-120b|--enable-auto-tool-choice --tool-call-parser openai"
+  [hub-solar-100b]="8011|4|furiosa-ai/Solar-Open-100B-NVFP4A16|--enable-auto-tool-choice --tool-call-parser solar_open --reasoning-parser solar_open"
+  [hub-llama-70b]="8012|4|furiosa-ai/Llama-3.3-70B-Instruct|--enable-auto-tool-choice --tool-call-parser llama3_json"
+  [hub-qwen3-32b]="8013|4|furiosa-ai/Qwen3-32B-FP8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  [hub-exaone4]="8014|4|furiosa-ai/EXAONE-4.0-32B-FP8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser exaone4"
+  [hub-kexaone-236b]="8015|4|furiosa-ai/K-EXAONE-236B-A23B-NVFP4A16|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser deepseek_v3 --default-chat-template-kwargs {\"enable_thinking\":true}"
+  [hub-a3b-inst-2507]="8016|4|furiosa-ai/Qwen3-30B-A3B-Instruct-2507-FP8|--enable-auto-tool-choice --tool-call-parser hermes"
+  [hub-a3b-think-2507]="8017|4|furiosa-ai/Qwen3-30B-A3B-Thinking-2507-FP8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  [hub-a3b]="8018|4|furiosa-ai/Qwen3-30B-A3B-FP8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  [hub-coder]="8019|4|furiosa-ai/Qwen3-Coder-30B-A3B-Instruct-FP8|"
+  [hub-qwen3-vl-32b]="8020|4|furiosa-ai/Qwen3-VL-32B-Instruct|--enable-auto-tool-choice --tool-call-parser hermes"
+
+  # ── furiosa-ai 프리빌트 중 1장짜리 ────────────────────────────────────
+  [hub-llama31-8b]="8021|1|furiosa-ai/Llama-3.1-8B-Instruct|--enable-auto-tool-choice --tool-call-parser llama3_json"
+  # Qwen3-8B/4B 는 FXB 번들이라 -pp 를 주면 PanicException 으로 죽는다 — 주지 않는다.
+  [hub-qwen3-8b]="8022|1|furiosa-ai/Qwen3-8B-FP8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  [hub-qwen3-4b]="8023|1|furiosa-ai/Qwen3-4B-FP8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  # tp4 — 카드 하나의 앞 4 PE 만 쓴다(아래 PE 목록으로 devices 를 npu:X:0-3 으로 만든다).
+  [hub-qwen2.5-0.5b]="8024|1|furiosa-ai/Qwen2.5-0.5B-Instruct|--enable-auto-tool-choice --tool-call-parser hermes"
+)
+# tp<8 아티팩트 — 카드를 통째로 주면 안 되고 앞 N PE 만 준다.
+declare -A PE=( [hub-qwen2.5-0.5b]=4 )
+
+DEFAULT_SET=(llama31-8b a3b qwen3-32b)   # 기본 3종 — 전부 tp8·pp1 이라 1장씩, 합쳐서 3장
 
 case "${1:-}" in
   stop) pkill -f "furiosa-llm serve" && echo "모든 serve 종료" || echo "실행 중인 serve 없음"; exit 0 ;;
   list)
-    echo "등록된 모델 키 (포트 / tp / 아티팩트):"
+    echo "등록된 모델 키 (포트 / 카드 / 아티팩트):"
     for k in "${!CAT[@]}"; do
-      IFS='|' read -r P T ART _ <<< "${CAT[$k]}"
-      printf "  %-16s :%s  tp%-2s  %s\n" "$k" "$P" "$T" "$(basename "${ART%%/snapshots*}")"
+      IFS='|' read -r P C A _ <<< "${CAT[$k]}"
+      printf "  %-20s :%s  %s장  %s\n" "$k" "$P" "$C" "$(basename "$A")"
     done | sort
     echo "기본 세트: ${DEFAULT_SET[*]}"
     exit 0 ;;
@@ -69,42 +101,43 @@ else
   SEL=("$@")
 fi
 
-# 키 유효성 + tp32 단독 검사
-NEED32=0
+# 키 유효성 + 카드 예산 검사(요청한 것들의 카드 합이 4장을 넘으면 거절).
+TOTAL=0
 for k in "${SEL[@]}"; do
   [ -n "${CAT[$k]:-}" ] || { echo "✗ 모르는 모델 키: $k   (./serve_models.sh list 로 확인)"; exit 1; }
-  IFS='|' read -r _ T _ _ <<< "${CAT[$k]}"
-  [ "$T" = "32" ] && NEED32=1
+  IFS='|' read -r _ C _ _ <<< "${CAT[$k]}"
+  TOTAL=$((TOTAL + C))
 done
-if [ "$NEED32" = "1" ] && [ "${#SEL[@]}" -gt 1 ]; then
-  echo "✗ tp32 모델은 카드 4장을 모두 써서 단독으로만 띄울 수 있습니다. 하나만 지정하세요."
-  exit 1
-fi
-if [ "$NEED32" = "0" ] && [ "${#SEL[@]}" -gt 4 ]; then
-  echo "✗ tp8 모델은 카드가 4장뿐이라 동시에 최대 4개입니다(요청 ${#SEL[@]}개). 줄여서 지정하세요."
+if [ "$TOTAL" -gt 4 ]; then
+  echo "✗ 카드가 4장뿐인데 요청한 구성은 ${TOTAL}장입니다. 줄여서 지정하세요."
+  echo "  (tp32 프리빌트는 4장을 독점하므로 단독으로만 띄울 수 있습니다.)"
   exit 1
 fi
 
-# 빈 카드 풀에서 tp8은 1장씩 배정, tp32는 4장 전부.
+# 빈 카드 풀에서 필요한 장수만큼 순서대로 배정.
 FREE=(0 1 2 3)
 for k in "${SEL[@]}"; do
-  IFS='|' read -r PORT T ART EXTRA <<< "${CAT[$k]}"
-  if [ ! -f "$ART/artifact.json" ]; then echo "⏭  skip $k — artifact 없음: $ART"; continue; fi
+  IFS='|' read -r PORT CARDS A EXTRA <<< "${CAT[$k]}"
+  # 로컬 아티팩트만 미리 확인한다. 프리빌트는 저장소 ID 라 파일이 아니고, 없으면 serve 가 받아온다.
+  case "$A" in
+    /*) [ -f "$A/artifact.json" ] || { echo "⏭  skip $k — artifact 없음: $A"; continue; } ;;
+  esac
   if pgrep -f "furiosa-llm serve.*--port $PORT" >/dev/null 2>&1; then echo "✔  $k 포트 $PORT 이미 실행 중"; continue; fi
-  if [ "$T" = "32" ]; then
-    DEV="npu:0,npu:1,npu:2,npu:3"
-  elif [ "$T" = "16" ]; then
-    if [ "${#FREE[@]}" -lt 2 ]; then echo "✗ 빈 카드 2장 필요(pp2: $k 는 62G라 2장 분할)"; exit 1; fi
-    DEV="npu:${FREE[0]},npu:${FREE[1]}"; FREE=("${FREE[@]:2}")
+  if [ "${#FREE[@]}" -lt "$CARDS" ]; then echo "✗ 빈 카드 ${CARDS}장 필요 — $k 건너뜀 (남은 ${#FREE[@]}장)"; continue; fi
+  pe="${PE[$k]:-8}"
+  if [ "$pe" -lt 8 ]; then
+    DEV="npu:${FREE[0]}:0-$((pe - 1))"
   else
-    if [ "${#FREE[@]}" -eq 0 ]; then echo "✗ 빈 카드 없음 — tp8 모델은 동시 최대 4개입니다."; exit 1; fi
-    DEV="npu:${FREE[0]}"; FREE=("${FREE[@]:1}")
+    DEV=""
+    for c in "${FREE[@]:0:$CARDS}"; do DEV="${DEV:+$DEV,}npu:$c"; done
   fi
-  echo "▶  $k ($DEV) → :$PORT   $(basename "${ART%%/snapshots*}")"
-  nohup furiosa-llm serve "$ART" --devices "$DEV" --host 0.0.0.0 --port "$PORT" \
+  FREE=("${FREE[@]:$CARDS}")
+  echo "▶  $k ($DEV) → :$PORT   $(basename "$A")"
+  # shellcheck disable=SC2086  # EXTRA 는 여러 인자로 쪼개져야 한다
+  nohup "$FURIOSA_LLM" serve "$A" --devices "$DEV" --host 0.0.0.0 --port "$PORT" \
         --enable-prefix-caching $EXTRA > "$LOGDIR/$PORT.log" 2>&1 &
 done
 
 echo
 echo "준비 확인:  tail -f $LOGDIR/<port>.log  →  'Uvicorn running' 뜨면 OK"
-echo "채팅 UI:    cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat && .venv/bin/python chat_app.py"
+echo "채팅 UI:    cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat && ./run.sh start"
