@@ -122,10 +122,13 @@ CATALOG = {
     "coder":            dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp8", port=8000, kind="tp8",
                              src="art", sub="coder-tp8", ctx=262144, prompt_max=65408,
                              pp_min=2, tool=None, reasoning=None),
-    # bf16 56.9G — pp2 면 장당 28.5G 로 검증구간(29.7G) 턱밑이라 README §4.1 권고대로 pp4 기본.
+    # bf16 56.9G. pp4 실측 분할은 13.5/14.1/14.1/15.8 GiB → pp2 면 27.6/29.9 GiB.
+    # 예전 pp2 상한(29.7G) 턱밑이라 한동안 pp4 로 강제했으나, 2026-08-04 에 pp2 로 실제 기동해
+    # 정상 동작을 확인하고 기본을 pp2 로 내렸다(카드 2장만 쓰므로 다른 모델과 같이 띄울 수 있다).
+    # 최대 컨텍스트(262144)로 길게 쓰면 KV 가 장당 12 GiB 라 빠듯하니, 그때는 UI 에서 pp4 를 고를 것.
     "coder-bf16":       dict(name="Qwen3-Coder-30B-A3B-Inst bf16 tp8", port=8001, kind="tp8",
                              src="art", sub="coder-bf16-tp8", ctx=262144, prompt_max=65408,
-                             pp_min=4, tool=None, reasoning=None),
+                             pp_min=2, tool=None, reasoning=None),
     "a3b-inst-2507":    dict(name="Qwen3-30B-A3B-Instruct-2507-FP8 tp8", port=8002, kind="tp8",
                              src="art", sub="a3b-inst-2507-tp8", ctx=262144, prompt_max=65408,
                              pp_min=2, tool="hermes", reasoning=None),
@@ -257,10 +260,16 @@ def _parser_flags(m):
 
 def _pp_choices(m):
     """이 모델에서 고를 수 있는 pp 목록. FXB 아티팩트는 pp 자체가 거부되고(no_pp),
-    pe<8(부분 카드) 모델도 쪼갤 대상이 아니라 1 뿐이다. 그 밖엔 pp_min 이상 4 까지."""
+    pe<8(부분 카드) 모델도 쪼갤 대상이 아니라 1 뿐이다. 그 밖엔 pp_min 이상 4 까지.
+
+    pp=3 도 넣는다. 한때 라우터의 (1,2,4) 를 그대로 가져와 3 을 뺐었는데 근거가 없었다 —
+    이 UI 는 원래 [1,2,3,4] 를 주고 있었고, 런타임도 `-pp 3` 을 받는다(2026-08-04 실측:
+    serve 로그에 `Parallelism Config: tp=8, pp=3, dp=1`). 다만 카드 4장에서 pp3 은 dp=1
+    고정이고 한 장이 놀게 된다(3장 점유). 2 로 안 들어가는 모델을 4장까지 안 쓰고 올릴 때 쓴다.
+    (pp3 로 끝까지 로드해 생성까지 확인한 실측은 아직 없다 — 카드가 비면 확인할 것.)"""
     if m.get("no_pp") or m.get("pe", 8) < 8:
         return [1]
-    return [n for n in (1, 2, 4) if n >= m.get("pp_min", 1)] or [1]
+    return [n for n in (1, 2, 3, 4) if n >= m.get("pp_min", 1)] or [1]
 
 
 def _serve_env():
