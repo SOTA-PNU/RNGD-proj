@@ -260,10 +260,16 @@ def _parser_flags(m):
 
 def _pp_choices(m):
     """이 모델에서 고를 수 있는 pp 목록. FXB 아티팩트는 pp 자체가 거부되고(no_pp),
-    pe<8(부분 카드) 모델도 쪼갤 대상이 아니라 1 뿐이다. 그 밖엔 pp_min 이상 4 까지."""
+    pe<8(부분 카드) 모델도 쪼갤 대상이 아니라 1 뿐이다. 그 밖엔 pp_min 이상 4 까지.
+
+    pp=3 도 넣는다. 한때 라우터의 (1,2,4) 를 그대로 가져와 3 을 뺐었는데 근거가 없었다 —
+    이 UI 는 원래 [1,2,3,4] 를 주고 있었고, 런타임도 `-pp 3` 을 받는다(2026-08-04 실측:
+    serve 로그에 `Parallelism Config: tp=8, pp=3, dp=1`). 다만 카드 4장에서 pp3 은 dp=1
+    고정이고 한 장이 놀게 된다(3장 점유). 2 로 안 들어가는 모델을 4장까지 안 쓰고 올릴 때 쓴다.
+    (pp3 로 끝까지 로드해 생성까지 확인한 실측은 아직 없다 — 카드가 비면 확인할 것.)"""
     if m.get("no_pp") or m.get("pe", 8) < 8:
         return [1]
-    return [n for n in (1, 2, 4) if n >= m.get("pp_min", 1)] or [1]
+    return [n for n in (1, 2, 3, 4) if n >= m.get("pp_min", 1)] or [1]
 
 
 def _serve_env():
