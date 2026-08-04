@@ -126,11 +126,33 @@ alpacon tunnel furiosa-npu-e6ec40 -l 7860 -r 7860
 ### 1-3. 종료
 
 ```bash
-./serve_models.sh stop      # 모델 서버 전부 종료 (NPU 비움)
-./run.sh stop               # gradio UI 종료 (쓰던 경우)
+./run.sh stop            # UI 만 종료 — 백엔드 serve 는 살려 둠(카드 계속 점유)
+./run.sh stop --all      # UI + 백엔드까지 종료 → NPU 카드 반납
+./run.sh status          # UI·백엔드·라우터·카드 점유를 한 번에 확인
 ```
 
+**`./run.sh stop` 이 백엔드를 안 죽이는 건 의도된 동작입니다.** `chat_app.py` 는 `furiosa-llm serve`
+를 `start_new_session=True` 로 분리 기동하므로, UI 를 껐다 켜도 이미 올라간 모델에 그대로 다시
+붙습니다(`_discover`). 모델 로딩이 수십 분 걸리기 때문에(262K 컨텍스트 pp2 는 50분을 넘긴 적도
+있음) 기본값을 "살려 두기"로 둔 것입니다. **카드를 비우려면 `--all` 을 붙이세요.**
+
+> 뭐가 카드를 잡고 있는지 헷갈리면 `./run.sh status` 를 보세요. UI/백엔드/라우터와 카드별
+> 메모리 점유가 한 번에 나옵니다.
+
+**furio 라우터(`:8400`)는 별개 서비스라 `run.sh` 가 건드리지 않습니다.** 팀원들이 쓰고 있을 수
+있어서 일부러 남깁니다. 내리려면:
+
+```bash
+bash ../coding-agent/serve-router.sh stop
+```
+
+> ⚠️ **라우터와 chat UI 를 동시에 켜 두지 마세요.** 둘 다 같은 카드 4장을 스스로 스케줄링하는데,
+> `chat_app` 은 자기 `CATALOG` 포트의 백엔드만 점유로 인식하므로 라우터 백엔드(`:8410+`)가 쓰는
+> 카드를 못 봅니다 → 같은 카드를 이중 배정할 수 있습니다. `run.sh start`/`status` 가 이 상황을
+> 감지하면 경고를 띄웁니다.
+
 > Continue 로 계속 쓸 거면 **모델 서버는 켜두세요** — 끄면 Continue 도 답을 못 받습니다.
+> (`./serve_models.sh stop` 은 백엔드만 따로 내릴 때 씁니다.)
 
 ---
 
