@@ -18,9 +18,25 @@ furiosa-llm 2026.2.0 의 serve 런타임은 `artifact.json` 의
     말 것 — 런타임이 hf_configs 기준으로 캐시 shape 를 검증/할당하므로 실제
     컴파일된 그래프와 일치해야 함.
   - 원본 아티팩트는 건드리지 않고 사본을 위장하는 것을 권장(--copy).
+    (--in-place 여도 artifact.json.orig-<원래타입> 백업을 자동으로 남긴다.)
   - 검증된 사례: qwen3_moe(FP8) → qwen3 위장으로 Qwen3-Coder-30B-A3B-Instruct-FP8
     serve 부활(2026-06-10, 62.7 tok/s 단일 카드). dense qwen3 스케줄러 preset 으로
     MoE 그래프를 구동 — 짧은 생성에서 정상 확인. 장문맥·고동시성은 추가 검증 권장.
+
+**2026.3.0 에서도 게이트는 그대로다** (2026-08-04 실측 — legacy_moe_build/README §6 의
+"미실측" 항목 해소). 직접 빌드한 tp8 v2 아티팩트 `coder-tp8` 을 그대로 serve 하면:
+
+    pyo3_runtime.PanicException: Unsupported model metadata: ModelMetadata {
+        model_type: Some(Qwen3Moe), ...
+        quantization_config: Some(QuantizationConfig { weight: FP8, ... }) }
+
+즉 **qwen3_moe × FP8 조합은 여전히 거부**되고 위장이 필요하다. 같은 qwen3_moe 라도
+weight=bf16 이면 통과하고, qwen3/llama/exaone4 계열은 애초에 대상이 아니다.
+현재 위장이 필요한 것: `coder-tp8` `a3b-tp8` `a3b-inst-2507-tp8` `a3b-think-2507-tp8`.
+
+(2026-08-04 수정) `--copy` 는 하드링크 복사라 예전에는 사본을 위장하면 **원본 artifact.json
+까지 같이 바뀌었다**(같은 inode 를 제자리 truncate). 지금은 임시파일 → os.replace 로 써서
+링크를 끊으므로 원본이 보존된다.
 
 사용법:
     # 사본을 만들고(하드링크) 위장
@@ -62,8 +78,19 @@ def masquerade(artifact_dir: str, as_type: str, strip_moe: bool) -> None:
     if strip_moe:
         for k in MOE_ONLY_KEYS:
             hf.pop(k, None)
-    with open(p, "w") as f:
+    # 원본 보존용 백업(멱등 — 이미 있으면 덮어쓰지 않는다. 되돌리기: 이 파일을 artifact.json 으로 복사).
+    bak = p + f".orig-{orig}"
+    if not os.path.exists(bak):
+        shutil.copyfile(p, bak)
+        print(f"[backup] {bak}")
+    # ⚠️ 반드시 임시파일 → os.replace 로 쓴다.
+    #    --copy 는 하드링크 복사라 dst/artifact.json 이 src 와 같은 inode 다. 여기서 open(p,"w") 로
+    #    제자리 truncate 하면 **원본까지 같이 바뀐다**(2026-08-04 발견). os.replace 는 디렉터리
+    #    엔트리를 갈아끼우므로 링크가 끊기고 원본이 그대로 남는다. 제자리 쓰기도 원자적이 된다.
+    tmp = p + ".tmp"
+    with open(tmp, "w") as f:
         json.dump(d, f)
+    os.replace(tmp, p)
     print(f"[masquerade] {orig} -> {as_type}  ({p})")
     print(f"  KV dims kept: layers={hf.get('num_hidden_layers')} "
           f"kv_heads={hf.get('num_key_value_heads')} head_dim={hf.get('head_dim')}")

@@ -42,19 +42,21 @@
 ```bash
 cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
 
-./serve_models.sh                  # 기본: 3종(coder7·coder14·qwen3-32b, tp8)을 빈 카드에 동시 serve
-./serve_models.sh 1                # 기본 세트에서 가벼운 1개만 (테스트용)
-./serve_models.sh coder7 coder14   # 고른 tp8 모델만 (빈 카드에 자동 배정)
-./serve_models.sh exaone-32b       # tp32 대형 모델 1개 (4장 전부 — 단독 serve)
+./serve_models.sh                    # 기본: tp8 2종(llama31-8b·qwen3-32b)을 빈 카드에 동시 serve
+./serve_models.sh 1                  # 기본 세트에서 가벼운 1개만 (테스트용)
+./serve_models.sh coder qwen3-32b    # 고른 tp8 모델만 (빈 카드에 자동 배정)
+./serve_models.sh hub-gpt-oss-120b   # tp32 프리빌트 1개 (4장 전부 — 단독 serve)
 ./serve_models.sh list             # 등록된 모델 키 보기
 ./serve_models.sh stop             # 전부 종료 (NPU 카드 다 비움)
 
 # 준비 확인: 각 포트 로그에 "Uvicorn running" 뜨면 OK
-tail -f serve_logs/8001.log
+tail -f serve_logs/8007.log
 ```
 
 - tp8 모델은 카드 1장·포트 1개, tp32 모델은 카드 4장 전부를 씁니다. 어떤 모델이 어느 카드·포트에 뜨는지는 `serve_models.sh` 의 `CAT` 카탈로그가 정합니다(아래 3번). tp32 모델은 4장을 독점해 단독으로만 뜹니다.
-- 33GB(qwen3-32b-fp8) 로딩은 수 분 걸립니다. 코더 모델들은 더 빠릅니다.
+- 로딩은 크기에 비례합니다(llama31-8b 15G 는 수십 초, 30~57G 는 수 분). 프리빌트를 처음 쓰면
+  HF 다운로드가 먼저 돌아 훨씬 오래 걸릴 수 있습니다.
+- `~/furiosa` venv 가 깨졌을 때는 `FURIOSA_LLM_BIN=<다른 venv>/bin/furiosa-llm` 로 우회할 수 있습니다.
 
 ### 1-2. 채팅하기 — (A) Continue  또는  (B) gradio UI
 
@@ -68,6 +70,18 @@ tail -f serve_logs/8001.log
 4. `F1` → **Focus Continue Chat** → 아래 드롭다운에서 모델 선택 후 대화
 
 #### (B) gradio 브라우저 UI
+
+**처음 한 번만 — 전용 venv 만들기.** gradio 는 furiosa venv 와 충돌하므로 이 폴더의 `.venv` 에 따로 둡니다
+(UI 는 NPU 를 직접 만지지 않고 OpenAI 호환 HTTP 로만 말하므로 venv 가 분리돼도 됩니다).
+
+```bash
+cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+> `./run.sh: Permission denied` 가 나면 실행 비트가 빠진 것입니다(홈 복구본 이슈 — `core.fileMode=false`
+> 라 `git status` 로도 안 잡힙니다). `chmod +x run.sh serve_models.sh` 로 고치세요.
 
 서버에서 띄우고, 개인 맥북에서 **alpacon tunnel** 로 접속하는 방식을 권장합니다(아래 원격 접속 참고).
 
@@ -126,7 +140,8 @@ alpacon tunnel furiosa-npu-e6ec40 -l 7860 -r 7860
 |---|---|---|
 | `serve_models.sh` 의 `CAT` 카탈로그 | 모델 키 ↔ 포트·tp(카드 수)·아티팩트·serve 옵션, 모델 추가/제거 | 모델을 추가·교체하거나 카드 배치를 바꿀 때 |
 | `~/.continue/config.yaml` 의 `models:` | **Continue** 드롭다운에 뜨는 모델 목록 | Continue 에 모델 추가·제거할 때 |
-| `chat_app.py` 의 `CATALOG` 딕셔너리 | **gradio UI** 모델 목록 (키 ↔ 표시이름·포트·카드수·아티팩트·serve옵션) | gradio UI 에 모델을 추가·교체할 때 |
+| `chat_app.py` 의 `CATALOG` 딕셔너리 | **gradio UI** 모델 목록 (키 ↔ 표시이름·포트·아티팩트·파서·pp) | gradio UI 에 모델을 추가·교체할 때 |
+| `serve_models.sh` 의 `CAT` 배열 | 백엔드만 손으로 띄울 때의 같은 목록 | **`CATALOG` 과 키·포트·파서를 반드시 맞출 것** |
 | `chat_app.py` 실행 시 환경변수 | 포트·접속 방식·비번·RAG 임베딩 서버 (아래 표) | 접속 방식·RAG 백엔드를 바꿀 때 |
 | `npu_metrics.py` | 실시간 대시보드(메트릭 카드·`furiosa-smi` 파싱·furiosa 색상) | 대시보드 지표/디자인을 바꿀 때 |
 | `rag_store.py` | RAG 검색(청킹·TF-IDF·임베딩/리랭커 백엔드) | RAG 동작을 바꿀 때 |
@@ -152,10 +167,10 @@ alpacon tunnel furiosa-npu-e6ec40 -l 7860 -r 7860
 - **모델**: 고르면 자동으로 serve 됩니다(위 (B) 참고).
 - **복제 dp** (1~4, 기본 1, tp8만): 모델 전체를 카드 수만큼 **복제**합니다.
   - dp 는 **동시 요청**의 throughput 을 키웁니다(예: dp4 면 4개 대화를 4장이 병렬 처리). **한 대화(요청)는 한 복제본=한 카드만** 씁니다 — `PrefixAware` 라우팅이 같은 대화를 같은 엔진으로 보내 prefix 캐시를 재사용하기 때문입니다. 그래서 혼자 대화하면 dp4 라도 답변마다 **NPU 1장만** 계산하고, **그 카드의 KV 캐시 사용률(RAM 수치)만** 차오릅니다(나머지 3장은 대기 — 정상이며 버그 아님). serve 로그의 `[Engine 0] ... Running: 1 reqs, RNGD KV cache usage: x%` 가 한 엔진에서만 오르는 것으로 확인됩니다.
-- **레이어 분할 pp** (1~4, 기본 1, tp8만): 한 모델의 레이어를 **여러 장에 나눠** 한 요청을 파이프라인으로 처리합니다(예: pp2 면 모델의 앞 절반·뒤 절반을 두 장이 맡음). 복제(dp)가 같은 모델을 통째로 여러 벌 올리는 것과 달리, pp 는 **한 벌을 쪼개 담습니다**. serve 로그에 `Resolve 1 pipeline for 1 DP groups (DP=1, PP=2)` 와 `PP device#0 ... Model weights=6.7 GiB` / `PP device#1 ... 7.5 GiB` 처럼 가중치가 장마다 나뉘어 찍히는 것으로 확인됩니다(2026-06-09 coder7 실측).
+- **레이어 분할 pp** (1·2·4, tp8만 · 기본값은 모델별 `pp_min`, FXB 프리빌트는 선택 불가): 한 모델의 레이어를 **여러 장에 나눠** 한 요청을 파이프라인으로 처리합니다(예: pp2 면 모델의 앞 절반·뒤 절반을 두 장이 맡음). 복제(dp)가 같은 모델을 통째로 여러 벌 올리는 것과 달리, pp 는 **한 벌을 쪼개 담습니다**. serve 로그에 `Resolve 1 pipeline for 1 DP groups (DP=1, PP=2)` 와 `PP device#0 ... Model weights=6.7 GiB` / `PP device#1 ... 7.5 GiB` 처럼 가중치가 장마다 나뉘어 찍히는 것으로 확인됩니다(2026-06-09 coder7 실측).
   - ⚠️ **dp × pp ≤ 4장**(카드가 4장이라). 그래서 pp 를 키우면 dp 선택지가 자동으로 줄어듭니다(pp2 → dp 는 1~2, pp4 → dp 는 1). 화면이 알아서 막아 주니 잘못된 조합은 못 고릅니다.
   - tp8 아티팩트는 `pipeline_parallel_size=1` 로 빌드돼 있어도 **serve 할 때 `-pp` 로 레이어를 다시 나눠** 띄울 수 있습니다(빌드 단계의 pp 와는 다른 동작 — 빌드 pp 는 2026.2.0 에서 안 되지만 serve pp 는 됩니다, `info/README_build.md` 3절). 내부적으로 `furiosa-llm serve` 의 `-pp`/`-dp`/`-tp` 옵션을 그대로 씁니다(`furiosa-llm serve --help`).
-  - ⚠️ **pp 도 단일 대화를 빠르게 하지는 못합니다** (2026-06-10 실측: coder7 단일 요청 1장 50.3 tok/s vs pp2 48.3 tok/s — 한 토큰이 스테이지를 차례로 통과해야 해서 오히려 카드간 전송만큼 살짝 느림). pp 의 가치는 속도가 아니라 **자리**입니다: 1장에 안 들어가는 모델을 나눠 담고, KV 캐시 풀이 장 수만큼 커져(pp2 면 38.8+38.0 GiB) 긴 대화·동시 사용자를 더 받습니다. **한 대화 자체를 빠르게** 받고 싶으면 **tp32 모델**(예: `Qwen3-32B-FP8-tp32`)뿐입니다 — tp 는 한 연산을 4장이 동시에 쪼개 계산하므로(텐서 분할) 단일 요청도 빨라집니다.
+  - ⚠️ **pp 도 단일 대화를 빠르게 하지는 못합니다** (2026-06-10 실측: coder7 단일 요청 1장 50.3 tok/s vs pp2 48.3 tok/s — 한 토큰이 스테이지를 차례로 통과해야 해서 오히려 카드간 전송만큼 살짝 느림). pp 의 가치는 속도가 아니라 **자리**입니다: 1장에 안 들어가는 모델을 나눠 담고, KV 캐시 풀이 장 수만큼 커져(pp2 면 38.8+38.0 GiB) 긴 대화·동시 사용자를 더 받습니다. **한 대화 자체를 빠르게** 받고 싶으면 **tp32 모델**(예: `Qwen3-32B-FP8 tp32`)뿐입니다 — tp 는 한 연산을 4장이 동시에 쪼개 계산하므로(텐서 분할) 단일 요청도 빨라집니다.
 - **tp32 모델**(EXAONE·Llama-70B·Qwen3-32B-tp32): 4장을 전부 써서 단독으로 뜨므로 **dp·pp 를 고를 수 없습니다**(두 컨트롤이 비활성·1 고정). 카드를 더/덜 쓸 여지가 없기 때문입니다.
 
 #### dp·pp 가 진짜 적용됐는지 확인하는 법
@@ -217,18 +232,18 @@ UI 에서 고른 값이 실제 serve 에 반영됐는지는 다음 네 곳에서
 
 빈 카드(예: `npu:3`)·빈 포트(예: `8004`)에 올린다고 가정합니다.
 
-**① serve 에 올리기** — `serve_models.sh` 의 `JOBS` 에 한 줄 추가:
+**① serve 에 올리기** — `serve_models.sh` 의 `CAT` 에 한 줄 추가 (형식: `포트|카드수|아티팩트|추가인자`):
 ```bash
-JOBS=(
+declare -A CAT=(
   ...
-  "8004|npu:3|$A/<새-아티팩트-폴더>|<추가옵션>"   # 예: Qwen3 추론모델이면 --reasoning-parser qwen3
+  [<키>]="8030|1|$ART/<새-아티팩트-폴더>|--enable-auto-tool-choice --tool-call-parser hermes"
 )
 ```
 또는 임시로 직접:
 ```bash
-nohup furiosa-llm serve artifacts/<새-아티팩트-폴더> \
-  --devices npu:3 --host 0.0.0.0 --port 8004 --enable-prefix-caching \
-  > serve_logs/8004.log 2>&1 &
+nohup furiosa-llm serve /mnt/nvme2n1p1/models/artifacts/<새-아티팩트-폴더> \
+  --devices npu:3 --host 0.0.0.0 --port 8030 --enable-prefix-caching \
+  > serve_logs/8030.log 2>&1 &
 ```
 
 **② 클라이언트에 등록하기**
@@ -237,41 +252,169 @@ nohup furiosa-llm serve artifacts/<새-아티팩트-폴더> \
   ```yaml
   - name: <보여줄 이름>
     provider: openai
-    model: /home/jun/RNGD-proj/Model_Benchmark/rngd-npu/artifacts/<새-아티팩트-폴더>
-    apiBase: http://localhost:8004/v1
+    model: /mnt/nvme2n1p1/models/artifacts/<새-아티팩트-폴더>
+    apiBase: http://localhost:8030/v1
     apiKey: dummy
     roles: [chat, edit, apply]
   ```
-- gradio → `chat_app.py` 의 `CATALOG` 딕셔너리에 한 줄: `"<키>": dict(name="<보여줄 이름>", port=8004, kind="tp8", sub="<아티팩트 폴더>", extra=[], ctx=32768),`
+- gradio → `chat_app.py` 의 `CATALOG` 딕셔너리에 한 줄 (필드 설명은 그 딕셔너리 위 주석 참고):
+  `"<키>": dict(name="<보여줄 이름>", port=8030, kind="tp8", src="art", sub="<아티팩트 폴더>", ctx=32768, pp_min=1, tool="hermes", reasoning=None),`
+  프리빌트를 등록할 땐 `src="hub", sub="furiosa-ai/<저장소>"` 로 두면 HF 캐시에서 해석됩니다.
 
 > ⚠️ **`model` 값은 아티팩트 절대경로 그대로** 써야 합니다. 서버가 `/v1/models` 로 돌려주는 id 가 그 경로라서, 다른 이름을 쓰면 거부됩니다. 헷갈리면 `curl -s localhost:8004/v1/models` 로 확인하세요.
 
 ---
 
-## 3. 등록된 모델 (벤치한 9개)
+## 3. 등록된 모델 (23종 — 2026-08-04 갱신)
 
-이번에 벤치마크한 9개 모델을 `serve_models.sh` 의 `CAT` 카탈로그(키 → 포트·tp·아티팩트)와
-`chat_app.py` 의 `CATALOG`(드롭다운)에 등록했습니다. 카드가 4장이라 동시에는 tp8 최대 4개,
-또는 tp32 1개만 띄울 수 있습니다(tp32는 4장 전부 독점, tp8과 같이 못 띄움).
+`serve_models.sh` 의 `CAT` 카탈로그와 `chat_app.py` 의 `CATALOG` 는 **키·포트·파서가 같아야 합니다.**
+카드가 4장이라 동시에 뜨는 것은 tp8 을 합쳐 4장까지, 또는 tp32 1개(4장 독점)입니다.
 
-| 키 | 포트 | tp(카드) | 모델 | serve 상태 |
-|---|--:|---|---|---|
-| ~~`coder1.5`~~ | — | — | Qwen2.5-Coder-1.5B | ❌ **제거됨(2026-06-08).** serve·속도는 정상이나 출력이 깨짐(gibberish) — greedy(temperature 0)에서도 깨져 샘플링·스트리밍 문제가 아닌 furiosa-llm 2026.2.0 컴파일 버그. tied embedding을 의심해 **untie 후 재빌드까지 했으나 동일하게 깨져** 원인이 아님(같은 증상 0.5B도). 로컬 빌드로는 못 살려 카탈로그에서 뺐습니다 — 코딩용은 coder7/14. 상세: `info/README_build.md` 8.2 |
-| `coder7` | 8002 | tp8(1장) | Qwen2.5-Coder-7B-Inst | 정상 |
-| `coder14` | 8003 | tp8(1장) | Qwen2.5-Coder-14B-Inst | 정상 (코딩 추천) |
-| `coder14-base` | 8007 | tp8(1장) | Qwen2.5-Coder-14B tp8 | base(non-inst) 14B |
-| `a3b-fp8` | 8000 | tp8(1장) | Qwen3-Coder-30B-A3B-Inst-FP8 tp8 | MoE FP8, max-model-len 65536. masquerade 로 serve 부활(30G·1장 OK) |
-| `a3b` | 8006 | tp8(1장) | Qwen3-Coder-30B-A3B-Inst tp8 | MoE bf16, 65536. **58G > 1장 47.5G → dp1·pp1 이면 OOM, pp≥2(2장 분할)로 띄워야 함** |
-| `qwen72b` | 8009 | host-loop | Qwen2.5-72B-Inst (**bf16 원본**) | ✅ **bf16 원본 serve 가능 — host 추론 루프**(`qcn/serve_q25.py`, `Q25Model`, 2026-06-17). 표준 `furiosa-llm serve`는 전부 막힘(아래)이라, host가 추론 루프를 들고 가중치를 레이어별로 NPU에 스트리밍하는 방식(Qwen3-Coder-Next 80B와 동일). 실측: "프랑스 수도?"→**"Paris" 정답, CPU폴백 0(전부 NPU)**. ⚠️ **매우 느림(~수백초/토큰)** — bf16 dense 72B는 토큰마다 135GiB를 디스크 스트리밍(RAM 116GB 초과). 정확도 우선용. 실행: `RNGD_DEV=rngd:4 PYTHONPATH=<proj> ~/furiosa/bin/python qcn/serve_q25.py`(포트 8009). <br>**왜 표준 serve는 불가(참고):** tp32 빌드=inter-chip DramShapeGuide 미구현(`allow_inter_chip_dram` 플래그로도 실패, radare2 실측), pp4 serve=인터칩 가중치 바인딩 `-1803550720` 실패(per-stage 33.6G), pp2=67G/장>47.5라 2장 초과. 빠른 native가 필요하면 FP8 양자화→`-pp 4` 또는 `llama-70b`(tp32 prebuilt). |
-| `qwen3-32b` | 8004 | tp8(1장) | Qwen3-32B-FP8 | 추론(사고과정). NPU에서 응답 느린 편 |
-| `qwen3-32b-16k` | 8005 | tp8(1장) | Qwen3-32B-FP8-16k | 추론. 위 모델의 컨텍스트 16K 축소판 |
-| `exaone-32b` | 8011 | tp32(4장) | EXAONE-4.0-32B-FP8 | 정상 (단독 serve) |
-| `llama-70b` | 8012 | tp32(4장) | Llama-3.3-70B-Instruct | 정상 (단독 serve) |
-| `qwen3-32b-tp32` | 8013 | tp32(4장) | Qwen3-32B-FP8-tp32 | 추론. 응답 느림 (단독 serve) |
+> ⚠️ 옛 카탈로그(9종)는 `rngd-npu/artifacts/` 를 가리켰는데 그 폴더엔 `.gitkeep` 만 남아
+> **12개 항목이 전부 死경로**였습니다. 지금은 실재하는 두 갈래만 등록합니다.
 
-- tp8 모델은 `serve_models.sh` 가 빈 카드(npu:0부터)에 하나씩 자동 배정합니다.
-- tp32 모델은 4장을 모두 써서 단독으로만 serve 됩니다(다른 모델과 같이 못 띄움).
-- 드롭다운에는 등록된 모델이 전부 보이고(`_dd_choices()`, tp8/tp32 표시), **고르는 순간 on-demand 로 serve** 됩니다. 떠 있는지는 왼쪽 상태 패널 LED 로 확인합니다.
+### 3-1. 로컬 tp8 아티팩트 — `/mnt/nvme2n1p1/models/artifacts` (8종)
+
+2026-07-29 에 `legacy_moe_build/` 로 직접 빌드한 legacy(v2) 아티팩트입니다.
+**tp8 로 빌드해 뒀기 때문에 serve 때 `-pp` 로 층을 쪼갤 수 있고, UI 에서 pp 를 고를 수 있는
+유일한 갈래입니다** (프리빌트는 대부분 tp32 로 박혀 있어 4장 고정).
+
+값은 전부 `artifact.json` 을 직접 파싱한 실측치입니다.
+
+| 키 | 포트 | 총 컨텍스트 | 프롬프트 최대 | 기본 pp | tool 파서 | reasoning 파서 |
+|---|--:|--:|--:|:--:|---|---|
+| `coder` (Qwen3-Coder-30B-A3B-Inst-FP8) | 8000 | 262,144 | **65,408** | 2 | — (아래 ⚠️) | — |
+| `coder-bf16` (Qwen3-Coder-30B-A3B-Inst bf16) | 8001 | 262,144 | **65,408** | 4 | — (아래 ⚠️) | — |
+| `a3b-inst-2507` (Qwen3-30B-A3B-Instruct-2507-FP8) | 8002 | 262,144 | **65,408** | 2 | `hermes` | — |
+| `a3b-think-2507` (Qwen3-30B-A3B-Thinking-2507-FP8) | 8003 | 262,144 | **65,408** | 2 | `hermes` | `qwen3` |
+| ~~`a3b`~~ (Qwen3-30B-A3B-FP8) | ~~8004~~ | — | — | — | — | ❌ **비활성** — 아래 참고 |
+| `qwen3-32b` (Qwen3-32B-FP8) | 8005 | 40,960 | 40,832 | 1 | `hermes` | `qwen3` |
+| `exaone4` (EXAONE-4.0-32B-FP8) | 8006 | 131,072 | 130,944 | 2 | `hermes` | `exaone4` |
+| `llama31-8b` (Llama-3.1-8B-Instruct) | 8007 | 131,072 | 130,944 | 1 | `llama3_json` | — |
+
+- **기본 pp** 는 "최대 컨텍스트로 쓸 때 카드 1장(47.5 GiB)에 들어가는가"로 정했습니다. 짧게만
+  쓰면 pp 를 낮춰도 뜨지만, UI 는 안전하게 이 값 이상만 고르게 합니다.
+  `coder-bf16` 은 pp2 면 장당 28.5 GiB 로 검증 상한(29.7 GiB) 턱밑이라 pp4 를 기본으로 둡니다.
+- ⚠️ **프롬프트 최대**: `kv_heads=4` 인 30B-A3B 계열은 append(chunked prefill) 버킷이 65536 에서
+  막혀 총 컨텍스트가 26만이어도 **한 번에 넣을 수 있는 프롬프트는 65,408 토큰**입니다.
+  서버는 초과 요청을 200 OK 로 받은 뒤 스케줄러에서 실패시키므로 클라이언트가 잘라야 합니다.
+  (근거: `legacy_moe_build/README.md` §0-A·§0.8)
+
+#### ⚠️ qwen3_moe × FP8 은 serve 게이트에 막힙니다 — model_type 위장 필요
+
+`coder` · `a3b` · `a3b-inst-2507` · `a3b-think-2507` 4종은 **그대로는 안 뜹니다.**
+2026.3.0 런타임도 `(model_type × 양자화)` 화이트리스트를 그대로 들고 있어서 부팅 때 죽습니다
+(2026-08-04 실측 — `legacy_moe_build/README.md` §6 의 "미실측" 항목 해소):
+
+```
+pyo3_runtime.PanicException: Unsupported model metadata: ModelMetadata {
+    model_type: Some(Qwen3Moe), ...
+    quantization_config: Some(QuantizationConfig { weight: FP8, ... }) }
+```
+
+연산은 빌드 때 이미 EDF 바이너리로 컴파일돼 있고 **게이트만 메타데이터 문자열을 봅니다.**
+그래서 `artifact.json` 의 `model_type` 만 `qwen3` 으로 바꾸면 통과하고, 런타임은 컴파일된
+MoE 그래프를 그대로 실행합니다(2026-06-10 에 62.7 tok/s 로 검증된 경로).
+
+```bash
+cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
+bash masquerade_moe_fp8.sh           # 대상만 보여주기(변경 없음)
+bash masquerade_moe_fp8.sh --apply   # 실제 적용
+python3 validate_catalog.py          # 4건이 사라지면 완료
+```
+
+`masquerade_moe_fp8.sh` 는 아티팩트를 직접 훑어 `qwen3_moe × FP8` 인 것만 골라내므로
+모델 목록을 손으로 관리할 필요가 없고, 이미 위장된 것은 대상에서 빠져 **여러 번 돌려도 안전**합니다.
+
+- 원본은 `artifact.json.orig-qwen3_moe` 로 자동 백업됩니다(되돌리려면 이 파일을 되돌려 놓으면 됨).
+- **KV 차원(`num_hidden_layers`·`num_key_value_heads`·`head_dim`)은 건드리면 안 됩니다** —
+  런타임이 이 값으로 캐시 shape 를 잡으므로 컴파일된 그래프와 어긋나면 깨집니다.
+- 같은 `qwen3_moe` 라도 **weight=bf16 인 `coder-bf16` 은 통과**하므로 위장 대상이 아닙니다.
+- `validate_catalog.py` 가 이 조합을 자동으로 잡아 위 명령까지 찍어 줍니다.
+
+**적용 결과 (2026-08-04 실측, 4종 전부 위장 후 실기동)**
+
+| 아티팩트 | serve | 생성 | 비고 |
+|---|:--:|:--:|---|
+| `coder-tp8` | ✅ | ✅ | pp2, 파이썬 코드 정상 생성 |
+| `a3b-inst-2507-tp8` | ✅ | ✅ | pp2, "Paris" 정답 |
+| `a3b-think-2507-tp8` | ✅ | ✅ | pp2, "Paris" 정답 |
+| `a3b-tp8` | ✅ | ❌ | **0 토큰** — 카탈로그에서 비활성 |
+
+`a3b-tp8` 은 게이트를 통과해 `Uvicorn running` 까지 가고 가중치도 29.0 GiB 정상 로드되는데
+**아무것도 생성하지 않습니다**(`/v1/completions` 로 채팅 템플릿을 우회해도 빈 문자열, 0 토큰).
+temperature 0 에서는 질문과 무관한 반복 텍스트가 나옵니다. **위장 방식의 문제는 아닙니다** —
+같은 처리를 한 나머지 3종은 정상이고, 빌드 로그도 `BUILD SUCCEEDED`(ERROR 0건)이며
+`hf_configs` 도 정상 3종과 `max_position_embeddings`(40960) 말고는 전부 같습니다.
+→ **이 빌드만의 문제로 보이며 재빌드가 필요합니다.** 그때까지 카탈로그에서 비활성입니다.
+
+### 3-2. furiosa-ai 프리빌트 — `HF_HUB_CACHE`(`/mnt/nvme2n1p1/models/hf/hub`) (15종)
+
+`models--furiosa-ai--*` 만 서빙 가능합니다(그 밖의 `models--Qwen--*` 등은 원본 가중치라 빌드가 필요).
+tp32 는 4장을 독점하므로 한 번에 하나만 뜹니다. 파서는 라우터 `REGISTRY` 와 같은 값입니다.
+
+| 키 | 포트 | tp(카드) | 컨텍스트 | tool 파서 | reasoning 파서 |
+|---|--:|---|--:|---|---|
+| `hub-gpt-oss-120b` | 8010 | tp32(4장) | 131,072 | `openai` | — |
+| `hub-solar-100b` | 8011 | tp32(4장) | 131,072 | `solar_open` | `solar_open` |
+| `hub-llama-70b` | 8012 | tp32(4장) | 131,072 | `llama3_json` | — |
+| `hub-qwen3-32b` | 8013 | tp32(4장) | 40,960 | `hermes` | `qwen3` |
+| `hub-exaone4` | 8014 | tp32(4장) | 131,072 | `hermes` | `exaone4` |
+| `hub-kexaone-236b` | 8015 | tp32(4장) | 262,144 | `hermes` | `deepseek_v3` |
+| `hub-a3b-inst-2507` | 8016 | tp32(4장) | 262,144 | `hermes` | — |
+| `hub-a3b-think-2507` | 8017 | tp32(4장) | 262,144 | `hermes` | `qwen3` |
+| `hub-a3b` | 8018 | tp32(4장) | 40,960 | `hermes` | `qwen3` |
+| `hub-coder` | 8019 | tp32(4장) | 262,144 | — (아래 ⚠️) | — |
+| `hub-qwen3-vl-32b` | 8020 | tp32(4장) | 262,144 | `hermes` | — |
+| `hub-llama31-8b` | 8021 | tp8(1장) | 131,072 | `llama3_json` | — |
+| `hub-qwen3-8b` | 8022 | tp8(1장, FXB) | 40,960 | `hermes` | `qwen3` |
+| `hub-qwen3-4b` | 8023 | tp8(1장, FXB) | 40,960 | `hermes` | `qwen3` |
+| `hub-qwen2.5-0.5b` | 8024 | tp4(카드 일부) | 32,768 | `hermes` | — |
+
+- **FXB 번들은 `-pp` 를 못 씁니다** — 런타임이 `FXB-based artifacts currently does not support
+  pipeline parallelism` 으로 거절합니다. 그래서 `hub-qwen3-8b`·`hub-qwen3-4b` 는 카탈로그에
+  `no_pp=True` 로 두어 UI 에서 pp 선택을 막습니다. dp(복제)는 됩니다.
+- `hub-qwen2.5-0.5b` 는 tp4 라 카드 하나를 통째로 주면 안 되고 앞 4 PE 만 줍니다(`npu:X:0-3`).
+- 임베딩/리랭커(`Qwen3-Embedding-8B`·`Qwen3-Reranker-8B`)는 채팅 모델이 아니라 뺐습니다 —
+  라우터(:8400)의 `/v1/embeddings`·`/v1/rerank` 로 쓰세요.
+- 프리빌트 저장소가 캐시에 없으면 serve 가 알아서 내려받습니다(수십~백 GB). 그래서
+  `CHAT_SERVE_TIMEOUT` 기본값을 2400 초로 뒀습니다.
+
+### 3-3. ⚠️ Qwen3-Coder 계열의 tool 파서 (serve 가능 여부와는 별개)
+
+> 위 3-1 의 게이트 문제는 **모델이 뜨느냐**의 이야기고, 여기는 **뜬 모델이 tool call 을
+> 파싱할 수 있느냐**의 이야기입니다. 둘은 별개입니다.
+
+`furiosa-llm` 2026.3.0 이 받는 tool 파서는 `furiosa_llm/constants.py` 의 `TOOL_PARSER_NAMES`
+에 **하드코딩**된 `{hermes, llama3_json, llama4_json, openai, solar_open}` 뿐입니다(2026-08-04 실측).
+Qwen3-Coder 전용 `qwen3_coder` 는 이 목록에 없어 넘기면 serve 가 `invalid choice` 로 즉시 죽습니다.
+그래서 `coder`·`coder-bf16`·`hub-coder` 는 **파서 없이(채팅 전용)** 등록했습니다.
+
+`coding-agent/furiosa_patches/` 에 로컬 `qwen3_coder` 파서가 들어 있지만, 그 `install.sh` 는
+`tool_parsers/__init__.py` 에 import 만 추가합니다. 2026.3.0 에서는 그것만으로는 부족하고
+`constants.py` 의 목록까지 넣어야 CLI 가 받습니다. 패치를 되살렸다면 두 카탈로그의 해당 3종을
+`qwen3_coder` 로 바꾸면 됩니다.
+
+### 3-4. 카탈로그 정합성 확인
+
+두 파일이 어긋나면 UI 는 A 모델을 고르고 serve 는 B 를 띄우는 사고가 납니다. 바꾼 뒤에는
+아티팩트 실재·`ctx` 실측·파서 유효성·포트 중복을 한 번에 확인하세요.
+
+```bash
+python3 validate_catalog.py     # ← 이것만 돌리면 됩니다
+./serve_models.sh list          # 등록된 키/포트/카드 눈으로 확인
+```
+
+`validate_catalog.py` 가 보는 것:
+
+- 표시이름·포트 중복 (겹치면 드롭다운과 상태패널이 조용히 어긋납니다)
+- 로컬 아티팩트 실재 + `ctx`·`pe` 가 `artifact.json` 실측치와 일치하는지
+- 프리빌트가 HF 캐시에 있는지, `furiosa-ai/*` 인지
+- FXB 번들인지 ↔ `no_pp` 가 맞는지 (FXB 에 `-pp` 를 주면 `PanicException`)
+- `tool`·`reasoning` 파서를 **지금 설치된 furiosa-llm CLI 가 실제로 받는지**
+- `serve_models.sh` 의 `CAT` 과 포트·파서·카드수·`-pp` 가 일치하는지
+
+gradio 의존성 없이 AST 로만 읽으므로 `chat/.venv` 가 없어도 돕니다.
 
 ---
 
