@@ -177,6 +177,25 @@ else
   rm -f "$HOME_DIR/desc.json"
 fi
 
+# 모델별 tp 선택지를 라우터에서 받아 meta.json 에 저장 → /model 의 tp 화살표 축.
+# 맨이름(접미사 없는 id)의 tp 는 id 에 안 들어 있어(=기본 빌드), 클라이언트가 이 맵으로 기본 tp 와
+# 고를 수 있는 tp 목록을 안다. base 별 {tp_default, tps} 한 벌.
+M=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/models" 2>/dev/null | node -e '
+const fs=require("fs"); let s=""; process.stdin.on("data",d=>s+=d).on("end",()=>{
+  try{ const j=JSON.parse(s), m={};
+    for (const x of (j.data||[])) if (x && x.base && typeof x.tp_default==="number" && Array.isArray(x.tp_choices))
+      m[x.base]={tp_default:x.tp_default, tps:x.tp_choices};
+    const n=Object.keys(m).length;
+    if (n) fs.writeFileSync(process.argv[1], JSON.stringify(m));
+    process.stdout.write(String(n));
+  }catch(e){ process.stdout.write("0") }});' "$HOME_DIR/meta.json" 2>/dev/null || echo 0)
+case "${M:-0}" in ''|*[!0-9]*) M=0 ;; esac
+if [ "$M" -gt 0 ]; then
+  echo "      [ok] 모델 tp 메타 ${M}개 기록 (meta.json — /model 에서 tp 화살표 선택)"
+else
+  rm -f "$HOME_DIR/meta.json"
+fi
+
 # 안전 자동모드(FURIO_AUTO=safe)용 규칙 파일. 사용자가 편집할 수 있게 파일로 두고, 이미 있으면 건드리지 않는다.
 #   auto-allow.txt : 물어보지 않고 바로 실행할 것(읽기·조회·테스트 등)
 #   auto-deny.txt  : 아예 막을 것(파괴적·되돌릴 수 없는·외부로 나가는 명령)
@@ -437,6 +456,10 @@ fi
 # 모델 선택 목록의 설명(설치 때 라우터에서 받아둔 값). 없으면 openclaude 기본 문구로 표시된다.
 if [ -z "\${FURIO_MODEL_DESCRIPTIONS:-}" ] && [ -s "$HOME_DIR/desc.json" ]; then
   export FURIO_MODEL_DESCRIPTIONS="\$(cat "$HOME_DIR/desc.json")"
+fi
+# 모델별 tp 선택지(base→{tp_default,tps}). 없으면 /model 에 tp 화살표 축이 안 뜬다(dp/pp 만).
+if [ -z "\${FURIO_NPU_META:-}" ] && [ -s "$HOME_DIR/meta.json" ]; then
+  export FURIO_NPU_META="\$(cat "$HOME_DIR/meta.json")"
 fi
 # 타임아웃: NPU 는 모델을 늦게 올려서(라우터가 최대 480초 대기) openclaude 0.25.0 기본값이 빠듯하다.
 export API_TIMEOUT_MS="\${API_TIMEOUT_MS:-900000}"                                # 응답헤더 마감(0.25.0 기본 600000)
