@@ -122,10 +122,13 @@ CATALOG = {
     "coder":            dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp8", port=8000, kind="tp8",
                              src="art", sub="coder-tp8", ctx=262144, prompt_max=65408,
                              pp_min=2, tool=None, reasoning=None),
-    # bf16 56.9G — pp2 면 장당 28.5G 로 검증구간(29.7G) 턱밑이라 README §4.1 권고대로 pp4 기본.
+    # bf16 56.9G. pp4 실측 분할은 13.5/14.1/14.1/15.8 GiB → pp2 면 27.6/29.9 GiB.
+    # 예전 pp2 상한(29.7G) 턱밑이라 한동안 pp4 로 강제했으나, 2026-08-04 에 pp2 로 실제 기동해
+    # 정상 동작을 확인하고 기본을 pp2 로 내렸다(카드 2장만 쓰므로 다른 모델과 같이 띄울 수 있다).
+    # 최대 컨텍스트(262144)로 길게 쓰면 KV 가 장당 12 GiB 라 빠듯하니, 그때는 UI 에서 pp4 를 고를 것.
     "coder-bf16":       dict(name="Qwen3-Coder-30B-A3B-Inst bf16 tp8", port=8001, kind="tp8",
                              src="art", sub="coder-bf16-tp8", ctx=262144, prompt_max=65408,
-                             pp_min=4, tool=None, reasoning=None),
+                             pp_min=2, tool=None, reasoning=None),
     "a3b-inst-2507":    dict(name="Qwen3-30B-A3B-Instruct-2507-FP8 tp8", port=8002, kind="tp8",
                              src="art", sub="a3b-inst-2507-tp8", ctx=262144, prompt_max=65408,
                              pp_min=2, tool="hermes", reasoning=None),
