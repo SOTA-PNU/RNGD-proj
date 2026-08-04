@@ -14,9 +14,9 @@
 #   - tp32 모델은 1개만(4장 독점)
 #
 # 사용:
-#   ./serve_models.sh                  # 기본 세트(가벼운 tp8 3종)를 빈 카드에 동시 serve
+#   ./serve_models.sh                  # 기본 세트(가벼운 tp8 2종)를 빈 카드에 동시 serve
 #   ./serve_models.sh 2                # 기본 세트에서 앞 N개만
-#   ./serve_models.sh a3b qwen3-32b    # 고른 모델만 (빈 카드에 자동 배정)
+#   ./serve_models.sh coder qwen3-32b  # 고른 모델만 (빈 카드에 자동 배정)
 #   ./serve_models.sh hub-gpt-oss-120b # tp32 프리빌트 1개 (4장 전부)
 #   ./serve_models.sh list             # 등록된 모델 키 보기
 #   ./serve_models.sh stop             # 전부 종료
@@ -48,7 +48,9 @@ declare -A CAT=(
   [coder-bf16]="8001|4|$ART/coder-bf16-tp8|-pp 4"
   [a3b-inst-2507]="8002|2|$ART/a3b-inst-2507-tp8|--enable-auto-tool-choice --tool-call-parser hermes -pp 2"
   [a3b-think-2507]="8003|2|$ART/a3b-think-2507-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3 -pp 2"
-  [a3b]="8004|1|$ART/a3b-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
+  # ❌ a3b — 아티팩트 고장으로 비활성(2026-08-04): serve 는 뜨는데 생성이 0 토큰. 재빌드 필요.
+  #        위장은 무죄 — 같은 처리를 한 coder·a3b-*-2507 은 정상 생성한다. 상세는 chat_app.py 주석.
+  # [a3b]="8004|1|$ART/a3b-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
   [qwen3-32b]="8005|1|$ART/qwen3-32b-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3"
   # 가중치 30.8G + KV 256KiB/token — 131072 를 다 쓰면 1장을 넘어 pp2.
   [exaone4]="8006|2|$ART/exaone4-tp8|--enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser exaone4 -pp 2"
@@ -78,7 +80,7 @@ declare -A CAT=(
 # tp<8 아티팩트 — 카드를 통째로 주면 안 되고 앞 N PE 만 준다.
 declare -A PE=( [hub-qwen2.5-0.5b]=4 )
 
-DEFAULT_SET=(llama31-8b a3b qwen3-32b)   # 기본 3종 — 전부 tp8·pp1 이라 1장씩, 합쳐서 3장
+DEFAULT_SET=(llama31-8b qwen3-32b)   # 기본 2종 — 둘 다 tp8·pp1 이라 1장씩 (a3b 는 위 사유로 비활성)
 
 case "${1:-}" in
   stop) pkill -f "furiosa-llm serve" && echo "모든 serve 종료" || echo "실행 중인 serve 없음"; exit 0 ;;
@@ -115,7 +117,21 @@ if [ "$TOTAL" -gt 4 ]; then
 fi
 
 # 빈 카드 풀에서 필요한 장수만큼 순서대로 배정.
-FREE=(0 1 2 3)
+# ⚠️ 이미 떠 있는 serve 가 쓰는 카드는 빼야 한다. 예전엔 무조건 (0 1 2 3) 에서 시작해서,
+#    이 스크립트를 두 번 나눠 호출하면 두 번째가 첫 번째와 같은 카드를 골라 충돌했다.
+#    실행 중인 프로세스의 --devices 를 읽어 실제 점유를 반영한다(chat_app.py 의 _discover 와 같은 방식).
+#    npu:0 · npu:0:0-3 둘 다 카드 번호만 뽑는다.
+HELD="$(pgrep -af 'furiosa-llm[ ]serve' 2>/dev/null \
+        | grep -oP -- '--devices\s+\K\S+' \
+        | tr ',' '\n' | sed -n 's/^npu:\([0-9][0-9]*\).*/\1/p' | sort -u | tr '\n' ' ')"
+FREE=()
+for c in 0 1 2 3; do
+  case " $HELD " in *" $c "*) ;; *) FREE+=("$c") ;; esac
+done
+if [ -n "${HELD// /}" ]; then
+  echo "ℹ️  이미 쓰는 카드: ${HELD}  →  남은 카드: ${FREE[*]:-없음}"
+  echo
+fi
 for k in "${SEL[@]}"; do
   IFS='|' read -r PORT CARDS A EXTRA <<< "${CAT[$k]}"
   # 로컬 아티팩트만 미리 확인한다. 프리빌트는 저장소 ID 라 파일이 아니고, 없으면 serve 가 받아온다.

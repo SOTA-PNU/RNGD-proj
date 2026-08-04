@@ -131,9 +131,17 @@ CATALOG = {
     "a3b-think-2507":   dict(name="Qwen3-30B-A3B-Thinking-2507-FP8 tp8", port=8003, kind="tp8",
                              src="art", sub="a3b-think-2507-tp8", ctx=262144, prompt_max=65408,
                              pp_min=2, tool="hermes", reasoning="qwen3"),
-    "a3b":              dict(name="Qwen3-30B-A3B-FP8 tp8", port=8004, kind="tp8",
-                             src="art", sub="a3b-tp8", ctx=40960,
-                             pp_min=1, tool="hermes", reasoning="qwen3"),
+    # ❌ a3b(Qwen3-30B-A3B-FP8) — **아티팩트가 고장이라 비활성**(2026-08-04 실측).
+    # 위장 후 serve 는 정상적으로 뜨는데(게이트 통과·Uvicorn running·가중치 29.0G 로드 OK)
+    # **생성이 0 토큰**이다. /v1/completions 로 채팅 템플릿을 우회해도 빈 문자열이라
+    # 샘플링·파서·템플릿 문제가 아니다. temperature 0 에선 질문과 무관한 반복 텍스트가 나온다.
+    # 같은 위장을 적용한 coder·a3b-inst-2507·a3b-think-2507 은 전부 정상 생성하므로
+    # 위장 방식의 문제가 아니라 이 빌드만의 문제다(빌드 로그는 SUCCEEDED, ERROR 0건).
+    # hf_configs 도 정상 3종과 max_position_embeddings(40960) 빼고 전부 동일.
+    # → 재빌드 후 되살릴 것. 그때 이 주석을 지우고 아래 항목을 복구하면 된다.
+    # "a3b":            dict(name="Qwen3-30B-A3B-FP8 tp8", port=8004, kind="tp8",
+    #                        src="art", sub="a3b-tp8", ctx=40960,
+    #                        pp_min=1, tool="hermes", reasoning="qwen3"),
     "qwen3-32b":        dict(name="Qwen3-32B-FP8 tp8", port=8005, kind="tp8",
                              src="art", sub="qwen3-32b-tp8", ctx=40960,
                              pp_min=1, tool="hermes", reasoning="qwen3"),

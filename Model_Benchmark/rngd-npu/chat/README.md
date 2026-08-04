@@ -42,9 +42,9 @@
 ```bash
 cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
 
-./serve_models.sh                    # 기본: tp8 3종(llama31-8b·a3b·qwen3-32b)을 빈 카드에 동시 serve
+./serve_models.sh                    # 기본: tp8 2종(llama31-8b·qwen3-32b)을 빈 카드에 동시 serve
 ./serve_models.sh 1                  # 기본 세트에서 가벼운 1개만 (테스트용)
-./serve_models.sh a3b qwen3-32b      # 고른 tp8 모델만 (빈 카드에 자동 배정)
+./serve_models.sh coder qwen3-32b    # 고른 tp8 모델만 (빈 카드에 자동 배정)
 ./serve_models.sh hub-gpt-oss-120b   # tp32 프리빌트 1개 (4장 전부 — 단독 serve)
 ./serve_models.sh list             # 등록된 모델 키 보기
 ./serve_models.sh stop             # 전부 종료 (NPU 카드 다 비움)
@@ -275,7 +275,7 @@ nohup furiosa-llm serve /mnt/nvme2n1p1/models/artifacts/<새-아티팩트-폴더
 | `coder-bf16` (Qwen3-Coder-30B-A3B-Inst bf16) | 8001 | 262,144 | **65,408** | 4 | — (아래 ⚠️) | — |
 | `a3b-inst-2507` (Qwen3-30B-A3B-Instruct-2507-FP8) | 8002 | 262,144 | **65,408** | 2 | `hermes` | — |
 | `a3b-think-2507` (Qwen3-30B-A3B-Thinking-2507-FP8) | 8003 | 262,144 | **65,408** | 2 | `hermes` | `qwen3` |
-| `a3b` (Qwen3-30B-A3B-FP8) | 8004 | 40,960 | 40,832 | 1 | `hermes` | `qwen3` |
+| ~~`a3b`~~ (Qwen3-30B-A3B-FP8) | ~~8004~~ | — | — | — | — | ❌ **비활성** — 아래 참고 |
 | `qwen3-32b` (Qwen3-32B-FP8) | 8005 | 40,960 | 40,832 | 1 | `hermes` | `qwen3` |
 | `exaone4` (EXAONE-4.0-32B-FP8) | 8006 | 131,072 | 130,944 | 2 | `hermes` | `exaone4` |
 | `llama31-8b` (Llama-3.1-8B-Instruct) | 8007 | 131,072 | 130,944 | 1 | `llama3_json` | — |
@@ -319,6 +319,22 @@ python3 validate_catalog.py          # 4건이 사라지면 완료
   런타임이 이 값으로 캐시 shape 를 잡으므로 컴파일된 그래프와 어긋나면 깨집니다.
 - 같은 `qwen3_moe` 라도 **weight=bf16 인 `coder-bf16` 은 통과**하므로 위장 대상이 아닙니다.
 - `validate_catalog.py` 가 이 조합을 자동으로 잡아 위 명령까지 찍어 줍니다.
+
+**적용 결과 (2026-08-04 실측, 4종 전부 위장 후 실기동)**
+
+| 아티팩트 | serve | 생성 | 비고 |
+|---|:--:|:--:|---|
+| `coder-tp8` | ✅ | ✅ | pp2, 파이썬 코드 정상 생성 |
+| `a3b-inst-2507-tp8` | ✅ | ✅ | pp2, "Paris" 정답 |
+| `a3b-think-2507-tp8` | ✅ | ✅ | pp2, "Paris" 정답 |
+| `a3b-tp8` | ✅ | ❌ | **0 토큰** — 카탈로그에서 비활성 |
+
+`a3b-tp8` 은 게이트를 통과해 `Uvicorn running` 까지 가고 가중치도 29.0 GiB 정상 로드되는데
+**아무것도 생성하지 않습니다**(`/v1/completions` 로 채팅 템플릿을 우회해도 빈 문자열, 0 토큰).
+temperature 0 에서는 질문과 무관한 반복 텍스트가 나옵니다. **위장 방식의 문제는 아닙니다** —
+같은 처리를 한 나머지 3종은 정상이고, 빌드 로그도 `BUILD SUCCEEDED`(ERROR 0건)이며
+`hf_configs` 도 정상 3종과 `max_position_embeddings`(40960) 말고는 전부 같습니다.
+→ **이 빌드만의 문제로 보이며 재빌드가 필요합니다.** 그때까지 카탈로그에서 비활성입니다.
 
 ### 3-2. furiosa-ai 프리빌트 — `HF_HUB_CACHE`(`/mnt/nvme2n1p1/models/hf/hub`) (15종)
 
