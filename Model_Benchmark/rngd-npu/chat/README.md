@@ -71,6 +71,18 @@ tail -f serve_logs/8007.log
 
 #### (B) gradio 브라우저 UI
 
+**처음 한 번만 — 전용 venv 만들기.** gradio 는 furiosa venv 와 충돌하므로 이 폴더의 `.venv` 에 따로 둡니다
+(UI 는 NPU 를 직접 만지지 않고 OpenAI 호환 HTTP 로만 말하므로 venv 가 분리돼도 됩니다).
+
+```bash
+cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+> `./run.sh: Permission denied` 가 나면 실행 비트가 빠진 것입니다(홈 복구본 이슈 — `core.fileMode=false`
+> 라 `git status` 로도 안 잡힙니다). `chmod +x run.sh serve_models.sh` 로 고치세요.
+
 서버에서 띄우고, 개인 맥북에서 **alpacon tunnel** 로 접속하는 방식을 권장합니다(아래 원격 접속 참고).
 
 ```bash
