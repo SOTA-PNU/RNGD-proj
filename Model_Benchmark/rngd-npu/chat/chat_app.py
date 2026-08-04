@@ -113,11 +113,12 @@ LOGO_URI = _logo_data_uri()
 CATALOG = {
     # ── 로컬 tp8 아티팩트 (2026-07-29 빌드) — pp 를 UI 에서 바꿀 수 있는 유일한 갈래 ──
     # kv_heads=4 계열(coder·a3b-*)은 총 컨텍스트가 262144 여도 프롬프트는 65,408 까지만 된다.
-    # ⚠️ qwen3_moe × FP8(coder·a3b·a3b-inst-2507·a3b-think-2507)은 serve 게이트가 거부한다 —
-    #    `PanicException: Unsupported model metadata`(2026.3.0 에서도 그대로, 2026-08-04 실측).
+    # ⚠️ model_type=qwen3_moe 인 것(coder·coder-bf16·a3b·a3b-inst-2507·a3b-think-2507)은
+    #    serve 게이트가 거부한다 — `PanicException: Unsupported model metadata`.
+    #    **양자화와 무관하다**: fp8·bf16 둘 다 막히는 것을 2026-08-04 에 실측했다.
     #    연산은 이미 컴파일돼 있고 게이트만 메타데이터를 보므로 artifact.json 의 model_type 을
-    #    qwen3 로 위장하면 뜬다: qwen3-next-proj/masquerade_artifact.py --as qwen3 --in-place
-    #    (README §3-1, validate_catalog.py 가 이 조합을 자동으로 잡아 명령까지 찍어 준다.)
+    #    qwen3 로 위장하면 뜬다: `bash masquerade_moe.sh --apply`
+    #    (README §3-1, validate_catalog.py 가 자동으로 잡아 명령까지 찍어 준다.)
     "coder":            dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp8", port=8000, kind="tp8",
                              src="art", sub="coder-tp8", ctx=262144, prompt_max=65408,
                              pp_min=2, tool=None, reasoning=None),
