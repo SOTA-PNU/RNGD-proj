@@ -20,6 +20,12 @@ ART = "/mnt/nvme2n1p1/models/artifacts"
 HUB = "/mnt/nvme2n1p1/models/hf/hub"
 FXB = os.path.expanduser("~/.cache/furiosa/llm/fxb")
 
+# serve 런타임이 커널 없음으로 거부하는 (model_type, weight 양자화) 조합.
+# 게이트는 hf_compat_next_gen.rs 의 화이트리스트이고, 연산 자체는 빌드 때 이미 컴파일돼
+# 있으므로 masquerade_artifact.py 로 model_type 만 바꾸면 통과한다.
+# 2026-08-04 실측: coder-tp8(qwen3_moe×fp8) → PanicException. 같은 qwen3_moe 라도 bf16 은 통과.
+GATE_REJECTS = {("qwen3_moe", "fp8")}
+
 # ── CATALOG 추출 (임포트 없이 AST 로) ────────────────────────────────────
 tree = ast.parse(open(CHAT).read())
 cat = None
@@ -86,6 +92,18 @@ for k, m in cat.items():
                 errs.append(f"{tag} tp 불일치: 카탈로그 pe={m.get('pe', 8)} vs artifact tp={tp}")
             if m.get("no_pp"):
                 errs.append(f"{tag} 로컬 v2 아티팩트인데 no_pp — pp 가능하므로 잘못됨")
+            # serve 게이트: (model_type × 양자화) 조합에 런타임 커널이 없으면 부팅 시
+            # PanicException: Unsupported model metadata 로 죽는다. 2026.3.0 에서도
+            # qwen3_moe × FP8 은 여전히 거부된다(2026-08-04 실측). 위장으로 통과시킨다.
+            mm = d["model"]["model_metadata"]
+            mt = mm.get("model_type")
+            wq = (mm.get("llm_config", {}).get("quantization_config") or {}).get("weight")
+            if (mt, wq) in GATE_REJECTS:
+                errs.append(
+                    f"{tag} serve 게이트가 거부하는 조합 (model_type={mt} × weight={wq}) — "
+                    f"masquerade 필요:\n"
+                    f"        python3 ../../qwen3-next-proj/masquerade_artifact.py "
+                    f"{os.path.join(ART, m['sub'])} --as qwen3 --in-place")
     else:
         repo = m["sub"]
         d = os.path.join(HUB, "models--" + repo.replace("/", "--"))

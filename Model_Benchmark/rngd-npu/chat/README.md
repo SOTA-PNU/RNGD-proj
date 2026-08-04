@@ -288,6 +288,37 @@ nohup furiosa-llm serve /mnt/nvme2n1p1/models/artifacts/<새-아티팩트-폴더
   서버는 초과 요청을 200 OK 로 받은 뒤 스케줄러에서 실패시키므로 클라이언트가 잘라야 합니다.
   (근거: `legacy_moe_build/README.md` §0-A·§0.8)
 
+#### ⚠️ qwen3_moe × FP8 은 serve 게이트에 막힙니다 — model_type 위장 필요
+
+`coder` · `a3b` · `a3b-inst-2507` · `a3b-think-2507` 4종은 **그대로는 안 뜹니다.**
+2026.3.0 런타임도 `(model_type × 양자화)` 화이트리스트를 그대로 들고 있어서 부팅 때 죽습니다
+(2026-08-04 실측 — `legacy_moe_build/README.md` §6 의 "미실측" 항목 해소):
+
+```
+pyo3_runtime.PanicException: Unsupported model metadata: ModelMetadata {
+    model_type: Some(Qwen3Moe), ...
+    quantization_config: Some(QuantizationConfig { weight: FP8, ... }) }
+```
+
+연산은 빌드 때 이미 EDF 바이너리로 컴파일돼 있고 **게이트만 메타데이터 문자열을 봅니다.**
+그래서 `artifact.json` 의 `model_type` 만 `qwen3` 으로 바꾸면 통과하고, 런타임은 컴파일된
+MoE 그래프를 그대로 실행합니다(2026-06-10 에 62.7 tok/s 로 검증된 경로).
+
+```bash
+cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
+for d in coder-tp8 a3b-tp8 a3b-inst-2507-tp8 a3b-think-2507-tp8; do
+  python3 ../../qwen3-next-proj/masquerade_artifact.py \
+      /mnt/nvme2n1p1/models/artifacts/$d --as qwen3 --in-place
+done
+python3 validate_catalog.py      # 4건이 사라지면 완료
+```
+
+- 원본은 `artifact.json.orig-qwen3_moe` 로 자동 백업됩니다(되돌리려면 이 파일을 되돌려 놓으면 됨).
+- **KV 차원(`num_hidden_layers`·`num_key_value_heads`·`head_dim`)은 건드리면 안 됩니다** —
+  런타임이 이 값으로 캐시 shape 를 잡으므로 컴파일된 그래프와 어긋나면 깨집니다.
+- 같은 `qwen3_moe` 라도 **weight=bf16 인 `coder-bf16` 은 통과**하므로 위장 대상이 아닙니다.
+- `validate_catalog.py` 가 이 조합을 자동으로 잡아 위 명령까지 찍어 줍니다.
+
 ### 3-2. furiosa-ai 프리빌트 — `HF_HUB_CACHE`(`/mnt/nvme2n1p1/models/hf/hub`) (15종)
 
 `models--furiosa-ai--*` 만 서빙 가능합니다(그 밖의 `models--Qwen--*` 등은 원본 가중치라 빌드가 필요).
@@ -320,7 +351,10 @@ tp32 는 4장을 독점하므로 한 번에 하나만 뜹니다. 파서는 라�
 - 프리빌트 저장소가 캐시에 없으면 serve 가 알아서 내려받습니다(수십~백 GB). 그래서
   `CHAT_SERVE_TIMEOUT` 기본값을 2400 초로 뒀습니다.
 
-### 3-3. ⚠️ Qwen3-Coder 계열의 tool 파서
+### 3-3. ⚠️ Qwen3-Coder 계열의 tool 파서 (serve 가능 여부와는 별개)
+
+> 위 3-1 의 게이트 문제는 **모델이 뜨느냐**의 이야기고, 여기는 **뜬 모델이 tool call 을
+> 파싱할 수 있느냐**의 이야기입니다. 둘은 별개입니다.
 
 `furiosa-llm` 2026.3.0 이 받는 tool 파서는 `furiosa_llm/constants.py` 의 `TOOL_PARSER_NAMES`
 에 **하드코딩**된 `{hermes, llama3_json, llama4_json, openai, solar_open}` 뿐입니다(2026-08-04 실측).
