@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# qwen3_moe × FP8 아티팩트의 model_type 을 qwen3 로 위장한다 (serve 게이트 통과용).
+# qwen3_moe 아티팩트의 model_type 을 qwen3 로 위장한다 (serve 게이트 통과용).
 #
-# 왜: furiosa-llm 런타임은 (model_type × 양자화) 화이트리스트를 들고 있어서 qwen3_moe × FP8
-#     아티팩트를 부팅 때 거부한다 — 2026.3.0 에서도 그대로다(2026-08-04 실측).
+# 왜: furiosa-llm 런타임은 model_type 화이트리스트를 들고 있어서 qwen3_moe 아티팩트를
+#     부팅 때 거부한다 — 2026.3.0 에서도 그대로다. **양자화와 무관하다**:
+#     fp8(coder-tp8)·bf16(coder-bf16-tp8) 둘 다 거부되는 것을 2026-08-04 에 실측했다.
 #
 #       pyo3_runtime.PanicException: Unsupported model metadata: ModelMetadata {
 #           model_type: Some(Qwen3Moe), quantization_config: { weight: FP8, ... } }
 #
 #     연산은 빌드 때 이미 EDF 바이너리로 컴파일돼 있고 게이트만 메타데이터 문자열을 보므로,
 #     model_type 만 바꾸면 통과하고 런타임은 컴파일된 MoE 그래프를 그대로 실행한다.
-#     (같은 qwen3_moe 라도 weight=bf16 은 통과하므로 대상이 아니다.)
 #
 # 사용:
-#   bash masquerade_moe_fp8.sh          # 대상만 보여주기(변경 없음)
-#   bash masquerade_moe_fp8.sh --apply  # 실제 적용
+#   bash masquerade_moe.sh          # 대상만 보여주기(변경 없음)
+#   bash masquerade_moe.sh --apply  # 실제 적용
 #
 # 멱등하다 — 이미 위장된 것은 model_type 이 qwen3 라 대상에서 빠진다.
 # 원본 artifact.json 은 artifact.json.orig-qwen3_moe 로 자동 백업된다(되돌리려면 되돌려 놓으면 됨).
@@ -37,18 +37,18 @@ for d in sorted(os.listdir(A)):
         mm = json.load(open(p))["model"]["model_metadata"]
     except Exception:
         continue
-    q = (mm.get("llm_config") or {}).get("quantization_config") or {}
-    if mm.get("model_type") == "qwen3_moe" and q.get("weight") == "fp8":
+    # 양자화와 무관하게 model_type=qwen3_moe 이면 전부 거부된다(2026-08-04 fp8·bf16 둘 다 실측).
+    if mm.get("model_type") == "qwen3_moe":
         print(d)
 PY
 )
 
 if [ "${#TARGETS[@]}" -eq 0 ]; then
-  echo "✅ 위장이 필요한 아티팩트 없음 (qwen3_moe × FP8 조합 0건)"
+  echo "✅ 위장이 필요한 아티팩트 없음 (model_type=qwen3_moe 0건)"
   exit 0
 fi
 
-echo "위장 대상 ${#TARGETS[@]}개 (qwen3_moe × FP8):"
+echo "위장 대상 ${#TARGETS[@]}개 (model_type=qwen3_moe):"
 printf '  - %s\n' "${TARGETS[@]}"
 if [ "$APPLY" -eq 0 ]; then
   echo

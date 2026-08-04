@@ -5,7 +5,7 @@ furiosa-llm 2026.2.0 의 serve 런타임은 `artifact.json` 의
 `model_metadata.model_type` 문자열 하나만 화이트리스트 검사합니다
 (허용: llama, exaone4, qwen2, qwen3, qwen3_moe, gpt_oss, embed, score —
 `hf_compat_next_gen.rs:367`). model_type 이 목록에 없거나(예: qwen3_next),
-런타임에 해당 (model_type × 양자화) 커널이 없으면(예: qwen3_moe × FP8) 부팅 시
+런타임에 그 model_type 용 커널이 없으면(예: qwen3_moe — 양자화와 무관) 부팅 시
 `PanicException: Unsupported model metadata` 로 죽습니다.
 
 그러나 **연산은 이미 빌드 시 EDF 바이너리로 다 컴파일**되어 있으므로, 게이트만
@@ -30,9 +30,10 @@ furiosa-llm 2026.2.0 의 serve 런타임은 `artifact.json` 의
         model_type: Some(Qwen3Moe), ...
         quantization_config: Some(QuantizationConfig { weight: FP8, ... }) }
 
-즉 **qwen3_moe × FP8 조합은 여전히 거부**되고 위장이 필요하다. 같은 qwen3_moe 라도
-weight=bf16 이면 통과하고, qwen3/llama/exaone4 계열은 애초에 대상이 아니다.
-현재 위장이 필요한 것: `coder-tp8` `a3b-tp8` `a3b-inst-2507-tp8` `a3b-think-2507-tp8`.
+즉 **qwen3_moe 는 여전히 거부**되고 위장이 필요하다. **양자화와 무관하다** — fp8(coder-tp8)과
+bf16(coder-bf16-tp8) 둘 다 같은 PanicException 으로 막히는 것을 실측했다(처음엔 fp8 만
+문제라고 봤다가 정정). qwen3/llama/exaone4 계열은 애초에 대상이 아니다.
+위장 대상: `coder-tp8` `coder-bf16-tp8` `a3b-tp8` `a3b-inst-2507-tp8` `a3b-think-2507-tp8`.
 
 (2026-08-04 수정) `--copy` 는 하드링크 복사라 예전에는 사본을 위장하면 **원본 artifact.json
 까지 같이 바뀌었다**(같은 inode 를 제자리 truncate). 지금은 임시파일 → os.replace 로 써서

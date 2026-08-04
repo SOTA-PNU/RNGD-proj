@@ -300,16 +300,17 @@ nohup furiosa-llm serve /mnt/nvme2n1p1/models/artifacts/<새-아티팩트-폴더
   서버는 초과 요청을 200 OK 로 받은 뒤 스케줄러에서 실패시키므로 클라이언트가 잘라야 합니다.
   (근거: `legacy_moe_build/README.md` §0-A·§0.8)
 
-#### ⚠️ qwen3_moe × FP8 은 serve 게이트에 막힙니다 — model_type 위장 필요
+#### ⚠️ qwen3_moe 는 serve 게이트에 막힙니다 — model_type 위장 필요
 
-`coder` · `a3b` · `a3b-inst-2507` · `a3b-think-2507` 4종은 **그대로는 안 뜹니다.**
+MoE 로 빌드한 5종(`coder` · `coder-bf16` · `a3b` · `a3b-inst-2507` · `a3b-think-2507`)은
+**그대로는 안 뜹니다.** 양자화와 무관합니다 — fp8 도 bf16 도 똑같이 막힙니다.
 2026.3.0 런타임도 `(model_type × 양자화)` 화이트리스트를 그대로 들고 있어서 부팅 때 죽습니다
 (2026-08-04 실측 — `legacy_moe_build/README.md` §6 의 "미실측" 항목 해소):
 
 ```
 pyo3_runtime.PanicException: Unsupported model metadata: ModelMetadata {
     model_type: Some(Qwen3Moe), ...
-    quantization_config: Some(QuantizationConfig { weight: FP8, ... }) }
+    quantization_config: Some(QuantizationConfig { weight: FP8, ... }) }   # bf16 도 동일
 ```
 
 연산은 빌드 때 이미 EDF 바이너리로 컴파일돼 있고 **게이트만 메타데이터 문자열을 봅니다.**
@@ -318,21 +319,20 @@ MoE 그래프를 그대로 실행합니다(2026-06-10 에 62.7 tok/s 로 검증�
 
 ```bash
 cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
-bash masquerade_moe_fp8.sh           # 대상만 보여주기(변경 없음)
-bash masquerade_moe_fp8.sh --apply   # 실제 적용
-python3 validate_catalog.py          # 4건이 사라지면 완료
+bash masquerade_moe.sh           # 대상만 보여주기(변경 없음)
+bash masquerade_moe.sh --apply   # 실제 적용
+python3 validate_catalog.py      # 지적이 사라지면 완료
 ```
 
-`masquerade_moe_fp8.sh` 는 아티팩트를 직접 훑어 `qwen3_moe × FP8` 인 것만 골라내므로
+`masquerade_moe.sh` 는 아티팩트를 직접 훑어 `model_type=qwen3_moe` 인 것만 골라내므로
 모델 목록을 손으로 관리할 필요가 없고, 이미 위장된 것은 대상에서 빠져 **여러 번 돌려도 안전**합니다.
 
 - 원본은 `artifact.json.orig-qwen3_moe` 로 자동 백업됩니다(되돌리려면 이 파일을 되돌려 놓으면 됨).
 - **KV 차원(`num_hidden_layers`·`num_key_value_heads`·`head_dim`)은 건드리면 안 됩니다** —
   런타임이 이 값으로 캐시 shape 를 잡으므로 컴파일된 그래프와 어긋나면 깨집니다.
-- 같은 `qwen3_moe` 라도 **weight=bf16 인 `coder-bf16` 은 통과**하므로 위장 대상이 아닙니다.
 - `validate_catalog.py` 가 이 조합을 자동으로 잡아 위 명령까지 찍어 줍니다.
 
-**적용 결과 (2026-08-04 실측, 4종 전부 위장 후 실기동)**
+**적용 결과 (2026-08-04 실측)**
 
 | 아티팩트 | serve | 생성 | 비고 |
 |---|:--:|:--:|---|
@@ -340,6 +340,7 @@ python3 validate_catalog.py          # 4건이 사라지면 완료
 | `a3b-inst-2507-tp8` | ✅ | ✅ | pp2, "Paris" 정답 |
 | `a3b-think-2507-tp8` | ✅ | ✅ | pp2, "Paris" 정답 |
 | `a3b-tp8` | ✅ | ❌ | **0 토큰** — 카탈로그에서 비활성 |
+| `coder-bf16-tp8` | — | — | 뒤늦게 대상으로 확인(아래) |
 
 `a3b-tp8` 은 게이트를 통과해 `Uvicorn running` 까지 가고 가중치도 29.0 GiB 정상 로드되는데
 **아무것도 생성하지 않습니다**(`/v1/completions` 로 채팅 템플릿을 우회해도 빈 문자열, 0 토큰).
@@ -347,6 +348,11 @@ temperature 0 에서는 질문과 무관한 반복 텍스트가 나옵니다. **
 같은 처리를 한 나머지 3종은 정상이고, 빌드 로그도 `BUILD SUCCEEDED`(ERROR 0건)이며
 `hf_configs` 도 정상 3종과 `max_position_embeddings`(40960) 말고는 전부 같습니다.
 → **이 빌드만의 문제로 보이며 재빌드가 필요합니다.** 그때까지 카탈로그에서 비활성입니다.
+
+> 📌 **정정(2026-08-04 후속)**: 처음엔 "fp8 만 막히고 bf16 은 통과"로 봤으나, `coder-bf16` 을
+> 실제로 띄워 보니 **bf16 도 같은 `PanicException` 으로 막혔습니다.** 게이트는 양자화가 아니라
+> `model_type` 만 봅니다. `masquerade_moe.sh` 와 `validate_catalog.py` 를 그에 맞게 고쳤고,
+> `coder-bf16-tp8` 도 위장 대상입니다.
 
 ### 3-2. furiosa-ai 프리빌트 — `HF_HUB_CACHE`(`/mnt/nvme2n1p1/models/hf/hub`) (15종)
 
