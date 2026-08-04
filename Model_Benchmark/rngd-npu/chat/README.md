@@ -306,12 +306,13 @@ MoE 그래프를 그대로 실행합니다(2026-06-10 에 62.7 tok/s 로 검증�
 
 ```bash
 cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
-for d in coder-tp8 a3b-tp8 a3b-inst-2507-tp8 a3b-think-2507-tp8; do
-  python3 ../../qwen3-next-proj/masquerade_artifact.py \
-      /mnt/nvme2n1p1/models/artifacts/$d --as qwen3 --in-place
-done
-python3 validate_catalog.py      # 4건이 사라지면 완료
+bash masquerade_moe_fp8.sh           # 대상만 보여주기(변경 없음)
+bash masquerade_moe_fp8.sh --apply   # 실제 적용
+python3 validate_catalog.py          # 4건이 사라지면 완료
 ```
+
+`masquerade_moe_fp8.sh` 는 아티팩트를 직접 훑어 `qwen3_moe × FP8` 인 것만 골라내므로
+모델 목록을 손으로 관리할 필요가 없고, 이미 위장된 것은 대상에서 빠져 **여러 번 돌려도 안전**합니다.
 
 - 원본은 `artifact.json.orig-qwen3_moe` 로 자동 백업됩니다(되돌리려면 이 파일을 되돌려 놓으면 됨).
 - **KV 차원(`num_hidden_layers`·`num_key_value_heads`·`head_dim`)은 건드리면 안 됩니다** —
