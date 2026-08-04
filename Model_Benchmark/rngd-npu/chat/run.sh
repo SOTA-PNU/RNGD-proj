@@ -3,6 +3,7 @@
 #   ./run.sh start        # 7860에 detached 기동(세션 종료해도 유지) → 맥북에서 alpacon tunnel 로 접속
 #   ./run.sh stop         # UI 만 종료 (백엔드 serve 는 남겨 둠 — 아래 설명)
 #   ./run.sh stop --all   # UI + 이 UI 가 띄운 백엔드 serve 까지 종료 (NPU 카드 반납)
+#                         #   (-all · -a · all 도 같은 뜻. 모르는 옵션은 아무것도 안 하고 에러를 낸다)
 #   ./run.sh status       # UI·백엔드·라우터·카드 점유를 한 번에 표시
 #   ./run.sh restart      # 재기동 (백엔드는 유지 → 모델 재로딩 없이 그대로 붙는다)
 #
@@ -82,8 +83,16 @@ stop_backends() {
 }
 
 stop() {
+  # 옵션은 UI 를 죽이기 **전에** 검증한다 — 오타 하나로 "UI 만 꺼지고 백엔드는 남는" 절반 실행이
+  # 되면 사용자는 다 정리된 줄 안다. 실제로 `-all`(하이픈 1개)이 조용히 무시된 사고가 있었다.
+  local all=0
+  case "${1:-}" in
+    "")               ;;
+    --all|-all|-a|all) all=1 ;;
+    *) echo "✗ 모르는 옵션: $1"; echo "   사용법: $0 stop [--all]   (--all = 백엔드 serve 까지 종료)"; return 1 ;;
+  esac
   stop_ui
-  if [ "${1:-}" = "--all" ] || [ "${1:-}" = "-a" ]; then
+  if [ "$all" = 1 ]; then
     stop_backends
     local r; r="$(router_pid)"
     [ -n "$r" ] && echo "ℹ️  furio 라우터(PID $r)는 별개 서비스라 그대로 뒀습니다. 내리려면: bash $ROUTER_STOP stop"
