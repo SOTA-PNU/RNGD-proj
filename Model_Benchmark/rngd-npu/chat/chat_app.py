@@ -43,8 +43,16 @@ from openai import OpenAI  # noqa: E402
 import npu_metrics  # noqa: E402  실시간 성능 대시보드(TPS·TTFT·TPOT·E2E·Power) — furiosa chat-playground 이식
 import rag_store    # noqa: E402  선택적 RAG(문서 검색 후 컨텍스트 주입) — furiosa rag(kotaemon) 패턴 이식
 
-ARTIFACTS = Path.home() / "RNGD-proj/Model_Benchmark/rngd-npu/artifacts"
-FURIOSA_LLM = str(Path.home() / "furiosa/bin/furiosa-llm")
+# 로컬 legacy(v2) tp8 아티팩트 저장소. 예전 rngd-npu/artifacts 는 비었고, 2026-07 재빌드분은
+# 공용 모델 저장소(nvme2)로 옮겨졌다. CHAT_ARTIFACTS 로 덮어쓸 수 있다.
+ARTIFACTS = Path(os.environ.get("CHAT_ARTIFACTS", "/mnt/nvme2n1p1/models/artifacts"))
+# 프리빌트 저장소(furiosa-ai/*)를 serve 가 해석할 HF 캐시. /etc/profile.d/hf-cache.sh 와 같은 값이며,
+# 로그인 셸을 안 거치고 뜬 경우(setsid·systemd)에도 자식 serve 가 같은 캐시를 보도록 여기서 못박는다.
+HF_HUB_CACHE = os.environ.get("HF_HUB_CACHE", "/mnt/nvme2n1p1/models/hf/hub")
+# serve 바이너리. venv 가 깨졌을 때 다른 venv 로 갈아끼울 수 있게 환경변수로 뺀다
+# (2026-07-31 ~/furiosa 의 furiosa-torch 만 2026.3.0 으로 올라가 furiosa-models 2026.2.0 과
+#  충돌하며 serve 가 import 단계에서 죽은 전례 — FURIOSA_LLM_BIN 으로 우회 가능).
+FURIOSA_LLM = os.environ.get("FURIOSA_LLM_BIN", str(Path.home() / "furiosa/bin/furiosa-llm"))
 HERE = Path(__file__).resolve().parent
 LOG_DIR = HERE / "serve_logs"
 CONV_DIR = HERE / "conversations"
@@ -67,74 +75,209 @@ def _logo_data_uri():
 
 LOGO_URI = _logo_data_uri()
 
-# 키 -> 모델. kind: tp8(카드 1~4 dp) / tp32(4장 고정). ctx: max_model_len.
-# Qwen2.5-Coder-1.5B 는 furiosa-llm 2026.2.0 이 출력이 깨지게 컴파일해(greedy 에서도
-# 토큰 수프, untie·재빌드로도 안 고쳐짐 — info/README_build.md 8.2) 카탈로그에서 뺐다.
+# ── 모델 카탈로그 (2026-08-04 전면 갱신) ───────────────────────────────────
+# 옛 카탈로그는 ~/RNGD-proj/Model_Benchmark/rngd-npu/artifacts 를 가리켰으나 그 폴더는 .gitkeep 만
+# 남아 12종 전부 死경로였다. 지금 실재하는 두 갈래를 노출한다.
+#
+#   src="art"  로컬 legacy(v2) tp8 아티팩트 — /mnt/nvme2n1p1/models/artifacts (2026-07-29 빌드, 8종)
+#              tp8 로 빌드해 뒀으므로 serve 때 -pp 로 층을 쪼갤 수 있다(= pp 커스텀 가능).
+#   src="hub"  furiosa-ai 프리빌트 저장소 — HF_HUB_CACHE(/mnt/nvme2n1p1/models/hf/hub)
+#              대부분 tp32(4장 독점)로 박혀 있고, FXB 번들은 pp 를 런타임이 거부한다(no_pp).
+#
+# 필드
+#   name       드롭다운 표시명. **고유해야 한다**(DISPLAY2KEY 의 키) — 같은 모델의 tp8/tp32 판을
+#              구분해야 하므로 이름에 tp 를 직접 넣는다.
+#   port       고정 포트(모델마다 유일). 라우터(:8400/백엔드 :8410+)와 겹치지 않는 8000~8024 대역.
+#   kind       "tp8"(카드 1장 단위, dp·pp 선택) | "tp32"(4장 고정, dp·pp 비활성)
+#   src/sub    "art"→ARTIFACTS 하위 디렉토리명 / "hub"→HF 저장소 ID(furiosa-llm 이 캐시에서 해석)
+#   ctx        아티팩트 총 컨텍스트 — artifact.json 의 최대 attention_size 실측
+#   prompt_max 한 번에 넣을 수 있는 프롬프트 상한(생략 시 ctx). kv_heads=4 인 30B-A3B 계열은
+#              append(chunked prefill) 버킷이 65536 에서 막혀 65,408 이 상한이다.
+#              ⚠️ 서버는 초과 요청을 200 OK 로 받은 뒤 스케줄러에서 실패한다 — 클라이언트가 잘라야 한다.
+#   pp_min     최소이자 기본 pp. 최대 컨텍스트로 쓸 때 1장(47.5G)에 안 들어가면 2 이상.
+#              (짧게 쓰면 pp1 로도 뜨지만, UI 는 최대 컨텍스트 기준으로 안전하게 고른다.)
+#   no_pp      True 면 pp 선택 불가 — FXB 아티팩트는 런타임이 PanicException 으로 거절(2026-07-22 실측)
+#   pe         인스턴스 하나가 쓰는 PE 수(기본 8 = 카드 1장). 8 미만이면 카드 일부(npu:X:0-N)만
+#              쓰고 dp·pp 는 1 고정.
+#   tool       --tool-call-parser 값 또는 None    reasoning  --reasoning-parser 값 또는 None
+#              ⚠️ furiosa-llm 2026.3.0 이 받는 값은 constants.py:TOOL_PARSER_NAMES 에 하드코딩된
+#              {hermes, llama3_json, llama4_json, openai, solar_open} 뿐이다(2026-08-04 실측).
+#              Qwen3-Coder 계열 전용 qwen3_coder 파서는 이 목록에 없어 주면 serve 가 즉시
+#              'invalid choice' 로 죽는다 → 아래 coder 3종은 tool=None(채팅 전용)으로 둔다.
+#              (coding-agent/furiosa_patches/ 의 로컬 파서는 __init__.py 등록만 해서는 안 되고
+#               constants.py 목록까지 손봐야 한다 — 그 패치가 들어오면 여기서 qwen3_coder 로 바꿀 것.)
+#   extra      그 밖의 serve 인자
+#
+# 근거: legacy_moe_build/README.md §0-A(빌드 실측표)·§0.5(파서)·§4.1(pp),
+#       coding-agent/furiosa_router.py REGISTRY(프리빌트 파서·tp), 각 artifact.json 직접 파싱.
 CATALOG = {
-    "coder7":         dict(name="Qwen2.5-Coder-7B-Inst", port=8002, kind="tp8",
-                           sub="qwen2.5-coder-7b-inst-tp8", extra=[], ctx=32768),
-    "coder14":        dict(name="Qwen2.5-Coder-14B-Inst", port=8003, kind="tp8",
-                           sub="qwen2.5-coder-14b-inst-tp8", extra=[], ctx=32768),
-    "coder14-base":   dict(name="Qwen2.5-Coder-14B tp8", port=8007, kind="tp8",
-                           sub="qwen2.5-coder-14b-tp8", extra=[], ctx=32768),
-    # Qwen2.5-Coder-32B-Inst (bf16 62G) — 1장(47.5G)엔 안 들어가 serve때 pp2 로 2장 레이어분할(pp_fixed=2).
-    # 실측(2026-06-18): pp2 면 per-card 가중치 29.7/31.4G(벽 ~32G 아래)+KV(15.8/14.1G) → 정상 serve·생성.
-    # a3b bf16(pp2 29.7G/장 OK) 선례와 동일. (pp2 가 막히면 pp_fixed=4 로 15.5G/장 안전화.)
-    "coder32":        dict(name="Qwen2.5-Coder-32B-Inst", port=8001, kind="tp8", pp_fixed=2,
-                           sub="qwen2.5-coder-32b-inst-tp8", extra=[], ctx=32768),
-    # Qwen3-Coder-30B-A3B (MoE, --max-model-len 65536 로 빌드). a3b-fp8 은 masquerade 로 FP8 MoE serve
-    # 부활시킨 것(artifact.json model_type=qwen3 위장) — 30G 라 1장 OK, 사용자가 8000 에서 운용 중.
-    # a3b(bf16)은 58G > 1장 47.5G 라 1장(dp1·pp1)이면 serve OOM → pp_fixed=2(2장 레이어분할, 29.7G/장 OK)로 강제.
-    # (전에는 pp 미고정이라 모델 바꿀 때 기본 pp1 로 떠 OOM '띄우기 실패' 났음 — 2026-06-18 정정.)
-    "a3b-fp8":        dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp8", port=8000, kind="tp8",
-                           sub="qwen3-coder-30b-a3b-inst-fp8-tp8-65k-tc", extra=[], ctx=65536),
-    "a3b":            dict(name="Qwen3-Coder-30B-A3B-Inst tp8", port=8006, kind="tp8", pp_fixed=2,
-                           sub="qwen3-coder-30b-a3b-inst-tp8-65k-tc", extra=[], ctx=65536),
-    # Qwen2.5-72B-Instruct(bf16 tp8 아티팩트, 136G) — ❌ **2026.2.0서 serve 불가라 비활성**(2026-06-17 실측·4에이전트 규명).
-    # bf16 은 pp2면 67.7G/장>47.5라 pp4 강제인데, pp4(4칩 인터칩)+큰 per-stage 가중치(33.6G/장) 조합이
-    # NativeLLMEngine 가중치 바인딩(인터칩 DRAM 매핑) 단계에서 NPU 드라이버 raw 에러(-1803550720=0x94800000,
-    # errno 아님)로 죽음. OOM 아님(카드당 11G 여유·--max-model-len 4096 동일), KV 아님(KV 로그 도달 전).
-    # 대조: qwen3-32b-fp8(pp1·인터칩 없음) OK, coder7 pp4(작은 per-stage) OK, a3b bf16 pp2(2칩 큰 per-stage) OK.
-    # 진짜 벽은 per-card 가중치 ~32G 초과(bracket: a3b bf16 pp2 29.7G/장 OK / 72b pp4 33.6G/장 FAIL / a3b pp4 16G OK).
-    # → 살리려면 FP8 양자화 후 -pp 4(18G/장, 벽 아래) 가 1순위(미실측). FP8+pp2(36G/장)는 벽 위라 위험. 70B급 즉시
-    # 대안은 llama-3.3-70b(tp32 prebuilt). 상세 README.md §3·info/README_build.md·메모리. (FP8 생기면 pp_fixed=4로 부활.)
-    # "qwen72b":      dict(name="Qwen2.5-72B-Inst", port=8008, kind="tp8", pp_fixed=4,
-    #                     sub="qwen2.5-72b-inst-tp8", extra=[], ctx=32768),
-    "qwen3-32b":      dict(name="Qwen3-32B-FP8", port=8004, kind="tp8",
-                           sub="qwen3-32b-fp8-tp8", extra=["--reasoning-parser", "qwen3"], ctx=40960),
-    "qwen3-32b-16k":  dict(name="Qwen3-32B-FP8-16k", port=8005, kind="tp8",
-                           sub="qwen3-32b-fp8-tp8-16k", extra=["--reasoning-parser", "qwen3"], ctx=16384),
-    "exaone-32b":     dict(name="EXAONE-4.0-32B-FP8", port=8011, kind="tp32",
-                           sub="exaone-4.0-32b-fp8-tp32/snapshots/8c42cdea3e7339fe3e3aefc5c7cff1f66b320f31",
-                           extra=["--reasoning-parser", "exaone4"], ctx=131072),
-    "llama-70b":      dict(name="Llama-3.3-70B", port=8012, kind="tp32",
-                           sub="llama-3.3-70b-inst-tp32/snapshots/2cbb7a6286be88e25072e56d3a64943e56408440",
-                           extra=["--tool-call-parser", "llama3_json"], ctx=131072),
-    "qwen3-32b-tp32": dict(name="Qwen3-32B-FP8-tp32", port=8013, kind="tp32",
-                           sub="qwen3-32b-fp8-tp32/snapshots/1f5cf9426425998140e2dde6357ba0ee4f6820b2",
-                           extra=["--reasoning-parser", "qwen3"], ctx=40960),
-    # (Qwen3-Coder-30B-A3B-FP8 은 한때 FP8 MoE serve 미지원으로 제외했으나 masquerade 로 부활 — 위 a3b-fp8.)
+    # ── 로컬 tp8 아티팩트 (2026-07-29 빌드) — pp 를 UI 에서 바꿀 수 있는 유일한 갈래 ──
+    # kv_heads=4 계열(coder·a3b-*)은 총 컨텍스트가 262144 여도 프롬프트는 65,408 까지만 된다.
+    # ⚠️ model_type=qwen3_moe 인 것(coder·coder-bf16·a3b·a3b-inst-2507·a3b-think-2507)은
+    #    serve 게이트가 거부한다 — `PanicException: Unsupported model metadata`.
+    #    **양자화와 무관하다**: fp8·bf16 둘 다 막히는 것을 2026-08-04 에 실측했다.
+    #    연산은 이미 컴파일돼 있고 게이트만 메타데이터를 보므로 artifact.json 의 model_type 을
+    #    qwen3 로 위장하면 뜬다: `bash masquerade_moe.sh --apply`
+    #    (README §3-1, validate_catalog.py 가 자동으로 잡아 명령까지 찍어 준다.)
+    "coder":            dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp8", port=8000, kind="tp8",
+                             src="art", sub="coder-tp8", ctx=262144, prompt_max=65408,
+                             pp_min=2, tool=None, reasoning=None),
+    # bf16 56.9G. pp4 실측 분할은 13.5/14.1/14.1/15.8 GiB → pp2 면 27.6/29.9 GiB.
+    # 예전 pp2 상한(29.7G) 턱밑이라 한동안 pp4 로 강제했으나, 2026-08-04 에 pp2 로 실제 기동해
+    # 정상 동작을 확인하고 기본을 pp2 로 내렸다(카드 2장만 쓰므로 다른 모델과 같이 띄울 수 있다).
+    # 최대 컨텍스트(262144)로 길게 쓰면 KV 가 장당 12 GiB 라 빠듯하니, 그때는 UI 에서 pp4 를 고를 것.
+    "coder-bf16":       dict(name="Qwen3-Coder-30B-A3B-Inst bf16 tp8", port=8001, kind="tp8",
+                             src="art", sub="coder-bf16-tp8", ctx=262144, prompt_max=65408,
+                             pp_min=2, tool=None, reasoning=None),
+    "a3b-inst-2507":    dict(name="Qwen3-30B-A3B-Instruct-2507-FP8 tp8", port=8002, kind="tp8",
+                             src="art", sub="a3b-inst-2507-tp8", ctx=262144, prompt_max=65408,
+                             pp_min=2, tool="hermes", reasoning=None),
+    "a3b-think-2507":   dict(name="Qwen3-30B-A3B-Thinking-2507-FP8 tp8", port=8003, kind="tp8",
+                             src="art", sub="a3b-think-2507-tp8", ctx=262144, prompt_max=65408,
+                             pp_min=2, tool="hermes", reasoning="qwen3"),
+    # ❌ a3b(Qwen3-30B-A3B-FP8) — **아티팩트가 고장이라 비활성**(2026-08-04 실측).
+    # 위장 후 serve 는 정상적으로 뜨는데(게이트 통과·Uvicorn running·가중치 29.0G 로드 OK)
+    # **생성이 0 토큰**이다. /v1/completions 로 채팅 템플릿을 우회해도 빈 문자열이라
+    # 샘플링·파서·템플릿 문제가 아니다. temperature 0 에선 질문과 무관한 반복 텍스트가 나온다.
+    # 같은 위장을 적용한 coder·a3b-inst-2507·a3b-think-2507 은 전부 정상 생성하므로
+    # 위장 방식의 문제가 아니라 이 빌드만의 문제다(빌드 로그는 SUCCEEDED, ERROR 0건).
+    # hf_configs 도 정상 3종과 max_position_embeddings(40960) 빼고 전부 동일.
+    # → 재빌드 후 되살릴 것. 그때 이 주석을 지우고 아래 항목을 복구하면 된다.
+    # "a3b":            dict(name="Qwen3-30B-A3B-FP8 tp8", port=8004, kind="tp8",
+    #                        src="art", sub="a3b-tp8", ctx=40960,
+    #                        pp_min=1, tool="hermes", reasoning="qwen3"),
+    "qwen3-32b":        dict(name="Qwen3-32B-FP8 tp8", port=8005, kind="tp8",
+                             src="art", sub="qwen3-32b-tp8", ctx=40960,
+                             pp_min=1, tool="hermes", reasoning="qwen3"),
+    # 가중치 30.8G + KV 256KiB/token — 131072 를 다 쓰면 1장 초과라 pp2.
+    "exaone4":          dict(name="EXAONE-4.0-32B-FP8 tp8", port=8006, kind="tp8",
+                             src="art", sub="exaone4-tp8", ctx=131072,
+                             pp_min=2, tool="hermes", reasoning="exaone4"),
+    "llama31-8b":       dict(name="Llama-3.1-8B-Instruct tp8", port=8007, kind="tp8",
+                             src="art", sub="llama31-8b-tp8", ctx=131072,
+                             pp_min=1, tool="llama3_json", reasoning=None),
+
+    # ── furiosa-ai 프리빌트 (HF 캐시) — tp32 는 4장 독점이라 한 번에 하나만 뜬다 ──
+    "hub-gpt-oss-120b":     dict(name="gpt-oss-120b tp32", port=8010, kind="tp32",
+                                 src="hub", sub="furiosa-ai/gpt-oss-120b", ctx=131072,
+                                 tool="openai", reasoning=None),
+    "hub-solar-100b":       dict(name="Solar-Open-100B-NVFP4A16 tp32", port=8011, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Solar-Open-100B-NVFP4A16", ctx=131072,
+                                 tool="solar_open", reasoning="solar_open"),
+    "hub-llama-70b":        dict(name="Llama-3.3-70B-Instruct tp32", port=8012, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Llama-3.3-70B-Instruct", ctx=131072,
+                                 tool="llama3_json", reasoning=None),
+    "hub-qwen3-32b":        dict(name="Qwen3-32B-FP8 tp32", port=8013, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Qwen3-32B-FP8", ctx=40960,
+                                 tool="hermes", reasoning="qwen3"),
+    "hub-exaone4":          dict(name="EXAONE-4.0-32B-FP8 tp32", port=8014, kind="tp32",
+                                 src="hub", sub="furiosa-ai/EXAONE-4.0-32B-FP8", ctx=131072,
+                                 tool="hermes", reasoning="exaone4"),
+    # enable_thinking 템플릿 kwargs 없이는 추론이 안 나온다(available_model.md 비고).
+    "hub-kexaone-236b":     dict(name="K-EXAONE-236B-A23B-NVFP4A16 tp32", port=8015, kind="tp32",
+                                 src="hub", sub="furiosa-ai/K-EXAONE-236B-A23B-NVFP4A16", ctx=262144,
+                                 tool="hermes", reasoning="deepseek_v3",
+                                 extra=["--default-chat-template-kwargs", '{"enable_thinking": true}']),
+    "hub-a3b-inst-2507":    dict(name="Qwen3-30B-A3B-Instruct-2507-FP8 tp32", port=8016, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Qwen3-30B-A3B-Instruct-2507-FP8", ctx=262144,
+                                 tool="hermes", reasoning=None),
+    "hub-a3b-think-2507":   dict(name="Qwen3-30B-A3B-Thinking-2507-FP8 tp32", port=8017, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Qwen3-30B-A3B-Thinking-2507-FP8", ctx=262144,
+                                 tool="hermes", reasoning="qwen3"),
+    "hub-a3b":              dict(name="Qwen3-30B-A3B-FP8 tp32", port=8018, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Qwen3-30B-A3B-FP8", ctx=40960,
+                                 tool="hermes", reasoning="qwen3"),
+    "hub-coder":            dict(name="Qwen3-Coder-30B-A3B-Inst-FP8 tp32", port=8019, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Qwen3-Coder-30B-A3B-Instruct-FP8", ctx=262144,
+                                 tool=None, reasoning=None),
+    # 멀티모달(VL) — 이 UI 는 텍스트만 보내므로 텍스트 채팅으로만 쓴다.
+    "hub-qwen3-vl-32b":     dict(name="Qwen3-VL-32B-Instruct tp32", port=8020, kind="tp32",
+                                 src="hub", sub="furiosa-ai/Qwen3-VL-32B-Instruct", ctx=262144,
+                                 tool="hermes", reasoning=None),
+    # 아래 4종은 프리빌트인데도 1장짜리라 tp32 처럼 4장을 묶지 않는다.
+    # Llama-3.1-8B 는 v2 아티팩트라 pp 가 되고, Qwen3-8B/4B 는 FXB 라 pp 가 막힌다(no_pp).
+    "hub-llama31-8b":       dict(name="Llama-3.1-8B-Instruct tp8 (prebuilt)", port=8021, kind="tp8",
+                                 src="hub", sub="furiosa-ai/Llama-3.1-8B-Instruct", ctx=131072,
+                                 pp_min=1, tool="llama3_json", reasoning=None),
+    "hub-qwen3-8b":         dict(name="Qwen3-8B-FP8 tp8 (prebuilt)", port=8022, kind="tp8",
+                                 src="hub", sub="furiosa-ai/Qwen3-8B-FP8", ctx=40960,
+                                 pp_min=1, no_pp=True, tool="hermes", reasoning="qwen3"),
+    "hub-qwen3-4b":         dict(name="Qwen3-4B-FP8 tp8 (prebuilt)", port=8023, kind="tp8",
+                                 src="hub", sub="furiosa-ai/Qwen3-4B-FP8", ctx=40960,
+                                 pp_min=1, no_pp=True, tool="hermes", reasoning="qwen3"),
+    # tp4 — 카드 하나의 앞 4 PE 만 쓴다(npu:X:0-3). dp·pp 는 1 고정.
+    "hub-qwen2.5-0.5b":     dict(name="Qwen2.5-0.5B-Instruct tp4 (prebuilt)", port=8024, kind="tp8",
+                                 src="hub", sub="furiosa-ai/Qwen2.5-0.5B-Instruct", ctx=32768,
+                                 pe=4, tool="hermes", reasoning=None),
+    # 임베딩/리랭커(furiosa-ai/Qwen3-Embedding-8B·Qwen3-Reranker-8B)는 채팅 모델이 아니라 뺐다 —
+    # /v1/embeddings·/v1/rerank 로 쓰는 것이고 라우터(:8400)가 이미 노출한다.
 }
 DISPLAY2KEY = {m["name"]: k for k, m in CATALOG.items()}
 DISPLAY_NAMES = [m["name"] for m in CATALOG.values()]
-# 기본 선택 모델 = 가장 가벼운 정상 모델 coder7 (coder1.5 는 출력 깨짐으로 제외, 위 참고).
-DEFAULT_MODEL = CATALOG["coder7"]["name"]
-STARTUP_TIMEOUT = float(os.environ.get("CHAT_SERVE_TIMEOUT", "900"))
-# 마지막으로 고른 모델/병렬구성을 서버측에 기억 → 브라우저 새로고침 후에도 default(coder7)로 안 돌아감.
+# 이름·포트가 겹치면 드롭다운/상태패널이 조용히 어긋나므로 임포트 시점에 잡는다.
+assert len(DISPLAY2KEY) == len(CATALOG), "CATALOG name 중복"
+assert len({m["port"] for m in CATALOG.values()}) == len(CATALOG), "CATALOG port 중복"
+# 기본 선택 = 가장 가볍고(15G) pp1 로 1장에 뜨는 로컬 tp8 모델.
+DEFAULT_MODEL = CATALOG["llama31-8b"]["name"]
+# 프리빌트(src="hub") 모델의 첫 기동은 HF 다운로드(수십~백 GB)를 포함할 수 있어 라우터와 같은
+# 2400 초를 기본으로 둔다. 로컬 아티팩트만 쓸 거면 CHAT_SERVE_TIMEOUT 으로 줄여도 된다.
+STARTUP_TIMEOUT = float(os.environ.get("CHAT_SERVE_TIMEOUT", "2400"))
+# 마지막으로 고른 모델/병렬구성을 서버측에 기억 → 브라우저 새로고침 후에도 DEFAULT_MODEL 로 안 돌아감.
 # user_set=False 면(아직 아무도 안 바꿈) '지금 NPU 에 떠 있는 모델'로 시작한다(아래 _initial_model).
 # (단일 사용자 DEMO 전제. 새 세션/탭도 마지막 선택을 따른다.)
 _LAST_MODEL = {"name": DEFAULT_MODEL, "dp": 1, "pp": 1, "user_set": False}
 
 
 def _dd_choices():
-    """드롭다운 라벨: '모델명 · tp8/tp32'. 단 이름에 이미 tp 표시가 있으면(예: '… tp8',
-    'Qwen3-32B-FP8-tp32') 중복되니 안 붙인다. 값은 모델명(DISPLAY2KEY 키)."""
+    """드롭다운 라벨. 이름 자체가 이미 tp 를 달고 있으므로(카탈로그 참고) 뒤에 컨텍스트만 덧붙인다.
+    kv_heads=4 계열처럼 프롬프트 상한이 총 컨텍스트보다 짧으면 그 값도 같이 보여 준다.
+    값은 모델명(DISPLAY2KEY 의 키)."""
     out = []
     for m in CATALOG.values():
-        name, kind = m["name"], m["kind"]
-        label = name if kind.lower() in name.lower() else f"{name}  ·  {kind}"
-        out.append((label, name))
+        ctx, pmax = m["ctx"], m.get("prompt_max")
+        c = f"{ctx // 1024}K" + (f"/프롬프트 {pmax // 1024}K" if pmax and pmax < ctx else "")
+        out.append((f"{m['name']}  ·  {c}", m["name"]))
     return out
+
+
+def _artifact_ref(m):
+    """serve 에 넘길 아티팩트 위치. 로컬은 절대경로, 프리빌트는 HF 저장소 ID 그대로 넘긴다
+    (furiosa-llm 이 HF_HUB_CACHE 에서 해석하고, 없으면 내려받는다)."""
+    return str(ARTIFACTS / m["sub"]) if m.get("src", "art") == "art" else m["sub"]
+
+
+def _parser_flags(m):
+    """--tool-call-parser / --reasoning-parser 플래그.
+    tool 파서를 쓰려면 --enable-auto-tool-choice 가 같이 있어야 하고(없으면 tool 요청이 400),
+    reasoning 파서는 추론 모델에만 준다(아닌 모델에 주면 400)."""
+    flags = []
+    if m.get("tool"):
+        flags += ["--enable-auto-tool-choice", "--tool-call-parser", m["tool"]]
+    if m.get("reasoning"):
+        flags += ["--reasoning-parser", m["reasoning"]]
+    return flags + list(m.get("extra", []))
+
+
+def _pp_choices(m):
+    """이 모델에서 고를 수 있는 pp 목록. FXB 아티팩트는 pp 자체가 거부되고(no_pp),
+    pe<8(부분 카드) 모델도 쪼갤 대상이 아니라 1 뿐이다. 그 밖엔 pp_min 이상 4 까지.
+
+    pp=3 도 넣는다. 한때 라우터의 (1,2,4) 를 그대로 가져와 3 을 뺐었는데 근거가 없었다 —
+    이 UI 는 원래 [1,2,3,4] 를 주고 있었고, 런타임도 `-pp 3` 을 받는다(2026-08-04 실측:
+    serve 로그에 `Parallelism Config: tp=8, pp=3, dp=1`). 다만 카드 4장에서 pp3 은 dp=1
+    고정이고 한 장이 놀게 된다(3장 점유). 2 로 안 들어가는 모델을 4장까지 안 쓰고 올릴 때 쓴다.
+    (pp3 로 끝까지 로드해 생성까지 확인한 실측은 아직 없다 — 카드가 비면 확인할 것.)"""
+    if m.get("no_pp") or m.get("pe", 8) < 8:
+        return [1]
+    return [n for n in (1, 2, 3, 4) if n >= m.get("pp_min", 1)] or [1]
+
+
+def _serve_env():
+    """자식 serve 프로세스 환경. 로그인 셸을 안 거치고 뜬 경우에도(setsid·systemd) 프리빌트
+    저장소를 같은 캐시에서 찾도록 HF_HUB_CACHE 를 못박는다."""
+    env = dict(os.environ)
+    env.setdefault("HF_HUB_CACHE", HF_HUB_CACHE)
+    return env
 
 
 def _port_up(port):
@@ -237,12 +380,18 @@ class ServeManager:
         if not key or key not in CATALOG:
             return
         self._discover()
-        kind = CATALOG[key]["kind"]
-        if kind == "tp32":
+        m = CATALOG[key]
+        if m["kind"] == "tp32":
             dp, pp, needed = 1, 1, 4          # tp32 는 4장 전부 — dp·pp 무의미
+        elif m.get("pe", 8) < 8:
+            dp, pp, needed = 1, 1, 1          # 부분 카드(tp<8) — 한 장의 앞 pe 개 PE 만
         else:
+            # UI 를 안 거친 호출(복원된 _LAST_MODEL 등)도 있으므로 여기서 다시 조인다.
+            # pp 는 이 모델이 실제로 허용하는 값 중 요청에 가장 가까운 것으로 스냅한다
+            # (FXB → 1 강제, 1장에 안 들어가는 모델 → pp_min 이상).
+            allowed = _pp_choices(m)
+            pp = min(allowed, key=lambda n: (abs(n - max(1, int(pp or 1))), n))
             dp = max(1, min(4, int(dp or 1)))
-            pp = max(1, min(4, int(pp or 1)))
             if dp * pp > 4:                    # 카드 4장 한도 — pp 우선, dp 축소
                 dp = max(1, 4 // pp)
             needed = dp * pp                    # tp8 = 카드당 8PE → 카드 수 = dp×pp
@@ -303,7 +452,10 @@ class ServeManager:
                 self._state[key] = "error"
                 self._err[key] = f"{needed}장 확보 실패"
                 return
-            dev = ",".join(f"npu:{c}" for c in cards)
+            # tp<8 아티팩트는 카드 하나를 통째로 주면 안 되고 앞 pe 개 PE 만 준다(예: tp4 → npu:0:0-3).
+            pe = CATALOG[key].get("pe", 8)
+            dev = (",".join(f"npu:{c}" for c in cards) if pe >= 8
+                   else f"npu:{cards[0]}:0-{pe - 1}")
             self._dev[key] = dev
         self._start_and_wait(key, dev)
         # 전환 중에 dp/pp 변경 요청이 들어와 쌓였으면(=_pending), 지금 serve 를 내리고 새 설정으로
@@ -317,9 +469,11 @@ class ServeManager:
 
     def _start_and_wait(self, key, dev):
         m = CATALOG[key]
-        art = str(ARTIFACTS / m["sub"])
+        art = _artifact_ref(m)
         port = m["port"]
-        if not Path(art, "artifact.json").exists():
+        # 로컬 아티팩트만 미리 존재를 확인한다. 프리빌트(src="hub")는 저장소 ID 라 파일이 아니고,
+        # 캐시에 없으면 serve 가 알아서 내려받는다(첫 기동은 수십 GB 다운로드가 될 수 있음).
+        if m.get("src", "art") == "art" and not Path(art, "artifact.json").exists():
             with self._lock:
                 self._state[key] = "error"
                 self._err[key] = f"artifact 없음: {art}"
@@ -328,10 +482,11 @@ class ServeManager:
         dp, pp = self._par.get(key, (1, 1))
         cmd = [FURIOSA_LLM, "serve", art, "--devices", dev, "--host", "0.0.0.0",
                "--port", str(port), "--enable-prefix-caching",
-               *_par_flags(m["kind"], dp, pp), *m["extra"]]
+               *_par_flags(m["kind"], dp, pp), *_parser_flags(m)]
         try:
             logf = open(LOG_DIR / f"{port}.log", "w")
-            proc = subprocess.Popen(cmd, stdout=logf, stderr=logf, start_new_session=True)
+            proc = subprocess.Popen(cmd, stdout=logf, stderr=logf, start_new_session=True,
+                                    env=_serve_env())
         except Exception as e:
             with self._lock:
                 self._state[key] = "error"
@@ -969,21 +1124,24 @@ def filter_convos(query):
 def _par_updates(model_name, dp, pp):
     """모델 종류에 맞춰 dp·pp 드롭다운을 재구성하고, 적용할 (dp,pp) 를 함께 돌려준다.
     - tp32: dp·pp 비활성(4장 고정, 둘 다 1·선택 불가)
-    - tp8 : pp 에 맞춰 dp 선택지를 제한(dp×pp ≤ 4 장). 반환: (dp_update, pp_update, dp, pp)"""
+    - pe<8(부분 카드)·FXB(no_pp): pp 는 1 뿐 — 전자는 dp 도 1, 후자는 dp 만 고른다.
+    - 그 밖의 tp8: pp 는 _pp_choices(pp_min 이상), dp 는 dp×pp ≤ 4 장.
+    반환: (dp_update, pp_update, dp, pp)"""
     key = DISPLAY2KEY.get(model_name)
     m = CATALOG.get(key, {})
-    if m.get("kind") == "tp32":
+    if not m or m.get("kind") == "tp32":
         return (gr.update(value=1, choices=[1], interactive=False),
                 gr.update(value=1, choices=[1], interactive=False), 1, 1)
-    pf = m.get("pp_fixed")
-    if pf:   # 1장에 안 들어가 pp 가 강제되는 모델(예: 72B 136G) — dp1·pp=pf 고정, 선택 비활성
+    if m.get("pe", 8) < 8:   # 카드 하나의 일부 PE 만 쓰는 모델 — 쪼개거나 복제할 대상이 아니다
         return (gr.update(value=1, choices=[1], interactive=False),
-                gr.update(value=pf, choices=[pf], interactive=False), 1, pf)
-    pp = max(1, min(4, int(pp or 1)))
+                gr.update(value=1, choices=[1], interactive=False), 1, 1)
+    pps = _pp_choices(m)
+    # 요청값을 허용 목록으로 스냅(같은 거리면 작은 쪽) — 예: pp_min=2 인데 1 이 들어오면 2 로.
+    pp = min(pps, key=lambda n: (abs(n - max(1, int(pp or 1))), n))
     max_dp = max(1, 4 // pp)                      # 카드 4장 한도: dp ≤ 4/pp
     dp = max(1, min(int(dp or 1), max_dp))
     return (gr.update(value=dp, choices=list(range(1, max_dp + 1)), interactive=True),
-            gr.update(value=pp, choices=[1, 2, 3, 4], interactive=True), dp, pp)
+            gr.update(value=pp, choices=pps, interactive=len(pps) > 1), dp, pp)
 
 
 def on_model_change(model_name, dp, pp):
@@ -1023,7 +1181,7 @@ def _serving_model_key():
 
 
 def _initial_model():
-    """첫 시작 모델: 사용자가 아직 안 바꿨으면 '지금 떠 있는 모델', 없으면 default(coder7).
+    """첫 시작 모델: 사용자가 아직 안 바꿨으면 '지금 떠 있는 모델', 없으면 DEFAULT_MODEL.
     떠 있는 모델이면 그 실제 dp·pp 구성까지 _LAST_MODEL 에 반영한다."""
     if not _LAST_MODEL.get("user_set"):
         k = _serving_model_key()
@@ -1238,7 +1396,7 @@ def _header_html():
 
 
 def build_ui():
-    # 첫 시작 모델 = 지금 NPU 에 떠 있는 모델(없으면 default coder7). 드롭다운·max_tokens 도 그 모델로.
+    # 첫 시작 모델 = 지금 NPU 에 떠 있는 모델(없으면 DEFAULT_MODEL). 드롭다운·max_tokens 도 그 모델로.
     _init_model = _initial_model()
     _ctx0 = CATALOG[DISPLAY2KEY[_init_model]]["ctx"]
     with gr.Blocks(title="Furiosa RNGD Chat", fill_height=True, css=CSS, theme=THEME) as demo:
