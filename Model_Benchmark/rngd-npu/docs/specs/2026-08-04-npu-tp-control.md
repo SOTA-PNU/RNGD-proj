@@ -73,6 +73,16 @@ pp 는 **v2 아티팩트에서만** 허용(fxb 는 PanicException). tp8 변형�
 2. **클라이언트** — tp 축 UI + 빌드 + mock 스모크 + 라이브 e2e.
 3. 배포: 라우터는 재시작만. 클라이언트는 dist 재빌드 후 각 PC `install.sh` 재실행(사용자 승인함).
 
+## 후속: pp 기본값(pp_default) — 1장 초과 모델 (2026-08-04 추가)
+
+BF16 코더(`coder-bf16-tp8`, 57GB)는 1장(47.5GB)에 안 들어가 **pp1 이 OOM**. 그래서 tp 축과
+대칭으로 **모델별 기본 pp** 를 도입:
+- 레지스트리 `pp_opts=[2,3,4]` → par_choices 가 pp1 을 빼고 2·3·4 만 노출, dp 는 1(대형이라 복제 안 함).
+- `pp_default(base)=pp_opts[0]`(=2). variant_id 는 pp==기본 pp 면 `@pp` 생략 → **맨이름이 pp2 를 뜻함**.
+  parse_variant 는 `@pp` 없으면 pp_default 로 채운다. (일반 모델은 pp_default=1 로 기존과 동일.)
+- `/router/models` 가 `pp_default` 를 실어 보내고, 클라이언트는 `FURIO_NPU_META` 로 받아 pp 축을
+  `[2·3·4]`(기본 2)로 라벨링(tp 와 같은 메커니즘). 실기검증: 기본(pp2) npu:0,1·pp3 npu:0,1,2 둘 다 "pong".
+
 ## 비고
 - coder(FP8/BF16) 계열은 `qwen3_coder` 파서가 2026.3.0 CLI 에 없어 tool calling 불가 → 채팅 전용.
 - llama fxb→v2 재지정은 serve 동등 + pp 만 추가(저위험). 되돌리려면 path 원복.

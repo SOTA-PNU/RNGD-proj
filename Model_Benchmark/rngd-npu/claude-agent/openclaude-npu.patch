@@ -1,7 +1,7 @@
 From 7c67b3d2b269375ae8e115204f8570f58f03285f Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:11:42 +0900
-Subject: [PATCH 01/14] statusline: show Furiosa NPU model state with per-model
+Subject: [PATCH 01/15] statusline: show Furiosa NPU model state with per-model
  LEDs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -381,7 +381,7 @@ index 0000000..5fb053a
 From b011b77eefa02e916e60392a3967cd48b532c531 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:19:21 +0900
-Subject: [PATCH 02/14] model picker: use backend-supplied model descriptions
+Subject: [PATCH 02/15] model picker: use backend-supplied model descriptions
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -465,7 +465,7 @@ index e901799..9bfec8b 100644
 From c7cbc97b974c40f9f73633619f18001745ab9a7e Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 14:29:26 +0900
-Subject: [PATCH 03/14] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
+Subject: [PATCH 03/15] =?UTF-8?q?model=20picker:=20adjust=20NPU=20dp/pp=20?=
  =?UTF-8?q?with=20=E2=86=90=20=E2=86=92?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -717,7 +717,7 @@ index 0000000..6949f79
 From e666bb3d649641c55a6416cee823024e729e36ce Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Wed, 22 Jul 2026 23:52:39 +0900
-Subject: [PATCH 04/14] model picker: say why the NPU config row is absent
+Subject: [PATCH 04/15] model picker: say why the NPU config row is absent
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -769,7 +769,7 @@ index 336c021..e0f1d18 100644
 From 09e4947a165c12eb7dbe2f8a9a5cdfa27611d5ad Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:00:52 +0900
-Subject: [PATCH 05/14] model picker: pick the model and its dp/pp separately
+Subject: [PATCH 05/15] model picker: pick the model and its dp/pp separately
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1065,7 +1065,7 @@ index 6949f79..0f41e51 100644
 From f67bfeb8b414af23f564216285b953325b3991b3 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:11:30 +0900
-Subject: [PATCH 06/14] model picker: apply NPU collapsing and descriptions on
+Subject: [PATCH 06/15] model picker: apply NPU collapsing and descriptions on
  the cached path
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1167,7 +1167,7 @@ index 0f41e51..d6de5f4 100644
 From 06bb55d93406b70563a2962473fce11e8b3085de Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:30:39 +0900
-Subject: [PATCH 07/14] model picker: apply NPU presentation where every path
+Subject: [PATCH 07/15] model picker: apply NPU presentation where every path
  converges
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1274,7 +1274,7 @@ index d6de5f4..239767c 100644
 From 9ed3935fb6f14e98419841dd51a3df81818f40b4 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 00:48:44 +0900
-Subject: [PATCH 08/14] model picker: adjust dp and pp as separate axes
+Subject: [PATCH 08/15] model picker: adjust dp and pp as separate axes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1554,7 +1554,7 @@ index 239767c..0f33993 100644
 From effb31cff239043a996a7aa3356fedc80a14326c Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:03:05 +0900
-Subject: [PATCH 09/14] model picker: stop the dp/pp row from reflowing
+Subject: [PATCH 09/15] model picker: stop the dp/pp row from reflowing
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1656,7 +1656,7 @@ index 0f33993..b00fbc3 100644
 From 27c42e3729aab78a816115b3e4c68a03c905cb77 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 01:51:34 +0900
-Subject: [PATCH 10/14] statusline: separate the current-model marker from the
+Subject: [PATCH 10/15] statusline: separate the current-model marker from the
  LED
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1693,7 +1693,7 @@ index ea77786..f6657b6 100644
 From f473f6cac85eb6191d5847cb17ecabb04e80d7aa Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Thu, 23 Jul 2026 02:07:35 +0900
-Subject: [PATCH 11/14] model picker: start loading the model as soon as it is
+Subject: [PATCH 11/15] model picker: start loading the model as soon as it is
  picked
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -1778,7 +1778,7 @@ index 5c7facc..8c5ff49 100644
 From 6ece7115d354facf8412c65797a85ab2bf667c2e Mon Sep 17 00:00:00 2001
 From: Claude <plab2090@gmail.com>
 Date: Thu, 23 Jul 2026 02:51:37 +0900
-Subject: [PATCH 12/14] npu: react to a model pick immediately, and show every
+Subject: [PATCH 12/15] npu: react to a model pick immediately, and show every
  loaded model
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -2778,7 +2778,7 @@ index b00fbc3..efa22d3 100644
 From d5a9fb4eed6d1020b8232bf4717e210cd581af97 Mon Sep 17 00:00:00 2001
 From: Claude <plab2090@gmail.com>
 Date: Thu, 23 Jul 2026 13:53:24 +0900
-Subject: [PATCH 13/14] =?UTF-8?q?npu:=20reflect=20real=20server=20state=20?=
+Subject: [PATCH 13/15] =?UTF-8?q?npu:=20reflect=20real=20server=20state=20?=
  =?UTF-8?q?=E2=80=94=20drop=20the=20default,=20remember=20what=20was=20loa?=
  =?UTF-8?q?ded?=
 MIME-Version: 1.0
@@ -3249,7 +3249,7 @@ index 6c8bdcc..be3eb5a 100644
 From 04d6b86964adcf6e223c25e3786e8f0c0b823049 Mon Sep 17 00:00:00 2001
 From: hyunjun1234 <plab2090@gmail.com>
 Date: Tue, 4 Aug 2026 13:20:47 +0900
-Subject: [PATCH 14/14] model picker: add tp as a third parallel axis
+Subject: [PATCH 14/15] model picker: add tp as a third parallel axis
  (tp/dp/pp)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -3966,6 +3966,144 @@ index efa22d3..f429c2e 100644
 +    ? { tp: current.tp, dp: next, pp: partner }
 +    : { tp: current.tp, dp: partner, pp: next }
  }
+-- 
+2.43.0
+
+
+From 361e3daf8b625ae512e1ccfd3fbe0dd75efdc0f2 Mon Sep 17 00:00:00 2001
+From: hyunjun1234 <plab2090@gmail.com>
+Date: Wed, 5 Aug 2026 13:47:34 +0900
+Subject: [PATCH 15/15] model picker: support a per-model default pp (large
+ models like bf16 coder)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Some builds are too big for one card (bf16 30B ≈ 57GB) so their smallest
+servable config is pp2, not pp1. The router now reports a `pp_default` per
+model in FURIO_NPU_META; mirror the tp mechanism:
+
+- ppDefaultOf(base) from the meta; parseNpuVariant fills pp from it when the
+  id has no @pp suffix; variantId omits @pp at the default. So the bare id
+  round-trips to pp2 and the pp axis shows [2,3,4] (never the OOM pp1).
+- Unchanged for normal models (pp_default defaults to 1).
+- tests: bare→pp2, axis lists [2,3,4], @pp only off-default, no tp axis.
+---
+ src/utils/npuVariants.test.ts | 27 +++++++++++++++++++++++++++
+ src/utils/npuVariants.ts      | 27 +++++++++++++++++++++------
+ 2 files changed, 48 insertions(+), 6 deletions(-)
+
+diff --git a/src/utils/npuVariants.test.ts b/src/utils/npuVariants.test.ts
+index 3eda34d..436b00f 100644
+--- a/src/utils/npuVariants.test.ts
++++ b/src/utils/npuVariants.test.ts
+@@ -106,6 +106,33 @@ describe('tp axis', () => {
+   })
+ })
+ 
++describe('pp default (models too big for one card)', () => {
++  // bf16 coder: 57GB -> needs >=2 cards, so its default build is pp2 (no pp1).
++  const META = JSON.stringify({ C: { tp_default: 8, tps: [8], pp_default: 2 } })
++  const ids = ['C', 'C@pp3', 'C@pp4']
++  beforeEach(() => { process.env.FURIO_NPU_META = META })
++  afterEach(() => { delete process.env.FURIO_NPU_META })
++
++  test('the bare id resolves to the default pp build (pp2)', () => {
++    expect(parseNpuVariant('C')).toMatchObject({ base: 'C', tp: 8, dp: 1, pp: 2 })
++    expect(parseNpuVariant('C@pp3').pp).toBe(3)
++  })
++
++  test('the pp axis lists the offered builds, not pp1', () => {
++    expect(npuAxisAllValues('C', ids, 'pp')).toEqual([2, 3, 4])
++  })
++
++  test('@pp is composed only when it is not the default', () => {
++    expect(variantId('C', 8, 1, 2)).toBe('C')
++    expect(variantId('C', 8, 1, 3)).toBe('C@pp3')
++    expect(variantId('C', 8, 1, 4)).toBe('C@pp4')
++  })
++
++  test('a single-build model has no tp axis', () => {
++    expect(npuAxisAllValues('C', ids, 'tp')).toEqual([8])
++  })
++})
++
+ describe('npuLoadStatesByBase', () => {
+   test('a loaded variant lights up its model row', () => {
+     const states = npuLoadStatesByBase([{ id: 'L@dp2', state: 'up' }])
+diff --git a/src/utils/npuVariants.ts b/src/utils/npuVariants.ts
+index f429c2e..6f87b92 100644
+--- a/src/utils/npuVariants.ts
++++ b/src/utils/npuVariants.ts
+@@ -46,7 +46,7 @@ const ANY_VARIANT = /@(tp|dp|pp)\d+$/
+  * `FURIO_NPU_META` (built from the router's `/router/models`). Absent for
+  * non-Furiosa backends, where there is no tp axis at all.
+  */
+-type NpuMeta = Record<string, { tp_default: number; tps: number[] }>
++type NpuMeta = Record<string, { tp_default: number; tps: number[]; pp_default?: number }>
+ let metaCacheRaw: string | undefined
+ let metaCache: NpuMeta = {}
+ 
+@@ -63,8 +63,13 @@ function npuMeta(): NpuMeta {
+         if (v && typeof v === 'object') {
+           const td = (v as { tp_default?: unknown }).tp_default
+           const tps = (v as { tps?: unknown }).tps
++          const pd = (v as { pp_default?: unknown }).pp_default
+           if (typeof td === 'number' && Array.isArray(tps)) {
+-            metaCache[k] = { tp_default: td, tps: tps.filter(n => typeof n === 'number') }
++            metaCache[k] = {
++              tp_default: td,
++              tps: tps.filter(n => typeof n === 'number'),
++              ...(typeof pd === 'number' ? { pp_default: pd } : {}),
++            }
+           }
+         }
+       }
+@@ -86,12 +91,21 @@ export function tpChoicesOf(base: string): number[] {
+   return npuMeta()[base]?.tps ?? []
+ }
+ 
++/**
++ * The pp of a model's default (no-suffix) build. Normally 1, but a model too
++ * large for one card (e.g. the bf16 coder) defaults to pp2 — the router reports
++ * it so the bare id, and the pp axis, are labelled correctly.
++ */
++export function ppDefaultOf(base: string): number {
++  return npuMeta()[base]?.pp_default ?? 1
++}
++
+ /** Splits a model id into its base and parallel configuration. */
+ export function parseNpuVariant(value: string): NpuVariant {
+   let rest = value
+   let tp: number | undefined
+   let dp = 1
+-  let pp = 1
++  let pp: number | undefined
+   for (;;) {
+     const m = SUFFIX.exec(rest)
+     if (!m) break
+@@ -104,9 +118,10 @@ export function parseNpuVariant(value: string): NpuVariant {
+     else pp = n
+     rest = rest.slice(0, m.index)
+   }
+-  // No `@tp` suffix means the default build; fill in its numeric tp when known.
++  // No suffix means the default build; fill in its numeric tp/pp when known
++  // (pp defaults to 1 except for models too big for one card, e.g. bf16 coder).
+   if (tp === undefined) tp = defaultTpOf(rest)
+-  return { value, base: rest, tp, dp, pp }
++  return { value, base: rest, tp, dp, pp: pp ?? ppDefaultOf(rest) }
+ }
+ 
+ function axisValue(v: NpuVariant, axis: NpuAxis): number | undefined {
+@@ -167,7 +182,7 @@ export function variantId(value: string, tp: number | undefined, dp: number, pp:
+     base +
+     (isDefaultTp ? '' : `@tp${tp}`) +
+     (dp > 1 ? `@dp${dp}` : '') +
+-    (pp > 1 ? `@pp${pp}` : '')
++    (pp !== ppDefaultOf(base) ? `@pp${pp}` : '')
+   )
+ }
+ 
 -- 
 2.43.0
 

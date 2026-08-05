@@ -46,6 +46,7 @@ MODELS = [
     ("Llama-3.3-70B-Instruct",           32, 4, 131072, "v2",  "ok"),
     ("K-EXAONE-236B-A23B-NVFP4A16",      32, 4, 262144, "fxb", "weak"),
     ("Qwen3-Coder-30B-A3B-Instruct-FP8", 32, 4, 262144, "fxb", "no"),
+    ("Qwen3-Coder-30B-A3B-Instruct",      8, 2, 262144, "v2",  "no"),   # bf16 57GB → pp2~4(1장 초과)
     ("Qwen3-30B-A3B-FP8",                32, 4,  40960, "fxb", "weak"),
     ("Llama-3.1-8B-Instruct",             8, 1, 131072, "v2",  "weak"),
     ("Qwen3-8B-FP8",                      8, 1,  40960, "fxb", "weak"),
@@ -56,10 +57,16 @@ REG = {m[0]: dict(tp=m[1], cards=m[2], ctx=m[3], art=m[4], tools=m[5]) for m in 
 NAME_HINT = {"ok": "", "weak": "  [tools~weak]", "no": "  [chat-only]"}
 # tp8 대체 빌드가 있는 모델(실제 라우터의 reg["tps"] 축약). tp8 은 로컬 v2 → pp 허용.
 TP8 = {"Qwen3-32B-FP8", "Qwen3-Coder-30B-A3B-Instruct-FP8", "Qwen3-30B-A3B-FP8"}
+# pp1 로는 못 뜨는(1장 초과) 모델의 pp 선택지. 첫값이 기본 pp(맨이름이 뜻하는 pp).
+PP_OPTS = {"Qwen3-Coder-30B-A3B-Instruct": [2, 3, 4]}
 
 
 def tp_choices(base):
     return sorted({REG[base]["tp"]} | ({8} if base in TP8 else set()))
+
+
+def pp_default(base):
+    return PP_OPTS[base][0] if base in PP_OPTS else 1
 
 
 def cards_base(tp):
@@ -83,13 +90,15 @@ def par_choices(base, tp):
     """주어진 tp 에서 (dp, pp) 선택지. tp32(4장 독점)면 ([1],[1]). pp 는 v2 에서만."""
     if cards_base(tp) >= CARDS:
         return [1], [1]
+    if base in PP_OPTS:                       # 1장 초과 모델 — 지정 pp 만, dp 는 1
+        return [1], [n for n in PP_OPTS[base] if variant_cards(tp, 1, n) <= CARDS]
     dp = [n for n in (1, 2, 4) if variant_cards(tp, n, 1) <= CARDS]
     pp = [1] if art_of(base, tp) == "fxb" else [n for n in (1, 2, 4) if variant_cards(tp, 1, n) <= CARDS]
     return dp, pp
 
 
 def parse_variant(mid):
-    base, tp, dp, pp = mid, None, 1, 1
+    base, tp, dp, pp = mid, None, 1, None
     while "@" in base:
         head, _, tag = base.rpartition("@")
         m = re.fullmatch(r"(tp|dp|pp)(\d+)", tag)
@@ -104,11 +113,13 @@ def parse_variant(mid):
             pp = v
     if tp is None:
         tp = REG[base]["tp"] if base in REG else 8
+    if pp is None:
+        pp = pp_default(base) if base in REG else 1
     return base, tp, dp, pp
 
 
 def variant_id(base, tp, dp, pp):
-    sfx = (f"@tp{tp}" if tp != REG[base]["tp"] else "") + (f"@dp{dp}" if dp > 1 else "") + (f"@pp{pp}" if pp > 1 else "")
+    sfx = (f"@tp{tp}" if tp != REG[base]["tp"] else "") + (f"@dp{dp}" if dp > 1 else "") + (f"@pp{pp}" if pp != pp_default(base) else "")
     return base + sfx
 
 
@@ -121,7 +132,7 @@ def all_ids():
             dps, pps = par_choices(base, tp)
             for dp in dps:
                 for pp in pps:
-                    if tp == default_tp and dp == 1 and pp == 1:
+                    if tp == default_tp and dp == 1 and pp == pp_default(base):
                         continue
                     if variant_cards(tp, dp, pp) > CARDS:
                         continue
@@ -231,6 +242,7 @@ class Handler(BaseHTTPRequestHandler):
                              "description": describe(mid), "context": r["ctx"],
                              "kind": "chat", "tp": tp, "tp_default": r["tp"],
                              "tp_choices": tp_choices(base), "dp": dp, "pp": pp,
+                             "pp_default": pp_default(base),
                              "cards": variant_cards(tp, dp, pp),
                              "dp_choices": dps, "pp_choices": pps,
                              "artifact": art_of(base, tp), "tools": r["tools"]})

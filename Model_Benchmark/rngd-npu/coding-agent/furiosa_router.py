@@ -84,8 +84,9 @@ REGISTRY = {
     "Qwen3-30B-A3B-Thinking-2507-FP8":  dict(path="furiosa-ai/Qwen3-30B-A3B-Thinking-2507-FP8",  tp=32, cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=262144, tps={8: f"{NVME_ART}/a3b-think-2507-tp8"}),
     "Qwen3-30B-A3B-FP8":                dict(path="furiosa-ai/Qwen3-30B-A3B-FP8",                tp=32, cards=4, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960,  tps={8: f"{NVME_ART}/a3b-tp8"}),
     "Qwen3-Coder-30B-A3B-Instruct-FP8": dict(path="furiosa-ai/Qwen3-Coder-30B-A3B-Instruct-FP8", tp=32, cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144, tps={8: f"{NVME_ART}/coder-tp8"}),
-    # BF16 코더(신규) — coder-bf16-tp8 v2, 1장·pp 조절가능. qwen3_coder 파서가 2026.3.0 CLI 에 없어 채팅전용(tool=None). [[chat-service-model-catalog]]
-    "Qwen3-Coder-30B-A3B-Instruct":     dict(path=f"{NVME_ART}/coder-bf16-tp8",                  tp=8,  cards=1, pp=1, tool=None,         reasoning=None,         ctx=262144),
+    # BF16 코더(신규) — coder-bf16-tp8 v2. 가중치 57GB 라 1장(47.5GB) 초과 → pp1 OOM.
+    # pp_opts=[2,3,4] 로 pp1 제외하고 2·3·4장 층분할만 노출(기본 pp2, 실측 OK). qwen3_coder 파서 부재로 채팅전용. [[chat-service-model-catalog]]
+    "Qwen3-Coder-30B-A3B-Instruct":     dict(path=f"{NVME_ART}/coder-bf16-tp8",                  tp=8,  cards=2, pp=1, tool=None,         reasoning=None,         ctx=262144, pp_opts=[2, 3, 4]),
     "Qwen3-VL-32B-Instruct":            dict(path="furiosa-ai/Qwen3-VL-32B-Instruct",            tp=32, cards=4, pp=1, tool="hermes",     reasoning=None,         ctx=262144),
     # fxb→v2 재지정: 로컬 tp8 v2 아티팩트로 서빙해 -pp 층분할 잠금해제(tp 동일=8). 되돌리려면 path 원복. [[chat-service-model-catalog]]
     "Llama-3.1-8B-Instruct":            dict(path=f"{NVME_ART}/llama31-8b-tp8",                   tp=8,  cards=1, pp=1, tool="llama3_json", reasoning=None,        ctx=131072),
@@ -176,6 +177,13 @@ def tp_choices(base):
     return sorted({reg["tp"], *reg.get("tps", {}).keys()})
 
 
+def pp_default(base):
+    """이 모델의 기본 pp(맨이름이 뜻하는 pp). pp_opts 가 있으면 그 첫값(예: bf16 코더 2),
+    없으면 1. tp_default 와 대칭 — 맨이름(@pp 없음)이 pp1 이 아닐 수 있게 한다."""
+    opts = REGISTRY.get(base, {}).get("pp_opts")
+    return opts[0] if opts else 1
+
+
 def resolve_art(reg, tp):
     """(reg, tp) → serve 할 아티팩트 경로. tp 가 대체 빌드면 그 경로, 아니면 기본 경로."""
     if tp != reg["tp"] and tp in reg.get("tps", {}):
@@ -208,6 +216,10 @@ def par_choices(base, tp):
     reg = REGISTRY[base]
     if cards_base(tp) >= len(ALL_CARDS):       # tp32 = 4장 독점
         return [1], [1]
+    # pp_opts 지정 모델(예: bf16 코더 — 57GB 라 pp1 OOM)은 그 pp 만 노출, dp 는 1(대형이라 복제 안 함).
+    if reg.get("pp_opts"):
+        pp = [n for n in reg["pp_opts"] if variant_cards(tp, 1, n) <= len(ALL_CARDS)]
+        return [1], pp
     dp = [n for n in (1, 2, 4) if variant_cards(tp, n, 1) <= len(ALL_CARDS)]
     if is_fxb_variant(reg, tp):
         pp = [1]
@@ -217,7 +229,7 @@ def par_choices(base, tp):
 
 
 def variant_id(base, tp=None, dp=1, pp=1):
-    """표시·요청용 모델 ID. 기본 구성(기본 tp·dp1·pp1)은 접미사 없이 원래 이름.
+    """표시·요청용 모델 ID. 기본 구성(기본 tp·dp1·기본 pp)은 접미사 없이 원래 이름.
     접미사 순서는 @tp → @dp → @pp 로 고정(parse_variant 와 일치)."""
     default_tp = REGISTRY[base]["tp"] if base in REGISTRY else None
     sfx = ""
@@ -225,7 +237,7 @@ def variant_id(base, tp=None, dp=1, pp=1):
         sfx += f"@tp{tp}"
     if dp > 1:
         sfx += f"@dp{dp}"
-    if pp > 1:
+    if pp != pp_default(base):
         sfx += f"@pp{pp}"
     return base + sfx
 
@@ -233,7 +245,7 @@ def variant_id(base, tp=None, dp=1, pp=1):
 def parse_variant(mid):
     """'Qwen3-32B-FP8@tp8@dp2@pp2' → ('Qwen3-32B-FP8', 8, 2, 2). tp 접미사가 없으면
     기본 tp(레지스트리)로 채운다. 모르는 접미사는 base 를 미등록으로 남겨 404 를 유도한다."""
-    base, tp, dp, pp = mid, None, 1, 1
+    base, tp, dp, pp = mid, None, 1, None
     while "@" in base:
         head, _, tag = base.rpartition("@")
         m = re.fullmatch(r"(tp|dp|pp)(\d+)", tag)
@@ -249,6 +261,8 @@ def parse_variant(mid):
             pp = v
     if tp is None:
         tp = REGISTRY[base]["tp"] if base in REGISTRY else 8
+    if pp is None:
+        pp = pp_default(base) if base in REGISTRY else 1
     return base, tp, dp, pp
 
 
@@ -264,7 +278,7 @@ def all_model_ids():
             dps, pps = par_choices(m, tp)
             for dp in dps:
                 for pp in pps:
-                    if tp == default_tp and dp == 1 and pp == 1:
+                    if tp == default_tp and dp == 1 and pp == pp_default(m):
                         continue      # 기본 = 맨이름(위에서 추가)
                     if variant_cards(tp, dp, pp) > len(ALL_CARDS):
                         continue
@@ -716,7 +730,7 @@ def build_app():
                 "description": model_desc(mid),
                 "context": reg["ctx"], "kind": reg.get("kind", "chat"),
                 "tp": tp, "tp_default": reg["tp"], "tp_choices": tp_choices(base),
-                "dp": dp, "pp": pp,
+                "dp": dp, "pp": pp, "pp_default": pp_default(base),
                 "cards": variant_cards(tp, dp, pp),
                 "dp_choices": dps, "pp_choices": pps,
                 "artifact": "fxb" if is_fxb_variant(reg, tp) else "v2",

@@ -184,7 +184,7 @@ M=$(curl -fsS --max-time 10 ${AUTH[@]+"${AUTH[@]}"} "$SDI_SERVER/router/models" 
 const fs=require("fs"); let s=""; process.stdin.on("data",d=>s+=d).on("end",()=>{
   try{ const j=JSON.parse(s), m={};
     for (const x of (j.data||[])) if (x && x.base && typeof x.tp_default==="number" && Array.isArray(x.tp_choices))
-      m[x.base]={tp_default:x.tp_default, tps:x.tp_choices};
+      m[x.base]={tp_default:x.tp_default, tps:x.tp_choices, ...(typeof x.pp_default==="number"?{pp_default:x.pp_default}:{})};
     const n=Object.keys(m).length;
     if (n) fs.writeFileSync(process.argv[1], JSON.stringify(m));
     process.stdout.write(String(n));
