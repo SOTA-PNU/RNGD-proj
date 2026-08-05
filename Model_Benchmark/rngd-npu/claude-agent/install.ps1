@@ -45,6 +45,107 @@ $keyFile = Join-Path $HomeDir "key"
 if ($key) { [System.IO.File]::WriteAllText($keyFile, $key, (New-Object System.Text.ASCIIEncoding)); icacls $keyFile /inheritance:r /grant:r "$($env:USERNAME):(R,W)" | Out-Null }
 elseif (Test-Path $keyFile) { Remove-Item $keyFile }
 
+# 모델별 '진짜' 컨텍스트 창을 라우터에서 받아 ctx.json 저장(단일 출처 = 서버 REGISTRY).
+# ⚠️ 없으면 openclaude 는 처음 보는 우리 모델 id 를 전부 128000 으로 가정한다(실제 40960~262144).
+$ctxFile = Join-Path $HomeDir "ctx.json"
+try {
+  $rm = Invoke-RestMethod -Uri "$server/router/models" -Headers $headers -TimeoutSec 10
+  $map = @{}
+  foreach ($m in $rm.data) { if ($m.id -and $m.context) { $map[$m.id] = [int]$m.context } }
+  if ($map.Count -gt 0) {
+    [System.IO.File]::WriteAllText($ctxFile, ($map | ConvertTo-Json -Compress), (New-Object System.Text.ASCIIEncoding))
+    Write-Host "      [ok] 모델별 컨텍스트 $($map.Count)개 기록 (ctx.json)"
+  } else { if (Test-Path $ctxFile) { Remove-Item $ctxFile }; Write-Host "      [warn] /router/models 비어있음 — 모델별 ctx 미설정" }
+} catch {
+  if (Test-Path $ctxFile) { Remove-Item $ctxFile }
+  Write-Host "      [warn] /router/models 응답 없음 — 모델별 ctx 미설정(openclaude 가 128000 으로 가정할 수 있음)"
+}
+
+# 안전 자동모드(FURIO_AUTO=safe)용 규칙 파일. 이미 있으면 사용자가 고친 것이므로 건드리지 않는다.
+# ⚠️ Windows 는 규칙을 .cmd 에 '구워' 넣으므로, 규칙을 고친 뒤에는 install.ps1 을 다시 실행해야 반영됩니다.
+$allowFile = Join-Path $HomeDir "auto-allow.txt"
+$denyFile  = Join-Path $HomeDir "auto-deny.txt"
+if (-not (Test-Path $allowFile)) {
+  @'
+# 자동 승인(묻지 않음) — 읽기/조회/테스트처럼 되돌릴 수 있는 것만.
+# 문법: 도구이름 또는 도구이름(명령 접두사:*)   예) Bash(git status:*)
+Read
+Glob
+Grep
+TodoWrite
+Bash(ls:*)
+Bash(pwd:*)
+Bash(cat:*)
+Bash(head:*)
+Bash(tail:*)
+Bash(wc:*)
+Bash(file:*)
+Bash(stat:*)
+Bash(du:*)
+Bash(df:*)
+Bash(tree:*)
+Bash(date:*)
+Bash(echo:*)
+Bash(which:*)
+Bash(find:*)
+Bash(grep:*)
+Bash(rg:*)
+Bash(diff:*)
+Bash(git status:*)
+Bash(git diff:*)
+Bash(git log:*)
+Bash(git show:*)
+Bash(git branch:*)
+Bash(git remote:*)
+Bash(npm test:*)
+Bash(npm run:*)
+Bash(pytest:*)
+Bash(make:*)
+Bash(cargo test:*)
+Bash(cargo build:*)
+Bash(go test:*)
+Bash(go build:*)
+'@ | Set-Content -Path $allowFile -Encoding ASCII
+}
+if (-not (Test-Path $denyFile)) {
+  @'
+# 차단(묻지도 않고 거부) — 파괴적이거나 되돌릴 수 없거나 밖으로 나가는 것.
+Bash(rm -rf:*)
+Bash(rm -fr:*)
+Bash(sudo:*)
+Bash(su:*)
+Bash(dd:*)
+Bash(mkfs:*)
+Bash(fdisk:*)
+Bash(parted:*)
+Bash(shutdown:*)
+Bash(reboot:*)
+Bash(halt:*)
+Bash(poweroff:*)
+Bash(chown:*)
+Bash(chmod 777:*)
+Bash(kill:*)
+Bash(pkill:*)
+Bash(killall:*)
+Bash(curl:*)
+Bash(wget:*)
+Bash(git push:*)
+Bash(git reset --hard:*)
+Bash(git clean:*)
+Bash(crontab:*)
+Bash(npm publish:*)
+Bash(ssh:*)
+Bash(scp:*)
+'@ | Set-Content -Path $denyFile -Encoding ASCII
+}
+# 규칙을 콤마로 이어 붙인다(openclaude 파서가 괄호를 인식해 괄호 안 공백/콤마는 안전).
+function Get-Rules([string]$p) {
+  if (-not (Test-Path $p)) { return '' }
+  ($(Get-Content $p | Where-Object { $_.Trim() -ne '' -and -not $_.TrimStart().StartsWith('#') }) -join ',')
+}
+$allowJoined = Get-Rules $allowFile
+$denyJoined  = Get-Rules $denyFile
+
 Write-Host "[4/4] '$cmd' 명령 설치: $BinDir\$cmd.cmd"
 $lines = @(
   '@echo off',
@@ -55,6 +156,9 @@ $lines = @(
   "set `"OPENCLAUDE_CONFIG_DIR=$HomeDir\config`"",
   'set "OPENAI_API_KEY=dummy"',
   "if exist `"$keyFile`" set /p OPENAI_API_KEY=<`"$keyFile`"",
+  "if not defined CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS if exist `"$ctxFile`" set /p CLAUDE_CODE_OPENAI_CONTEXT_WINDOWS=<`"$ctxFile`"",
+  'if not defined API_TIMEOUT_MS set "API_TIMEOUT_MS=900000"',
+  'if not defined CLAUDE_STREAM_IDLE_TIMEOUT_MS set "CLAUDE_STREAM_IDLE_TIMEOUT_MS=600000"',
   "if not defined FURIO_AUTO set `"FURIO_AUTO=$auto`"",
   'set "AUTO_ARGS="',
   'if /I "%FURIO_AUTO%"=="1" set "AUTO_ARGS=--dangerously-skip-permissions"',
@@ -64,7 +168,11 @@ $lines = @(
   'if /I "%FURIO_AUTO%"=="bypass" set "AUTO_ARGS=--dangerously-skip-permissions"',
   'if /I "%FURIO_AUTO%"=="edits" set "AUTO_ARGS=--permission-mode acceptEdits"',
   'if /I "%FURIO_AUTO%"=="accept" set "AUTO_ARGS=--permission-mode acceptEdits"',
-  "`"$ocBin`" %AUTO_ARGS% %*"
+  "if /I `"%FURIO_AUTO%`"==`"safe`" set `"AUTO_ARGS=--permission-mode acceptEdits --allowed-tools $allowJoined --disallowed-tools $denyJoined`"",
+  "if /I `"%FURIO_AUTO%`"==`"rules`" set `"AUTO_ARGS=--permission-mode acceptEdits --allowed-tools $allowJoined --disallowed-tools $denyJoined`"",
+  'set "TOOL_ARGS="',
+  'if defined FURIO_TOOLS set "TOOL_ARGS=--tools %FURIO_TOOLS%"',
+  "`"$ocBin`" %AUTO_ARGS% %TOOL_ARGS% %*"
 ) -join "`r`n"
 [System.IO.File]::WriteAllText((Join-Path $BinDir "$cmd.cmd"), $lines + "`r`n", (New-Object System.Text.ASCIIEncoding))
 

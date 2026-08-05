@@ -1,0 +1,23 @@
+# RNGD NPU Chat (gradio UI) 의존성.
+#
+# ⚠️ furiosa venv(~/furiosa)와 같이 쓰면 안 된다 — gradio 가 끌어오는 패키지들이 furiosa-llm 과
+#    충돌한다. 반드시 이 폴더의 별도 .venv 에 설치할 것:
+#
+#      cd ~/RNGD-proj/Model_Benchmark/rngd-npu/chat
+#      python3 -m venv .venv
+#      .venv/bin/pip install -r requirements.txt
+#      ./run.sh start
+#
+# UI 는 NPU 를 직접 만지지 않는다. serve 는 별도 프로세스(furiosa venv)로 띄우고
+# UI 는 OpenAI 호환 HTTP 로만 말한다 — 그래서 두 venv 가 분리돼 있어도 된다.
+# ⚠️ gradio 는 5.x 로 고정한다. 6.x 에서 Chatbot 의 `type` 인자가 없어져
+#    `TypeError: Chatbot.__init__() got an unexpected keyword argument 'type'` 로 죽는다
+#    (2026-08-04 gradio 6.22.0 실측). chat_app.py 는 type="messages"·allow_tags 등
+#    5.x API 를 쓴다. 6.x 로 올리려면 UI 코드를 함께 손봐야 한다.
+gradio>=5,<6
+openai
+httpx
+
+# RAG(문서 업로드 후 근거 검색) 를 쓸 때만 필요. 없으면 해당 기능만 비활성된다.
+pypdf
+numpy
