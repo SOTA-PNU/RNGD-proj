@@ -797,10 +797,14 @@ def build_app():
         # furiosa-generator 의 sampling/random.rs 가 가중치가 전부 0/NaN 이면 InvalidWeight 로 패닉한다.
         # 패닉하면 그 serve 는 이후 200 을 주면서 completion_tokens=0 만 내놓아(엔진 스레드 사망)
         # 클라이언트에는 "아무 반응 없음"으로 보인다 — 재시작 말고는 복구가 없다. [[furiosa-llm-invalidweight-panic]]
-        # 그리디(temperature=0)는 이 경로를 아예 타지 않으므로, 취약 모델에 한해 기본값으로 박아 준다.
-        # 클라이언트가 명시적으로 temperature 를 준 경우엔 존중한다(사용자 의도 우선).
-        if REGISTRY[parse_variant(model)[0]].get("greedy_default") and "temperature" not in payload:
+        # 그리디(temperature=0)는 이 경로를 아예 타지 않으므로, 취약 모델은 그리디로 **강제**한다.
+        # 클라이언트 값을 존중하지 않는 이유: openclaude 는 항상 temperature=1 을 보내고(claude.ts:1933)
+        # 그 값이 곧 패닉 경로다. 존중하면 코더 모델이 매번 죽어 사용 자체가 불가능하다.
+        # top_k/top_p 도 함께 걷어낸다 — 남아 있으면 필터 후 가중치가 다시 0/NaN 이 될 수 있다.
+        if REGISTRY[parse_variant(model)[0]].get("greedy_default"):
             payload["temperature"] = 0
+            payload.pop("top_p", None)
+            payload.pop("top_k", None)
             raw = json.dumps(payload).encode()
         try:
             port = await run_in_threadpool(ROUTER.ensure, model)
