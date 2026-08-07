@@ -97,7 +97,9 @@ REGISTRY = {
     "Llama-3.1-8B-Instruct":            dict(path=f"{NVME_ART}/llama31-8b-tp8",                   tp=8,  cards=1, pp=1, tool="llama3_json", reasoning=None,        ctx=131072),
     "Qwen3-8B-FP8":                     dict(path="furiosa-ai/Qwen3-8B-FP8",                     tp=8,  cards=1, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
     "Qwen3-4B-FP8":                     dict(path="furiosa-ai/Qwen3-4B-FP8",                     tp=8,  cards=1, pp=1, tool="hermes",     reasoning="qwen3",      ctx=40960),
-    "Qwen2.5-0.5B-Instruct":            dict(path="furiosa-ai/Qwen2.5-0.5B-Instruct",            tp=4,  cards=1, pp=1, tool="hermes",     reasoning=None,         ctx=32768),
+    # ctx 는 32768 이 아니라 4096 이다(2026-08-06 정정 — 백엔드 /v1/models 가 max_model_len:4096 을 보고).
+    # openclaude 의 첫 요청이 ~15.7k 토큰이라 이 모델은 furio 로는 못 쓴다(400) — 라우터 스모크 테스트용.
+    "Qwen2.5-0.5B-Instruct":            dict(path="furiosa-ai/Qwen2.5-0.5B-Instruct",            tp=4,  cards=1, pp=1, tool="hermes",     reasoning=None,         ctx=4096),
     # ── 비-chat (furio/opencode 목록에서 제외 — /v1/embeddings·/v1/rerank 로 사용) ──
     "Qwen3-Embedding-8B":               dict(path="furiosa-ai/Qwen3-Embedding-8B",               tp=8,  cards=1, pp=1, tool=None,         reasoning=None,         ctx=40960, kind="embedding"),
     "Qwen3-Reranker-8B":                dict(path="furiosa-ai/Qwen3-Reranker-8B",                tp=8,  cards=1, pp=1, tool=None,         reasoning=None,         ctx=40960, kind="reranker"),
