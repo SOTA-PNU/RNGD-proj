@@ -3,7 +3,8 @@
 수치는 손으로 적지 않는다 — 전부 ../summary.json 에서 읽는다."""
 import json, os
 _H = os.path.dirname(os.path.abspath(__file__))
-SUM = json.load(open(os.path.join(_H, "..", "summary.json"), encoding="utf-8"))
+# DECK_SUMMARY 로 다른 판을 그린다(예: summary_len.json). 기본은 2026-08-29 판.
+SUM = json.load(open(os.path.join(_H, "..", os.environ.get("DECK_SUMMARY", "summary.json")), encoding="utf-8"))
 BY = {d["model"]: d for d in SUM}
 GRAY, GRAY_L, INK = "#5b6b7b", "#eef2f7", "#16202c"
 BLUE, BLUE_L, BLUE_M = "#253761", "#e3e5ea", "#9da5b8"
@@ -78,8 +79,10 @@ MODELS = [
     ("Qwen3-4B-FP8", "Qwen3 4B", 1),
     ("Qwen2.5-0.5B-Instruct", "Qwen2.5 0.5B", 1),
 ]
-THINK = {"Qwen3-32B-FP8", "Qwen3-30B-A3B-Thinking-2507-FP8", "Qwen3-30B-A3B-FP8",
-         "EXAONE-4.0-32B-FP8", "K-EXAONE-236B-A23B-NVFP4A16", "Solar-Open-100B-NVFP4A16"}
+# 사고하는 모델은 이름이 아니라 실제 출력으로 가린다 — 사고(reasoning) 조각이 한 번이라도 온 모델.
+# 손으로 적은 목록은 사고하는 Qwen3 4B, 8B, gpt-oss 를 빠뜨리고 사고 안 한 EXAONE 4.0 을 넣고 있었다.
+THINK = {mid for mid, d in BY.items()
+         if any((r.get("think_tok") or r.get("thinking")) for r in d.get("runs") or [])}
 
 
 def G(mid, *path, default=None):
@@ -216,6 +219,57 @@ def loading_svg():
     return svg(950, y + 48, "\n".join(b))
 
 
+# ── 4-1) 출력 길이와 한도 ─────────────────────────────────────────
+def lengths_svg(cap=None, old=1024):
+    """모델마다 가장 긴 프롬프트는 막대(연한 칸 사고, 진한 칸 답변), 나머지 셋은 점.
+    세로선 둘은 기존 한도와 새 한도. 한도에 걸려 끊긴 실행은 노란 칸으로 칠한다."""
+    rows = [(mid, lab) for mid, lab, _ in MODELS if G(mid, "runs")]
+    runs_of = {mid: [r for r in G(mid, "runs") if not r.get("error")] for mid, _ in rows}
+    mx = max(r["out_tokens"] for rs in runs_of.values() for r in rs)
+    ax = next(v for v in (2048, 4096, 8192, 16384, 32768) if v >= max(mx, cap or 0, old))
+    X0, X1 = W0 + 118, W1 - 44
+    sx = lambda v: round(X0 + (X1 - X0) * v / ax, 1)
+    b = []
+    y0 = y = 26
+    cut_any = False
+    for mid, lab in rows:
+        rs = runs_of[mid]
+        top = max(rs, key=lambda r: r["out_tokens"])
+        n = top["out_tokens"]
+        th = min(top.get("think_tok") or 0, n)
+        cut = top.get("finish_reason") in ("length", "wall")
+        cut_any |= cut
+        b.append(txt(W0, y + 9, lab + (" *" if mid in THINK else ""), 10.5, INK))
+        b.append(rect(X0, y, X1 - X0, 10, GRAY_L, "none"))
+        if th:
+            b.append(rect(X0, y, sx(th) - X0, 10, BLUE_M, "none"))
+        b.append(rect(sx(th), y, max(1.5, sx(n) - sx(th)), 10, YEL if cut else BLUE, "none"))
+        for r in rs:
+            if r is not top:
+                b.append(f'<circle cx="{sx(r["out_tokens"])}" cy="{y + 5}" r="2.6" fill="#ffffff" '
+                         f'stroke="{INK}" stroke-width="1"/>')
+        b.append(txt(sx(n) + 5, y + 9, f"{n:,}", 10.5, INK))
+        y += 12
+    # 세로선은 막대 뒤에 그린다 — 막대에 가려지지 않게(L-35)
+    for v, lab_, col, dash in ((old, f"기존 한도 {old:,}", GRAY, "4,3"), (cap, f"새 한도 {cap:,}" if cap else "", BLUE, None)):
+        if v and v <= ax:
+            b.append(line(sx(v), y0 - 4, sx(v), y + 1, col, 1.4, dash))
+            b.append(txt(sx(v), y0 - 8, lab_, 10.5, INK if col == BLUE else GRAY, anchor="middle"))
+    step = {2048: 512, 4096: 1024, 8192: 2048, 16384: 4096, 32768: 8192}[ax]
+    for v in range(0, ax + 1, step):
+        b.append(txt(sx(v), y + 13, f"{v:,}", 10.5, GRAY, anchor="middle"))
+    ly = y + 31
+    lx = W0
+    for fill, name in ((BLUE_M, "사고"), (BLUE, "답변")) + (((YEL, "한도에 걸려 끊김"),) if cut_any else ()):
+        b.append(rect(lx, ly - 9, 14, 10, fill, "none"))
+        b.append(txt(lx + 19, ly, name, 10.5, INK))
+        lx += 19 + tw(name) + 16
+    b.append(f'<circle cx="{lx + 5}" cy="{ly - 4}" r="2.6" fill="#ffffff" stroke="{INK}" stroke-width="1"/>')
+    b.append(txt(lx + 13, ly, "나머지 세 프롬프트", 10.5, INK))
+    b.append(txt(W1, ly, "막대는 가장 길게 나온 프롬프트, 단위 토큰", 10.5, GRAY, anchor="end"))
+    return svg(950, ly + 8, "\n".join(b))
+
+
 # ── 5) 같은 질문에 대한 답변 ───────────────────────────────────────
 def answers_svg():
     b = []
@@ -247,3 +301,14 @@ def answers_svg():
     b.append(txt(W0, y + 16, "모두 같은 문장을 같은 설정으로 물었다, 별표는 사고하는 모델이다", 11, INK))
     b.append(txt(W1, y + 16, "답변 원문 전체는 results 폴더에", 10.5, GRAY, anchor="end"))
     return svg(950, y + 26, "\n".join(b))
+
+
+if __name__ == "__main__":
+    # 그림 파일을 쓴다. 출력 길이 그림은 summary 에 finish_reason 이 있는 판에서만, 새 한도 선은 DECK_CAP 으로.
+    figs = {"lineup": lineup_svg, "latency": latency_svg, "tput": tput_svg, "loading": loading_svg}
+    if any(r.get("finish_reason") for d in SUM for r in d.get("runs") or []):
+        cap = int(os.environ.get("DECK_CAP", "0")) or None
+        figs["lengths"] = lambda: lengths_svg(cap)
+    for name, fn in figs.items():
+        open(os.path.join(_H, name + ".svg"), "w", encoding="utf-8").write(fn())
+        print(f"{name}.svg")
