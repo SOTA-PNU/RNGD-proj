@@ -1,0 +1,496 @@
+
+=== Qwen2.5-0.5B-Instruct  (max_tokens 3840, ctx 4096)
+    [     0s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 31.9}, "Qwen2.5-0.5B-Instruct": {"por
+    [    10s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 41.9}, "Qwen2.5-0.5B-Instruct": {"por
+    [    20s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 51.9}, "Qwen2.5-0.5B-Instruct": {"por
+    적재 20.2s
+    fact         stop      715tok (사고 0 / 본문 684)   71.6 tok/s  총    10.0s
+    code         stop      289tok (사고 0 / 본문 283)   75.5 tok/s  총     3.8s
+    reason       stop      242tok (사고 0 / 본문 227)   77.0 tok/s  총     3.2s
+    long         stop      291tok (사고 0 / 본문 276)   79.5 tok/s  총     3.7s
+    동시4 @3840: 4.6s 합계 1257tok 273.0 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen2.5-0.5B-Instruct.json
+
+=== Llama-3.1-8B-Instruct  (max_tokens 16384, ctx 131072)
+    [     0s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 77.4}, "Qwen2.5-0.5B-Instruct": {"por
+    [    10s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 87.4}, "Qwen2.5-0.5B-Instruct": {"por
+    [    20s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 97.4}, "Qwen2.5-0.5B-Instruct": {"por
+    [    30s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 107.4}, "Qwen2.5-0.5B-Instruct": {"po
+    적재 30.2s
+    fact         stop      124tok (사고 0 / 본문 119)   47.7 tok/s  총     2.6s
+    code         stop      291tok (사고 0 / 본문 289)   48.1 tok/s  총     6.1s
+    reason       stop      224tok (사고 0 / 본문 222)   48.8 tok/s  총     4.6s
+    long         stop      579tok (사고 0 / 본문 575)   47.6 tok/s  총    12.2s
+    동시4 @16384: 14.73s 합계 2680tok 181.9 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Llama-3.1-8B-Instruct.json
+
+=== Qwen3-4B-FP8  (max_tokens 16384, ctx 40960)
+    [     0s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 0.0}, "Qwen2.5-0.5B-Instruct": {"port
+    적재 0.3s
+    fact         stop      304tok (사고 196 / 본문 104)   74.8 tok/s  총     4.2s
+    code         stop     1587tok (사고 1495 / 본문 89)   73.6 tok/s  총    21.7s
+    reason       stop     1032tok (사고 781 / 본문 239)   75.7 tok/s  총    13.8s
+    long         stop     1317tok (사고 550 / 본문 733)   77.0 tok/s  총    17.2s
+    long@1024    length   1024tok (사고 550 / 본문 454)   78.4 tok/s  총    13.2s
+    동시4 @1024: 14.96s 합계 4096tok 273.7 tok/s finish=['length', 'length', 'length', 'length']
+    동시4 @16384: 23.47s 합계 5284tok 225.1 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-4B-FP8.json
+
+=== Qwen3-8B-FP8  (max_tokens 16384, ctx 40960)
+    [     0s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 0.0}, "Qwen2.5-0.5B-Instruct": {"port
+    [    10s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 10.0}, "Qwen2.5-0.5B-Instruct": {"por
+    [    20s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 20.0}, "Qwen2.5-0.5B-Instruct": {"por
+    [    30s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 30.0}, "Qwen2.5-0.5B-Instruct": {"por
+    적재 30.4s
+    fact         stop      257tok (사고 167 / 본문 82)   57.8 tok/s  총     4.7s
+    code         stop     1395tok (사고 1308 / 본문 78)   61.3 tok/s  총    22.9s
+    reason       stop     1067tok (사고 771 / 본문 284)   61.7 tok/s  총    17.4s
+    long         stop     1408tok (사고 571 / 본문 794)   62.1 tok/s  총    22.9s
+    동시4 @16384: 25.6s 합계 5537tok 216.3 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-8B-FP8.json
+
+=== Qwen3-30B-A3B-Thinking-2507-FP8  (max_tokens 16384, ctx 262144)
+    [     0s] {"Qwen3-4B-FP8": {"port": 8410, "cards": [0], "alive": true, "tp": 8, "dp": 1, "pp": 1, "state": "up", "idle_s": 123.9}, "Qwen2.5-0.5B-Instruct": {"po
+    [    10s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 4.8
+    [    20s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 14.
+    [    30s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 24.
+    [    40s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 34.
+    [    50s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 44.
+    [    60s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 55.
+    [    70s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 65.
+    [    80s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 75.
+    [    90s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 85.0}}
+    적재 90.8s
+    fact         stop     1525tok (사고 1431 / 본문 86)   34.1 tok/s  총    45.1s
+    code         stop     1176tok (사고 1103 / 본문 71)   39.3 tok/s  총    30.3s
+    reason       stop     1798tok (사고 1535 / 본문 247)   24.2 tok/s  총    74.4s
+    long         stop     2013tok (사고 1211 / 본문 774)   36.7 tok/s  총    55.2s
+    동시4 @16384: 150.71s 합계 8734tok 58.0 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-30B-A3B-Thinking-2507-FP8.json
+
+=== Qwen3-VL-32B-Instruct  (max_tokens 16384, ctx 262144)
+    [     0s] {"Qwen3-30B-A3B-Thinking-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.
+    [    10s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 3.2}}
+    [    20s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 13.2}}
+    [    30s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 23.3}}
+    [    40s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 33.3}}
+    [    50s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 43.3}}
+    [    60s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 53.3}}
+    [    70s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 63.3}}
+    [    80s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 73.3}}
+    [    90s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 83.3}}
+    [   100s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 93.3}}
+    [   110s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 103.3}}
+    [   120s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 113.4}}
+    [   130s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 123.4}}
+    [   140s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 133.4}}
+    적재 140.5s
+    fact         stop       85tok (사고 0 / 본문 84)   35.3 tok/s  총     2.8s
+    code         stop       68tok (사고 0 / 본문 67)   29.6 tok/s  총     2.6s
+    reason       stop      497tok (사고 0 / 본문 482)   25.9 tok/s  총    19.7s
+    long         stop     1014tok (사고 0 / 본문 950)   21.4 tok/s  총    47.6s
+    동시4 @16384: 153.19s 합계 4056tok 26.5 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-VL-32B-Instruct.json
+
+=== EXAONE-4.0-32B-FP8  (max_tokens 16384, ctx 131072)
+    [     0s] {"Qwen3-VL-32B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.0}, "EXAON
+    [    10s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 6.1}}
+    [    20s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 16.1}}
+    [    30s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 26.2}}
+    [    40s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 36.2}}
+    [    50s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 46.2}}
+    [    60s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 56.2}}
+    [    70s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 66.2}}
+    [    80s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 76.2}}
+    적재 80.5s
+    fact         stop      133tok (사고 0 / 본문 132)   31.8 tok/s  총     4.3s
+    code         stop      118tok (사고 0 / 본문 117)   32.2 tok/s  총     3.8s
+    reason       stop      213tok (사고 0 / 본문 212)   32.0 tok/s  총     6.8s
+    long         stop      385tok (사고 0 / 본문 383)   31.8 tok/s  총    12.3s
+    동시4 @16384: 15.46s 합계 1642tok 106.2 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/EXAONE-4.0-32B-FP8.json
+
+=== Llama-3.3-70B-Instruct  (max_tokens 16384, ctx 131072)
+    [     0s] {"EXAONE-4.0-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.1}, "Llama-3.
+    [    10s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 6.6}}
+    [    20s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 16.6}}
+    [    30s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 26.8}}
+    [    40s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 36.8}}
+    [    50s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 46.8}}
+    [    60s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 56.9}}
+    [    70s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 66.9}}
+    [    80s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 76.9}}
+    [    90s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 86.9}}
+    [   100s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 96.9}}
+    [   110s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 106.9}}
+    [   120s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 116.9}}
+    [   130s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 126.9}}
+    적재 130.8s
+    fact         stop      107tok (사고 0 / 본문 103)   26.1 tok/s  총     4.3s
+    code         stop       67tok (사고 0 / 본문 66)   26.1 tok/s  총     2.7s
+    reason       stop      233tok (사고 0 / 본문 229)   25.4 tok/s  총     9.3s
+    long         stop      409tok (사고 0 / 본문 407)   23.9 tok/s  총    17.2s
+    동시4 @16384: 25.14s 합계 1487tok 59.1 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Llama-3.3-70B-Instruct.json
+
+=== Qwen3-32B-FP8  (max_tokens 16384, ctx 40960)
+    [     0s] {"Llama-3.3-70B-Instruct": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.0}, "Qwen
+    [    10s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 7.8}}
+    [    20s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 17.8}}
+    [    30s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 27.8}}
+    [    40s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 37.9}}
+    [    50s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 47.9}}
+    [    60s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 57.9}}
+    [    70s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 67.9}}
+    [    80s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 77.9}}
+    [    90s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 87.9}}
+    적재 90.5s
+    fact         stop      458tok (사고 330 / 본문 121)   18.0 tok/s  총    25.6s
+    code         stop     1361tok (사고 1125 / 본문 230)   33.8 tok/s  총    40.7s
+    reason       stop      842tok (사고 548 / 본문 283)   25.2 tok/s  총    33.8s
+    long         stop     1133tok (사고 430 / 본문 659)   24.8 tok/s  총    45.9s
+    long@1024    length   1024tok (사고 430 / 본문 557)   37.9 tok/s  총    27.4s
+    동시4 @1024: 67.3s 합계 4096tok 60.9 tok/s finish=['length', 'length', 'length', 'length']
+    동시4 @16384: 139.25s 합계 4788tok 34.4 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-32B-FP8.json
+
+=== Qwen3-30B-A3B-Instruct-2507-FP8  (max_tokens 16384, ctx 262144)
+    [     0s] {"Qwen3-32B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.0}, "Qwen3-30B-A3B
+    [    10s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 5.9
+    [    20s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 15.
+[2026-09-11 16:45:03] 재개: 남은 6종 (라우터 재기동)
+
+=== Qwen3-30B-A3B-Instruct-2507-FP8  (max_tokens 16384, ctx 262144)
+    [     0s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": null}}
+    [    10s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 10.
+    [    20s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 20.
+    [    30s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 30.
+    [    40s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 40.
+    [    50s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 50.
+    [    60s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 60.
+    [    70s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 70.2}}
+    적재 70.4s
+    fact         stop      100tok (사고 0 / 본문 98)   69.4 tok/s  총     1.5s
+    code         stop       70tok (사고 0 / 본문 69)   69.6 tok/s  총     1.8s
+    reason       stop      385tok (사고 0 / 본문 368)   63.3 tok/s  총     7.5s
+    long         stop     1172tok (사고 0 / 본문 1096)   67.1 tok/s  총    17.6s
+    동시4 @16384: 139.83s 합계 4859tok 34.7 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-30B-A3B-Instruct-2507-FP8.json
+
+=== Solar-Open-100B-NVFP4A16  (max_tokens 16384, ctx 131072)
+    [     0s] {"Qwen3-30B-A3B-Instruct-2507-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.
+    [    10s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 6.1}}
+    [    20s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 16.2}}
+    [    30s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 26.3}}
+    [    40s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 36.3}}
+    [    50s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 46.3}}
+    [    60s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 56.3}}
+    [    70s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 66.3}}
+    [    80s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 76.4}}
+    [    90s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 86.4}}
+    [   100s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 96.4}}
+    [   110s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 106.4}}
+    [   120s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 116.4}}
+    [   130s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 126.4}}
+    [   140s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 136.5}}
+    [   150s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 146.6}}
+    [   160s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 156.6}}
+    [   171s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 166.7}}
+    [   181s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 177.0}}
+    [   191s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 187.0}}
+    [   201s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 197.1}}
+    [   211s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 207.1}}
+    [   221s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 217.1}}
+    [   231s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 227.1}}
+    [   241s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 237.1}}
+    [   251s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 247.1}}
+    [   261s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 257.1}}
+    [   271s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 267.1}}
+    [   281s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 277.1}}
+    [   291s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 287.1}}
+    [   301s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 297.1}}
+    [   311s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 307.1}}
+    [   321s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 317.1}}
+    [   331s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 327.1}}
+    [   341s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 337.1}}
+    [   351s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 347.1}}
+    [   361s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 357.2}}
+    [   371s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 367.2}}
+    [   381s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 377.2}}
+    [   391s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 387.2}}
+    [   401s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 397.2}}
+    [   411s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 407.2}}
+    [   421s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 417.2}}
+    [   431s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 427.2}}
+    [   441s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 437.2}}
+    [   451s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 447.2}}
+    [   461s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 457.2}}
+    [   471s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 467.2}}
+    [   481s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 477.2}}
+    [   491s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 487.2}}
+    [   501s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 497.2}}
+    [   511s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 507.2}}
+    [   521s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 517.3}}
+    [   531s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 527.3}}
+    [   541s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 537.3}}
+    [   551s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 547.3}}
+    [   561s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 557.3}}
+    [   571s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 567.3}}
+    [   581s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 577.3}}
+    [   591s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 587.4}}
+    [   601s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 597.4}}
+    [   611s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 607.4}}
+    [   621s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 617.4}}
+    [   631s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 627.4}}
+    [   641s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 637.4}}
+    [   651s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 647.4}}
+    [   661s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 657.4}}
+    [   671s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 667.4}}
+    [   681s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 677.4}}
+    [   691s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 687.4}}
+    [   701s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 697.4}}
+    [   711s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 707.4}}
+    [   721s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 717.4}}
+    [   731s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 727.4}}
+    [   741s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 737.4}}
+    [   751s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 747.4}}
+    [   761s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 757.5}}
+    [   771s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 767.5}}
+    [   781s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 777.5}}
+    [   791s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 787.5}}
+    [   801s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 797.5}}
+    [   811s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 807.5}}
+    [   821s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 817.5}}
+    [   831s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 827.5}}
+    [   841s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 837.5}}
+    [   851s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 847.5}}
+    [   861s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 857.5}}
+[2026-09-11 17:05:59] 재개 2: 남은 5종 (세션 재시작 뒤)
+
+=== Solar-Open-100B-NVFP4A16  (max_tokens 16384, ctx 131072)
+    [     0s] {"Solar-Open-100B-NVFP4A16": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": null}}
+    [    10s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 10.0}}
+    [    20s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 20.0}}
+    [    30s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 30.0}}
+    [    40s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 40.0}}
+    [    50s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 50.0}}
+    [    60s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 60.0}}
+    [    70s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 70.1}}
+    [    80s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 80.1}}
+    [    90s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 90.1}}
+    [   100s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 100.1}}
+    [   110s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 110.1}}
+    [   120s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 120.1}}
+    [   130s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 130.1}}
+    [   140s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 140.1}}
+    [   150s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 150.1}}
+    [   160s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 160.1}}
+    [   170s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 170.1}}
+    [   180s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 180.1}}
+    [   190s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 190.4}}
+    [   200s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 200.4}}
+    [   210s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 210.4}}
+    [   220s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 220.4}}
+    [   230s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 230.4}}
+    [   240s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 240.4}}
+    [   250s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 250.4}}
+    [   261s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 260.6}}
+    [   271s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 270.6}}
+    [   281s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 280.6}}
+    [   291s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 290.6}}
+    [   301s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 301.0}}
+    [   311s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 311.0}}
+    [   321s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 321.0}}
+    [   331s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 331.0}}
+    [   341s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 341.0}}
+    [   351s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 351.0}}
+    [   361s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 361.0}}
+    [   371s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 371.0}}
+    [   381s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 381.1}}
+    [   391s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 391.1}}
+    [   401s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 401.1}}
+    [   411s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 411.1}}
+    [   421s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 421.1}}
+    [   431s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 431.1}}
+    [   441s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 441.1}}
+    [   451s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 451.1}}
+    [   461s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 461.1}}
+    [   471s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 471.1}}
+    [   481s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 481.1}}
+    [   491s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 491.1}}
+    [   501s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 501.1}}
+    [   511s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 511.1}}
+    [   521s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 521.1}}
+    [   531s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 531.1}}
+    [   541s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 541.2}}
+    [   551s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 551.2}}
+    [   561s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 561.2}}
+    [   571s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 571.2}}
+    [   581s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 581.2}}
+    [   591s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 591.2}}
+    [   601s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 601.2}}
+    [   611s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 611.2}}
+    [   621s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 621.2}}
+    [   631s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 631.3}}
+    [   641s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 641.3}}
+    [   651s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 651.3}}
+    [   661s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 661.3}}
+    [   671s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 671.3}}
+    [   681s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 681.3}}
+    [   691s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 691.3}}
+    [   701s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 701.3}}
+    [   711s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 711.3}}
+    [   721s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 721.3}}
+    [   731s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 731.3}}
+    [   741s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 741.3}}
+    [   751s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 751.3}}
+    [   762s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 761.9}}
+    [   772s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 772.0}}
+    [   782s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 782.0}}
+    [   792s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 792.0}}
+    적재 792.4s
+    fact         stop      160tok (사고 91 / 본문 63)   58.9 tok/s  총     3.0s
+    code         stop      737tok (사고 404 / 본문 327)   23.2 tok/s  총    32.0s
+    reason       stop     1453tok (사고 730 / 본문 716)   35.6 tok/s  총    41.1s
+    long         stop    10958tok (사고 9830 / 본문 1120)   20.2 tok/s  총   543.6s
+    동시4 @16384: 1689.35s 합계 36424tok 21.6 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Solar-Open-100B-NVFP4A16.json
+
+=== Qwen3-Coder-30B-A3B-Instruct-FP8  (max_tokens 16384, ctx 262144)
+    [     0s] {"Solar-Open-100B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.0}, "Qw
+    [    10s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 5.
+    [    20s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 15
+    [    30s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 25
+    [    40s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 35
+    [    50s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 45
+    [    60s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 55
+    [    70s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 65
+    [    80s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 75
+    [    90s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 85
+    [   100s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 95
+    [   110s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 105.3}}
+    적재 110.3s
+    fact         stop       92tok (사고 0 / 본문 91)   70.7 tok/s  총     1.4s
+    code         stop       91tok (사고 0 / 본문 90)   72.6 tok/s  총     1.3s
+    reason       stop      373tok (사고 0 / 본문 354)   70.3 tok/s  총     5.4s
+    long         stop      800tok (사고 0 / 본문 748)   70.5 tok/s  총    11.4s
+    동시4 @16384: 26.32s 합계 3585tok 136.2 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-Coder-30B-A3B-Instruct-FP8.json
+
+=== gpt-oss-120b  (max_tokens 16384, ctx 131072)
+    [     0s] {"Qwen3-Coder-30B-A3B-Instruct-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0
+    [    10s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 7.0}}
+    [    20s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 17.0}}
+    [    30s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 27.1}}
+    [    40s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 37.1}}
+    [    50s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 47.1}}
+    [    60s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 57.1}}
+    [    70s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 67.1}}
+    [    80s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 77.1}}
+    [    90s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 87.1}}
+    [   100s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 97.1}}
+    [   110s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 107.1}}
+    [   120s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 117.4}}
+    [   130s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 127.4}}
+    [   140s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 137.4}}
+    [   150s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 147.5}}
+    [   160s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 157.5}}
+    [   170s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 167.5}}
+    [   181s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 177.8}}
+    [   191s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 187.9}}
+    [   201s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 197.9}}
+    [   211s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 208.0}}
+    [   221s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 218.0}}
+    [   231s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 228.0}}
+    [   241s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 238.0}}
+    [   251s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 248.1}}
+    [   261s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 258.2}}
+    [   271s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 268.2}}
+    [   282s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 278.6}}
+    [   292s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 288.6}}
+    [   302s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 299.0}}
+    [   312s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 309.2}}
+    [   322s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 319.3}}
+    [   332s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 329.3}}
+    [   342s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 339.3}}
+    [   352s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 349.3}}
+    [   362s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 359.3}}
+    [   373s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 369.6}}
+    [   383s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 379.6}}
+    [   393s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 389.6}}
+    [   403s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 399.6}}
+    [   413s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 409.6}}
+    [   423s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 420.1}}
+    [   433s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 430.1}}
+    [   443s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 440.3}}
+    [   453s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 450.3}}
+    [   464s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 460.6}}
+    [   474s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 470.6}}
+    [   484s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 480.6}}
+    [   494s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 490.6}}
+    [   504s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 500.6}}
+    [   514s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 510.6}}
+    [   524s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 520.6}}
+    [   534s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 530.6}}
+    [   544s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 540.6}}
+    [   554s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 550.8}}
+    [   564s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 560.8}}
+    [   574s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 570.8}}
+    [   584s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 580.8}}
+    [   594s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 590.8}}
+    [   604s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 600.8}}
+    적재 611.8s
+    fact         stop      258tok (사고 86 / 본문 162)    1.0 tok/s  총   256.1s
+    code         stop      388tok (사고 55 / 본문 322)    1.0 tok/s  총   374.2s
+    reason       stop      509tok (사고 153 / 본문 343)    1.1 tok/s  총   480.8s
+    long         stop     1495tok (사고 163 / 본문 1312)    1.1 tok/s  총  1343.6s
+    동시4 @16384: 1158.77s 합계 5984tok 5.2 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/gpt-oss-120b.json
+
+=== K-EXAONE-236B-A23B-NVFP4A16  (max_tokens 16384, ctx 262144)
+    [     0s] {"gpt-oss-120b": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "stopping", "idle_s": 0.0}, "K-EXAONE-236B-
+    [    10s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 1.6}}
+    [    20s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 11.6}}
+    [    30s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 21.6}}
+    [    40s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 31.6}}
+    [    50s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 41.6}}
+    [    60s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 51.6}}
+    [    70s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 61.7}}
+    [    80s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 71.7}}
+    [    90s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 81.7}}
+    [   100s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 91.7}}
+    [   110s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 101.7}}
+    [   120s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 111.7}}
+    [   130s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 122.0}}
+    [   140s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 132.0}}
+    [   150s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 142.0}}
+    [   161s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 152.1}}
+    [   171s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 162.1}}
+    [   181s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 172.1}}
+    [   191s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 182.1}}
+    [   201s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 192.2}}
+    [   211s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 202.2}}
+    [   221s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 212.2}}
+    [   231s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 222.2}}
+    [   241s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 232.2}}
+    [   251s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 242.2}}
+    [   261s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 252.2}}
+    [   271s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 262.2}}
+    [   281s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 272.2}}
+    [   291s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 282.2}}
+    [   301s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "error", "idle_s": null}}
+    실패: RuntimeError: K-EXAONE-236B-A23B-NVFP4A16: 라우터가 error 로 표시 — serve 가 뜨지 못했다
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/K-EXAONE-236B-A23B-NVFP4A16.json
+
+=== Qwen3-30B-A3B-FP8  (max_tokens 16384, ctx 40960)
+    [     0s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "error", "idle_s": null}, "Qwen3-30B-
+    [    10s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 10.0}, "K-EXAONE-
+    [    20s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 20.0}, "K-EXAONE-
+    [    30s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 30.0}, "K-EXAONE-
+    [    40s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 40.1}, "K-EXAONE-
+    [    50s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 50.1}, "K-EXAONE-
+    [    60s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 60.1}, "K-EXAONE-
+    [    70s] {"Qwen3-30B-A3B-FP8": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 70.1}, "K-EXAONE-
+    [    80s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "error", "idle_s": null}, "Qwen3-30B-
+    실패: RuntimeError: Qwen3-30B-A3B-FP8: 라우터가 error 로 표시 — serve 가 뜨지 못했다
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-30B-A3B-FP8.json

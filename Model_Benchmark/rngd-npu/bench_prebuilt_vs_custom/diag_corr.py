@@ -24,7 +24,11 @@ def pearson(xs, ys):
 
 
 def main():
-    samp = [json.loads(l) for l in open(SAMPLER, encoding="utf-8")]
+    import gzip
+    # 커밋본은 sampler.jsonl.gz 다(원본은 9.6 MB 라 .gitignore)
+    path = SAMPLER if os.path.exists(SAMPLER) else SAMPLER + ".gz"
+    fh = gzip.open(path, "rt", encoding="utf-8") if path.endswith(".gz") else open(path, encoding="utf-8")
+    samp = [json.loads(l) for l in fh]
     samp.sort(key=lambda s: s["t"])
     keys = [k for k in samp[0] if k not in ("t",)]
     rows = []
@@ -36,7 +40,10 @@ def main():
             if not t or not t0:
                 continue
             lo, hi = t0 + t[0], t0 + t[-1]
-            gaps = [(t0 + a, t0 + b) for a, b in zip(t, t[1:]) if b - a > 0.1]
+            # 멈춤 기준: 0.1초와 간격 중앙값 × 5 중 큰 값(gpt-oss 는 스텝 자체가 약 1초)
+            dd = sorted(b - a for a, b in zip(t, t[1:]))
+            thr = max(0.1, 5 * dd[len(dd) // 2]) if dd else 0.1
+            gaps = [(t0 + a, t0 + b) for a, b in zip(t, t[1:]) if b - a > thr]
             for s0, s1 in zip(samp, samp[1:]):
                 if s1["t"] <= lo or s0["t"] >= hi:
                     continue

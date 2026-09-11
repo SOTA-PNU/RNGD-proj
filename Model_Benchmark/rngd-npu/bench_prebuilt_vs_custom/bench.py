@@ -13,7 +13,7 @@ import urllib.request, urllib.error
 
 ROUTER = os.environ.get("BENCH_ROUTER", "http://localhost:8400")
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "results")
+OUT = os.path.join(HERE, os.environ.get("BENCH_OUT", "results"))
 
 # 같은 조건: 같은 프롬프트, greedy(temperature 0), 같은 max_tokens.
 PROMPTS = [
@@ -22,9 +22,10 @@ PROMPTS = [
     ("reason","한 상자에 사과가 12개 들어간다. 사과 100개를 담으려면 상자가 몇 개 필요하고 마지막 상자에는 몇 개가 남는지 계산 과정을 보여줘."),
     ("long",  "트랜스포머의 어텐션이 무엇인지 처음 배우는 사람에게 설명해줘. 비유를 하나 들고, 왜 순환신경망보다 병렬화에 유리한지도 말해줘."),
 ]
-# thinking 모델은 256 으로는 사고만 하다 끝난다(Qwen3-32B 실측: 4프롬프트 전부 thinking 만).
-# 최종 답변까지 보려면 예산을 키운다. 디코드 속도는 예산과 무관하므로 속도 비교는 그대로 유효하다.
-MAX_TOKENS = 1024
+# 16384 = 잰 13종의 단일, 동시 요청이 전부 스스로 멈추는 가장 작은 2의 거듭제곱(2026-09-11, length_probe.py).
+# 1024 는 사고하는 모델의 답을 잘랐다(단일 15/48, 동시 24/48). 정상 출력은 최장 2,901토큰이고 4096~16384 사이는
+# Solar long 의 greedy 반복(10,958~11,316토큰)뿐이다. max_tokens 는 속도도 동시 처리량도 바꾸지 않는다(diag.py E1, E4).
+MAX_TOKENS = int(os.environ.get("BENCH_MAX_TOKENS", "16384"))
 CONC = 4          # 동시 요청 수 (총처리량 측정)
 
 
@@ -47,7 +48,7 @@ def stream_once(model, prompt, max_tokens=MAX_TOKENS, timeout=1800):
             "stream_options": {"include_usage": True}}
     req = urllib.request.Request(ROUTER + "/v1/chat/completions", data=json.dumps(body).encode(),
                                  headers={"Content-Type": "application/json"})
-    t0 = time.perf_counter(); ttft = None; text = []; think = []; usage = None; chunks = 0
+    t0 = time.perf_counter(); ttft = None; text = []; think = []; usage = None; chunks = 0; finish = None
     with urllib.request.urlopen(req, timeout=timeout) as r:
         for raw in r:
             line = raw.decode("utf-8", "replace").strip()
@@ -63,6 +64,9 @@ def stream_once(model, prompt, max_tokens=MAX_TOKENS, timeout=1800):
             if ev.get("usage"):
                 usage = ev["usage"]
             for ch in ev.get("choices", []):
+                # stop 이면 스스로 멈춤, length 면 한도에 걸려 잘림. 08-29 판은 이걸 안 남겨 잘림을 몰랐다.
+                if ch.get("finish_reason"):
+                    finish = ch["finish_reason"]
                 d = ch.get("delta") or {}
                 # 답변 본문과 사고 과정(thinking)은 따로 모은다. 어느 쪽이든 첫 조각이 TTFT 다.
                 # 필드 이름이 모델·파서마다 reasoning / reasoning_content 로 갈린다.
@@ -79,7 +83,9 @@ def stream_once(model, prompt, max_tokens=MAX_TOKENS, timeout=1800):
     total = time.perf_counter() - t0
     out_tok = (usage or {}).get("completion_tokens") or chunks
     in_tok = (usage or {}).get("prompt_tokens")
-    return dict(ttft=ttft, total=total, out_tokens=out_tok, in_tokens=in_tok,
+    think_tok = ((usage or {}).get("completion_tokens_details") or {}).get("reasoning_tokens")
+    return dict(ttft=ttft, total=total, out_tokens=out_tok, in_tokens=in_tok, max_tokens=max_tokens,
+                finish_reason=finish, think_tokens=think_tok,
                 decode_tps=(out_tok - 1) / (total - ttft) if (ttft and total > ttft and out_tok > 1) else None,
                 text="".join(text), thinking="".join(think), chunks=chunks)
 
@@ -127,21 +133,36 @@ def wait_ready(model, budget=None):
     raise TimeoutError(f"{model} 준비 실패 ({budget}s)")
 
 
+# serve 는 prompt + max_tokens 가 컨텍스트를 넘으면 잘라 주지 않고 400 으로 거절한다
+# (furiosa_llm/errors.py ContextLengthExceededError). 컨텍스트가 작은 모델만 한도를 줄여 보낸다.
+# 지금은 Qwen2.5-0.5B(4096) 하나다. 프롬프트는 템플릿 포함 120토큰 안쪽이라 256 을 비워 둔다.
+CTX_MARGIN = 256
+
+
+def cap_for(model):
+    try:
+        ctx = {m["id"]: m["context"] for m in get("/router/models")["data"]}.get(model)
+    except Exception:
+        ctx = None
+    return min(MAX_TOKENS, ctx - CTX_MARGIN) if ctx else MAX_TOKENS
+
+
 def bench_model(model):
     print(f"\n=== {model}", flush=True)
     rec = {"model": model, "started": time.strftime("%Y-%m-%d %H:%M:%S")}
     t0 = time.perf_counter()
     rec["load_s"] = round(wait_ready(model), 1)
-    print(f"    적재 {rec['load_s']}s", flush=True)
+    cap = rec["max_tokens"] = cap_for(model)
+    print(f"    적재 {rec['load_s']}s, max_tokens {cap}", flush=True)
 
     # 단일 요청 지연·답변
     runs = []
     for name, p in PROMPTS:
-        r = stream_once(model, p)
+        r = stream_once(model, p, cap)
         r["prompt"] = name
         runs.append(r)
         print(f"    {name:7s} ttft {('%.2f' % r['ttft']) if r['ttft'] else '  --'}s  총 {r['total']:.2f}s  "
-              f"{r['out_tokens']}tok  {(r['decode_tps'] or 0):.1f} tok/s"
+              f"{r['out_tokens']}tok  {(r['decode_tps'] or 0):.1f} tok/s  {r['finish_reason']}"
               f"{'  [출력 없음]' if not r['out_tokens'] else ''}"
               f"{'  [thinking만]' if (r['thinking'] and not r['text']) else ''}", flush=True)
     rec["runs"] = runs
@@ -150,7 +171,7 @@ def bench_model(model):
     res = [None] * CONC
     def work(i):
         try:
-            res[i] = stream_once(model, PROMPTS[3][1])
+            res[i] = stream_once(model, PROMPTS[3][1], cap)
         except Exception as e:
             res[i] = {"error": str(e)}
     ts = [threading.Thread(target=work, args=(i,)) for i in range(CONC)]
@@ -162,8 +183,12 @@ def bench_model(model):
     rec["concurrent"] = {"n": CONC, "wall_s": round(wall, 2), "out_tokens": tot_out,
                          "agg_tps": round(tot_out / wall, 1) if wall else None,
                          "per_req_total_s": [round(r["total"], 2) for r in ok],
+                         # 동시 요청은 배치가 수치를 바꿔 같은 프롬프트라도 요청마다 출력 길이가 갈린다
+                         "per_req_out": [r["out_tokens"] for r in ok],
+                         "finish": [r["finish_reason"] for r in ok],
                          "errors": [r.get("error") for r in res if r and r.get("error")]}
-    print(f"    동시 {CONC}개: {wall:.1f}s, 합계 {tot_out}tok, {rec['concurrent']['agg_tps']} tok/s", flush=True)
+    print(f"    동시 {CONC}개: {wall:.1f}s, 합계 {tot_out}tok, {rec['concurrent']['agg_tps']} tok/s "
+          f"finish={rec['concurrent']['finish']}", flush=True)
     rec["elapsed_s"] = round(time.perf_counter() - t0, 1)
     return rec
 

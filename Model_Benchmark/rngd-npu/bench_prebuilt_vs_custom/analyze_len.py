@@ -13,7 +13,32 @@ import json, glob, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from analyze import serve_load_seconds, looks_broken  # noqa: E402
+from analyze import serve_load_seconds, looks_broken, LOGDIR, TS  # noqa: E402
+from datetime import datetime, timedelta  # noqa: E402
+
+
+def load_time(d):
+    """serve 로그의 순수 적재 시간과 아티팩트 종류. 라우터는 serve 를 띄울 때마다 로그를 새로 쓰므로,
+    측정 뒤에 같은 모델을 다시 올렸으면(E4, E5 대조 실험) 로그는 그 뒤의 적재다. 그때는 length_probe.py 가
+    잰 전환 시간(load_s, 앞 모델을 내리는 시간 포함)을 쓰고 load_src 에 표시한다.
+    (2026-09-11 실측: A3B Instruct 2507 이 E5 적재 중인 로그를 읽어 3초로 찍혔다)"""
+    s, kind = serve_load_seconds(d["model"])
+    try:
+        txt = open(os.path.join(LOGDIR, "router-" + d["model"].replace("@", "_") + ".log"),
+                   encoding="utf-8", errors="replace").read()
+        i = txt.rfind("Loading LLM:")
+        m = TS.search(txt, i) if i >= 0 else None
+        if m and d.get("started"):
+            t_log = datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%S")
+            t_rec = datetime.strptime(d["started"], "%Y-%m-%d %H:%M:%S")
+            if t_log > t_rec + timedelta(seconds=(d.get("load_s") or 0) + 60):
+                if (d.get("load_s") or 0) >= 5:
+                    return d.get("load_s"), kind, "probe"
+                # 측정 때 이미 떠 있던 모델(전환 0.3초, Qwen3-4B)은 그 뒤 다시 올린 로그라도 오늘의 실제 적재 시간이다
+                return s, kind, "log-later"
+    except (OSError, ValueError):
+        pass
+    return s, kind, "log"
 
 RES = os.path.join(HERE, "results_len")
 OUT = os.path.join(HERE, "summary_len.json")
@@ -64,6 +89,10 @@ def stalls(r, thr=0.1):
     (정상 스텝은 08-29 와 같은 14 ms). 벽시계 속도와 멈춤을 뺀 속도(정상 스텝 중앙값)를 따로 낸다."""
     t = r.get("times") or []
     gaps = [b - a for a, b in zip(t, t[1:])]
+    # 기준은 0.1초와 '그 실행의 간격 중앙값 × 5' 중 큰 값. gpt-oss 는 스텝 자체가 약 1초라
+    # 고정 0.1초로 재면 모든 간격이 멈춤으로 잡힌다(2026-09-11 실측: 2,592회 중 2,592회).
+    if gaps:
+        thr = max(thr, 5 * sorted(gaps)[len(gaps) // 2])
     big = [g for g in gaps if g > thr]
     base = sorted(g for g in gaps if g <= thr)
     step = base[len(base) // 2] if base else None
@@ -71,6 +100,23 @@ def stalls(r, thr=0.1):
     return {"n": len(big), "lost_s": round(sum(big), 2),
             "step_ms": round(step * 1000, 1) if step else None,
             "clean_tps": round(scale / step, 1) if step else None}
+
+
+def rep_cr(r):
+    """사고와 본문을 따로 통째로 zlib 압축한 비율 {thinking, text}. 같은 문형을 되풀이하면 작아진다.
+    정상 사고는 0.30~0.50, Solar long(668 문장 중 655개가 'We can also mention that')은 0.036.
+    ★ 둘을 이어 붙여 끝부분만 재면 안 된다 — 반복 사고 뒤에 정상 답변이 붙으면 비율이 희석된다."""
+    import zlib
+    out = {}
+    for k in ("thinking", "text"):
+        s = r.get(k) or ""
+        if len(s) >= 2000:
+            b = s.encode()
+            out[k] = round(len(zlib.compress(b, 9)) / len(b), 3)
+    return out
+
+
+DEGEN = 0.15   # 이보다 작으면 퇴행 반복으로 본다
 
 
 def time_at(r, cap):
@@ -95,7 +141,7 @@ def load_all():
         d = json.load(open(f, encoding="utf-8"))
         mid = d["model"]
         d["base"] = mid.split("@")[0]
-        d["serve_load_s"], d["build_kind"] = serve_load_seconds(mid)
+        d["serve_load_s"], d["build_kind"], d["load_src"] = load_time(d)
         if "runs" in d:
             for r in d["runs"] + ([d["control_long_1024"]] if d.get("control_long_1024") else []):
                 if r.get("error"):
@@ -108,6 +154,11 @@ def load_all():
                 r["stalls"] = stalls(r)
                 r["loop"] = (loop_period((r.get("thinking") or "") + (r.get("text") or ""))
                              if r.get("finish_reason") in ("length", "wall") else None)
+                cr = rep_cr(r)
+                r["rep_cr"] = min(cr.values()) if cr else None
+                # 퇴행이 난 쪽. 사고가 반복하면 사고 칸을, 답변이 반복하면 답변 칸을 칠한다
+                r["degenerate_part"] = next((k for k in ("thinking", "text") if cr.get(k, 1) < DEGEN), None)
+                r["degenerate"] = r["degenerate_part"] is not None
             runs = [r for r in d["runs"] if not r.get("error")]
             ct = median([r["stalls"]["clean_tps"] for r in runs if (r.get("out_tokens") or 0) >= 64])
             d["clean_tps_med"] = round(ct, 1) if ct else None
@@ -176,6 +227,8 @@ def main():
             extra += " ".join(f"{k}:{v}" for k, v in (r.get("tps_by_pos") or {}).items())
             if r.get("loop"):
                 extra += f"  반복 주기 {r['loop']}자"
+            if r.get("degenerate"):
+                extra += f"  퇴행 반복(압축 {r['rep_cr']})"
             if r.get("broken"):
                 extra += f"  [{r['broken']}]"
             print(f"{d['model'][:34]:34s} {r['prompt'][:9]:7s} {str(r.get('finish_reason')):6s} {r['out_tokens']:6d} "

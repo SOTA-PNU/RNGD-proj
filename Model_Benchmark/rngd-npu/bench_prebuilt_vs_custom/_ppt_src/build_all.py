@@ -115,12 +115,13 @@ def stall_items():
     hit = [(mid, rec_of(mid)) for mid, _, _ in gen_all.MODELS if rec_of(mid) and rec_of(mid).get("stall_lost_s", 0) > 1]
     clean = [(mid, rec_of(mid)) for mid, _, c in gen_all.MODELS if rec_of(mid) and c == 4 and rec_of(mid).get("stall_lost_s", 0) <= 1]
     items = [
-        {"t": "토큰이 오는 시각을 전부 기록해 조각 사이 간격을 봤다. 정상 간격은 모델마다 12~30 ms 로 일정한데, "
-              "카드 넉 장에 올린 FXB 모델에서만 0.1~1초씩 멈추는 간격이 수백 번 끼어들었다"},
-        {"t": "같은 넉 장이라도 v2 아티팩트인 " + ", ".join(lab_of(m) for m, _ in clean) +
-              " 은 멈춤이 없었고, FXB 라도 한 장짜리는 멈춤이 없었다. 멈춤이 없는 모델의 속도는 08-29 와 같다"},
-        {"t": "09-01 재부팅 때 커널이 6.17 에서 7.0 으로 바뀌었다. 멈춤을 뺀 정상 간격은 08-29 속도와 같으므로 "
-              "모델이 느려진 것이 아니라 스텝 사이가 막히는 것이다. 원인 확정은 결정 실험 결과를 보라"},
+        {"t": "토큰이 오는 시각을 전부 기록해 조각 사이 간격을 봤다. 정상 간격으로 계산한 속도는 08-29 속도와 같다. "
+              "모델이 느려진 것이 아니라 스텝 사이에 0.1~1초씩 멈추는 간격이 끼어든 것이다"},
+        {"t": "멈춤은 몇 분 단위로 밀려왔다 빠진다. 같은 모델도 시간대에 따라 0회에서 수천 회까지 달랐고, "
+              "동시 요청이 가장 크게 다쳤다. A3B Instruct 2507 의 동시 4요청은 16:49 에 35 tok/s 였는데 19:3x 에 다시 재니 "
+              "141~143 tok/s 로 08-29(142)와 같았다. 서버 로그의 생성량도 같은 시간에 떨어졌으니 서버 쪽 멈춤이다"},
+        {"t": "smi 호출, max_tokens, 라우터, CPU 경합, 카드 한 장의 열화, 온도, 노드 메모리 부족은 실험으로 배제했다. "
+              "08-29 이후 바뀐 것은 09-01 재부팅 때 커널이 6.17 에서 7.0 으로 올라간 것이다"},
     ]
     return items, hit
 
@@ -235,7 +236,7 @@ def build():
                   f"{best4[1]['concurrent']['agg_tps']:.0f} tok/s 보다 높다"},
             {"t": ("사람이 여럿 붙는 서비스라면 이 두 번째 숫자가 중요하다. 혼자 쓰는 도구라면 첫 번째 숫자와 앞 장의 응답 시간을 본다"
                    if not LEN else
-                   "넉 장짜리 FXB 모델은 이번 측정에서 스텝 사이 멈춤이 끼어 두 숫자 모두 낮게 나왔다. 다음 장에 멈춤을 뺀 속도를 따로 적었다")},
+                   "이번 측정은 스텝 사이 멈춤이 시간대에 따라 끼어, 넉 장짜리 모델 여럿이 두 숫자 모두 낮게 나왔다. 다음 장에 멈춤을 뺀 속도를 따로 적었다")},
         ])
     if LEN:
         items, hit = stall_items()
@@ -270,7 +271,8 @@ def build():
     for mid, lab, cards in gen_all.MODELS:
         rec = BY.get(mid)          # ★ 'd' 를 쓰면 덱 객체를 가려 build() 전체가 깨진다
         if not rec or "runs" not in rec:
-            why = "배포 FXB 결함" if "A3B-FP8" in mid and "2507" not in mid else "측정 실패"
+            why = {"Qwen3-30B-A3B-FP8": "배포 FXB 결함",
+                   "K-EXAONE-236B-A23B-NVFP4A16": "적재 중 메모리 부족" if LEN else "측정 실패"}.get(mid, "측정 실패")
             trows.append([lab, str(cards), "못 뜸", "-", "-", "-", "-", why] + (["-"] if LEN else []))
             continue
         c = rec.get("concurrent") or {}
@@ -292,7 +294,10 @@ def build():
                   "첫응답 = 가장 짧은 프롬프트가 끝날 때까지. " + ("최장 출력 = 단일 요청 네 개 중 가장 긴 출력 토큰. " if LEN else "") +
                   "Qwen3-30B-A3B-FP8 은 배포 FXB 번들이 가중치를 30.2 GiB 다 읽은 뒤 "
                   "embed_tokens.weight 가 F32 인데 EDF 는 bf16 을 기대해 죽는다(50회 재현). "
-                  "다운로드 문제가 아니라 배포본 결함이다."))
+                  "다운로드 문제가 아니라 배포본 결함이다."
+                  + (" K-EXAONE 236B 는 적재 중 서버 메모리가 바닥나 OOM 으로 serve 가 죽었다. 가중치 136.6 GiB 가 "
+                     "서버 메모리 125 GiB 보다 크고, 적재 중 serve 는 가중치의 약 2배를 호스트에 든다. "
+                     "08-29 판(1024 한도)에서는 떴다." if LEN else "")))
 
     rows = []
     for mid, lab, _ in gen_all.MODELS:
@@ -367,21 +372,37 @@ def prompts_slide():
            note=f"temperature 0, max_tokens {MT:,}, 스트리밍. 답변 원문은 이어지는 절에 그대로 싣는다.")
 
 
-def answer_slides(budget=760):
-    """모델별 답변을 발췌 없이 싣는다. 분량이 커서 프롬프트마다 여러 장으로 나눈다."""
+# 글머리 유형의 본문 크기(L-47). 답변 원문은 이 크기에 들어가게 나누고, 표지와 부 표지 부제도 이 크기로 맞춘다.
+ANS_PT = 14
+# 부제 없는 글머리 슬라이드의 본문 높이(pt): _chrome 이 돌려주는 top(0.42+0.72+0.30in)부터 BODY_BOT 까지
+AVAIL_PT = (deck.BODY_BOT - deck.Inches(1.44)) / 12700.0 - 8
+
+
+def _fits(items):
+    return deck.Deck._needed_pt(items, deck.BODY_W, ANS_PT) <= AVAIL_PT
+
+
+def _split(t, hdr):
+    """한 모델의 답이 한 장에 안 들어가면 잘라서 이어 싣는다. 자르는 자리는 공백으로."""
+    out = []
+    while t:
+        n = len(t)
+        while n > 60 and not _fits([{"t": hdr}, {"t": t[:n], "lv": 1}]):
+            n = int(n * 0.9)
+        if n < len(t):
+            sp = t.rfind(" ", int(n * 0.8), n)
+            n = sp if sp > 0 else n
+        out.append(t[:n].strip())
+        t = t[n:].strip()
+    return out
+
+
+def answer_slides():
+    """모델별 답변을 발췌 없이 싣는다. 슬라이드마다 ANS_PT 에 들어가는 만큼만 담는다(L-47)."""
     import gen_all
     for name, _ in PROMPTS:
         key = KEY[name]
-        items, used, part = [], 0, 1
-        def flush(last=False):
-            nonlocal items, used, part
-            if not items:
-                return
-            # 제목에 대시를 쓰지 않는다(L-26). 콜론으로 잇는다.
-            d.bullets(f"답변 원문: {name}" + (f" ({part})" if (part > 1 or not last) else ""),
-                      items, subtitle=None)
-            items, used = [], 0
-            part += 1
+        pages, cur = [], []
         for mid, lab, _ in gen_all.MODELS:
             rec = BY.get(mid)
             if not rec or "runs" not in rec:
@@ -394,13 +415,75 @@ def answer_slides(budget=760):
                 t = t.replace(ch, ", ")
             if not t:
                 t = "(답변 없음, 사고만 하고 예산이 끝났다)" if r.get("thinking") else "(빈 출력)"
-            if used + len(t) > budget and items:
-                flush()
-            th = r.get("think_tok")
-            items.append({"t": f"{lab}  ({r.get('out_tokens')}tok" + (f", 사고 {th}" if th else "") + ")"})
-            items.append({"t": t, "lv": 1})
-            used += len(t)
-        flush(last=True)
+            th = r.get("think_tok") or r.get("think_tokens")
+            hdr = f"{lab}  ({r.get('out_tokens')}tok" + (f", 사고 {th}" if th else "") + ")"
+            for k, piece in enumerate(_split(t, hdr)):
+                pair = [{"t": hdr + ("  이어서" if k else "")}, {"t": piece, "lv": 1}]
+                if cur and not _fits(cur + pair):
+                    pages.append(cur)
+                    cur = []
+                cur += pair
+        if cur:
+            pages.append(cur)
+        for i, items in enumerate(pages, 1):
+            # 제목에 대시를 쓰지 않는다(L-26). 콜론으로 잇는다.
+            d.bullets(f"답변 원문: {name}" + (f" ({i})" if len(pages) > 1 else ""), items, subtitle=None)
+
+
+def unify_sizes(prs):
+    """L-47: 같은 유형의 슬라이드는 같은 본문 크기. deck.py 는 장마다 들어가는 최대 크기를 골라서 흩어진다.
+    유형 구분과 크기 측정은 검사기(check_layout)의 것을 그대로 쓴다 — 기준이 다르면 고쳐도 걸린다.
+      글머리  ANS_PT. 답변 원문은 1단과 2단의 차이(1.2pt)를 지키며 옮기고, 표지와 부 표지는 부제만 줄인다
+      표, 코드  그 유형에서 가장 작게 잡힌 크기(큰 쪽에 맞추면 내용이 많은 장이 넘친다)"""
+    import check_layout as cl
+    from pptx.util import Pt
+    kinds = [(s, cl._slide_kind(s)) for s in prs.slides]
+    tmin = min((cl._body_pt(s) for s, k in kinds if k == "표"), default=None)
+    cmin = min((cl._body_pt(s) for s, k in kinds if k == "코드"), default=None)
+
+    def body_runs(s):
+        for sh in s.shapes:
+            if sh.has_text_frame and (sh.top or 0) > cl.EMU_IN:
+                for p in sh.text_frame.paragraphs:
+                    for r in p.runs:
+                        if r.font.size:
+                            yield r
+    for s, k in kinds:
+        if k == "표" and tmin:
+            for sh in s.shapes:
+                if sh.has_table:
+                    for row in sh.table.rows:
+                        for c in row.cells:
+                            for p in c.text_frame.paragraphs:
+                                for r in p.runs:
+                                    if r.font.size:
+                                        r.font.size = Pt(tmin)
+        elif k == "코드" and cmin:
+            for r in body_runs(s):
+                if r.font.name == "Consolas":
+                    r.font.size = Pt(cmin)
+        elif k == "글머리":
+            body = cl._body_pt(s)
+            if not body or body == ANS_PT:
+                continue
+            cover = any(r.font.size.pt >= 30 for sh in s.shapes if sh.has_text_frame
+                        for p in sh.text_frame.paragraphs for r in p.runs if r.font.size)
+            for r in body_runs(s):
+                v = r.font.size.pt
+                if not 9.6 <= v <= 24:
+                    continue
+                if cover:
+                    if v > ANS_PT:
+                        r.font.size = Pt(ANS_PT)
+                else:
+                    r.font.size = Pt(v - (body - ANS_PT))
+    from collections import defaultdict
+    by = defaultdict(set)
+    for s, k in kinds:
+        pt = cl._body_pt(s)
+        if pt is not None:
+            by[k].add(pt)
+    print("유형별 본문 크기(L-47):", {k: sorted(v) for k, v in by.items()})
 
 
 if __name__ == "__main__":
@@ -408,6 +491,7 @@ if __name__ == "__main__":
     prompts_slide()
     d.section("2", "답변 원문", "발췌하지 않고 모델이 낸 그대로")
     answer_slides()
+    unify_sizes(d.prs)
     OUT = os.path.join(SRC, "..", os.environ.get("DECK_OUT", "모델별-성능정리.pptx"))
     d.save(OUT)
     print("넘침:", deck.OVERFLOW if deck.OVERFLOW else "없음")

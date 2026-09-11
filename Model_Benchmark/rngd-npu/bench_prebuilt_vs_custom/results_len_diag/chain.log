@@ -1,0 +1,12 @@
+[2026-09-11 17:05:56] chain start
+  npu 최대 사용 0 GiB
+router pid 1300338
+{"running":{},"free_cards":[0,1,2,3]}
+[router 16:49:02] evict 'Qwen3-30B-A3B-Instruct-2507-FP8' (port 8410, cards [0, 1, 2, 3])
+[router 16:49:06] start 'Solar-Open-100B-NVFP4A16' art=furiosa-ai/Solar-Open-100B-NVFP4A16 devices=npu:0,npu:1,npu:2,npu:3 tp=32 dp=1 pp=1 tool=solar_open reasoning=solar_open → :8410
+[2026-09-11 17:05:57] router start by claude job 35467ad1 (max_tokens probe)
+[router 17:05:57] ℹ️  인증 OFF — :8400 가 네트워크에 개방됩니다(키 불필요 모드, 승인된 사내망 전용). 키를 요구하려면 SDI_API_KEY 를 설정하세요.
+[router 17:05:57] furiosa-router up on 0.0.0.0:8400  (17 models + 33 dp/pp variants, auth=OFF(open))  pid=1300338
+[2026-09-11 19:17:03] probe done
+[2026-09-11 19:35:16] chain done
+Terminated

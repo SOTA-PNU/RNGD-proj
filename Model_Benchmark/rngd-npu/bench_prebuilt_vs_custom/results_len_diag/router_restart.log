@@ -1,0 +1,7 @@
+router pid 1236383
+{"running":{},"free_cards":[0,1,2,3]}
+[router 16:32:48] evict 'Qwen3-32B-FP8' (port 8410, cards [0, 1, 2, 3])
+[router 16:32:52] start 'Qwen3-30B-A3B-Instruct-2507-FP8' art=furiosa-ai/Qwen3-30B-A3B-Instruct-2507-FP8 devices=npu:0,npu:1,npu:2,npu:3 tp=32 dp=1 pp=1 tool=hermes reasoning=None → :8410
+[2026-09-11 16:45:01] router start by claude job 35467ad1 (max_tokens probe)
+[router 16:45:01] ℹ️  인증 OFF — :8400 가 네트워크에 개방됩니다(키 불필요 모드, 승인된 사내망 전용). 키를 요구하려면 SDI_API_KEY 를 설정하세요.
+[router 16:45:01] furiosa-router up on 0.0.0.0:8400  (17 models + 33 dp/pp variants, auth=OFF(open))  pid=1236383

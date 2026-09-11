@@ -231,24 +231,28 @@ def lengths_svg(cap=None, old=1024):
     sx = lambda v: round(X0 + (X1 - X0) * v / ax, 1)
     b = []
     y0 = y = 26
-    cut_any = False
+    cut_any = degen_any = False
     for mid, lab in rows:
         rs = runs_of[mid]
         top = max(rs, key=lambda r: r["out_tokens"])
         n = top["out_tokens"]
         th = min(top.get("think_tok") or 0, n)
+        # 노란 칸: 같은 문형을 되풀이한 쪽(압축 비율 0.15 미만, 사고 또는 답변), 또는 한도에 걸려 끊긴 끝
         cut = top.get("finish_reason") in ("length", "wall")
+        part = top.get("degenerate_part")
         cut_any |= cut
+        degen_any |= part is not None
         b.append(txt(W0, y + 9, lab + (" *" if mid in THINK else ""), 10.5, INK))
         b.append(rect(X0, y, X1 - X0, 10, GRAY_L, "none"))
         if th:
-            b.append(rect(X0, y, sx(th) - X0, 10, BLUE_M, "none"))
-        b.append(rect(sx(th), y, max(1.5, sx(n) - sx(th)), 10, YEL if cut else BLUE, "none"))
+            b.append(rect(X0, y, sx(th) - X0, 10, YEL if part == "thinking" else BLUE_M, "none"))
+        b.append(rect(sx(th), y, max(1.5, sx(n) - sx(th)), 10, YEL if (part == "text" or cut) else BLUE, "none"))
         for r in rs:
             if r is not top:
                 b.append(f'<circle cx="{sx(r["out_tokens"])}" cy="{y + 5}" r="2.6" fill="#ffffff" '
                          f'stroke="{INK}" stroke-width="1"/>')
-        b.append(txt(sx(n) + 5, y + 9, f"{n:,}", 10.5, INK))
+        # 값은 막대 끝이 아니라 오른쪽 값 칸에 모은다 — 짧은 막대의 값이 기존 한도 점선에 걸린다(L-27)
+        b.append(txt(W1, y + 9, f"{n:,}", 10.5, INK, anchor="end"))
         y += 12
     # 세로선은 막대 뒤에 그린다 — 막대에 가려지지 않게(L-35)
     for v, lab_, col, dash in ((old, f"기존 한도 {old:,}", GRAY, "4,3"), (cap, f"새 한도 {cap:,}" if cap else "", BLUE, None)):
@@ -260,7 +264,8 @@ def lengths_svg(cap=None, old=1024):
         b.append(txt(sx(v), y + 13, f"{v:,}", 10.5, GRAY, anchor="middle"))
     ly = y + 31
     lx = W0
-    for fill, name in ((BLUE_M, "사고"), (BLUE, "답변")) + (((YEL, "한도에 걸려 끊김"),) if cut_any else ()):
+    yel = ", ".join(x for x, on in (("같은 문형 반복", degen_any), ("한도에 걸려 끊김", cut_any)) if on)
+    for fill, name in ((BLUE_M, "사고"), (BLUE, "답변")) + (((YEL, yel),) if yel else ()):
         b.append(rect(lx, ly - 9, 14, 10, fill, "none"))
         b.append(txt(lx + 19, ly, name, 10.5, INK))
         lx += 19 + tw(name) + 16
