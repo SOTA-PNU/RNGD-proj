@@ -5,7 +5,12 @@ EXAONE-4.0-32B-FP8                 reason  stop      213      0    213   32.0   
 EXAONE-4.0-32B-FP8                 long    stop      385      0    385   31.8    12.3  정상 32.4/s 멈춤 0회 0s  0-1024:31.9
                                    요약: 벽시계 32.0 tok/s, 멈춤 뺀 32.5 tok/s, 멈춤 0회 0s, 스스로 멈춘 최대 385, 한도 도달 []
                                    concurrent      15.5s   1642tok  106.2 tok/s finish=['stop', 'stop', 'stop', 'stop'] out=[410, 433, 410, 389]
-K-EXAONE-236B-A23B-NVFP4A16        실패 RuntimeError: K-EXAONE-236B-A23B-NVFP4A16: 라우터가 error 로 표시 — serve 가 뜨
+K-EXAONE-236B-A23B-NVFP4A16        fact    stop     5070   5015     55   45.5   112.6  정상 50.0/s 멈춤 6회 3.09s  0-1024:38.5 1024-2048:49.8 2048-4096:49.7 4096-8192:42.1
+K-EXAONE-236B-A23B-NVFP4A16        code    stop     6606   6557     49   40.7   162.7  정상 50.0/s 멈춤 84회 14.4s  0-1024:40.4 1024-2048:48.0 2048-4096:48.3 4096-8192:34.3
+K-EXAONE-236B-A23B-NVFP4A16        reason  stop      999    701    298   42.6    23.9  정상 50.1/s 멈춤 0회 0s  0-1024:42.7
+K-EXAONE-236B-A23B-NVFP4A16        long    stop     2465   1883    582   46.1    53.9  정상 50.1/s 멈춤 0회 0s  0-1024:42.1 1024-2048:49.2 2048-4096:50.3
+                                   요약: 벽시계 45.5 tok/s, 멈춤 뺀 50.1 tok/s, 멈춤 90회 17.5s, 스스로 멈춘 최대 6606, 한도 도달 []
+                                   concurrent     194.1s  12279tok   63.3 tok/s finish=['stop', 'stop', 'stop', 'stop'] out=[2968, 2200, 3067, 4044]
 Llama-3.1-8B-Instruct              fact    stop      124      0    124   47.7     2.6  정상 52.1/s 멈춤 0회 0s  0-1024:48.1
 Llama-3.1-8B-Instruct              code    stop      291      0    291   48.1     6.1  정상 50.3/s 멈춤 0회 0s  0-1024:48.3
 Llama-3.1-8B-Instruct              reason  stop      224      0    224   48.8     4.6  정상 50.5/s 멈춤 0회 0s  0-1024:49.0
@@ -85,10 +90,10 @@ gpt-oss-120b                       long    stop     1495    163   1332    1.1  1
                                    concurrent    1158.8s   5984tok    5.2 tok/s finish=['stop', 'stop', 'stop', 'stop'] out=[1287, 1547, 1412, 1738]
 
     한도     잘림(단일)     잘림(동시)           단일 4개 시간 합(전 모델)  잘리는 모델
-  1024     16/52      28/52                  45.0분  Qwen3-30B-A3B-Instruct-2507-FP8, Qwen3-30B-A3B-Thinking-2507-FP8, Qwen3-32B-FP8, Qwen3-4B-FP8, Qwen3-8B-FP8, Solar-Open-100B-NVFP4A16, gpt-oss-120b
-  2048      1/52       6/52                  54.6분  Solar-Open-100B-NVFP4A16
-  4096      1/52       3/52                  55.5분  Solar-Open-100B-NVFP4A16
-  8192      1/52       3/52                  61.7분  Solar-Open-100B-NVFP4A16
- 16384      0/52       0/52                  63.0분  
+  1024     19/56      32/56                  46.7분  K-EXAONE-236B-A23B-NVFP4A16, Qwen3-30B-A3B-Instruct-2507-FP8, Qwen3-30B-A3B-Thinking-2507-FP8, Qwen3-32B-FP8, Qwen3-4B-FP8, Qwen3-8B-FP8, Solar-Open-100B-NVFP4A16, gpt-oss-120b
+  2048      4/56      10/56                  57.4분  K-EXAONE-236B-A23B-NVFP4A16, Solar-Open-100B-NVFP4A16
+  4096      3/56       3/56                  59.8분  K-EXAONE-236B-A23B-NVFP4A16, Solar-Open-100B-NVFP4A16
+  8192      1/56       3/56                  67.6분  Solar-Open-100B-NVFP4A16
+ 16384      0/56       0/56                  68.8분  
 
 → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/summary_len.json (15개)

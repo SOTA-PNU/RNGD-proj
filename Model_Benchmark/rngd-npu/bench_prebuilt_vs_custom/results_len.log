@@ -494,3 +494,74 @@
     [    80s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "error", "idle_s": null}, "Qwen3-30B-
     실패: RuntimeError: Qwen3-30B-A3B-FP8: 라우터가 error 로 표시 — serve 가 뜨지 못했다
     → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/Qwen3-30B-A3B-FP8.json
+[2026-09-12 23:24:50] 재시도: K-EXAONE (스왑 207 GB)
+
+=== K-EXAONE-236B-A23B-NVFP4A16  (max_tokens 16384, ctx 262144)
+    [     0s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": null, "cards": [], "alive": false, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": null}}
+    [    10s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 10.0}}
+    [    20s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 20.0}}
+    [    30s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 30.0}}
+    [    40s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 40.0}}
+    [    50s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 50.0}}
+    [    60s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 60.0}}
+    [    70s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 70.1}}
+    [    80s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 80.1}}
+    [    90s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 90.1}}
+    [   100s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 100.1}}
+    [   110s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 110.1}}
+    [   120s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 120.1}}
+    [   130s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 130.1}}
+    [   140s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 140.1}}
+    [   150s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 150.1}}
+    [   160s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 160.2}}
+    [   170s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 170.2}}
+    [   180s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 180.2}}
+    [   190s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 190.2}}
+    [   200s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 200.2}}
+    [   210s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 210.3}}
+    [   240s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 240.0}}
+    [   250s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 250.4}}
+    [   260s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 260.5}}
+    [   271s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 270.6}}
+    [   281s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 280.6}}
+    [   291s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 290.6}}
+    [   302s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 302.3}}
+    [   312s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 312.3}}
+    [   322s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 322.3}}
+    [   332s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 332.3}}
+    [   343s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 342.3}}
+    [   353s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 353.0}}
+    [   363s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 363.4}}
+    [   373s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 373.4}}
+    [   383s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 383.4}}
+    [   394s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 393.6}}
+    [   410s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 410.0}}
+    [   420s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 420.0}}
+    [   430s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 430.0}}
+    [   440s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 440.0}}
+    [   451s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 450.8}}
+    [   461s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 461.4}}
+    [   471s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 471.5}}
+    [   481s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 481.5}}
+    [   492s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 492.4}}
+    [   504s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 504.4}}
+    [   514s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 514.4}}
+    [   524s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 524.4}}
+    [   534s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 534.5}}
+    [   545s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 544.7}}
+    [   555s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 554.7}}
+    [   565s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 564.7}}
+    [   575s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 574.7}}
+    [   585s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 584.7}}
+    [   595s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 594.7}}
+    [   605s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 604.8}}
+    [   615s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 614.8}}
+    [   625s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "loading", "idle_s": 624.8}}
+    [   635s] {"K-EXAONE-236B-A23B-NVFP4A16": {"port": 8410, "cards": [0, 1, 2, 3], "alive": true, "tp": 32, "dp": 1, "pp": 1, "state": "up", "idle_s": 634.8}}
+    적재 636.4s
+    fact         stop     5070tok (사고 5015 / 본문 53)   45.5 tok/s  총   112.6s
+    code         stop     6606tok (사고 6557 / 본문 47)   40.7 tok/s  총   162.7s
+    reason       stop      999tok (사고 701 / 본문 296)   42.6 tok/s  총    23.9s
+    long         stop     2465tok (사고 1883 / 본문 578)   46.1 tok/s  총    53.9s
+    동시4 @16384: 194.1s 합계 12279tok 63.3 tok/s finish=['stop', 'stop', 'stop', 'stop']
+    → /home/jun/RNGD-proj/.claude/worktrees/max-tokens-probe/Model_Benchmark/rngd-npu/bench_prebuilt_vs_custom/results_len/K-EXAONE-236B-A23B-NVFP4A16.json

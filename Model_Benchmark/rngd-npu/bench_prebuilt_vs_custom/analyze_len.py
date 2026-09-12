@@ -9,7 +9,7 @@ summary.json(analyze.py)과 같은 필드를 채워 덱 생성기(_ppt_src)가 �
   tps_by_pos   디코드 속도를 출력 위치 구간별로 — 길어질수록 느려지는지(attention 버킷이 커지는지)
   loop         length/wall 로 끝난 실행의 꼬리가 같은 조각의 반복인지
 """
-import json, glob, os, sys
+import json, glob, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -116,7 +116,22 @@ def rep_cr(r):
     return out
 
 
-DEGEN = 0.15   # 이보다 작으면 퇴행 반복으로 본다
+def uniq_ratio(r):
+    """문장 중 서로 다른 것의 비율 {thinking, text}. 압축만으로는 장황한 사고와 반복을 못 가른다 —
+    K-EXAONE fact 는 압축 0.145 인데 문장 74%가 서로 다르고(같은 초안을 고쳐 쓰는 장황한 사고),
+    Solar long 은 압축 0.036 에 고유 문장 14%다(진짜 반복). 2026-09-12 실측."""
+    out = {}
+    for k in ("thinking", "text"):
+        s = r.get(k) or ""
+        if len(s) >= 2000:
+            xs = [x.strip().lower() for x in re.split(r"(?<=[.!?])\s+", s) if len(x.strip()) > 10]
+            if xs:
+                out[k] = round(len(set(xs)) / len(xs), 2)
+    return out
+
+
+DEGEN = 0.15    # 압축 비율이 이보다 작고
+UNIQ = 0.5      # 고유 문장 비율도 이보다 작으면 퇴행 반복으로 본다
 
 
 def time_at(r, cap):
@@ -154,10 +169,12 @@ def load_all():
                 r["stalls"] = stalls(r)
                 r["loop"] = (loop_period((r.get("thinking") or "") + (r.get("text") or ""))
                              if r.get("finish_reason") in ("length", "wall") else None)
-                cr = rep_cr(r)
+                cr, uq = rep_cr(r), uniq_ratio(r)
                 r["rep_cr"] = min(cr.values()) if cr else None
+                r["uniq_ratio"] = min(uq.values()) if uq else None
                 # 퇴행이 난 쪽. 사고가 반복하면 사고 칸을, 답변이 반복하면 답변 칸을 칠한다
-                r["degenerate_part"] = next((k for k in ("thinking", "text") if cr.get(k, 1) < DEGEN), None)
+                r["degenerate_part"] = next((k for k in ("thinking", "text")
+                                             if cr.get(k, 1) < DEGEN and uq.get(k, 1) < UNIQ), None)
                 r["degenerate"] = r["degenerate_part"] is not None
             runs = [r for r in d["runs"] if not r.get("error")]
             ct = median([r["stalls"]["clean_tps"] for r in runs if (r.get("out_tokens") or 0) >= 64])

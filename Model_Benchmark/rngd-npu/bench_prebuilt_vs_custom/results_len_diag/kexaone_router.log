@@ -1,0 +1,7 @@
+router pid 1833396
+{"running":{},"free_cards":[0,1,2,3]}
+[router 19:37:20] start 'Qwen2.5-0.5B-Instruct' art=furiosa-ai/Qwen2.5-0.5B-Instruct devices=npu:0:0-3 tp=4 dp=1 pp=1 tool=hermes reasoning=None → :8410
+[router 19:37:32] ready 'Qwen2.5-0.5B-Instruct' on :8410
+[2026-09-12 23:24:48] router start by claude job 35467ad1 (max_tokens probe)
+[router 23:24:48] ℹ️  인증 OFF — :8400 가 네트워크에 개방됩니다(키 불필요 모드, 승인된 사내망 전용). 키를 요구하려면 SDI_API_KEY 를 설정하세요.
+[router 23:24:48] furiosa-router up on 0.0.0.0:8400  (17 models + 33 dp/pp variants, auth=OFF(open))  pid=1833396
